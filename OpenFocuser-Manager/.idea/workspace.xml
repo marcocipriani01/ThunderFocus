@@ -1,0 +1,1470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_TEST_SOURCES" value="false" />
+    <option name="SCOPE_TYPE" value="4" />
+    <option name="CUSTOM_SCOPE_NAME" value="AstroAllInOne" />
+  </component>
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="OpenFocuser-Manager:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Update readme, added help in CLI mode." />
+    <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
+    <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
+    <list id="b515a51b-5fe4-442d-a0c1-a1bd00652ac8" name="Updated build system" comment="" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="1252409286">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="19" />
+          <entry key="project.open.time.11" value="1" />
+          <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.15" value="2" />
+          <entry key="project.open.time.16" value="2" />
+          <entry key="project.open.time.17" value="2" />
+          <entry key="project.open.time.18" value="3" />
+          <entry key="project.open.time.19" value="3" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.21" value="2" />
+          <entry key="project.open.time.27" value="1" />
+          <entry key="project.open.time.3" value="1" />
+          <entry key="project.open.time.35" value="1" />
+          <entry key="project.opened" value="20" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="MF" value="1" />
+          <entry key="astroallinone" value="6" />
+          <entry key="class" value="15" />
+          <entry key="conffiles" value="2" />
+          <entry key="control" value="3" />
+          <entry key="desktop" value="2" />
+          <entry key="form" value="10" />
+          <entry key="java" value="128" />
+          <entry key="md" value="4" />
+          <entry key="png" value="3" />
+          <entry key="sh" value="7" />
+          <entry key="snippet" value="1" />
+          <entry key="xml" value="11" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Bash" value="9" />
+          <entry key="CLASS" value="15" />
+          <entry key="GUI_DESIGNER_FORM" value="10" />
+          <entry key="Image" value="3" />
+          <entry key="JAVA" value="128" />
+          <entry key="Manifest" value="1" />
+          <entry key="Markdown" value="2" />
+          <entry key="PLAIN_TEXT" value="13" />
+          <entry key="Scratch" value="1" />
+          <entry key="XML" value="11" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="MF" value="2" />
+          <entry key="control" value="1" />
+          <entry key="desktop" value="132" />
+          <entry key="java" value="18133" />
+          <entry key="md" value="2233" />
+          <entry key="sh" value="722" />
+          <entry key="txt" value="600" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Bash" value="722" />
+          <entry key="JAVA" value="18133" />
+          <entry key="Manifest" value="2" />
+          <entry key="Markdown" value="2233" />
+          <entry key="PLAIN_TEXT" value="733" />
+        </counts>
+      </usages-collector>
+    </session>
+    <session id="1447497215">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="11" />
+          <entry key="project.open.time.13" value="1" />
+          <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.15" value="1" />
+          <entry key="project.open.time.16" value="1" />
+          <entry key="project.open.time.17" value="3" />
+          <entry key="project.open.time.19" value="1" />
+          <entry key="project.open.time.20" value="1" />
+          <entry key="project.open.time.25" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="11" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="MF" value="7" />
+          <entry key="astroallinone" value="1" />
+          <entry key="boards" value="1" />
+          <entry key="conf" value="4" />
+          <entry key="conffiles" value="3" />
+          <entry key="control" value="6" />
+          <entry key="desktop" value="4" />
+          <entry key="firmwares" value="2" />
+          <entry key="form" value="8" />
+          <entry key="hex" value="1" />
+          <entry key="java" value="47" />
+          <entry key="license" value="1" />
+          <entry key="md" value="3" />
+          <entry key="openfocuser" value="4" />
+          <entry key="png" value="17" />
+          <entry key="sh" value="10" />
+          <entry key="xml" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Bash" value="15" />
+          <entry key="GUI_DESIGNER_FORM" value="8" />
+          <entry key="Image" value="17" />
+          <entry key="JAVA" value="47" />
+          <entry key="Manifest" value="7" />
+          <entry key="Markdown" value="3" />
+          <entry key="PLAIN_TEXT" value="22" />
+          <entry key="XML" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="MF" value="48" />
+          <entry key="boards" value="115" />
+          <entry key="control" value="39" />
+          <entry key="desktop" value="24" />
+          <entry key="firmwares" value="475" />
+          <entry key="java" value="10229" />
+          <entry key="sh" value="53" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Bash" value="53" />
+          <entry key="JAVA" value="10229" />
+          <entry key="Manifest" value="48" />
+          <entry key="PLAIN_TEXT" value="653" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="281">
+              <caret line="355" lean-forward="true" selection-start-line="355" selection-end-line="355" />
+              <folding>
+                <element signature="docComment;class#Main#0" />
+                <element signature="docComment;field#cliOptions#0;class#Main#0" />
+                <element signature="docComment;field#verboseMode#0;class#Main#0" />
+                <element signature="docComment;field#settings#0;class#Main#0" />
+                <element signature="docComment;field#server#0;class#Main#0" />
+                <element signature="docComment;field#showGUI#0;class#Main#0" />
+                <element signature="initializer##0;class#Main#0" />
+                <element signature="method#main#0;class#Main#0" />
+                <element signature="docComment;method#runServer#0;class#Main#0" />
+                <element signature="method#runServer#0;class#Main#0" />
+                <element signature="docComment;method#isVerboseMode#0;class#Main#0" />
+                <element signature="docComment;method#isGUIEnabled#0;class#Main#0" />
+                <element signature="docComment;method#getSettings#0;class#Main#0" />
+                <element signature="docComment;method#getServer#0;class#Main#0" />
+                <element signature="docComment;method#exit#0;class#Main#0" />
+                <element signature="docComment;method#exit#1;class#Main#0" />
+                <element signature="method#exit#1;class#Main#0" />
+                <element signature="docComment;method#exit#2;class#Main#0" />
+                <element signature="docComment;method#err#0;class#Main#0" />
+                <element signature="method#err#0;class#Main#0" />
+                <element signature="docComment;method#err#1;class#Main#0" />
+                <element signature="method#err#1;class#Main#0" />
+                <element signature="docComment;method#err#2;class#Main#0" />
+                <element signature="method#err#2;class#Main#0" />
+                <element signature="docComment;method#err#3;class#Main#0" />
+                <element signature="method#err#3;class#Main#0" />
+                <element signature="docComment;method#err#4;class#Main#0" />
+                <element signature="docComment;method#info#0;class#Main#0" />
+                <element signature="method#info#0;class#Main#0" />
+                <element signature="docComment;method#info#1;class#Main#0" />
+                <element signature="method#info#1;class#Main#0" />
+                <element signature="docComment;method#info#2;class#Main#0" />
+                <element signature="docComment;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;field#code#0;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;field#message#0;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;method#ExitCodes#0;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;method#ExitCodes#1;class#ExitCodes#0;class#Main#0" />
+                <element signature="method#ExitCodes#1;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;method#getMessage#0;class#ExitCodes#0;class#Main#0" />
+                <element signature="docComment;method#getCode#0;class#ExitCodes#0;class#Main#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="module-info" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>print</find>
+      <find>marco</find>
+      <find>marcoùùù</find>
+      <find>IllegalStateException</find>
+      <find>Control</find>
+      <find>e.prints</find>
+      <find>printMessage</find>
+      <find>System.err.print</find>
+      <find>bye</find>
+      <find>addProperty(portsListProp)</find>
+      <find>Updatin</find>
+      <find>WindowAda</find>
+      <find>Unable to parse the INDI server port!</find>
+      <find>NoRouteToHostException</find>
+      <find>Main.err</find>
+      <find>astro</find>
+      <find>astr</find>
+      <find>SquareBoot</find>
+      <find>@author SquareBoot</find>
+      <find>indiPortField</find>
+      <find>loading</find>
+      <find>AstroAllInOne</find>
+      <find>NO_DATA_DIR</find>
+      <find>CFG_FOLDER_ERROR</find>
+      <find>PARSING_ERROR</find>
+      <find>Could not start server</find>
+      <find>ARDUINO_ERROR</find>
+      <find>SOCAT_ERROR</find>
+      <find>INTERNAL_ERROR</find>
+      <find>SERVER_ERROR</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>during</replace>
+      <replace>public</replace>
+      <replace>board</replace>
+      <replace>noGui</replace>
+      <replace>Manage Pins</replace>
+      <replace>@author marcocipriani01</replace>
+      <replace>OpenFocuser</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/src</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="SquareBoot &lt;marco.cipriani.01@gmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ArduinoPin.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ControlPanel.form" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/PinArray.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/Settings.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ScpUpload.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/io/ConnectionError.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/io/ConnectionException.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ScpTo.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ScpUploader.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/io/ScpUploader.java" />
+        <option value="$PROJECT_DIR$/deb-builder/AstroAllInOne/DEBIAN/control" />
+        <option value="$PROJECT_DIR$/deb-builder/AstroAllInOne/usr/share/applications/AstroAllInOne.desktop" />
+        <option value="$PROJECT_DIR$/deb-builder/AstroAllInOne/usr/share/applications/AstroAllInOne-nogui.desktop" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ControlPanel.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java" />
+        <option value="$PROJECT_DIR$/deb-builder/AstroAllInOne/usr/share/applications/AstroAllInOne-cli-server.desktop" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ServerMiniWindow.form" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/ServerMiniWindow.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/astro/allinone/Main.java" />
+        <option value="$PROJECT_DIR$/src/debug.sh" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/astroallinone" />
+        <option value="$PROJECT_DIR$/.idea/dictionaries/marco.xml" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/AstroAllInOne.desktop" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager-server.desktop" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/ControlPanel.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/ServerMiniWindow.form" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/Main.java" />
+        <option value="$PROJECT_DIR$/deb-builder/build.sh" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/io/SerialPortImpl.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/indi/INDIArduinoDriver.java" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/fwconf/boards" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/fwconf/firmwares" />
+        <option value="$PROJECT_DIR$/src/squareboot/openfocuser/manager/fwconf/Updater.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ServerMiniWindow.form" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/boards" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.java" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" />
+        <option value="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser" />
+        <option value="$PROJECT_DIR$/debug.sh" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/Settings.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="32" />
+    <option name="width" value="1920" />
+    <option name="height" value="1048" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Java</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <hideEmptyPackages ProjectPane="false" />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="AstroAllInOne" type="58d84e3e:PackageViewProjectNode" />
+              <item name="AstroAllInOne" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="AstroAllInOne" type="58d84e3e:PackageViewProjectNode" />
+              <item name="AstroAllInOne" type="616d4139:PackageViewModuleNode" />
+              <item name="squareboot" type="1f31426a:PackageElementNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+              <item name="openfocuser" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+              <item name="openfocuser" type="462c0819:PsiDirectoryNode" />
+              <item name="manager" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+              <item name="openfocuser" type="462c0819:PsiDirectoryNode" />
+              <item name="manager" type="462c0819:PsiDirectoryNode" />
+              <item name="fwconf" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+              <item name="openfocuser" type="462c0819:PsiDirectoryNode" />
+              <item name="manager" type="462c0819:PsiDirectoryNode" />
+              <item name="io" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="marcocipriani" type="462c0819:PsiDirectoryNode" />
+              <item name="openfocuser" type="462c0819:PsiDirectoryNode" />
+              <item name="manager" type="462c0819:PsiDirectoryNode" />
+              <item name="plus" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="Abstr&#9;PSI&#9;JAVA://marcocipriani.openfocuser.manager.ControlPanel.AbstractPinDialog&#10;Update&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/fwconf/Updater.java&#10;INDIDr&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java&#10;Main&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/Main.java&#10;outputs&#9;PSI&#9;JAVA://laazotea.indi.Base64.OutputStream&#10;socat&#9;PSI&#9;JAVA://marcocipriani.openfocuser.manager.io.SerialPortMultiplexer.SocatRunner&#10;INDI&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;indiard&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;indiar&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;Driver&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;deb&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/debug.sh&#10;Connec&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/ConnectionError.java&#10;INDIDriverRunner&#9;PSI&#9;JAVA://laazotea.indi.driver.INDIDriverRunner&#10;PinArra&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinArray.java&#10;Arduino&#9;PSI&#9;JAVA://squareboot.astro.allinone.io.Arduino&#10;Socat&#9;PSI&#9;JAVA://squareboot.astro.allinone.SocatRunner&#10;star&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/start.sh&#10;PinVA&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinValue.java&#10;INDIARD&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;PinVa&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinValue.java&#10;pwm&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PwmPinDialog.java&#10;sett&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/Settings.java&#10;Ardui&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/ArduinoPin.java&#10;SerialP&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/SerialPortMultiplexer.java&#10;start&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/start.sh&#10;INDISE&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIServer.java&#10;Sett&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/Settings.java&#10;spla&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/SplashScreen.java&#10;Ardu&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/Arduino.java&#10;Spla&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/SplashScreen.java&#10;Ard&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;INDIDevi&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/laazotea/indi/server/INDIDevice.java&#10;PwmPi&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PwmPinPanel.java&#10;DigitalPin&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/DigitalPinPanel.java&#10;Arra&#9;FILE&#9;jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/util/ArrayList.java&#10;ArrayList&#9;PSI&#9;JAVA://java.util.ArrayList&#10;jbutt&#9;PSI&#9;JAVA://javax.swing.JButton&#10;soca&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/runner/socat-test&#10;GTK&#9;PSI&#9;JAVA://com.sun.java.swing.plaf.gtk.GTKFileChooserUI.GTKDirectoryListModel&#10;FIle&#9;PSI&#9;JAVA://java.io.File&#10;Server&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIServer.java&#10;server&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/INDIServer.java&#10;INDIBaseS&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/INDIBaseServer.java" />
+    <property name="TODO_SCOPE" value="All Places" />
+    <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="247" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="TEXT&#10;JAVA" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="marcocipriani.openfocuser.manager.AppInfo" />
+      <recent name="squareboot.astro.allinone.ControlPanel" />
+      <recent name="squareboot.astro.allinone.Application" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib" />
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager" />
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/squareboot/openfocuser/manager/fwconf" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="squareboot.astro.allinone.io" />
+      <recent name="squareboot.astro.allinone" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res" />
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf" />
+      <recent name="$PROJECT_DIR$/bin" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Bash.Generate Debian package">
+    <configuration name="Build artifacts" type="BashConfigurationType" factoryName="Bash">
+      <option name="INTERPRETER_OPTIONS" value="-c" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="PROJECT_INTERPRETER" value="false" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="echo Done." />
+      <option name="PARAMETERS" value="" />
+      <module name="" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager-Windows:jar" />
+          <artifact name="OpenFocuser-Manager:jar" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Generate Debian package" type="BashConfigurationType" factoryName="Bash" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="PROJECT_INTERPRETER" value="false" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="deb-builder/build.sh" />
+      <option name="PARAMETERS" value="" />
+      <module name="" />
+      <method v="2">
+        <option name="MakeProject" enabled="true" />
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager:jar" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Run control panel" type="BashConfigurationType" factoryName="Bash" singleton="true" temporary="true">
+      <module name="OpenFocuser-Manager" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="PROJECT_INTERPRETER" value="false" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="debug.sh" />
+      <option name="PARAMETERS" value="-c" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager:jar" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Run driver" type="BashConfigurationType" factoryName="Bash" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="PROJECT_INTERPRETER" value="false" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="debug.sh" />
+      <option name="PARAMETERS" value="-d" />
+      <module name="" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager:jar" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Run server" type="BashConfigurationType" factoryName="Bash" singleton="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="PROJECT_INTERPRETER" value="false" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="debug.sh" />
+      <option name="PARAMETERS" value="-p=7625" />
+      <module name="" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager:jar" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Run Windows-compatible Jar" type="JarApplication" factoryName="JAR Application" singleton="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/OpenFocuser_Manager_Windows_jar/OpenFocuser-Manager.jar" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="ALTERNATIVE_JRE_PATH" value="9.0" />
+      <method v="2">
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="OpenFocuser-Manager-Windows:jar" />
+        </option>
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Bash.Generate Debian package" />
+      <item itemvalue="Bash.Build artifacts" />
+      <item itemvalue="Bash.Run driver" />
+      <item itemvalue="Bash.Run server" />
+      <item itemvalue="JAR Application.Run Windows-compatible Jar" />
+      <item itemvalue="Bash.Run control panel" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Bash.Run control panel" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",SHOW_PROPERTIES,SHOW_INHERITED" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="" />
+      <changelist id="b515a51b-5fe4-442d-a0c1-a1bd00652ac8" name="Updated build system" comment="" />
+      <changelist id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
+      <created>1519760819507</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1519760819507</updated>
+    </task>
+    <task id="LOCAL-00001" summary="First commit">
+      <created>1519775156214</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1519775156214</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update">
+      <created>1519863473357</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1519863473357</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update settings">
+      <created>1520087323490</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1520087323490</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Update">
+      <created>1520119387589</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1520119387589</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Update">
+      <created>1520285946271</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1520285946271</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update">
+      <created>1520458579411</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1520458579411</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update">
+      <created>1520975397775</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1520975397775</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Update">
+      <created>1521150264768</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1521150264768</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Update">
+      <created>1521315803152</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1521315803152</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Update">
+      <created>1521317984822</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1521317984822</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Update">
+      <created>1521322601325</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1521322601325</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Update">
+      <created>1521389742057</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1521389742057</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Update">
+      <created>1521411750624</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1521411750625</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Update">
+      <created>1521585916479</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1521585916479</updated>
+    </task>
+    <task id="LOCAL-00015" summary="It (probably) works!">
+      <created>1521824635052</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1521824635053</updated>
+    </task>
+    <task id="LOCAL-00016" summary="NEW README! Added LICENSE, Back to Java 8 again.">
+      <created>1522614168411</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1522614168411</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Debian package builder. Updated readme">
+      <created>1522616132406</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1522616132406</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Bug fixing, Debian package update&#10;Also added CLI desktop launcher">
+      <created>1522618186034</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1522618186034</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Updated build system">
+      <created>1538253466495</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1538253466496</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Updated build system">
+      <created>1538651570686</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1538651570686</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Renewed arch, refactor, bugs fixed, ability to work in a cmdline-only environment as a stand-alone INDI server or as an INDI driver, new control panel, better logs management, changed cmdline arguments, removed some unused code. Still something to fix and to test, serial ports discovery makes its property disappear.">
+      <created>1539379575080</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1539379575081</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Completely rewritten, almost OK">
+      <created>1540765687986</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1540765687986</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Added SCP config sender">
+      <created>1540810658108</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1540810658108</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Update missing files">
+      <created>1540817958341</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1540817958341</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Update readme, added help in CLI mode.">
+      <created>1540821558852</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1540821558852</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="32" width="1920" height="1048" extended-state="6" />
+    <layout>
+      <window_info id="Designer" order="0" />
+      <window_info id="UI Designer" order="1" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="3" visible="true" weight="0.31102782" />
+      <window_info id="Structure" order="4" weight="0.16809422" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.37288135" />
+      <window_info anchor="bottom" id="Debug" order="2" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="5" sideWeight="0.496788" weight="0.20225988" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32655367" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.503212" side_tool="true" weight="0.2965909" />
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" sideWeight="0.49923897" weight="0.33068183" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49732333" weight="0.29604518" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32768363" />
+      <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.3284091" />
+      <window_info anchor="bottom" id="Statistic" order="12" weight="0.67727274" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="2" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" x="100" y="133" width="1160" height="535" id="Documentation" order="4" sideWeight="0.49886364" weight="0.3608137" />
+      <window_info anchor="right" id="Ant Build" order="5" sideWeight="0.50113636" side_tool="true" weight="0.3608137" />
+      <window_info anchor="right" id="Maven Projects" order="6" sideWeight="0.50113636" side_tool="true" weight="0.3608137" />
+    </layout>
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.conf" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="First commit" />
+    <MESSAGE value="Update settings" />
+    <MESSAGE value="Update" />
+    <MESSAGE value="It (probably) works!" />
+    <MESSAGE value="NEW README! Added LICENSE, Back to Java 8 again." />
+    <MESSAGE value="Debian package builder. Updated readme" />
+    <MESSAGE value="Bug fixing, Debian package update&#10;Also added CLI desktop launcher" />
+    <MESSAGE value="Updated build system" />
+    <MESSAGE value="Renewed arch, refactor, bugs fixed, ability to work in a cmdline-only environment as a stand-alone INDI server or as an INDI driver, new control panel, better logs management, changed cmdline arguments, removed some unused code. Still something to fix and to test, serial ports discovery makes its property disappear." />
+    <MESSAGE value="Completely rewritten, almost OK" />
+    <MESSAGE value="Added SCP config sender" />
+    <MESSAGE value="Update missing files" />
+    <MESSAGE value="Update readme, added help in CLI mode." />
+    <option name="LAST_COMMIT_MESSAGE" value="Update readme, added help in CLI mode." />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/.idea/vcs.xml" />
+    <entry file="file://$PROJECT_DIR$/I4J/src/laazotea/indi/server/INDIJavaDevice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-70">
+          <caret line="78" column="12" selection-start-line="78" selection-start-column="12" selection-end-line="78" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/I4J/src/laazotea/indi/server/AbstractINDIServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="263" column="45" selection-start-line="263" selection-start-column="45" selection-end-line="263" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LICENSE.md" />
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/OpenFocuser-Manager/logo-terminal.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/dictionaries/marco.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.form">
+      <provider selected="true" editor-type-id="ui-designer" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="48" column="42" lean-forward="true" selection-start-line="48" selection-start-column="42" selection-end-line="48" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/net/URL.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="190" column="14" lean-forward="true" selection-start-line="190" selection-start-column="14" selection-end-line="190" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/nio/file/CopyOption.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="43" column="17" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/nio/file/StandardCopyOption.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="37" column="20" selection-start-line="37" selection-start-column="4" selection-end-line="37" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hex/OpenFocuser_Plus_proto_OB.hex">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/nio/file/Files.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="2956" column="24" selection-start-line="2956" selection-start-column="24" selection-end-line="2956" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/avrdude.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243882">
+          <caret line="14346" column="5" lean-forward="true" selection-start-line="14346" selection-start-column="5" selection-end-line="14346" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="111" column="67" lean-forward="true" selection-start-line="111" selection-start-column="67" selection-end-line="111" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/I4J/src/laazotea/indi/Base64.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2367">
+          <caret line="1785" column="22" selection-start-line="1785" selection-start-column="22" selection-end-line="1785" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/boards">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="20" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/build.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="29" lean-forward="true" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.desktop/java/awt/Desktop.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="634" column="17" selection-start-line="634" selection-start-column="17" selection-end-line="634" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Website.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Update.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Refresh.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/logo.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.desktop/javax/swing/JFrame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="123" column="13" selection-start-line="123" selection-start-column="13" selection-end-line="123" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.desktop/javax/swing/UIDefaults.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="167" column="18" selection-start-line="167" selection-start-column="18" selection-end-line="167" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.desktop/java/awt/Color.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="591" column="59" selection-start-line="591" selection-start-column="59" selection-end-line="591" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/radiance-substance.jar!/Looks.license">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.desktop/javax/swing/ImageIcon.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1139">
+          <caret line="299" column="11" selection-start-line="299" selection-start-column="11" selection-end-line="299" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form">
+      <provider selected="true" editor-type-id="ui-designer" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="46" column="26" selection-start-line="46" selection-start-column="26" selection-end-line="46" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form">
+      <provider selected="true" editor-type-id="ui-designer" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md" />
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="320" selection-start-line="320" selection-end-line="320" />
+          <folding>
+            <element signature="docComment;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#serialPort#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#multiplexer#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#serialPortString#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#serialPortFieldProp#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#serialPortFieldElem#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#connectionProp#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#connectElem#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#disconnectElem#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#portsListProp#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#searchElem#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#portsListElements#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#digitalPinProps#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#pwmPinsProp#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#pinsMap#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;field#moonLitePortProp#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#INDIArduinoDriver#0;class#INDIArduinoDriver#0" />
+            <element signature="method#INDIArduinoDriver#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#INDIArduinoDriver#1;class#INDIArduinoDriver#0" />
+            <element signature="method#INDIArduinoDriver#1;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#scanSerialPorts#0;class#INDIArduinoDriver#0" />
+            <element signature="method#scanSerialPorts#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#forceReboot#0;class#INDIArduinoDriver#0" />
+            <element signature="method#forceReboot#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#updatePin#0;class#INDIArduinoDriver#0" />
+            <element signature="method#updatePin#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#serialInit#0;class#INDIArduinoDriver#0" />
+            <element signature="method#serialInit#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#getName#0;class#INDIArduinoDriver#0" />
+            <element signature="method#processNewNumberValue#0;class#INDIArduinoDriver#0" />
+            <element signature="method#processNewBLOBValue#0;class#INDIArduinoDriver#0" />
+            <element signature="method#processNewTextValue#0;class#INDIArduinoDriver#0" />
+            <element signature="method#processNewSwitchValue#0;class#INDIArduinoDriver#0" />
+            <element signature="method#serialDisconnect#0;class#INDIArduinoDriver#0" />
+            <element signature="method#driverConnect#0;class#INDIArduinoDriver#0" />
+            <element signature="method#driverDisconnect#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#onPortMessage#0;class#INDIArduinoDriver#0" />
+            <element signature="method#onPortMessage#0;class#INDIArduinoDriver#0" />
+            <element signature="docComment;method#onPortError#0;class#INDIArduinoDriver#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/conffiles">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logo.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="68" column="57" selection-start-line="68" selection-start-column="57" selection-end-line="68" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="23" selection-start-line="3" selection-start-column="16" selection-end-line="3" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="71" lean-forward="true" selection-start-line="5" selection-start-column="71" selection-end-line="5" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager-server.desktop">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="19" lean-forward="true" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager.desktop">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/I4J/src/laazotea/indi/server/DefaultINDIServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="45" column="4" lean-forward="true" selection-start-line="45" selection-start-column="4" selection-end-line="46" selection-end-column="43" />
+          <folding>
+            <element signature="e#1641#1642#0" expanded="true" />
+            <element signature="e#1662#1663#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="37" column="10" selection-start-line="37" selection-start-column="10" selection-end-line="37" selection-end-column="10" />
+          <folding>
+            <element signature="e#1035#1036#0" expanded="true" />
+            <element signature="e#1062#1063#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/debug.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="10" lean-forward="true" selection-start-line="20" selection-start-column="10" selection-end-line="20" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="31" column="86" selection-start-line="31" selection-start-column="86" selection-end-line="31" selection-end-column="86" />
+          <folding>
+            <element signature="docComment;class#Updater#0" />
+            <element signature="docComment;method#getBoards#0;class#Updater#0" />
+            <element signature="docComment;method#getFirmwares#0;class#Updater#0" />
+            <element signature="docComment;method#updateFirmware#0;class#Updater#0" />
+            <element signature="method#updateFirmware#0;class#Updater#0" />
+            <element signature="e#5178#6662#0" />
+            <element signature="docComment;class#AvrdudeListener#0;class#Updater#0" />
+            <element signature="class#AvrdudeListener#0;class#Updater#0" />
+            <element signature="docComment;method#print#0;class#AvrdudeListener#0;class#Updater#0" />
+            <element signature="docComment;method#onFinished#0;class#AvrdudeListener#0;class#Updater#0" />
+            <element signature="docComment;class#Firmware#0;class#Updater#0" />
+            <element signature="class#Firmware#0;class#Updater#0" />
+            <element signature="method#Firmware#0;class#Firmware#0;class#Updater#0" />
+            <element signature="docComment;class#Board#0;class#Updater#0" />
+            <element signature="class#Board#0;class#Updater#0" />
+            <element signature="method#Board#0;class#Board#0;class#Updater#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="36" column="52" selection-start-line="36" selection-start-column="52" selection-end-line="36" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="506" column="42" selection-start-line="506" selection-start-column="42" selection-end-line="506" selection-end-column="42" />
+          <folding>
+            <element signature="docComment;class#ControlPanel#0" />
+            <element signature="e#779#827#0" />
+            <element signature="e#998#1038#0" />
+            <element signature="e#1070#1114#0" />
+            <element signature="e#1166#1206#0" />
+            <element signature="e#1254#1306#0" />
+            <element signature="e#1347#1398#0" />
+            <element signature="e#1444#1494#0" />
+            <element signature="e#1543#1590#0" />
+            <element signature="e#1632#1678#0" />
+            <element signature="e#1723#1782#0" />
+            <element signature="e#1829#1884#0" />
+            <element signature="e#1927#1976#0" />
+            <element signature="e#2013#2074#0" />
+            <element signature="e#2116#2185#0" />
+            <element signature="e#2228#2296#0" />
+            <element signature="e#2353#2385#0" />
+            <element signature="e#2442#2484#0" />
+            <element signature="e#2524#2566#0" />
+            <element signature="e#2607#2639#0" />
+            <element signature="e#2679#2720#0" />
+            <element signature="e#3076#3130#0" />
+            <element signature="e#3194#3244#0" />
+            <element signature="e#3304#3341#0" />
+            <element signature="e#3378#3415#0" />
+            <element signature="e#3378#10788#0" />
+            <element signature="e#4393#5315#0" />
+            <element signature="e#5360#5552#0" />
+            <element signature="class#6447:6916" />
+            <element signature="method#print#0;class#6447:6916" />
+            <element signature="e#7457#8034#0" />
+            <element signature="e#8082#9039#0" />
+            <element signature="e#9679#10244#0" />
+            <element signature="e#10794#10876#0" />
+            <element signature="e#10794#11351#0" />
+            <element signature="e#11357#11435#0" />
+            <element signature="e#11357#11670#0" />
+            <element signature="e#11676#11722#0" />
+            <element signature="e#11676#13166#0" />
+            <element signature="e#12357#12553#0" />
+            <element signature="e#12970#13158#0" />
+            <element signature="e#13172#13325#0" />
+            <element signature="e#13172#14259#0" />
+            <element signature="e#14265#14336#0" />
+            <element signature="e#14265#15558#0" />
+            <element signature="e#15564#15627#0" />
+            <element signature="e#15564#15760#0" />
+            <element signature="e#15766#15833#0" />
+            <element signature="e#15766#15982#0" />
+            <element signature="e#15988#16160#0" />
+            <element signature="e#15988#17010#0" />
+            <element signature="e#17016#17131#0" />
+            <element signature="e#17188#17394#0" />
+            <element signature="e#17473#17515#0" />
+            <element signature="e#17862#18863#0" />
+            <element signature="class#18146:18740" />
+            <element signature="e#18873#18993#0" />
+            <element signature="e#19003#19053#0" />
+            <element signature="e#19143#19282#0" />
+            <element signature="e#19143#20894#0" />
+            <element signature="e#19418#19532#0" />
+            <element signature="e#19749#19996#0" />
+            <element signature="e#20212#20703#0" />
+            <element signature="e#20713#20888#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="36" column="52" selection-start-line="36" selection-start-column="52" selection-end-line="36" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/Settings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="73" column="85" selection-start-line="73" selection-start-column="85" selection-end-line="73" selection-end-column="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="13" lean-forward="true" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="355" lean-forward="true" selection-start-line="355" selection-end-line="355" />
+          <folding>
+            <element signature="docComment;class#Main#0" />
+            <element signature="docComment;field#cliOptions#0;class#Main#0" />
+            <element signature="docComment;field#verboseMode#0;class#Main#0" />
+            <element signature="docComment;field#settings#0;class#Main#0" />
+            <element signature="docComment;field#server#0;class#Main#0" />
+            <element signature="docComment;field#showGUI#0;class#Main#0" />
+            <element signature="initializer##0;class#Main#0" />
+            <element signature="method#main#0;class#Main#0" />
+            <element signature="docComment;method#runServer#0;class#Main#0" />
+            <element signature="method#runServer#0;class#Main#0" />
+            <element signature="docComment;method#isVerboseMode#0;class#Main#0" />
+            <element signature="docComment;method#isGUIEnabled#0;class#Main#0" />
+            <element signature="docComment;method#getSettings#0;class#Main#0" />
+            <element signature="docComment;method#getServer#0;class#Main#0" />
+            <element signature="docComment;method#exit#0;class#Main#0" />
+            <element signature="docComment;method#exit#1;class#Main#0" />
+            <element signature="method#exit#1;class#Main#0" />
+            <element signature="docComment;method#exit#2;class#Main#0" />
+            <element signature="docComment;method#err#0;class#Main#0" />
+            <element signature="method#err#0;class#Main#0" />
+            <element signature="docComment;method#err#1;class#Main#0" />
+            <element signature="method#err#1;class#Main#0" />
+            <element signature="docComment;method#err#2;class#Main#0" />
+            <element signature="method#err#2;class#Main#0" />
+            <element signature="docComment;method#err#3;class#Main#0" />
+            <element signature="method#err#3;class#Main#0" />
+            <element signature="docComment;method#err#4;class#Main#0" />
+            <element signature="docComment;method#info#0;class#Main#0" />
+            <element signature="method#info#0;class#Main#0" />
+            <element signature="docComment;method#info#1;class#Main#0" />
+            <element signature="method#info#1;class#Main#0" />
+            <element signature="docComment;method#info#2;class#Main#0" />
+            <element signature="docComment;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;field#code#0;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;field#message#0;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;method#ExitCodes#0;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;method#ExitCodes#1;class#ExitCodes#0;class#Main#0" />
+            <element signature="method#ExitCodes#1;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;method#getMessage#0;class#ExitCodes#0;class#Main#0" />
+            <element signature="docComment;method#getCode#0;class#ExitCodes#0;class#Main#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor>
+            <show-content>
+              <type id="artifact" />
+              <type id="library" />
+            </show-content>
+          </artifact-editor>
+          <last-edited>OpenFocuser-Manager:jar</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.3030647" />
+                <option value="0.5" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>9.0</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>OpenFocuser-Manager</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>radiance-trident</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <last-edited>AstroAllInOne</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

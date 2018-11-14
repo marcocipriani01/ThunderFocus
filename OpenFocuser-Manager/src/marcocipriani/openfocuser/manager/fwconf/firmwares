@@ -1,0 +1,11 @@
+[OpenFocuser] Standard commercial version, no extras. Arduino Nano with old bootloader
+hex="OpenFocuser"
+version="1.0"
+
+[OpenFocuser Plus prototype] Prototype of Plus version, polar finder illuminator, 3 device switches
+hex="OpenFocuser_Plus_proto"
+version="1.0"
+
+[OpenFocuser Plus] Plus version, polar finder illuminator, 3 device switches
+hex="OpenFocuser_Plus"
+version="1.0"

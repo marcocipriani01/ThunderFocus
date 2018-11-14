@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="radiance-trident">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/radiance-trident.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

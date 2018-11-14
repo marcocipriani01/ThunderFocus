@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+code {
+  font-family: 'Source Code Pro', monospace;
+  background-color: #E0E0E0;
+  padding: 1px;
+}
+
+aside {
+  float: right;
+  width: 30%;
+  margin-left: 1.5%;
+  margin-top: 20px;
+  border: 1px solid #90A4AE;
+  overflow: auto;
+}
+
+.contents {
+  width: 400px;
+}
+
+@media print {
+  .no-print, .no-print * {
+    display: none !important;
+  }
+}
+
+body {
+  padding-top: 8px;
+  padding-bottom: 32px;
+  padding-left: 16px;
+  padding-right: 16px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+img {
+  margin: 8px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table, th, td {
+  border: 1px solid #90A4AE;
+  border-radius: 30%;
+  padding: 10px;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 23px;
+}
+
+h3 {
+  font-size: 21px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h5 {
+  font-size: 15px;
+}

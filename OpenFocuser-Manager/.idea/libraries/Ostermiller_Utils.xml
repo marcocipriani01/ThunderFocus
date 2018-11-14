@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Ostermiller-Utils">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/ostermillerutils.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

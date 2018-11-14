@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=OpenFocuser Manager
+Comment=OpenFocuser Control Panel GUI
+Exec=/usr/bin/openfocuser -c
+Icon=/usr/share/OpenFocuser-Manager/logo.png
+Terminal=false
+Type=Application
+Categories=Application;Science;Astronomy;
+StartupNotify=true

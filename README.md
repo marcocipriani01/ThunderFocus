@@ -1,3 +1,12 @@
+<img align="left" width="100" src="assets/logo.png" style="position: relative; top: 8px; margin-bottom: 8px;" alt="OpenFocuser logo">
+
+# OpenFocuser by Marco Cipriani
+
+<span class="no-print">**[Online page](https://marcocipriani01.github.io/projects/OpenFocuser) |**</span> MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching.
+Linux & MacOS (INDI) and Windows (MoonLite and ASCOM) compatible.
+Doesn't support temperature compensation.
+Comes in two editions: standard and Plus, which has a non-MoonLite extra function to control all the Arduino's digital and PWM pins, so that you can turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi directly from your computer, or remotely if you use an INDI server.
+
 <aside>
 <div class="contents no-print">
 <b style="margin-left:16px;">Table of contents</b>
@@ -36,15 +45,6 @@
 
 </div>
 </aside>
-
-<img align="left" width="100" src="assets/logo.png" style="position: relative; top: 8px; margin-bottom: 8px;" alt="OpenFocuser logo">
-
-# OpenFocuser by Marco Cipriani
-
-<span class="no-print">**[Online page](https://marcocipriani01.github.io/) |**</span> MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching.
-Linux & MacOS (INDI) and Windows (MoonLite and ASCOM) compatible.
-Doesn't support temperature compensation.
-Comes in two editions: standard and Plus, which has a non-MoonLite extra function to control all the Arduino's digital and PWM pins, so that you can turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi directly from your computer, or remotely if you use an INDI server.
 
 <div class="no-print">
 

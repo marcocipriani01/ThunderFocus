@@ -15,7 +15,7 @@ import java.awt.event.WindowEvent;
  * @author marcocipriani01
  * @version 1.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings("unused")
 public class ServerMiniWindow extends JFrame {
 
     /**
@@ -43,7 +43,8 @@ public class ServerMiniWindow extends JFrame {
             }
         });
         exitButton.addActionListener(e -> exit());
-        setBounds(250, 250, 280, 200);
+        pack();
+        setLocation(250, 250);
         setResizable(false);
         setVisible(true);
     }

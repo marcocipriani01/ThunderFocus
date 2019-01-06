@@ -3,7 +3,7 @@
 #define LED 13
 #define SERIAL_SPEED 9600
 // Standard (0), Plus prototype (1), Plus (2)
-#define EDITION 2
+#define EDITION 1
 
 #if EDITION == 0 // Standard
 

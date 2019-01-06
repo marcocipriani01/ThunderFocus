@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README-it</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="readme-style.css" />
+</head>
+<body>
+<p><img align="left" width="100" src="assets/logo.png" style="position: relative; top: 8px; margin-bottom: 8px;" alt="OpenFocuser logo"></p>
+<h1 id="openfocuser-un-progetto-di-marco-cipriani">OpenFocuser, un progetto di Marco Cipriani</h1>
+<p><span class="no-print"><strong><a href="https://marcocipriani01.github.io/projects/OpenFocuser">Sito web</a> |</strong></span> Focheggiatore compatibile MoonLite con posizionamento assoluto e relativo, half e full step. Compatibile con Linux e MacOS (INDI) e Windows (ASCOM). Non supporta la compensazione per temperatura. Disponibile in due edizioni: standard e Plus, la quale supporta una funzione non-MoonLite per controllare tutti i pin digitali e PWM dell’Arduino, in modo da poter accendere, spegnere o regolare in corrente altri dispositivi come fasce anti condensa, ventole per specchi o Raspberry Pi direttamente dal computer, o in remoto con un server INDI.</p>
+<aside>
+<div class="contents no-print">
+<p><b style="margin-left:16px;">Indice</b></p>
+</div>
+</aside>
+<h2 id="utilizzo">Utilizzo</h2>
+<h3 id="focheggiatore">Focheggiatore</h3>
+<p>OpenFocuser è completamente compatibile con software MoonLite, quindi fare riferimento alle guide officiali per MoonLite, INDI, KStars, ASCOM o qualunque altra piattaforma si usi per l’astrofotografia</p>
+<h3 id="openfocuser-manager">OpenFocuser-Manager</h3>
+<p>OpenFocuser-Manager è un’applicazione Java 8 che permette all’utente finale di aggiornare facilmente il firmware dell’Arduino (eliminando la necessità di installare l’intera IDE Arduino, compilare e caricare lo sketch) e controllare i pin digitali della scheda se si sta utilizzando l’edizione Plus. Contiene integrati <code>avrdude</code> e gli ultimi firmware <code>.hex</code> per Arduino Nano, librerie seriali, il server INDI4Java e utility di auto-aggiornamento.</p>
+<h4 id="installazione">Installazione</h4>
+<ul>
+<li>Debian e Ubuntu:
+<ul>
+<li>Installare il pacchetto Debian: <code>dpkg</code> installerà automaticamente <code>socat</code> e <code>avrdude</code> per te, una icona desktop verrà creata e si è pronti per lavorare.</li>
+<li>I pacchetti <code>openssh-client</code> e <code>openssh-server</code> sono richiesti se si vogliono inviare i file di configurazione, vedere sotto per ulteriori informazioni.</li>
+</ul></li>
+<li>Altre distribuzioni Linux:
+<ul>
+<li>Scaricare l’archivio <code>jar</code> ed eseguirlo. <code>socat</code> e <code>avrdude</code> <strong>devono</strong> essere installati a seconda del package manager e nella path.</li>
+<li><code>ssh</code> client e server sono richiesti se si vogliono inviare i file di configurazione, vedere sotto per ulteriori informazioni.</li>
+</ul></li>
+<li>Windows:
+<ul>
+<li>Scaricare l’archivio <code>jar</code> ed eseguirlo. <code>avrdude.exe</code> e <code>libusb0.dll</code> sono inclusi, non c’è bisogno di un’installazione aggiuntiva. Il server INDI, il driver e l’invio delle impostazioni non sono disponibili, solo firmware update.</li>
+</ul></li>
+<li>MacOS: non possiedo un Mac, quindi non posso distribuire un pacchetto per questo sistema operativo. Sentiti libero di contribuire!</li>
+</ul>
+<p><a class="no-print" href="assets/FW-update.png"><img src="assets/FW-update.png" width="400" align="right"></a></p>
+<h4 id="updating-the-firmware">Updating the firmware</h4>
+<p>L’aggiornamento del firmware con <code>avrdude</code> è supportato in Windows (<code>avrdude.exe</code> è incluso nello <code>jar</code> e verrà spacchettato durante l’esecuzione nella cartella temporanea predefinita di sistema) e in Linux, indifferentemente dalla distribuzione, se <code>avrdude</code> è nella path (in Debian, installarlo con <code>sudo apt-get install avrdude</code>). La configurazione predefinita di <code>avrdude</code> è scelta automaticamente dal programma.<br> Nella sezione Firmware update è possible selezionare la porta seriale della scheda, il tipo di scheda (al momento, il firmware è compilato solo per Arduino Nano, nuovo e vecchio bootloader), e l’edizione del firmware: standard (solo focheggiatore) o Plus (pin controllabili e illuminatore polare). Un’etichetta di testo sotto la selezione del firmware mostra la versione del software selezionato. Premere Update per eseguire il flash della scheda</p>
+<p><a class="no-print" href="assets/Plus-config.png"><img src="assets/Plus-config.png" width="400" align="left"></a></p>
+<h4 id="gestione-dei-pin-nelledizione-plus">Gestione dei pin nell’edizione Plus</h4>
+<p><strong>Nota: i focheggiatori standard non supportano la gestione dei pin! Non sono compatibili con OpenFocuser</strong> <br>Se si è nuovi ai driver INDI, leggere prima la documentazione sul <a href="http://indilib.org/about/discover-indi.html">sito INDI</a> e su <a href="https://en.wikipedia.org/wiki/Instrument_Neutral_Distributed_Interface">Wikipedia</a>. <br>Nella sezione “Plus edition configuration” è possibile selezionare una porta per il server INDI (predefinita 7625 per lasciare la 7624 agli altri server INDI) e definire la lista dei pin digitali e PWM. Premi “Add” per aggiungere una definizione di pin: aggiungere un pin digitale significa aggiungere un elemento switch INDI (una casella di selezione ON/OFF nel pannello di controllo INDI del client) che permette all’utente di cambiare lo stato del pin ON e OFF; invece, alla creazione di un pin PWM OpenFocuser aggiungerà un elemento INDI numerico al suo driver, permettendo all’utilizzatore di scrivere il valore del pin (0→100%) direttamente dal pannello di controllo INDI nel client. Una porta pin verrà richiesta (per esempio, pin 13). <strong>Nota: puoi aggiungere solo quei pin precedentemente selezionati nella configurazione dell’Arduino!</strong> È poi possibile premere “Edit” per modificare le proprietà del pin: un nome personalizzato (es. “Fascia anticondensa”) e un valore predefinito, applicato quando si avvia il driver. Dopo aver definito tutti i pin, salvare la configurazione ed avviare il server direttamente dal pannello di controllo o chiuderlo per avviarlo dalla linea di comando (si veda utilizzo avanzato). Per utilizzare il manger dei pin è necessario un client INDI. In KStars, aprire Ekos dalla toolbar e create un nuovo profilo contenente la tua montatura, CCD o Reflex e un focheggiatore MoonLite, e nel campo driver “Remote:” scrivere <code>INDI Arduino pin driver@localhost:7625</code>. Cambiare <code>localhost:7625</code> con la giusta porta e host. <strong>Deselezionare</strong> l’auto connessione dei dispositivi e dare al profilo un nome. Ora avviare il server OpenFocuser (dal pannello di controllo o dalla linea di comando). Avviare il server INDI di Ekos ed aprire il pannello di controllo INDI. Collegare tutti i device, andare nella sezione “INDI Arduino pin driver” e connettere il driver. Nella sottosezione “Serial connection” selezionare una porta seriale e connettere. Una nuova scheda chiamata “Manage pins” comparirà, nella quale è possibile modificare lo stato dei pin selezionati nel pannello di controllo. Copiare la porta del focheggiatore MoonLite ed incollarla nel campo della porta del driver MoonLite. Selezionare come veloctà baud 9600 e connettere il focheggiatore. Se tutto funziona a dovere l’intero pannello di controllo MoonLite comparirà. Altrimentri controllare se il server OpenFocuser è in esecuzione, se la porta virtuale esiste e se la velocità è 9600.</p>
+<h2 id="utilizzo-avanzato-e-risoluzione-dei-problemi">Utilizzo avanzato e risoluzione dei problemi</h2>
+<h3 id="inviare-la-configurazione-ad-un-altro-computer.">Inviare la configurazione ad un altro computer.</h3>
+<p>È possibile inviare la configurazione dei pin e le impostazioni ad un altro computer. Assicurarsi che OpenFocuser-Manager sia installato su entrambi i computer con tutte le dipendenze. Dal computer che deve inviare la configurazione aprire il pannello di controllo e premere “Send configuration”. Verranno richiesti l’host remoto, l’username e la password. Se il processo fallisce a causa di una cartella remota non trovata, aprire e chiudere una volta il pannello di controllo nel computer remoto e riprovare (questo ricreerà la cartella di configurazione nella cartella remota, che deve essere presente per permettere al primo computer di inviare il file di impostazioni).</p>
+<h3 id="server-stand-alone-da-riga-di-comando">Server stand-alone da riga di comando</h3>
+<p>Usare <code>openfocuser -p=xxxx</code>, con <code>xxxx</code> la porta del server (o <code>0</code> per usare l’ultima porta salvata), per avviare il server da riga di comando senza interfaccia utente. La configurazione è la stessa di quella salvata nel pannello di contrllo.</p>
+<h3 id="indi-driver-da-solo-in-un-altro-server-indi">INDI driver da solo in un altro server INDI</h3>
+<p>The INDI driver can be run inside another INDI server executing <code>openfocuser -d</code>. No GUI will be loaded, nor the server will be set up: the driver will communicate with your external server with stdin/out, just like any other INDI driver.</p>
+<h3 id="starting-from-the-command-line">Starting from the command line</h3>
+<ul>
+<li><code>bash</code>: <code>openfocuser &lt;options&gt;</code></li>
+<li>Windows: <code>java -jar OpenFocuser-Manager.jar &lt;options&gt;</code></li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 11%" />
+<col style="width: 12%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Short option</th>
+<th>Long option</th>
+<th>Param</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>-a</code></td>
+<td><code>--serial-port</code></td>
+<td>e.g. <code>/dev/ttyUSB0</code></td>
+<td>Specifies a serial port and connects to it if possible. Otherwise it will be stored to settings only.</td>
+</tr>
+<tr class="even">
+<td><code>-c</code></td>
+<td><code>--control-panel</code></td>
+<td></td>
+<td>Shows the control panel.</td>
+</tr>
+<tr class="odd">
+<td><code>-d</code></td>
+<td><code>--driver</code></td>
+<td></td>
+<td>Driver-only mode (no server, stdin/stdout)</td>
+</tr>
+<tr class="even">
+<td><code>-p</code></td>
+<td><code>--indi-port</code></td>
+<td>e.g. <code>7625</code></td>
+<td>Stand-alone server mode, CLI. If port=0, fetch the last used port from the settings.</td>
+</tr>
+<tr class="odd">
+<td><code>-v</code></td>
+<td><code>--verbose</code></td>
+<td></td>
+<td>Verbose logging mode.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-errors">Common errors</h3>
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 14%" />
+<col style="width: 82%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Exit code</th>
+<th>Error</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>Java not found</td>
+<td>Install Java &gt;8 and ensure it’s in path</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><code>socat</code> not found</td>
+<td>Install <code>socat</code> (Linux)</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>INDI not found</td>
+<td>Install <code>indiserver</code> (Linux)</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><code>avrdude</code> not found</td>
+<td>Install <code>avrdude</code> (Linux)</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td><code>jar</code> not found</td>
+<td>Where did you put <code>OpenFocuser-Manager.jar</code>? Did you build the project and artifacts?</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Config folder could not be initialized</td>
+<td>OpenFocuser-Manager wasn’t able to create the folder where it’ll put the configuration. Using your file manager, go to you home directory and check if the <code>.config/OpenFocuser-Manager</code> folders exist and are directories</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Unable to parse parameters</td>
+<td>Check the command line arguments</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Invalid options</td>
+<td>Invalid combination of command line arguments (for example, you can’t run the driver and the control panel or the stand-alone server at the same time)</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td><code>socat</code> error</td>
+<td><code>socat</code> could not be started. Check if it’s installed, up-to-date and in path. No solution for operating systems other that Linux, but shouldn’t happen: report an issue if so.</td>
+</tr>
+</tbody>
+</table>
+<p><a class="no-print" href="assets/Circuit-1.jpg"><img align="left" src="assets/Circuit-1.jpg" width="250"></a></p>
+<h2 id="hardware">Hardware</h2>
+<h3 id="autodesk-eagle-circuit">Autodesk Eagle circuit</h3>
+<p>In the “Eagle” directory you can find the full circuit project, both schematics and PCB for the standard and Plus editions. Feel free to modify it to accomplish your necessities: for example, you could add another dew heater controller, or remove the Newton mirror cooler MOSFET. <br><strong>Made with Eagle 9.2.2 Premium</strong></p>
+<p><a class="no-print" href="assets/Motor-holder-1.jpg"><img align="right" src="assets/Motor-holder-1.jpg" width="250"></a></p>
+<h3 id="motor-holders">Motor holders</h3>
+<p>I included the mounting brackets I made for the common SkyWatcher Dual-Speed Crayford focuser (I have a 200mm f/5 Newton OTA). <br><strong>AutoCAD 2019</strong> project, STL and IGS exported files ready for 3D printing.</p>
+<h3 id="focuser-motor-and-drivers">Focuser motor and drivers</h3>
+<p>I use a Nema 11 motor that moves the focuser knob using a belt. If you don’t have a heavy focuser, also consider using a Nema 8. A 20 teeth pulley and a 6mm wide 160mm long belt are enough. Supported motor drivers via the <a href="https://github.com/laurb9/StepperDriver">StepperDriver</a> library:</p>
+<ul>
+<li>Generic 2-pin drivers</li>
+<li>DRV8825</li>
+<li>A4988</li>
+<li>DRV8834</li>
+</ul>
+<h1 id="developers-guide">Developer’s guide</h1>
+<p>See ENGLIGH</p>
+<h2 id="license">License</h2>
+<p>OpenFocuser is a project by Marco Cipriani<span class="no-print"> - <a href="https://github.com/marcocipriani01">GitHub profile</a> - <a href="https://marcocipriani01.github.io/">website</a></span> <br>Licensed under the <a href="LICENSE.md">Apache License, Version 2.0</a> <br>Google, The Apache Software Foundation, Java, GitHub and MoonLite trademarks belong to their respective owners. I’m not affiliated with these manufacturers, companies and software foundations.</p>
+<h2 id="forking-and-issues">Forking and issues</h2>
+<p>Feel free to submit pull requests, report an issue or suggest new features! Also, new mounting brackets are welcome!</p>
+</body>
+</html>

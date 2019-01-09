@@ -16,7 +16,7 @@
 <body>
 <p><img align="left" width="100" src="assets/logo.png" style="position: relative; top: 8px; margin-bottom: 8px;" alt="OpenFocuser logo"></p>
 <h1 id="openfocuser-by-marco-cipriani">OpenFocuser by Marco Cipriani</h1>
-<p><span class="no-print"><strong><a href="https://marcocipriani01.github.io/projects/OpenFocuser">Online page</a> |</strong></span> MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching. Linux &amp; MacOS (INDI) and Windows (MoonLite and ASCOM) compatible. Doesn’t support temperature compensation. Comes in two editions: standard and Plus, which has a non-MoonLite extra function to control all the Arduino’s digital and PWM pins, so that you can turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi directly from your computer, or remotely if you use an INDI server.</p>
+<p><span class="no-print"><strong><a href="https://marcocipriani01.github.io/projects/OpenFocuser">Online page</a> |</strong></span> OpenFocuser is a MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching. It is Unix/Linux (INDI) and Windows (MoonLite and ASCOM) compatible. Two editions are available: standard and Plus, which has a non-MoonLite extra function to control all the Arduino’s digital and PWM pins, allowing the final user to turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi, directly from your computer, or remotely with Telescope-Pi. OpenFocuser also comes with a firmware update utility (via avrdude), a command line server for remote control (using INDI) and a control panel to manage the pins (name and value at startup). 3D mounting brackets and circuit/PCB projects are also provided.</p>
 <aside>
 <div class="contents no-print">
 <p><b style="margin-left:16px;">Table of contents</b></p>
@@ -78,7 +78,7 @@
 </aside>
 <h2 id="usage">Usage</h2>
 <h3 id="focuser">Focuser</h3>
-<p>OpenFocuser is fully compatible with MoonLite softwares, so please refer to the official user guides for MoonLite focusers, or to the documentations for INDI, KStars, ASCOM or whatever software you use for astrophotography.</p>
+<p>OpenFocuser is fully compatible with MoonLite softwares, so please refer to the official user guides for MoonLite focusers, or to the documentations for INDI (indi_moonlite_focus), KStars, ASCOM or whatever software you use for astrophotography. Recommended stad-alone software for Windows: <a href="https://focuser.com/downloads.php">MoonLite Single Focuser V1.4</a></p>
 <h3 id="openfocuser-manager">OpenFocuser-Manager</h3>
 <p>OpenFocuser-Manager is a Java 8 desktop application that allows the end user to update the Arduino firmware easily (eliminates the need of installing the whole Arduino IDE, compiling and uploading the sketch) and to control the digital pins of the board if using the Plus edition. It comes bundled with <code>avrdude</code> and the latest <code>.hex</code> firmwares for Arduino Nano, serial libraries, INDI4Java server and self-updating utility.</p>
 <h4 id="installation">Installation</h4>

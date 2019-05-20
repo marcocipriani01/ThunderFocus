@@ -35,7 +35,7 @@ public class PwmPinDialog extends ControlPanel.AbstractPinDialog {
      * Class constructor.
      *
      * @param frame a parent window for this dialog.
-     * @param pin a pin.
+     * @param pin   a pin.
      */
     public PwmPinDialog(JFrame frame, ArduinoPin pin) {
         super(frame, pin);

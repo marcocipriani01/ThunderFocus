@@ -5,7 +5,7 @@ import laazotea.indi.Constants.PropertyPermissions;
 import laazotea.indi.Constants.PropertyStates;
 import laazotea.indi.INDIException;
 import laazotea.indi.driver.*;
-import marcocipriani.openfocuser.manager.*;
+import marcocipriani.openfocuser.manager.Main;
 import marcocipriani.openfocuser.manager.io.ConnectionException;
 import marcocipriani.openfocuser.manager.io.SerialMessageListener;
 import marcocipriani.openfocuser.manager.io.SerialPortImpl;

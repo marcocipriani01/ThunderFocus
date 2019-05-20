@@ -5,7 +5,6 @@ import marcocipriani.openfocuser.manager.ControlPanel;
 import marcocipriani.openfocuser.manager.Main;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 

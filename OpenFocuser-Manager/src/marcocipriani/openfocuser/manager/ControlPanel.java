@@ -515,7 +515,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
          * Class constructor.
          *
          * @param frame a parent window for this dialog.
-         * @param pin a pin.
+         * @param pin   a pin.
          */
         public AbstractPinDialog(JFrame frame, ArduinoPin pin) {
             super(frame, "Pin editor", ModalityType.DOCUMENT_MODAL);

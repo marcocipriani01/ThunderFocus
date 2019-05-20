@@ -27,8 +27,8 @@ public class Updater {
      * creates the temp folder and copies in it the avrdude config file.
      *
      * @param listener avrdude listener.
-     * @throws IOException if resources in the app jar are not found.
-     * @throws IllegalStateException if the system temp folder can't be initialized.
+     * @throws IOException                   if resources in the app jar are not found.
+     * @throws IllegalStateException         if the system temp folder can't be initialized.
      * @throws UnsupportedOperationException if the current OS doesn't support avrdude
      */
     public Updater(AvrdudeListener listener) throws IOException {

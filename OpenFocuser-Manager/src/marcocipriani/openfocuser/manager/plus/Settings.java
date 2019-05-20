@@ -24,25 +24,25 @@ public class Settings {
 
     /**
      * Last used serial port.
-     * */
+     */
     @SerializedName("USB port")
     @Expose
     private String usbPort = "";
     /**
      * INDI server port.
-     * */
+     */
     @SerializedName("INDI server port")
     @Expose
     private int indiPort = 7625;
     /**
      * List of digital pins.
-     * */
+     */
     @SerializedName("Digital pins")
     @Expose
     private PinArray digitalPins = new PinArray();
     /**
      * List of PWM pins.
-     * */
+     */
     @SerializedName("PWM pins")
     @Expose
     private PinArray pwmPins = new PinArray();

@@ -5,7 +5,6 @@ import marcocipriani.openfocuser.manager.indi.INDIServer;
 import marcocipriani.openfocuser.manager.plus.ServerMiniWindow;
 import marcocipriani.openfocuser.manager.plus.Settings;
 import org.apache.commons.cli.*;
-import org.pushingpixels.substance.api.skin.SubstanceGraphiteAquaLookAndFeel;
 
 import javax.swing.*;
 import java.io.File;
@@ -15,7 +14,7 @@ import java.io.File;
  * runs the server, the driver or the control panel.
  *
  * @author marcocipriani01
- * @version 2.0
+ * @version 2.1
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Main {
@@ -113,14 +112,27 @@ public class Main {
                 }
             }
 
-            if (controlPanel && !driverOnly) {
+            if (serverMode && (!controlPanel && !driverOnly)) {
+                Main.info("Welcome to OpenFocuser-Manager CLI server!", false);
+                runServer(serverPort);
+                Main.info("Ctrl-C to stop");
+
+            } else if (driverOnly && (!controlPanel && !serverMode)) {
+                new INDIArduinoDriver(System.in, System.out, autoConnectSerial);
+
+            } else if (!serverMode && !driverOnly) {
                 showGUI = true;
                 SwingUtilities.invokeLater(() -> {
                     try {
                         err("Setting up L&F...");
-                        UIManager.setLookAndFeel(new SubstanceGraphiteAquaLookAndFeel());
+                        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if ("Nimbus".equals(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
+                            }
+                        }
 
-                    } catch (UnsupportedLookAndFeelException e) {
+                    } catch (UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
                         e.printStackTrace();
                     }
                     new ControlPanel() {
@@ -133,14 +145,6 @@ public class Main {
                         }
                     };
                 });
-
-            } else if (serverMode && (!controlPanel && !driverOnly)) {
-                Main.info("Welcome to OpenFocuser-Manager CLI server!", false);
-                runServer(serverPort);
-                Main.info("Ctrl-C to stop");
-
-            } else if (driverOnly && (!controlPanel && !serverMode)) {
-                new INDIArduinoDriver(System.in, System.out, autoConnectSerial);
 
             } else {
                 exit(ExitCodes.INVALID_OPTIONS);

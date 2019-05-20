@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
  * @author marcocipriani01
  * @version 1.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings("unused")
 public class SerialPortMultiplexer {
 
     /**

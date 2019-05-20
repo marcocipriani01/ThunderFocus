@@ -1,7 +1,0 @@
-[Arduino Nano]
-cmd="-C{avrdude.conf} -v -patmega328p -carduino -P{port} -b115200 -D -Uflash:w:{hex}:i"
-hex-suffix=".hex"
-
-[Arduino Nano with old bootloader]
-cmd="-C{avrdude.conf} -v -patmega328p -carduino -P{port} -b57600 -D -Uflash:w:{hex}:i"
-hex-suffix="_OB.hex"

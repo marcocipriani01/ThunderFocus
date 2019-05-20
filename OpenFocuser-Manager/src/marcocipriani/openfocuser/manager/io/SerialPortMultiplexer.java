@@ -85,7 +85,7 @@ public class SerialPortMultiplexer {
      * @author marcocipriani01
      * @version 1.0
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
+    @SuppressWarnings("unused")
     private static class SocatRunner implements Runnable {
 
         /**

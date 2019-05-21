@@ -4,7 +4,6 @@
     <root id="archive" name="OpenFocuser-Manager.jar">
       <element id="module-output" name="OpenFocuser-Manager" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jSSC.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-cli.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/ostermillerutils.jar" path-in-jar="/" />
       <element id="module-output" name="I4J" />

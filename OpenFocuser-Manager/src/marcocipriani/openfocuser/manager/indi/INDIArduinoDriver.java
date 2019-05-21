@@ -250,7 +250,11 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                 }
 
                 Main.err("Loading port forwarder (socat)...");
-                multiplexer = new SerialPortMultiplexer(serialPort);
+                multiplexer = SerialPortMultiplexer.getSystemCompatibleMultiplexer(serialPort);
+                if (multiplexer == null) {
+                    //TODO(marcocipriani01): handle error
+                    throw new UnsupportedOperationException();
+                }
                 String mockedPort = multiplexer.getMockedPort();
                 moonLitePortProp = new INDITextProperty(this, "MoonLite port", "MoonLite port",
                         "Serial connection", PropertyStates.OK, PropertyPermissions.RO);

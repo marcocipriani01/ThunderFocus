@@ -13,7 +13,7 @@ import java.net.NoRouteToHostException;
  * @author marcocipriani01
  * @version 1.0
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings("unused")
 public class ScpUploader {
 
     /**

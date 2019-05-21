@@ -1,7 +1,7 @@
 Package: OpenFocuser-Manager
 Architecture: all
 Maintainer: marcocipriani01
-Depends: socat, avrdude
+Depends: socat, avrdude, libjssc-java
 Suggests: openssh-client, openssh-server
 Priority: optional
 Version: 1.0

@@ -22,6 +22,10 @@ public class AppInfo {
      */
     public static final String APP_NAME = "OpenFocuser-Manager";
     /**
+     * Current version codename.
+     */
+    public static final String CODENAME = "Bellatrix";
+    /**
      * Bug report page URL.
      */
     public static final String ISSUE_REPORT = "https://github.com/marcocipriani01/OpenFocuser/issues/new";

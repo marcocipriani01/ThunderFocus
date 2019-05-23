@@ -11,6 +11,7 @@
       <element id="directory" name="hex">
         <element id="dir-copy" path="$PROJECT_DIR$/hex" />
       </element>
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jSSC.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -7,37 +7,22 @@
   </component>
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="OpenFocuser-Manager-Windows:jar" />
+      <artifact name="OpenFocuser-Manager:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Windows Serial Port Multiplexer pre-implementation in Java">
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/save.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/send.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/marco.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/marco.xml" afterDir="false" />
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Bug fixing, added italian language">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager.deb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/OpenFocuser-Manager/OpenFocuser-Manager.jar" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/OpenFocuser-Manager/OpenFocuser-Manager.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinArray.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/GitHub.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/GitHub.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Issue-report.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Issue-report.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Refresh.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Refresh.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Update.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Update.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Website.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Website.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" afterDir="false" />
     </list>
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
@@ -54,11 +39,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="36" column="121" selection-start-line="36" selection-start-column="121" selection-end-line="36" selection-end-column="121" />
+            <state relative-caret-position="323">
+              <caret line="19" column="3" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#544#589#0" expanded="true" />
@@ -95,11 +80,20 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-321">
+              <caret line="286" column="89" selection-start-line="286" selection-start-column="89" selection-end-line="286" selection-end-column="89" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties">
           <provider editor-type-id="text-editor">
             <state relative-caret-position="289">
-              <caret line="19" column="75" lean-forward="true" selection-start-line="19" selection-start-column="75" selection-end-line="19" selection-end-column="75" />
+              <caret line="20" column="75" selection-start-line="20" selection-start-column="75" selection-end-line="20" selection-end-column="75" />
             </state>
           </provider>
           <provider selected="true" editor-type-id="ResourceBundle" />
@@ -109,7 +103,7 @@
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="918">
-              <caret line="207" lean-forward="true" selection-start-line="207" selection-end-line="207" />
+              <caret line="207" selection-start-line="207" selection-end-line="207" />
               <folding>
                 <element signature="docComment;class#INDIArduinoDriver#0" />
                 <element signature="docComment;field#serialPort#0;class#INDIArduinoDriver#0" />
@@ -230,15 +224,6 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinValue.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="185">
-              <caret line="115" column="78" lean-forward="true" selection-start-line="115" selection-start-column="78" selection-end-line="115" selection-end-column="78" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -253,7 +238,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>marco</find>
       <find>marcoùùù</find>
       <find>IllegalStateException</find>
       <find>Control</find>
@@ -283,6 +267,7 @@
       <find>INTERNAL_ERROR</find>
       <find>SERVER_ERROR</find>
       <find>System.getProperty(&quot;os.name&quot;)</find>
+      <find>no up</find>
     </findStrings>
     <replaceStrings>
       <replace>during</replace>
@@ -337,8 +322,6 @@
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ServerMiniWindow.form" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/boards" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
-        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser" />
         <option value="$PROJECT_DIR$/debug.sh" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.java" />
@@ -347,25 +330,27 @@
         <option value="$APPLICATION_CONFIG_DIR$/idea.properties" />
         <option value="$APPLICATION_CONFIG_DIR$/idea64.vmoptions" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ScpUploader.java" />
-        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.xml" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.form" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/Settings.java" />
-        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java" />
-        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinArray.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.form" />
-        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortImpl.java" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" />
         <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser" />
+        <option value="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
+        <option value="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" />
+        <option value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" />
       </list>
     </option>
   </component>
@@ -426,37 +411,7 @@
               <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-              <item name="fwconf" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-              <item name="Resource Bundle 'strings'" type="a6c14932:ResourceBundleNode" />
-            </path>
-            <path>
-              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-              <item name="ControlPanel" type="e9f4de52:FormNode" />
+              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -487,8 +442,8 @@
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="247" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="TEXT&#10;JAVA" />
     <property name="extract.method.default.visibility" value="private" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/jSSC.jar!/" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2662116" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -537,7 +492,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JAR Application.Run Windows-compatible Jar">
+  <component name="RunManager" selected="Bash.Generate Debian package">
     <configuration name="Build artifacts" type="BashConfigurationType" factoryName="Bash">
       <option name="INTERPRETER_OPTIONS" value="-c" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -834,7 +789,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558450857834</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Bug fixing, added italian language">
+      <created>1558649199334</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1558649199334</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TodoView">
@@ -852,14 +814,14 @@
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="3" visible="true" weight="0.1761242" />
+      <window_info active="true" content_ui="combo" id="Project" order="3" visible="true" weight="0.21252677" />
       <window_info id="Structure" order="4" weight="0.16809422" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.23831242" />
       <window_info anchor="bottom" id="Debug" order="2" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
-      <window_info active="true" anchor="bottom" id="Run" order="5" sideWeight="0.49357602" visible="true" weight="0.1995439" />
+      <window_info anchor="bottom" id="Run" order="5" sideWeight="0.49357602" weight="0.1995439" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.2018244" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50588864" side_tool="true" weight="0.33067274" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49411136" weight="0.345496" />
@@ -947,7 +909,8 @@
     <MESSAGE value="Update missing files" />
     <MESSAGE value="Update readme, added help in CLI mode." />
     <MESSAGE value="Windows Serial Port Multiplexer pre-implementation in Java" />
-    <option name="LAST_COMMIT_MESSAGE" value="Windows Serial Port Multiplexer pre-implementation in Java" />
+    <MESSAGE value="Bug fixing, added italian language" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug fixing, added italian language" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
@@ -972,24 +935,10 @@
     <entry file="file://$PROJECT_DIR$/logo.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="71" lean-forward="true" selection-start-line="5" selection-start-column="71" selection-end-line="5" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager-server.desktop">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="9" column="19" lean-forward="true" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager.desktop">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -1063,23 +1012,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/conffiles">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="40" lean-forward="true" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/build.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="27" selection-start-line="27" selection-end-line="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -1095,13 +1027,6 @@
         </state>
       </provider>
       <provider editor-type-id="ResourceBundle" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/GitHub.png">
       <provider selected="true" editor-type-id="images" />
@@ -1190,13 +1115,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="48" column="5" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinArray.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
@@ -1204,59 +1122,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="393" column="25" selection-start-line="393" selection-start-column="25" selection-end-line="393" selection-end-column="25" />
-          <folding>
-            <element signature="e#10100#10202#1" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="78" column="4" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="4" />
-          <folding>
-            <element signature="docComment;class#AppInfo#0" />
-            <element signature="docComment;field#APP_NAME#0;class#AppInfo#0" />
-            <element signature="docComment;field#ISSUE_REPORT#0;class#AppInfo#0" />
-            <element signature="docComment;field#WEBSITE#0;class#AppInfo#0" />
-            <element signature="docComment;field#GITHUB_REPO#0;class#AppInfo#0" />
-            <element signature="docComment;field#VERSION_CHECK_URL#0;class#AppInfo#0" />
-            <element signature="docComment;field#VERSION_DOWNLOAD_URL#0;class#AppInfo#0" />
-            <element signature="docComment;field#latestVersion#0;class#AppInfo#0" />
-            <element signature="docComment;field#latestVersionLink#0;class#AppInfo#0" />
-            <element signature="docComment;field#currentVersion#0;class#AppInfo#0" />
-            <element signature="docComment;method#AppInfo#0;class#AppInfo#0" />
-            <element signature="method#AppInfo#0;class#AppInfo#0" />
-            <element signature="e#2246#2579#1" />
-            <element signature="e#2475#2569#1" />
-            <element signature="e#2616#2712#1" />
-            <element signature="docComment;method#checkForUpdates#0;class#AppInfo#0" />
-            <element signature="method#checkForUpdates#0;class#AppInfo#0" />
-            <element signature="e#3313#3906#1" />
-            <element signature="e#3397#3896#1" />
-            <element signature="e#3606#3666#1" />
-            <element signature="e#3672#3731#1" />
-            <element signature="e#3964#4058#1" />
-            <element signature="docComment;method#getLatestVersion#0;class#AppInfo#0" />
-            <element signature="docComment;method#getCurrentVersion#0;class#AppInfo#0" />
-            <element signature="docComment;method#getLatestVersionLink#0;class#AppInfo#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.form">
       <provider selected="true" editor-type-id="ui-designer" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="115" column="78" lean-forward="true" selection-start-line="115" selection-start-column="78" selection-end-line="115" selection-end-column="78" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares">
       <provider selected="true" editor-type-id="text-editor">
@@ -1337,13 +1204,10 @@
       </provider>
       <provider editor-type-id="ResourceBundle" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form">
-      <provider selected="true" editor-type-id="ui-designer" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="918">
-          <caret line="207" lean-forward="true" selection-start-line="207" selection-end-line="207" />
+          <caret line="207" selection-start-line="207" selection-end-line="207" />
           <folding>
             <element signature="docComment;class#INDIArduinoDriver#0" />
             <element signature="docComment;field#serialPort#0;class#INDIArduinoDriver#0" />
@@ -1454,18 +1318,91 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="19" column="75" lean-forward="true" selection-start-line="19" selection-start-column="75" selection-end-line="19" selection-end-column="75" />
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="docComment;class#AppInfo#0" />
+            <element signature="e#404#437#0" expanded="true" />
+            <element signature="docComment;field#APP_NAME#0;class#AppInfo#0" />
+            <element signature="docComment;field#ISSUE_REPORT#0;class#AppInfo#0" />
+            <element signature="docComment;field#WEBSITE#0;class#AppInfo#0" />
+            <element signature="docComment;field#GITHUB_REPO#0;class#AppInfo#0" />
+            <element signature="docComment;field#VERSION_CHECK_URL#0;class#AppInfo#0" />
+            <element signature="docComment;field#VERSION_DOWNLOAD_URL#0;class#AppInfo#0" />
+            <element signature="docComment;field#latestVersion#0;class#AppInfo#0" />
+            <element signature="docComment;field#latestVersionLink#0;class#AppInfo#0" />
+            <element signature="docComment;field#currentVersion#0;class#AppInfo#0" />
+            <element signature="docComment;method#AppInfo#0;class#AppInfo#0" />
+            <element signature="method#AppInfo#0;class#AppInfo#0" />
+            <element signature="method#checkForUpdates#0;class#AppInfo#0" />
+            <element signature="docComment;method#getLatestVersion#0;class#AppInfo#0" />
+            <element signature="docComment;method#getCurrentVersion#0;class#AppInfo#0" />
+            <element signature="docComment;method#getLatestVersionLink#0;class#AppInfo#0" />
+          </folding>
         </state>
       </provider>
-      <provider selected="true" editor-type-id="ResourceBundle" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form">
+      <provider selected="true" editor-type-id="ui-designer" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="115" column="78" selection-start-line="115" selection-start-column="78" selection-end-line="115" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/conffiles">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/build.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="23" selection-start-line="3" selection-start-column="23" selection-end-line="3" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/bin/openfocuser">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="71" selection-start-line="5" selection-start-column="71" selection-end-line="5" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/applications/OpenFocuser-Manager.desktop">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="18" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="332">
+          <caret line="48" column="5" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="5" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="36" column="121" selection-start-line="36" selection-start-column="121" selection-end-line="36" selection-end-column="121" />
+        <state relative-caret-position="323">
+          <caret line="19" column="3" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#544#589#0" expanded="true" />
@@ -1498,6 +1435,21 @@
             <element signature="e#14054#14055#0" expanded="true" />
             <element signature="e#14098#14099#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="20" column="75" selection-start-line="20" selection-start-column="75" selection-end-line="20" selection-end-column="75" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="ResourceBundle" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-321">
+          <caret line="286" column="89" selection-start-line="286" selection-start-column="89" selection-end-line="286" selection-end-column="89" />
         </state>
       </provider>
     </entry>
@@ -1536,11 +1488,11 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>9.0</last-edited>
+          <last-edited>12</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.2" />
+                <option value="0.2662116" />
               </list>
             </option>
           </splitter-proportions>

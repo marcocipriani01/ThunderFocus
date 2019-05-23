@@ -115,6 +115,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
     private JButton websiteButton;
     private JButton githubButton;
     private JButton issueReportButton;
+    private JLabel codenameLabel;
 
     /**
      * Model for the list of digital pins.
@@ -137,6 +138,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
         setIconImage(APP_LOGO);
         setContentPane(parent);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        codenameLabel.setText(AppInfo.CODENAME);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -282,7 +284,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
                 try {
                     if (appInfo.checkForUpdates()) {
                         if (JOptionPane.showConfirmDialog(this,
-                                "An newer version (" + appInfo.getLatestVersion() + ") available! Download it?",
+                                "A newer version (" + appInfo.getLatestVersion() + ") is available! Download it?",
                                 AppInfo.APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                             launchBrowser(appInfo.getLatestVersionLink());
                         }
@@ -326,7 +328,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
             }
 
         } else {
-            Main.err("Unable to star your web browser!", this);
+            Main.err("Error while starting the web browser!", this);
         }
     }
 

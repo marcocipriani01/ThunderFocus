@@ -11,16 +11,8 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Update readme, added help in CLI mode.">
-      <change afterPath="$PROJECT_DIR$/.idea/bashsupport_project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" afterDir="false" />
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Windows Serial Port Multiplexer pre-implementation in Java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ScpUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ScpUploader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" afterDir="false" />
     </list>
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
@@ -174,7 +166,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
+            <state relative-caret-position="578">
               <caret line="48" column="16" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
               <folding>
                 <element signature="docComment;field#mockedSerialPort#0;class#SerialPortMultiplexer#0" />
@@ -192,7 +184,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
+            <state relative-caret-position="986">
               <caret line="82" column="32" selection-start-line="82" selection-start-column="32" selection-end-line="90" selection-end-column="29" />
               <folding>
                 <element signature="docComment;class#UnixSerialPortMultiplexer#0" />
@@ -219,13 +211,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+            <state relative-caret-position="289">
+              <caret line="22" column="30" lean-forward="true" selection-start-line="22" selection-start-column="30" selection-end-line="22" selection-end-column="30" />
               <folding>
                 <element signature="docComment;field#port2#0;class#WindowsSerialPortMultiplexer#0" />
                 <element signature="docComment;method#stop#0;class#WindowsSerialPortMultiplexer#0" />
-                <element signature="e#805#806#0" expanded="true" />
-                <element signature="e#844#845#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -326,6 +316,7 @@
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
+        <option value="marcocipriani01 &lt;marco.cipriani.01@gmail.com&gt;" />
         <option value="SquareBoot &lt;marco.cipriani.01@gmail.com&gt;" />
       </list>
     </option>
@@ -428,6 +419,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -480,7 +472,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -648,9 +639,9 @@
     <list>
       <item itemvalue="Bash.Build artifacts" />
       <item itemvalue="Bash.Generate Debian package" />
-      <item itemvalue="Bash.Run control panel" />
       <item itemvalue="Bash.Run driver" />
       <item itemvalue="Bash.Run server" />
+      <item itemvalue="Bash.Run control panel" />
       <item itemvalue="JAR Application.Run Windows-compatible Jar" />
     </list>
   </component>
@@ -845,7 +836,14 @@
       <option name="project" value="LOCAL" />
       <updated>1540821558852</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Windows Serial Port Multiplexer pre-implementation in Java">
+      <created>1558450857834</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1558450857834</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TodoView">
@@ -862,7 +860,7 @@
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="3" visible="true" weight="0.17184155" />
+      <window_info content_ui="combo" id="Project" order="3" visible="true" weight="0.1761242" />
       <window_info id="Structure" order="4" weight="0.16809422" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.37286204" />
@@ -871,8 +869,8 @@
       <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
       <window_info anchor="bottom" id="Run" order="5" sideWeight="0.49357602" weight="0.1995439" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32655367" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.506424" side_tool="true" weight="0.1802721" />
-      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49923897" weight="0.33067274" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.506424" side_tool="true" weight="0.17942858" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="8" sideWeight="0.49923897" visible="true" weight="0.4686431" />
       <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49732333" weight="0.29604518" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.32768363" />
       <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.3284091" />
@@ -956,7 +954,8 @@
     <MESSAGE value="Added SCP config sender" />
     <MESSAGE value="Update missing files" />
     <MESSAGE value="Update readme, added help in CLI mode." />
-    <option name="LAST_COMMIT_MESSAGE" value="Update readme, added help in CLI mode." />
+    <MESSAGE value="Windows Serial Port Multiplexer pre-implementation in Java" />
+    <option name="LAST_COMMIT_MESSAGE" value="Windows Serial Port Multiplexer pre-implementation in Java" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
@@ -1224,6 +1223,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/conffiles">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="40" lean-forward="true" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1411">
@@ -1351,6 +1360,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="48" column="16" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
+          <folding>
+            <element signature="docComment;field#mockedSerialPort#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;field#realSerialPort#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;method#SerialPortMultiplexer#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;method#stop#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;method#Forwarder#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;method#onPortMessage#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
+            <element signature="docComment;method#onPortError#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="986">
+          <caret line="82" column="32" selection-start-line="82" selection-start-column="32" selection-end-line="90" selection-end-column="29" />
+          <folding>
+            <element signature="docComment;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;field#socat#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#UnixSerialPortMultiplexer#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#stop#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="e#1957#1958#0" expanded="true" />
+            <element signature="e#1996#1997#0" expanded="true" />
+            <element signature="docComment;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;field#process#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;field#port1#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;field#port2#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#isNotReady#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#stop#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="method#stop#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#getProcess#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#getPort1#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+            <element signature="docComment;method#getPort2#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1938">
@@ -1382,66 +1432,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="48" column="16" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
-          <folding>
-            <element signature="docComment;field#mockedSerialPort#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;field#realSerialPort#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;method#SerialPortMultiplexer#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;method#stop#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;method#Forwarder#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;method#onPortMessage#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
-            <element signature="docComment;method#onPortError#0;class#Forwarder#0;class#SerialPortMultiplexer#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/conffiles">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="82" column="32" selection-start-line="82" selection-start-column="32" selection-end-line="90" selection-end-column="29" />
-          <folding>
-            <element signature="docComment;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;field#socat#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#UnixSerialPortMultiplexer#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#stop#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="e#1957#1958#0" expanded="true" />
-            <element signature="e#1996#1997#0" expanded="true" />
-            <element signature="docComment;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;field#process#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;field#port1#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;field#port2#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#isNotReady#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#stop#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="method#stop#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#getProcess#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#getPort1#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-            <element signature="docComment;method#getPort2#0;class#SocatRunner#0;class#UnixSerialPortMultiplexer#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="40" lean-forward="true" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+        <state relative-caret-position="289">
+          <caret line="22" column="30" lean-forward="true" selection-start-line="22" selection-start-column="30" selection-end-line="22" selection-end-column="30" />
           <folding>
             <element signature="docComment;field#port2#0;class#WindowsSerialPortMultiplexer#0" />
             <element signature="docComment;method#stop#0;class#WindowsSerialPortMultiplexer#0" />
-            <element signature="e#805#806#0" expanded="true" />
-            <element signature="e#844#845#0" expanded="true" />
           </folding>
         </state>
       </provider>

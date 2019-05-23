@@ -4,6 +4,7 @@
       <w>autodesk</w>
       <w>avrdude</w>
       <w>bootloader</w>
+      <w>cipriani</w>
       <w>crayford</w>
       <w>debian</w>
       <w>ekos</w>
@@ -12,6 +13,7 @@
       <w>fwconf</w>
       <w>gson</w>
       <w>illuminator</w>
+      <w>laazotea</w>
       <w>libusb</w>
       <w>marcocipriani</w>
       <w>moonlite</w>
@@ -24,6 +26,7 @@
       <w>pseudoterminals</w>
       <w>socat</w>
       <w>stdin</w>
+      <w>tmpdir</w>
       <w>wikipedia</w>
       <w>zerjillo</w>
     </words>

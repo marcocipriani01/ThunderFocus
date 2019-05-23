@@ -2,6 +2,7 @@ package marcocipriani.openfocuser.manager.io;
 
 /**
  * Serial port multiplexer/duplicator for Windows, using JNI.
+ * TODO: implement serial port multiplexing in Windows
  *
  * @author marcocipriani01
  * @version 1.1
@@ -23,8 +24,7 @@ public class WindowsSerialPortMultiplexer extends SerialPortMultiplexer {
         super(realSerialPort);
         String[] ports = createVirtualPorts0();
         if (ports.length != 2) {
-            //TODO(marcocipriani01): handle exception
-            throw new IllegalStateException();
+            throw new IllegalArgumentException("Native method returned less or more than 2 parameters!");
         }
         mockedSerialPort = new SerialPortImpl(ports[0]);
         port2 = ports[1];

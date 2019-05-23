@@ -12,6 +12,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 
@@ -19,7 +20,7 @@ import java.net.URI;
  * The control panel.
  *
  * @author marcocipriani01
- * @version 1.0
+ * @version 1.1
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class ControlPanel extends JFrame implements ActionListener {
@@ -278,20 +279,25 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
             AppInfo appInfo = new AppInfo();
             managerVersionLabel.setText(appInfo.getCurrentVersion());
             updateManagerButton.addActionListener(e -> {
-                if (appInfo.checkForUpdates()) {
-                    if (JOptionPane.showConfirmDialog(this,
-                            "An newer version (" + appInfo.getLatestVersion() + ") available! Download it?",
-                            AppInfo.APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                        launchBrowser(appInfo.getLatestVersionLink());
+                try {
+                    if (appInfo.checkForUpdates()) {
+                        if (JOptionPane.showConfirmDialog(this,
+                                "An newer version (" + appInfo.getLatestVersion() + ") available! Download it?",
+                                AppInfo.APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                            launchBrowser(appInfo.getLatestVersionLink());
+                        }
+
+                    } else {
+                        Main.info("No updates found!", this);
                     }
 
-                } else {
-                    Main.info("No updates found!", this);
+                } catch (IOException | IllegalStateException | NumberFormatException ex) {
+                    Main.err("Unable to retrieve information about the latest version!", ex, ControlPanel.this);
                 }
             });
 
-        } catch (Exception e) {
-            Main.err("Unable to check the Manifest file!", e, this);
+        } catch (IOException | IllegalStateException e) {
+            Main.err("Unable to retrieve information about the current version!", e, this);
             updateManagerButton.setEnabled(false);
         }
 
@@ -385,7 +391,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
             settings.setIndiPort(indiPort);
         }
         try {
-            if (!PinArray.checkPins(settings.getDigitalPins().toArray(), settings.getPwmPins().toArray())) {
+            if (PinArray.findDuplicates(settings.getDigitalPins().toArray(), settings.getPwmPins().toArray())) {
                 Main.err("Duplicated pins found, please fix this in order to continue.", this);
                 return null;
             }

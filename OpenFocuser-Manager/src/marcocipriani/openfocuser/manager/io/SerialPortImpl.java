@@ -93,13 +93,6 @@ public class SerialPortImpl implements SerialPortEventListener {
     }
 
     /**
-     * @return a mask for this serial port.
-     */
-    protected int getMask() {
-        return SerialPort.MASK_RXCHAR;
-    }
-
-    /**
      * Connects an board to this object.
      *
      * @param port the port.
@@ -110,7 +103,7 @@ public class SerialPortImpl implements SerialPortEventListener {
         try {
             serialPort.openPort();
             serialPort.setParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            serialPort.setEventsMask(getMask());
+            serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
             serialPort.addEventListener(this);
 
         } catch (SerialPortException e) {

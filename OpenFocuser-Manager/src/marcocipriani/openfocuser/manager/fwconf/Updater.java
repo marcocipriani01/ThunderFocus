@@ -1,5 +1,7 @@
 package marcocipriani.openfocuser.manager.fwconf;
 
+import marcocipriani.openfocuser.manager.Main;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 public class Updater {
 
     private ArrayList<Board> boards;
-    private ArrayList<Firmware> firmwares;
+    private final ArrayList<Firmware> firmwares;
     private String avrdude;
     private String avrdudeConfig;
     private String tmpDir;
@@ -89,11 +91,10 @@ public class Updater {
         Files.copy(cStream, cFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         avrdudeConfig = cFile.getAbsolutePath();
 
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.equals("linux")) {
+        if (Main.COMPUTER_OS.isUnix) {
             avrdude = "avrdude";
 
-        } else if (os.contains("win")) {
+        } else if (Main.COMPUTER_OS == Main.OperatingSystem.Windows) {
             InputStream pStream = getClass().getResourceAsStream("/bin/avrdude.exe");
             File pFile = new File(tmpDir + File.separator + "avrdude.exe");
             Files.copy(pStream, pFile.toPath(), StandardCopyOption.REPLACE_EXISTING);

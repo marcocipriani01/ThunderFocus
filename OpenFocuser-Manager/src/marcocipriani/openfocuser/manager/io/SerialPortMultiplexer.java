@@ -2,26 +2,14 @@ package marcocipriani.openfocuser.manager.io;
 
 import marcocipriani.openfocuser.manager.Main;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 /**
  * Serial port multiplexer/duplicator.
  *
  * @author marcocipriani01
- * @version 1.1
+ * @version 1.2
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class SerialPortMultiplexer {
-
-    /**
-     * @return an OS-compatible serial port multiplexer, or {@code null} if there isn't any.
-     * */
-    public static SerialPortMultiplexer getSystemCompatibleMultiplexer(SerialPortImpl realSerialPort) {
-        String os = System.getProperty("os.name").toLowerCase();
-        return os.equals("linux") ? new UnixSerialPortMultiplexer(realSerialPort) : (os.contains("win") ? new WindowsSerialPortMultiplexer(realSerialPort) : null);
-    }
 
     /**
      * The mocked serial port.
@@ -44,12 +32,28 @@ public abstract class SerialPortMultiplexer {
     }
 
     /**
+     * @return an OS-compatible serial port multiplexer, or {@code null} if there isn't any.
+     */
+    public static SerialPortMultiplexer getSystemCompatibleMultiplexer(SerialPortImpl realSerialPort) {
+        if (Main.COMPUTER_OS.isUnix) {
+            return new UnixSerialPortMultiplexer(realSerialPort);
+
+        } else if (Main.COMPUTER_OS == Main.OperatingSystem.Windows) {
+            //TODO: implement serial port multiplexing in Windows
+            throw new UnsupportedOperationException("Serial port multiplexing is not currently supported in Windows!");
+            //return new WindowsSerialPortMultiplexer(realSerialPort);
+
+        } else {
+            throw new UnsupportedOperationException("Unsupported OS!");
+        }
+    }
+
+    /**
      * Stops everything.
      */
     public void stop() {
         realSerialPort.removeListener(realSerialPortLister);
         mockedSerialPort.removeListener(mockedSerialPortListener);
-        realSerialPort.disconnect();
         mockedSerialPort.disconnect();
     }
 

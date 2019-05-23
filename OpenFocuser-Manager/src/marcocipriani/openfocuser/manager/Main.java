@@ -8,21 +8,33 @@ import org.apache.commons.cli.*;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * The main class of the application. Interprets the input commands and
  * runs the server, the driver or the control panel.
  *
  * @author marcocipriani01
- * @version 2.1
+ * @version 2.2
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Main {
 
     /**
+     * The current operating system.
+     *
+     * @see <a href="https://stackoverflow.com/a/18417382">How do I programmatically determine operating system in Java?</a>
+     */
+    public static final OperatingSystem COMPUTER_OS;
+    /**
      * Command line options for the parser.
      */
     private static final Options cliOptions = new Options();
+    /**
+     * Resources bundle for strings.
+     */
+    private static final ResourceBundle STRINGS = ResourceBundle.getBundle("marcocipriani/openfocuser/manager/res/strings", Locale.getDefault());
     /**
      * Verbose/debug mode.
      */
@@ -41,19 +53,35 @@ public class Main {
     private static boolean showGUI = false;
 
     static {
-        /*Option settingsOption = new Option("s", "settings", true,
-                "The directory where OpenFocuser-Manager will save and retrieve its settings (normally, automatically set by the application runner).");
-        settingsOption.setRequired(true);
-        cliOptions.addOption(settingsOption);*/
-        cliOptions.addOption("c", "control-panel", false,
-                "Shows the control panel.");
-        cliOptions.addOption("d", "driver", false,
-                "Driver-only mode (no server, stdin/stdout)");
-        cliOptions.addOption("p", "indi-port", true,
-                "Stand-alone server mode, CLI. If port=0, fetch the last used port from the settings.");
-        cliOptions.addOption("a", "serial-port", true,
-                "Specifies a serial port and connects to it if possible. Otherwise it will be stored to settings only.");
-        cliOptions.addOption("v", "verbose", false, "Verbose mode.");
+        String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+        if ((os.contains("mac")) || (os.contains("darwin"))) {
+            COMPUTER_OS = OperatingSystem.MacOS;
+
+        } else if (os.contains("win")) {
+            COMPUTER_OS = OperatingSystem.Windows;
+
+        } else if (os.contains("nux")) {
+            COMPUTER_OS = OperatingSystem.Linux;
+
+        } else {
+            COMPUTER_OS = OperatingSystem.Other;
+        }
+
+        cliOptions.addOption("c", "control-panel", false, getStringResource("control_panel_param"));
+        cliOptions.addOption("d", "driver", false, getStringResource("driver_only_param"));
+        cliOptions.addOption("p", "indi-port", true, getStringResource("server_mode_param"));
+        cliOptions.addOption("a", "serial-port", true, getStringResource("serial_port_param"));
+        cliOptions.addOption("v", "verbose", false, getStringResource("verbose_mode"));
+    }
+
+    /**
+     * Retrieves a string from the application's resource bundle.
+     *
+     * @param key the key of the string to retrieve.
+     * @return the string taken from the application's resource bundle.
+     */
+    public static String getStringResource(String key) {
+        return STRINGS.getString(key);
     }
 
     /**
@@ -405,6 +433,22 @@ public class Main {
          */
         public int getCode() {
             return code;
+        }
+    }
+
+    /**
+     * Enum that lists all the possible operating systems.
+     *
+     * @author marcocipriani01
+     * @version 1.0
+     */
+    public enum OperatingSystem {
+        Windows(false), MacOS(true), Linux(true), Other(false);
+
+        public final boolean isUnix;
+
+        OperatingSystem(boolean isUnix) {
+            this.isUnix = isUnix;
         }
     }
 }

@@ -39,8 +39,7 @@ public class PinArray {
      * @return {@code true} if no duplicates are found.
      * @throws IndexOutOfBoundsException if a pin is outside the allowed bounds (2 ≤ pin ≤ 99)
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean checkPins(ArduinoPin[]... pins) {
+    public static boolean findDuplicates(ArduinoPin[]... pins) {
         LinkedHashSet<Integer> checker = new LinkedHashSet<>();
         int size = 0;
         for (ArduinoPin[] a : pins) {
@@ -53,7 +52,7 @@ public class PinArray {
                 checker.add(n);
             }
         }
-        return checker.size() == size;
+        return checker.size() != size;
     }
 
     /**

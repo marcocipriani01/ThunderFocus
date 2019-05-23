@@ -12,7 +12,7 @@ import java.util.jar.Manifest;
  * Stores info about the app name, website and GitHub page.
  *
  * @author marcocipriani01
- * @version 1.0
+ * @version 1.1
  */
 @SuppressWarnings("WeakerAccess")
 public class AppInfo {
@@ -53,15 +53,16 @@ public class AppInfo {
     /**
      * The current version.
      */
-    private String currentVersion;
+    private String currentVersion = null;
 
     /**
      * Class constructor. Loads the current version name.
      *
-     * @throws IOException if the manifest file couldn't be read.
+     * @throws IOException           if the manifest file couldn't be read.
+     * @throws IllegalStateException if the version couldn't be found in the manifest.
      * @see <a href="http://stackoverflow.com/questions/1272648/reading-my-own-jars-manifest">Reading my own Jar's Manifest</a>
      */
-    public AppInfo() throws IOException {
+    public AppInfo() throws IOException, IllegalStateException {
         Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
         while (resources.hasMoreElements()) {
             Manifest manifest = new Manifest(resources.nextElement().openStream());
@@ -70,8 +71,6 @@ public class AppInfo {
                 currentVersion = attributes.getValue("Specification-Version");
             }
         }
-        /*currentVersion = new Manifest(getClass().getResourceAsStream("META-INF/MANIFEST.MF")).getMainAttributes()
-                .getValue("Specification-Version");*/
         if (currentVersion == null) {
             throw new IllegalStateException("Version not specified in MANIFEST.MF");
         }
@@ -80,36 +79,34 @@ public class AppInfo {
     /**
      * Looks for updates.
      *
-     * @return {@code true} if an update is available.
+     * @return {@code true} if an update is available, {@code false} otherwise.
+     * @throws IOException           if a network error occurred.
+     * @throws IllegalStateException if the version tag couldn't be found in the remote file.
+     * @throws NumberFormatException if the version has an illegal format.
      */
-    public boolean checkForUpdates() {
-        try {
-            Scanner scan = new Scanner(new URL(VERSION_CHECK_URL).openStream());
-            while (scan.hasNextLine()) {
-                String line = scan.nextLine();
-                if (line.contains("tag_name")) {
-                    latestVersion = line.replace("\"tag_name\"", "");
-                    latestVersion = latestVersion.substring(latestVersion.indexOf("\"") + 1, latestVersion.lastIndexOf("\""));
-                    String extension;
-                    if (System.getProperty("os.name").toLowerCase().equals("linux")) {
-                        extension = ".deb";
+    public boolean checkForUpdates() throws IOException, IllegalStateException, NumberFormatException {
+        Scanner scan = new Scanner(new URL(VERSION_CHECK_URL).openStream()).useDelimiter("\\s*,\\s*");
+        while (scan.hasNext()) {
+            String line = scan.next();
+            if (line.contains("tag_name")) {
+                latestVersion = line.replace("\"tag_name\":", "").replace("\"", "").trim();
+                String extension;
+                if (Main.COMPUTER_OS == Main.OperatingSystem.Linux) {
+                    extension = ".deb";
 
-                    } else {
-                        extension = ".jar";
-                    }
-                    latestVersionLink = VERSION_DOWNLOAD_URL.replace("{version}", latestVersion).replace("{extension}", extension);
-                    break;
+                } else {
+                    extension = ".jar";
                 }
+                latestVersionLink = VERSION_DOWNLOAD_URL.replace("{version}", latestVersion).replace("{extension}", extension);
+                break;
             }
-            scan.close();
-            return ((latestVersion != null && currentVersion != null)) &&
-                    (Integer.valueOf(latestVersion.replace("v", "").replace(".", "")) >
-                            Integer.valueOf(currentVersion.replace("v", "").replace(".", "")));
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return false;
+        scan.close();
+        if (latestVersion == null) {
+            throw new IllegalStateException("Unable to look for newer versions!");
+        }
+        return Integer.valueOf(latestVersion.replace("v", "").replace(".", "").trim()) >
+                Integer.valueOf(currentVersion.replace("v", "").replace(".", "").trim());
     }
 
     /**

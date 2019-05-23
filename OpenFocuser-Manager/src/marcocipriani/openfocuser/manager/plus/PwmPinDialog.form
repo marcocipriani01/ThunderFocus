@@ -19,7 +19,7 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Pin"/>
+          <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="pin"/>
         </properties>
       </component>
       <component id="ab23a" class="javax.swing.JTextField" binding="nameTextField" default-binding="true">
@@ -29,7 +29,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="Guide cameara heather"/>
+          <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="guide_scope_heather"/>
         </properties>
       </component>
       <component id="4b58" class="javax.swing.JSpinner" binding="valueSpinner" custom-create="true">
@@ -43,7 +43,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Name:"/>
+          <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="name"/>
         </properties>
       </component>
       <component id="2e124" class="javax.swing.JLabel">
@@ -51,7 +51,7 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Default value:"/>
+          <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="default_value"/>
         </properties>
       </component>
       <component id="a028" class="javax.swing.JLabel">

@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
  * Serial port multiplexer/duplicator for Linux/Unix that uses socat (via {@link SocatRunner}).
  *
  * @author marcocipriani01
- * @version 1.1
+ * @version 1.2
  */
 @SuppressWarnings("unused")
 public class UnixSerialPortMultiplexer extends SerialPortMultiplexer {
@@ -93,11 +93,6 @@ public class UnixSerialPortMultiplexer extends SerialPortMultiplexer {
         @Override
         public void run() {
             try {
-                if (!System.getProperty("os.name").toLowerCase().equals("linux")) {
-                    UnsupportedOperationException e = new UnsupportedOperationException("Only Linux is supported by socat!");
-                    Main.err(e.getMessage());
-                    throw e;
-                }
                 ProcessBuilder processBuilder = new ProcessBuilder("socat",
                         "-d", "-d", "pty,raw,echo=0", "pty,raw,echo=0");
                 processBuilder.redirectErrorStream(true);

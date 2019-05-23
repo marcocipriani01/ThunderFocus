@@ -25,7 +25,7 @@ import java.util.HashMap;
  * INDI Arduino pin driver.
  *
  * @author marcocipriani01
- * @version 2.0
+ * @version 2.1
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandler, SerialMessageListener {
@@ -218,19 +218,16 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                 // Restart the board to ensure that all the pins are turned off.
                 serialPort.print(":RS#");
 
+                Main.err("Loading port forwarder (socat)...");
+                multiplexer = SerialPortMultiplexer.getSystemCompatibleMultiplexer(serialPort);
+                String mockedPort = multiplexer.getMockedPort();
+
                 Settings settings = Main.getSettings();
                 ArduinoPin[] switchPins = settings.getDigitalPins().toArray(),
                         pwmPins = settings.getPwmPins().toArray();
-                // Look for duplicated pins
-                try {
-                    if (!PinArray.checkPins(switchPins, pwmPins)) {
-                        throw new IllegalStateException("Duplicated pins found, please fix this in order to continue.");
-                    }
-
-                } catch (IndexOutOfBoundsException e) {
-                    throw new IllegalStateException(e.getMessage(), e);
+                if (PinArray.findDuplicates(switchPins, pwmPins)) {
+                    throw new IllegalStateException("Duplicated pins found, please fix this in order to continue.");
                 }
-
                 pinsMap = new HashMap<>();
                 digitalPinProps = new INDISwitchProperty(this, "Digital pins", "Digital pins", "Manage Pins",
                         PropertyStates.OK, PropertyPermissions.RW, Constants.SwitchRules.ANY_OF_MANY);
@@ -249,16 +246,10 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                             (double) pin.getValuePercentage(), 0.0, 100.0, 1.0, "%f"), pin);
                 }
 
-                Main.err("Loading port forwarder (socat)...");
-                multiplexer = SerialPortMultiplexer.getSystemCompatibleMultiplexer(serialPort);
-                if (multiplexer == null) {
-                    //TODO(marcocipriani01): handle error
-                    throw new UnsupportedOperationException();
-                }
-                String mockedPort = multiplexer.getMockedPort();
                 moonLitePortProp = new INDITextProperty(this, "MoonLite port", "MoonLite port",
                         "Serial connection", PropertyStates.OK, PropertyPermissions.RO);
                 new INDITextElement(moonLitePortProp, "MoonLite port", "MoonLite port", mockedPort);
+
                 addProperty(moonLitePortProp);
                 addProperty(digitalPinProps);
                 addProperty(pwmPinsProp);
@@ -267,19 +258,11 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                 connectionProp.setState(PropertyStates.OK);
                 Main.info("Connect MoonLite to port " + mockedPort);
 
-            } catch (ConnectionException e) {
+            } catch (ConnectionException | UnsupportedOperationException |
+                    IllegalStateException | IndexOutOfBoundsException | IllegalArgumentException e) {
+                serialDisconnect0();
                 connectionProp.setState(PropertyStates.ALERT);
-                if (serialPort != null) {
-                    try {
-                        serialPort.removeListener(this);
-                        serialPort.disconnect();
-                        serialPort = null;
-
-                    } catch (ConnectionException de) {
-                        Main.err(de.getMessage(), de, false);
-                    }
-                }
-                Main.err(e.getMessage(), e, false);
+                Main.err(e.getMessage(), e, true);
             }
 
         } else {
@@ -412,30 +395,42 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
     }
 
     private void serialDisconnect() {
-        if (serialPort != null) {
-            try {
-                serialPort.removeListener(this);
+        serialDisconnect0();
+        connectionProp.setState(PropertyStates.OK);
+    }
+
+    private void serialDisconnect0() {
+        try {
+            if (multiplexer != null) {
                 multiplexer.stop();
-                serialPort = null;
                 multiplexer = null;
+            }
+            if (serialPort != null) {
+                serialPort.removeListener(this);
+                serialPort.disconnect();
+                serialPort = null;
+            }
+            if (moonLitePortProp != null) {
                 removeProperty(moonLitePortProp);
                 moonLitePortProp = null;
+            }
+            if (digitalPinProps != null) {
                 removeProperty(digitalPinProps);
                 digitalPinProps = null;
+            }
+            if (pwmPinsProp != null) {
                 removeProperty(pwmPinsProp);
                 pwmPinsProp = null;
+            }
+            if (pinsMap != null) {
                 pinsMap.clear();
                 pinsMap = null;
-                disconnectElem.setValue(Constants.SwitchStatus.ON);
-                connectElem.setValue(Constants.SwitchStatus.OFF);
-                connectionProp.setState(PropertyStates.OK);
-
-            } catch (ConnectionException e) {
-                Main.err(e.getMessage(), e, false);
-                connectionProp.setState(PropertyStates.ALERT);
             }
+            disconnectElem.setValue(Constants.SwitchStatus.ON);
+            connectElem.setValue(Constants.SwitchStatus.OFF);
 
-        } else {
+        } catch (ConnectionException e) {
+            Main.err(e.getMessage(), e, false);
             connectionProp.setState(PropertyStates.ALERT);
         }
     }

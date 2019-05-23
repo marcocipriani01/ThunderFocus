@@ -7,23 +7,11 @@
   </component>
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="OpenFocuser-Manager:jar" />
+      <artifact name="OpenFocuser-Manager-Windows:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Bug fixing, added italian language">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/OpenFocuser_Manager_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager.deb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/OpenFocuser-Manager/OpenFocuser-Manager.jar" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/usr/share/OpenFocuser-Manager/OpenFocuser-Manager.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings_it.properties" afterDir="false" />
-    </list>
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Prepare for release" />
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
     <list id="b515a51b-5fe4-442d-a0c1-a1bd00652ac8" name="Updated build system" comment="" />
@@ -39,7 +27,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="323">
@@ -80,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-321">
-              <caret line="286" column="89" selection-start-line="286" selection-start-column="89" selection-end-line="286" selection-end-column="89" />
+            <state relative-caret-position="5202">
+              <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -399,6 +387,58 @@
             <path>
               <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="usr" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="usr" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="usr" type="462c0819:PsiDirectoryNode" />
+              <item name="share" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="usr" type="462c0819:PsiDirectoryNode" />
+              <item name="share" type="462c0819:PsiDirectoryNode" />
+              <item name="applications" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="deb-builder" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+              <item name="usr" type="462c0819:PsiDirectoryNode" />
+              <item name="share" type="462c0819:PsiDirectoryNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -406,12 +446,6 @@
               <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="manager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="OpenFocuser-Manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="OpenFocuser-Manager" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -492,7 +526,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Bash.Generate Debian package">
+  <component name="RunManager" selected="JAR Application.Run Windows-compatible Jar">
     <configuration name="Build artifacts" type="BashConfigurationType" factoryName="Bash">
       <option name="INTERPRETER_OPTIONS" value="-c" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -796,7 +830,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558649199334</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Prepare for release">
+      <created>1558651537506</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1558651537506</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TodoView">
@@ -809,12 +850,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="43" width="1922" height="1038" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Designer" order="0" />
       <window_info id="UI Designer" order="1" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="3" visible="true" weight="0.21252677" />
+      <window_info content_ui="combo" id="Project" order="3" visible="true" weight="0.21252677" />
       <window_info id="Structure" order="4" weight="0.16809422" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.23831242" />
@@ -910,7 +950,8 @@
     <MESSAGE value="Update readme, added help in CLI mode." />
     <MESSAGE value="Windows Serial Port Multiplexer pre-implementation in Java" />
     <MESSAGE value="Bug fixing, added italian language" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fixing, added italian language" />
+    <MESSAGE value="Prepare for release" />
+    <option name="LAST_COMMIT_MESSAGE" value="Prepare for release" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
@@ -1399,6 +1440,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="20" column="75" selection-start-line="20" selection-start-column="75" selection-end-line="20" selection-end-column="75" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="ResourceBundle" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5202">
+          <caret line="331" column="9" selection-start-line="331" selection-start-column="9" selection-end-line="331" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -1435,21 +1491,6 @@
             <element signature="e#14054#14055#0" expanded="true" />
             <element signature="e#14098#14099#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/strings.properties">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="20" column="75" selection-start-line="20" selection-start-column="75" selection-end-line="20" selection-end-column="75" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="ResourceBundle" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-321">
-          <caret line="286" column="89" selection-start-line="286" selection-start-column="89" selection-end-line="286" selection-end-column="89" />
         </state>
       </provider>
     </entry>

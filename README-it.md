@@ -8,6 +8,25 @@
 <div class="contents no-print">
 <b style="margin-left:16px;">Indice</b>
 
+[](TOC)
+
+- [OpenFocuser, un progetto di Marco Cipriani](#openfocuser-un-progetto-di-marco-cipriani)
+  - [Utilizzo](#utilizzo)
+    - [Focheggiatore](#focheggiatore)
+    - [OpenFocuser-Manager](#openfocuser-manager)
+  - [Utilizzo avanzato e risoluzione dei problemi](#utilizzo-avanzato-e-risoluzione-dei-problemi)
+    - [Inviare la configurazione ad un altro computer.](#inviare-la-configurazione-ad-un-altro-computer)
+    - [Server stand-alone da riga di comando](#server-stand-alone-da-riga-di-comando)
+    - [INDI driver da solo in un altro server INDI](#indi-driver-da-solo-in-un-altro-server-indi)
+    - [Lanciare OpenFocuser dalla linea di comando](#lanciare-openfocuser-dalla-linea-di-comando)
+    - [Errori frequenti](#errori-frequenti)
+  - [Hardware](#hardware)
+    - [Autodesk Eagle circuit](#autodesk-eagle-circuit)
+    - [Motor holders](#motor-holders)
+    - [Focuser motor and drivers](#focuser-motor-and-drivers)
+  - [Guida allo sviluppo](#guida-allo-sviluppo)
+    - [Licensa](#licensa)
+    - [Creare opere derivate e contribuire](#creare-opere-derivate-e-contribuire)
 </div>
 </aside>
 
@@ -19,7 +38,7 @@ OpenFocuser è completamente compatibile con software MoonLite, quindi fare rife
 
 ### OpenFocuser-Manager
 
-OpenFocuser-Manager è un'applicazione Java 8 che permette all'utente finale di aggiornare facilmente il firmware dell'Arduino (eliminando la necessità di installare l'intera IDE Arduino, compilare e caricare lo sketch) e controllare i pin digitali della scheda se si sta utilizzando l'edizione Plus. Contiene integrati `avrdude` e gli ultimi firmware `.hex` per Arduino Nano, librerie seriali, il server INDI4Java e utility di auto-aggiornamento.
+OpenFocuser-Manager è un'applicazione Java 12 che permette all'utente finale di aggiornare facilmente il firmware dell'Arduino (eliminando la necessità di installare l'intera IDE Arduino, compilare e caricare lo sketch) e controllare i pin digitali della scheda se si sta utilizzando l'edizione Plus. Contiene integrati `avrdude` e gli ultimi firmware `.hex` per Arduino Nano, librerie seriali, il server INDI4Java e utility di auto-aggiornamento.
 
 #### Installazione
 
@@ -35,7 +54,7 @@ OpenFocuser-Manager è un'applicazione Java 8 che permette all'utente finale di 
 
 <a class="no-print" href="assets/FW-update.png"><img src="assets/FW-update.png" width="400" align="right"></a>
 
-#### Updating the firmware
+#### Aggiornare il firmware
 
 L'aggiornamento del firmware con `avrdude` è supportato in Windows (`avrdude.exe` è  incluso nello `jar` e verrà spacchettato durante l'esecuzione nella cartella temporanea predefinita di sistema) e in Linux, indifferentemente dalla distribuzione, se `avrdude` è nella path (in Debian, installarlo con `sudo apt-get install avrdude`). La configurazione predefinita di `avrdude` è scelta automaticamente dal programma.<br>
 Nella sezione Firmware update è possible selezionare la porta seriale della scheda, il tipo di scheda (al momento, il firmware è compilato solo per Arduino Nano, nuovo e vecchio bootloader), e l'edizione del firmware: standard (solo focheggiatore) o Plus (pin controllabili e illuminatore polare). Un'etichetta di testo sotto la selezione del firmware mostra la versione del software selezionato. Premere Update per eseguire il flash della scheda
@@ -80,35 +99,35 @@ La configurazione è la stessa di quella salvata nel pannello di contrllo.
 
 ### INDI driver da solo in un altro server INDI
 
-The INDI driver can be run inside another INDI server executing `openfocuser -d`.
-No GUI will be loaded, nor the server will be set up: the driver will communicate with your external server with stdin/out, just like any other INDI driver.
+Il driver INDI può essere eseguito all'interno di un altro server INDI eseguiendo `openfocuser -d`.
+Nessuna interfaccia utente verrà caricata e nessun server di OpenFocuser verrà eseguito: il driver comunicherà direttamente con lo standard input/output, come qualunque altro driver INDI.
 
-### Starting from the command line
+### Lanciare OpenFocuser dalla linea di comando
 
 -   `bash`: `openfocuser <options>`
 -   Windows: `java -jar OpenFocuser-Manager.jar <options>`
 
-| Short option | Long option       | Param               | Description                                                                                           |
+| Opzione abbreviata | Opzione completa       | Parametri               | Description                                                                                           |
 | ------------ | ----------------- | ------------------- | ----------------------------------------------------------------------------------------------------- |
-| `-a`         | `--serial-port`   | e.g. `/dev/ttyUSB0` | Specifies a serial port and connects to it if possible. Otherwise it will be stored to settings only. |
-| `-c`         | `--control-panel` |                     | Shows the control panel.                                                                              |
-| `-d`         | `--driver`        |                     | Driver-only mode (no server, stdin/stdout)                                                            |
-| `-p`         | `--indi-port`     | e.g. `7625`         | Stand-alone server mode, CLI. If port=0, fetch the last used port from the settings.                  |
-| `-v`         | `--verbose`       |                     | Verbose logging mode.                                                                                 |
+| `-a`         | `--serial-port`   | es. `/dev/ttyUSB0` | Specifica la porta seriale e tenta una connessione. Altrimentri verrà solamente salvata nelle preferenze. |
+| `-c`         | `--control-panel` |                     | Mostra il pannello di controllo.                                                                              |
+| `-d`         | `--driver`        |                     | Modalità solo driver (no server, stdin/stdout)                                                            |
+| `-p`         | `--indi-port`     | es. `7625`         | Modalità server in linea di comando. Se la porta specificata è 0, usare l'ultima.                  |
+| `-v`         | `--verbose`       |                     | Log verbosi.                                                                                 |
 
-### Common errors
+### Errori frequenti
 
-| Exit code | Error                                  | Solution                                                                                                                                                                                                                   |
+| Codice d'uscita | Errore                                  | Soluzione                                                                                                                                                                                                                   |
 | --------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0         | Java not found                         | Install Java >8 and ensure it's in path                                                                                                                                                                                    |
-| 3         | `socat` not found                      | Install `socat` (Linux)                                                                                                                                                                                                    |
-| 4         | INDI not found                         | Install `indiserver` (Linux)                                                                                                                                                                                               |
-| 5         | `avrdude` not found                    | Install `avrdude` (Linux)                                                                                                                                                                                                  |
-| 6         | `jar` not found                        | Where did you put `OpenFocuser-Manager.jar`? Did you build the project and artifacts?                                                                                                                                      |
-| 8         | Config folder could not be initialized | OpenFocuser-Manager wasn't able to create the folder where it'll put the configuration. Using your file manager, go to you home directory and check if the `.config/OpenFocuser-Manager` folders exist and are directories |
-| 9         | Unable to parse parameters             | Check the command line arguments                                                                                                                                                                                           |
-| 10        | Invalid options                        | Invalid combination of command line arguments (for example, you can't run the driver and the control panel or the stand-alone server at the same time)                                                                     |
-| 11        | `socat` error                          | `socat` could not be started. Check if it's installed, up-to-date and in path. No solution for operating systems other that Linux, but shouldn't happen: report an issue if so.                                            |
+| 0         | Java non trovato                         | Installare Java >12 e controllare che sia nella path.                                                                                                                                                                                    |
+| 3         | `socat` non trovato                      | Installare `socat` (Linux)                                                                                                                                                                                                    |
+| 4         | INDI non trovato                         | Installare il pacchetto `indiserver` (Linux)                                                                                                                                                                                               |
+| 5         | `avrdude` non trovare                    | Installare il pacchetto `avrdude` (Linux)                                                                                                                                                                                                  |
+| 6         | `jar` non trovato                        | Controllare la cartella di esecuzione, il progetto e se l'installazione è integra.                                                                                                                                      |
+| 8         | Impossibile impostare la cartella delle impostazioni | OpenFocuser-Manager non è riuscito a creare la cartella dove salvare le impostazioni. Usando il file manager di sistema, andare nella cartella utente e controllare se la cartella `.config/OpenFocuser-Manager` esiste ed è una cartella. |
+| 9         | Impossibile interpretare i parametri             | Controlla i parametri della linea di comando.                                                                                                                                                                                           |
+| 10        | Opzioni non valide                        | Combinazione non valida di parametri di linea di comando (ad esempio, non si può eseguire il driver insieme al server, né il pannello di controllo con gli altri due).                                                                     |
+| 11        | Errore di `socat`                          | Non è stato possibile avviare `socat`. Controllare che sia installato, aggiornato e nella path. Nessuna soluzione per sistemi operativi diversi da Linux, anche se non dovrebbe succere su Windows: se accade ciò, riportare l'errore allo sviluppatore.                                            |
 
 <a class="no-print" href="assets/Circuit-1.jpg"><img align="left" src="assets/Circuit-1.jpg" width="250"></a>
 
@@ -118,7 +137,7 @@ No GUI will be loaded, nor the server will be set up: the driver will communicat
 
 In the "Eagle" directory you can find the full circuit project, both schematics and PCB for the standard and Plus editions.
 Feel free to modify it to accomplish your necessities: for example, you could add another dew heater controller, or remove the Newton mirror cooler MOSFET.
-<br>**Made with Eagle 9.2.2 Premium**
+<br>**Made with Eagle 9.4.1 Premium**
 
 <a class="no-print" href="assets/Motor-holder-1.jpg"><img align="right" src="assets/Motor-holder-1.jpg" width="250"></a>
 
@@ -140,16 +159,15 @@ Supported motor drivers via the [StepperDriver](https://github.com/laurb9/Steppe
 -   A4988
 -   DRV8834
 
-# Developer's guide
-See ENGLIGH
+# Guida allo sviluppo
+Vedere guida inglese.
 
-## License
+## Licensa
 
-OpenFocuser is a project by Marco Cipriani<span class="no-print"> - [GitHub profile](https://github.com/marcocipriani01) - [website](https://marcocipriani01.github.io/)</span>
+OpenFocuser è un progetto di Marco Cipriani<span class="no-print"> - [GitHub](https://github.com/marcocipriani01) - [sito web](https://marcocipriani01.github.io/)</span>
 <br>Licensed under the [Apache License, Version 2.0](LICENSE.md)
 <br>Google, The Apache Software Foundation, Java, GitHub and MoonLite trademarks belong to their respective owners. I'm not affiliated with these manufacturers, companies and software foundations.
 
-## Forking and issues
+## Creare opere derivate e contribuire
 
-Feel free to submit pull requests, report an issue or suggest new features!
-Also, new mounting brackets are welcome!
+Sentiti libero di inviare richieste di pull, riportare errori o suggerire nuove funzionalità da implementare! Inoltre, nuove staffe per motori sono le benvenute!

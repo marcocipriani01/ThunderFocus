@@ -85,7 +85,7 @@ public class Main {
     }
 
     /**
-     * Main. Configures the L&F and starts the application.
+     * Main. Configures the Look And Feel and starts the application.
      *
      * @param args command line arguments.
      */

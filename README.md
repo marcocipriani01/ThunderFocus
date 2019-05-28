@@ -2,19 +2,18 @@
 
 # OpenFocuser by Marco Cipriani
 
-<span class="no-print">**[Online page](https://marcocipriani01.github.io/projects/OpenFocuser) |**</span> OpenFocuser is a MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching. It is Unix/Linux (INDI) and Windows (MoonLite and ASCOM) compatible. Two editions are available: standard and Plus, which has a non-MoonLite extra function to control all the Arduino's digital and PWM pins, allowing the final user to turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi, directly from your computer, or remotely with Telescope-Pi. OpenFocuser also comes with a firmware update utility (via avrdude), a command line server for remote control (using INDI) and a control panel to manage the pins (name and value at startup). 3D mounting brackets and circuit/PCB projects are also provided.
+<span class="no-print">**[Online page](https://marcocipriani01.github.io/projects/OpenFocuser) |**</span> OpenFocuser is a MoonLite-compatible motorized focuser controller with absolute and relative positioning and half and full step switching. It is Unix/Linux (INDI) and Windows (MoonLite and ASCOM) compatible. Two editions are available: standard and Plus, which has a non-MoonLite extra function to control all the Arduino's digital and PWM pins, allowing the final user to turn on and off (or regulate in current) other devices like dew heaters, mirror coolers, or even a Raspberry Pi, directly from your computer, or remotely with Telescope-Pi. OpenFocuser also comes with a firmware update utility (via `avrdude`), a command line server for remote control (using INDI) and a control panel to manage the pins (name and value at startup). 3D mounting brackets and circuit/PCB projects are also provided.
 
 <aside>
 <div class="contents no-print">
 <b style="margin-left:16px;">Table of contents</b>
 
+[](TOC)
+
 - [OpenFocuser by Marco Cipriani](#openfocuser-by-marco-cipriani)
   - [Usage](#usage)
     - [Focuser](#focuser)
     - [OpenFocuser-Manager](#openfocuser-manager)
-      - [Installation](#installation)
-      - [Updating the firmware](#updating-the-firmware)
-      - [Plus edition pin management](#plus-edition-pin-management)
   - [Advanced usage and troubleshooting](#advanced-usage-and-troubleshooting)
     - [Sending configuration to another computer](#sending-configuration-to-another-computer)
     - [Stand-alone CLI server](#stand-alone-cli-server)
@@ -28,17 +27,7 @@
   - [Developer's guide](#developers-guide)
     - [Development status](#development-status)
     - [Arduino configuration](#arduino-configuration)
-      - [Compiling from sources](#compiling-from-sources)
-      - [Libraries](#libraries)
-      - [Contributors](#contributors)
-      - [Using the Config file](#using-the-config-file)
-        - [Motor drivers](#motor-drivers)
-        - [Hand controller](#hand-controller)
-        - [Pin management](#pin-management)
-        - [Polar finder illuminator](#polar-finder-illuminator)
     - [Compiling the Manager from sources](#compiling-the-manager-from-sources)
-      - [OpenFocuser-Manager used libraries and resources](#openfocuser-manager-used-libraries-and-resources)
-      - [Behind the scenes of the Plus edition](#behind-the-scenes-of-the-plus-edition)
     - [HTML version of this document](#html-version-of-this-document)
   - [License](#license)
   - [Forking and issues](#forking-and-issues)
@@ -54,7 +43,7 @@ OpenFocuser is fully compatible with MoonLite softwares, so please refer to the 
 
 ### OpenFocuser-Manager
 
-OpenFocuser-Manager is a Java 8 desktop application that allows the end user to update the Arduino firmware easily (eliminates the need of installing the whole Arduino IDE, compiling and uploading the sketch) and to control the digital pins of the board if using the Plus edition.
+OpenFocuser-Manager is a Java 12 desktop application that allows the end user to update the Arduino firmware easily (eliminates the need of installing the whole Arduino IDE, compiling and uploading the sketch) and to control the digital pins of the board if using the Plus edition.
 It comes bundled with `avrdude` and the latest `.hex` firmwares for Arduino Nano, serial libraries, INDI4Java server and self-updating utility.
 
 #### Installation
@@ -157,7 +146,7 @@ No GUI will be loaded, nor the server will be set up: the driver will communicat
 
 In the "Eagle" directory you can find the full circuit project, both schematics and PCB for the standard and Plus editions.
 Feel free to modify it to accomplish your necessities: for example, you could add another dew heater controller, or remove the Newton mirror cooler MOSFET.
-<br>**Made with Eagle 9.2.2 Premium**
+<br>**Made with Eagle 9.4.1 Premium**
 
 <a class="no-print" href="assets/Motor-holder-1.jpg"><img align="right" src="assets/Motor-holder-1.jpg" width="250"></a>
 
@@ -271,7 +260,7 @@ You can include a LED output to illuminate the polar finder of you mount enablin
 
 ### Compiling the Manager from sources
 
-**_Required:_** IntelliJ 2018.2 with Bash Support plugin, Java >8
+**_Required:_** IntelliJ 2018.2 with Bash Support plugin, Java >12
 - To build the Debian installer, run configuration "Generate Debian package"
 	- The utput Debian package will be generated in `OpenFocuser-Manager/deb-builder/OpenFocuser-Manager.deb`
 - To compile the universal `jar` executable, start configuration _Run Windows-compatible Jar_

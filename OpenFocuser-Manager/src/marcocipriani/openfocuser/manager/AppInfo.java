@@ -24,7 +24,7 @@ public class AppInfo {
     /**
      * Current version codename.
      */
-    public static final String CODENAME = "Bellatrix";
+    public static final String CODENAME = "Caph";
     /**
      * Bug report page URL.
      */

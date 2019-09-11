@@ -11,22 +11,9 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Prepare for release">
-      <change beforePath="$PROJECT_DIR$/../Firmware/Config.h" beforeDir="false" afterPath="$PROJECT_DIR$/../Firmware/Config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Firmware/Firmware.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Firmware/Firmware.ino" afterDir="false" />
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Bug fixing, new release">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_OB.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_OB.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto_OB.hex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" afterDir="false" />
     </list>
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
@@ -57,13 +44,13 @@
         <option value="SquareBoot &lt;marco.cipriani.01@gmail.com&gt;" />
       </list>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$/.." value="master" />
         <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="ProjectId" id="1P0rByocML4Y3HUzulFubVRB9yS" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -453,7 +440,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558651537506</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Bug fixing, new release">
+      <created>1568200966189</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1568200966189</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TodoView">
@@ -523,7 +517,8 @@
     <MESSAGE value="Windows Serial Port Multiplexer pre-implementation in Java" />
     <MESSAGE value="Bug fixing, added italian language" />
     <MESSAGE value="Prepare for release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Prepare for release" />
+    <MESSAGE value="Bug fixing, new release" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug fixing, new release" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

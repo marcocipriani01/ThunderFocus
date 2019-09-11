@@ -25,7 +25,7 @@ import java.util.HashMap;
  * INDI Arduino pin driver.
  *
  * @author marcocipriani01
- * @version 2.1
+ * @version 2.2
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandler, SerialMessageListener {
@@ -198,7 +198,7 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
      * @param pin the pin ID.
      */
     private void updatePin(ArduinoPin pin) {
-        StringBuilder hex = new StringBuilder(Integer.toHexString(Integer.valueOf(pin.getPin() +
+        StringBuilder hex = new StringBuilder(Integer.toHexString(Integer.parseInt(pin.getPin() +
                 String.format("%03d", pin.getValuePwm()))));
         while (hex.length() < 4) {
             hex.insert(0, "0");
@@ -215,6 +215,13 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                 Main.err("Connecting to the Serial port...");
                 serialPort = new SerialPortImpl(serialPortString);
                 serialPort.addListener(this);
+                // Wait for connection to finish properly
+                try {
+                    Thread.sleep(600);
+
+                } catch (InterruptedException ignored) {
+
+                }
                 // Restart the board to ensure that all the pins are turned off.
                 serialPort.print(":RS#");
 
@@ -243,7 +250,7 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                     Main.err("Defining PWM pin: " + pin);
                     updatePin(pin);
                     pinsMap.put(new INDINumberElement(pwmPinsProp, "PWM pin" + pin.getPin(), pin.getName(),
-                            (double) pin.getValuePercentage(), 0.0, 100.0, 1.0, "%f"), pin);
+                            pin.getValuePercentage(), 0.0, 100.0, 1.0, "%f"), pin);
                 }
 
                 moonLitePortProp = new INDITextProperty(this, "MoonLite port", "MoonLite port",
@@ -284,12 +291,9 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
             for (INDINumberElementAndValue eAV : elementsAndValues) {
                 INDINumberElement element = eAV.getElement();
                 ArduinoPin pin = pinsMap.get(element);
-                PinValue newValue = new PinValue(PinValue.ValueType.PERCENTAGE, eAV.getValue().intValue());
-                if (!newValue.equals(pin.getPinValueObj())) {
-                    pin.setPinValueObj(newValue);
-                    element.setValue((double) pin.getValuePercentage());
-                    updatePin(pin);
-                }
+                pin.setPinValueObj(new PinValue(PinValue.ValueType.PERCENTAGE, eAV.getValue().intValue()));
+                element.setValue((double) pin.getValuePercentage());
+                updatePin(pin);
             }
             pwmPinsProp.setState(PropertyStates.OK);
             try {
@@ -333,11 +337,9 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                 INDISwitchElement element = eAV.getElement();
                 ArduinoPin pin = pinsMap.get(element);
                 PinValue newValue = new PinValue(PinValue.ValueType.INDI, eAV.getValue());
-                if (!newValue.equals(pin.getPinValueObj())) {
-                    pin.setPinValueObj(newValue);
-                    element.setValue(newValue.getValueIndi());
-                    updatePin(pin);
-                }
+                pin.setPinValueObj(newValue);
+                element.setValue(newValue.getValueIndi());
+                updatePin(pin);
             }
             digitalPinProps.setState(PropertyStates.OK);
             try {

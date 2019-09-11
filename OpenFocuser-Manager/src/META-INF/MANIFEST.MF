@@ -3,4 +3,4 @@ Specification-Vendor: marcocipriani01
 Main-Class: marcocipriani.openfocuser.manager.Main
 Name: marcocipriani/openfocuser/manager
 Specification-Title: OpenFocuser-Manager
-Specification-Version: 1.1
+Specification-Version: 1.2

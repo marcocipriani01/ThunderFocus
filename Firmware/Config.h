@@ -3,7 +3,7 @@
 #define LED 13
 #define SERIAL_SPEED 9600
 // Standard (0), Plus prototype (1), Plus (2)
-#define EDITION 1
+#define EDITION 2
 
 #if EDITION == 0 // Standard
 
@@ -27,7 +27,7 @@
 // RPM. Decreasing this value should decrease telescope shaking.
 #define MOTOR_RPM 120
 // Acceleration
-#define MOTOR_ACCEL 1300
+#define MOTOR_ACCEL 100
 
 // ----- Hand controller -----
 #define ENABLE_HC true
@@ -63,7 +63,7 @@
 // RPM. Decreasing this value should decrease telescope shaking.
 #define MOTOR_RPM 120
 // Acceleration
-#define MOTOR_ACCEL 1300
+#define MOTOR_ACCEL 100
 
 // ----- Customizable pins -----
 // List of pins that can be modified by the serial port
@@ -100,7 +100,7 @@
 // RPM. Decreasing this value should decrease telescope shaking.
 #define MOTOR_RPM 120
 // Acceleration
-#define MOTOR_ACCEL 1300
+#define MOTOR_ACCEL 100
 
 // ----- Customizable pins -----
 // List of pins that can be modified by the serial port

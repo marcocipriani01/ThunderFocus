@@ -66,7 +66,7 @@ public class AppInfo {
      * @throws IllegalStateException if the version couldn't be found in the manifest.
      * @see <a href="http://stackoverflow.com/questions/1272648/reading-my-own-jars-manifest">Reading my own Jar's Manifest</a>
      */
-    public AppInfo() throws IOException, IllegalStateException {
+    public AppInfo() throws IOException, IllegalStateException, NullPointerException {
         Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
         while (resources.hasMoreElements()) {
             Manifest manifest = new Manifest(resources.nextElement().openStream());
@@ -109,8 +109,8 @@ public class AppInfo {
         if (latestVersion == null) {
             throw new IllegalStateException("Unable to look for newer versions!");
         }
-        return Integer.valueOf(latestVersion.replace("v", "").replace(".", "").trim()) >
-                Integer.valueOf(currentVersion.replace("v", "").replace(".", "").trim());
+        return Integer.parseInt(latestVersion.replace("v", "").replace(".", "").trim()) >
+                Integer.parseInt(currentVersion.replace("v", "").replace(".", "").trim());
     }
 
     /**

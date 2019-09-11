@@ -1,6 +1,9 @@
 /*
   Moonlite-compatible focuser controller
 
+  ** Version 1.0.1 **
+    Decreased default acceleration.
+
   ** Version 1.0 **
     Ready for releasing and selling it.
 
@@ -116,17 +119,16 @@ AccelStepper stepper(goBackward, goForward);
 ButtonDebounce buttonUp(BUTTON_UP, BUTTONS_DEBOUNCE);
 ButtonDebounce buttonDown(BUTTON_DOWN, BUTTONS_DEBOUNCE);
 // Buttons wrappers
-//TODO: should we tell INDI that the position is changed by the HC?
 // Button up
 void buttonUpChanged(int state) {
   if (state == 1) {
-      stepper.move(map(analogRead(HC_SPEED_POT), 0, 1023, 1, 500));
+    stepper.move(map(analogRead(HC_SPEED_POT), 0, 1023, 1, 1000));
   }
 }
 // Button down
 void buttonDownChanged(int state) {
   if (state == 1) {
-    stepper.move(-map(analogRead(HC_SPEED_POT), 0, 1023, 1, 500));
+    stepper.move(-map(analogRead(HC_SPEED_POT), 0, 1023, 1, 1000));
   }
 }
 #endif

@@ -128,7 +128,7 @@ public class Main {
             int serverPort = settings.getIndiPort();
             if (serverMode) {
                 try {
-                    int gp = Integer.valueOf(line.getOptionValue('p'));
+                    int gp = Integer.parseInt(line.getOptionValue('p'));
                     if (gp != 0) {
                         serverPort = gp;
                         settings.setIndiPort(serverPort);

@@ -298,7 +298,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
                 }
             });
 
-        } catch (IOException | IllegalStateException e) {
+        } catch (IOException | IllegalStateException | NullPointerException e) {
             Main.err("Unable to retrieve information about the current version!", e, this);
             updateManagerButton.setEnabled(false);
         }
@@ -482,7 +482,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
                 if (input == null) {
                     return null;
                 }
-                pin = Integer.valueOf(input);
+                pin = Integer.parseInt(input);
                 if ((pin < 2) || (pin > 99)) {
                     Main.err("Invalid pin: " + pin + "\" is outside the allowed bounds (2 ≤ pin ≤ 99)!", this);
 

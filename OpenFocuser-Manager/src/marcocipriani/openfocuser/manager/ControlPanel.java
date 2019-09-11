@@ -323,8 +323,16 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
         if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
             try {
                 desktop.browse(new URI(url));
-            } catch (Exception ex) {
-                Main.err("Error while starting the web browser!", ex, this);
+            } catch (Exception e) {
+                Main.err("Error while starting the web browser!", e, this);
+            }
+
+        } else if (Main.COMPUTER_OS == Main.OperatingSystem.Linux) {
+            try {
+                Runtime.getRuntime().exec("xdg-open " + url);
+
+            } catch (IOException e) {
+                Main.err("Error while starting the web browser!", e, this);
             }
 
         } else {

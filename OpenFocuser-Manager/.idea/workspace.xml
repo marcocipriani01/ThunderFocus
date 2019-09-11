@@ -8,12 +8,13 @@
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
       <artifact name="OpenFocuser-Manager-Windows:jar" />
+      <artifact name="OpenFocuser-Manager:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Bug fixing, new release">
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="New codename">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" afterDir="false" />
     </list>
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
@@ -127,7 +128,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JAR Application.Run cross-platform JAR">
+  <component name="RunManager" selected="Bash.Build artifacts">
     <configuration name="Build artifacts" type="BashConfigurationType" factoryName="Bash">
       <option name="INTERPRETER_OPTIONS" value="-c" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -447,7 +448,14 @@
       <option name="project" value="LOCAL" />
       <updated>1568200966189</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="New codename">
+      <created>1568201172385</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1568201172385</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TodoView">
@@ -518,7 +526,8 @@
     <MESSAGE value="Bug fixing, added italian language" />
     <MESSAGE value="Prepare for release" />
     <MESSAGE value="Bug fixing, new release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug fixing, new release" />
+    <MESSAGE value="New codename" />
+    <option name="LAST_COMMIT_MESSAGE" value="New codename" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

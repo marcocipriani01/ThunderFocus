@@ -1,10 +1,10 @@
 Package: OpenFocuser-Manager
 Architecture: all
 Maintainer: marcocipriani01
-Depends: socat, avrdude
+Depends: avrdude
 Suggests: openssh-client, openssh-server
 Priority: optional
-Version: 1.2
+Version: 2.0
 Description: INDI driver to control a focuser and a list of pins
  OpenFocuser-Manager is an INDI driver that forwards commands from an
  Arduino to two INDI devices to control with just one Arduino a

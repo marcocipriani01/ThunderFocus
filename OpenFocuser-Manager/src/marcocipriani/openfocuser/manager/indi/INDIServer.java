@@ -4,7 +4,7 @@ import laazotea.indi.INDIException;
 import laazotea.indi.driver.INDIDriver;
 import laazotea.indi.server.DefaultINDIServer;
 import laazotea.indi.server.INDIClient;
-import marcocipriani.openfocuser.manager.Main;
+import marcocipriani.openfocuser.manager.Utils;
 import marcocipriani.openfocuser.manager.io.ConnectionException;
 
 import java.net.Socket;
@@ -228,7 +228,7 @@ public class INDIServer extends DefaultINDIServer {
      */
     @Override
     protected void connectionWithClientBroken(INDIClient client) {
-        Main.err("Connection with client " + client.getInetAddress() + " has been broken.");
+        Utils.err("Connection with client " + client.getInetAddress() + " has been broken.");
     }
 
     /**
@@ -238,7 +238,7 @@ public class INDIServer extends DefaultINDIServer {
      */
     @Override
     protected void connectionWithClientEstablished(INDIClient client) {
-        Main.err("Connection with client " + client.getInetAddress() + " established.");
+        Utils.err("Connection with client " + client.getInetAddress() + " established.");
     }
 
     /**
@@ -249,7 +249,7 @@ public class INDIServer extends DefaultINDIServer {
      */
     @Override
     protected void driverDisconnected(String driverIdentifier, String[] deviceNames) {
-        Main.err("Driver " + driverIdentifier + " has been disconnected. " +
+        Utils.err("Driver " + driverIdentifier + " has been disconnected. " +
                 "The following devices have disappeared: " + Arrays.toString(deviceNames)
                 .replace("[", "").replace("]", ""));
     }

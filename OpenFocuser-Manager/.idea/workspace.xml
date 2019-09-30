@@ -2,19 +2,176 @@
 <project version="4">
   <component name="AnalysisUIOptions">
     <option name="ANALYZE_TEST_SOURCES" value="false" />
-    <option name="SCOPE_TYPE" value="8" />
+    <option name="SCOPE_TYPE" value="3" />
     <option name="CUSTOM_SCOPE_NAME" value="Module 'OpenFocuser-Manager'" />
   </component>
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
       <artifact name="OpenFocuser-Manager-Windows:jar" />
-      <artifact name="OpenFocuser-Manager:jar" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="New codename">
+    <list default="true" id="7b6582ec-1eba-4fb4-91a8-e78dc243580b" name="Default" comment="Fix bug when updating from Linux, update Debian package version">
+      <change afterPath="$PROJECT_DIR$/../Circuit/Circuit.brd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Circuit/Circuit.cam" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Circuit/Circuit.sch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Circuit/Gerber.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-DevManager/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-DevManager/.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-DevManager/platformio.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-DevManager/src/config.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-DevManager/src/dev-manager.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/AccelStepper.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/AccelStepper.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/MANIFEST" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/MultiStepper.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/MultiStepper.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/AccelStepper_8h-source.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/annotated.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/classAccelStepper-members.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/classAccelStepper.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/doxygen.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/doxygen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/files.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/functions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/functions_func.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/tab_b.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/tab_l.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/tab_r.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/doc/tabs.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/AFMotor_ConstantSpeed/AFMotor_ConstantSpeed.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/AFMotor_MultiStepper/AFMotor_MultiStepper.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/Blocking/Blocking.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/Bounce/Bounce.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/ConstantSpeed/ConstantSpeed.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/DualMotorShield/DualMotorShield.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/MotorShield/MotorShield.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/MultiStepper/MultiStepper.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/MultipleSteppers/MultipleSteppers.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/Overshoot/Overshoot.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/ProportionalControl/ProportionalControl.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/Quickstop/Quickstop.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/examples/Random/Random.pde" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/keywords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/AccelStepper/project.cfg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/ButtonDebounce.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/ButtonDebounce.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/examples/simple_btn/simple_btn.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/examples/simple_callback/simple_callback.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/keywords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/ButtonDebounce/library.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/A4988.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/A4988.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/BasicStepperDriver.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/BasicStepperDriver.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8825.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8825.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8834.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8834.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8880.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/DRV8880.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/MultiDriver.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/MultiDriver.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/SyncDriver.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/SyncDriver.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/AccelTest/AccelTest.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/BasicStepperDriver/BasicStepperDriver.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/ClockStepper/ClockStepper.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/MicroStepping/MicroStepping.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/MultiAxis/MultiAxis.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/examples/NonBlocking/NonBlocking.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/keywords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/lib/StepperDriver/library.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/platformio.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/src/config.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Firmware-Focuser/src/focuser.ino" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/externalDependencies.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIBLOBElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIBLOBProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIDevice.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIDeviceListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIElementListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDILightElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDILightProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDINumberElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDINumberProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIPropertyListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIServerConnection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIServerConnectionListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDISwitchElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDISwitchProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDITextElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDITextProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/INDIValueException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/I4J/src/laazotea/indi/client/package.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Utils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIFocuserClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/pins/ArduinoPinsJTable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Connect.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Disconnect.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Flash.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/SerialConnection.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Start.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Stop.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/updater/firmwares" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Builder/build-fw.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../Builder/build-fw.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Circuit/Plus.brd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Circuit/Plus.sch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Circuit/Standard.brd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Circuit/Standard.sch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Circuit/eagle.epf" beforeDir="false" afterPath="$PROJECT_DIR$/../Circuit/eagle.epf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Firmware/Config.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Firmware/Firmware.ino" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/deb-builder/OpenFocuser-Manager/DEBIAN/control" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_OB.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_OB.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto_OB.hex" beforeDir="false" afterPath="$PROJECT_DIR$/hex/OpenFocuser_Plus_proto_OB.hex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/AppInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.form" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/ControlPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/Updater.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/updater/Updater.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/avrdude.conf" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/updater/avrdude.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/boards" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/updater/boards" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf/firmwares" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi/INDIServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ConnectionException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ConnectionException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ScpUploader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/ScpUploader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/SerialPortMultiplexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/UnixSerialPortMultiplexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/io/WindowsSerialPortMultiplexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ArduinoPin.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/DigitalPinDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinArray.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/pins/PinArray.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PinValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/pins/ArduinoPin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/PwmPinDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/ServerMiniWindow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/Settings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/save.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Save.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/send.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res/Send.png" afterDir="false" />
     </list>
     <list id="d568ad25-11e9-4c1c-a8ee-b1c0c066124a" name="Revert &quot;Updated build system&quot;" comment="Revert &quot;Updated build system&quot;&#10;&#10;This reverts commit 7b2e6a1" />
     <list id="ee47c326-339d-46ab-a847-f3a6a6f7e63a" name="Revert: Completely rewritten, almost OK" comment="" />
@@ -25,6 +182,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="315" />
+  </component>
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
   </component>
@@ -33,8 +193,8 @@
       <list>
         <option value="Interface" />
         <option value="module-info" />
-        <option value="Class" />
         <option value="XML Properties File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -75,11 +235,12 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SearchEverywhereHistoryKey" value="Abstr&#9;PSI&#9;JAVA://marcocipriani.openfocuser.manager.ControlPanel.AbstractPinDialog&#10;Update&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/fwconf/Updater.java&#10;INDIDr&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/indi/INDIArduinoDriver.java&#10;Main&#9;FILE&#9;file:///home/marco/GitProjects/OpenFocuser/OpenFocuser-Manager/src/marcocipriani/openfocuser/manager/Main.java&#10;outputs&#9;PSI&#9;JAVA://laazotea.indi.Base64.OutputStream&#10;socat&#9;PSI&#9;JAVA://marcocipriani.openfocuser.manager.io.SerialPortMultiplexer.SocatRunner&#10;INDI&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;indiard&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;indiar&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;Driver&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;deb&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/debug.sh&#10;Connec&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/ConnectionError.java&#10;INDIDriverRunner&#9;PSI&#9;JAVA://laazotea.indi.driver.INDIDriverRunner&#10;PinArra&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinArray.java&#10;Arduino&#9;PSI&#9;JAVA://squareboot.astro.allinone.io.Arduino&#10;Socat&#9;PSI&#9;JAVA://squareboot.astro.allinone.SocatRunner&#10;star&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/start.sh&#10;PinVA&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinValue.java&#10;INDIARD&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;PinVa&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PinValue.java&#10;pwm&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PwmPinDialog.java&#10;sett&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/Settings.java&#10;Ardui&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/ArduinoPin.java&#10;SerialP&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/SerialPortMultiplexer.java&#10;start&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/start.sh&#10;INDISE&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIServer.java&#10;Sett&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/Settings.java&#10;spla&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/SplashScreen.java&#10;Ardu&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/io/Arduino.java&#10;Spla&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/SplashScreen.java&#10;Ard&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIArduinoDriver.java&#10;INDIDevi&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/laazotea/indi/server/INDIDevice.java&#10;PwmPi&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/PwmPinPanel.java&#10;DigitalPin&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/DigitalPinPanel.java&#10;Arra&#9;FILE&#9;jar:///usr/lib/jvm/java-9-oracle/lib/src.zip!/java.base/java/util/ArrayList.java&#10;ArrayList&#9;PSI&#9;JAVA://java.util.ArrayList&#10;jbutt&#9;PSI&#9;JAVA://javax.swing.JButton&#10;soca&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/runner/socat-test&#10;GTK&#9;PSI&#9;JAVA://com.sun.java.swing.plaf.gtk.GTKFileChooserUI.GTKDirectoryListModel&#10;FIle&#9;PSI&#9;JAVA://java.io.File&#10;Server&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/indi/INDIServer.java&#10;server&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/INDIServer.java&#10;INDIBaseS&#9;FILE&#9;file:///home/marco/IdeaProjects/AstroAllInOne/src/squareboot/astro/allinone/INDIBaseServer.java" />
     <property name="TODO_SCOPE" value="All Places" />
-    <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="247" />
+    <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="203" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="JShellLanguage" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="TEXT&#10;JAVA" />
     <property name="extract.method.default.visibility" value="private" />
-    <property name="last_opened_file_path" value="/media/marco/USB DISK/EserciziJava" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Scrivania/test" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2662116" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -88,27 +249,31 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="marcocipriani.openfocuser.manager.Utils" />
       <recent name="marcocipriani.openfocuser.manager.AppInfo" />
       <recent name="squareboot.astro.allinone.ControlPanel" />
       <recent name="squareboot.astro.allinone.Application" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res" />
       <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/plus" />
       <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager" />
-      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="marcocipriani.openfocuser.manager" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="squareboot.astro.allinone.io" />
       <recent name="squareboot.astro.allinone" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/indi" />
+      <recent name="$PROJECT_DIR$/I4J/src/laazotea/indi" />
       <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/res" />
       <recent name="$PROJECT_DIR$/lib" />
       <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager" />
-      <recent name="$PROJECT_DIR$/src/marcocipriani/openfocuser/manager/fwconf" />
-      <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -128,7 +293,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Bash.Build artifacts">
+  <component name="RunManager" selected="JAR Application.Run cross-platform JAR">
     <configuration name="Build artifacts" type="BashConfigurationType" factoryName="Bash">
       <option name="INTERPRETER_OPTIONS" value="-c" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -210,7 +375,7 @@
     <configuration name="Run cross-platform JAR" type="JarApplication" singleton="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/OpenFocuser_Manager_Windows_jar/OpenFocuser-Manager.jar" />
       <option name="VM_PARAMETERS" value="-Duser.language=IT_it" />
-      <option name="PROGRAM_PARAMETERS" value="-v -p=0" />
+      <option name="PROGRAM_PARAMETERS" value="-v -c" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="ALTERNATIVE_JRE_PATH" value="12" />
@@ -228,6 +393,11 @@
       <item itemvalue="Bash.Run control panel" />
       <item itemvalue="JAR Application.Run cross-platform JAR" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Bash.Run control panel" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="StructureViewFactory">
     <option name="ACTIVE_ACTIONS" value=",SHOW_PROPERTIES,SHOW_INHERITED,ALPHA_COMPARATOR" />
@@ -455,7 +625,14 @@
       <option name="project" value="LOCAL" />
       <updated>1568201172385</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Fix bug when updating from Linux, update Debian package version">
+      <created>1568201980800</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1568201980800</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TodoView">
@@ -527,93 +704,14 @@
     <MESSAGE value="Prepare for release" />
     <MESSAGE value="Bug fixing, new release" />
     <MESSAGE value="New codename" />
-    <option name="LAST_COMMIT_MESSAGE" value="New codename" />
+    <MESSAGE value="Fix bug when updating from Linux, update Debian package version" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix bug when updating from Linux, update Debian package version" />
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
   </component>
-  <component name="masterDetails">
-    <states>
-      <state key="ArtifactsStructureConfigurable.UI">
-        <settings>
-          <artifact-editor>
-            <show-content>
-              <type id="artifact" />
-              <type id="library" />
-            </show-content>
-          </artifact-editor>
-          <last-edited>OpenFocuser-Manager:jar</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2662116" />
-                <option value="0.5" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="GlobalLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="JdkListConfigurable.UI">
-        <settings>
-          <last-edited>12</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2662116" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ModuleStructureConfigurable.UI">
-        <settings>
-          <last-edited>I4J</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2662116" />
-                <option value="0.6" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectLibrariesConfigurable.UI">
-        <settings>
-          <last-edited>commons-cli</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2662116" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ScopeChooserConfigurable.UI">
-        <settings>
-          <last-edited>AstroAllInOne</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/OpenFocuser_Manager$Run_cross_platform_JAR.ic" NAME="Run cross-platform JAR Coverage Results" MODIFIED="1569849643360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

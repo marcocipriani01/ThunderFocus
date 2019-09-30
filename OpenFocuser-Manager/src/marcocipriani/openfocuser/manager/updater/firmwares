@@ -1,0 +1,7 @@
+[OpenFocuser focuser module]
+hex="OpenFocuser_focuser"
+version="2.0"
+
+[OpenFocuser device manager module]
+hex="OpenFocuser_devices"
+version="2.0"

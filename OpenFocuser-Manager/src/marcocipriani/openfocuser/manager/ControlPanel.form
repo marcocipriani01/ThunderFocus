@@ -1,41 +1,354 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="marcocipriani.openfocuser.manager.ControlPanel">
-  <grid id="27dc6" binding="parent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="parent" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="4" left="4" bottom="4" right="4"/>
     <constraints>
-      <xy x="20" y="20" width="555" height="459"/>
+      <xy x="20" y="20" width="722" height="492"/>
     </constraints>
     <properties/>
     <border type="none">
       <font size="18" style="1"/>
     </border>
     <children>
-      <tabbedpane id="5dbe4" default-binding="true">
+      <tabbedpane id="5dbe4" binding="mainTabbedPane">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="5111f" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="83325" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="8" left="8" bottom="8" right="8"/>
             <constraints>
-              <tabbedpane title-resource-bundle="marcocipriani/openfocuser/manager/res/strings" title-key="update_firmware"/>
+              <tabbedpane title="Configuration"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="582b8" class="javax.swing.JRadioButton" binding="startServerRadioButton" default-binding="true">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Start server"/>
+                </properties>
+              </component>
+              <vspacer id="52dfa">
+                <constraints>
+                  <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="39e1a" class="javax.swing.JRadioButton" binding="connectToRemoteHostRadioButton" default-binding="true">
+                <constraints>
+                  <grid row="3" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Connect to remote host"/>
+                </properties>
+              </component>
+              <component id="e79c8" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Port:"/>
+                </properties>
+              </component>
+              <grid id="fc5e9" binding="startStopServerPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="1" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="800e3" class="javax.swing.JButton" binding="startServerButton" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <actionCommand value=""/>
+                      <icon value="marcocipriani/openfocuser/manager/res/Start.png"/>
+                      <text value="Start server"/>
+                    </properties>
+                  </component>
+                  <component id="4cec7" class="javax.swing.JButton" binding="stopServerButton" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <actionCommand value=""/>
+                      <enabled value="false"/>
+                      <icon value="marcocipriani/openfocuser/manager/res/Stop.png"/>
+                      <text value="Stop server"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <component id="986fc" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="IP or hostname:"/>
+                </properties>
+              </component>
+              <component id="186ad" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Port:"/>
+                </properties>
+              </component>
+              <grid id="7270e" binding="connectDisconnectPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="1" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="6ecbf" class="javax.swing.JButton" binding="connectServerButton">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <icon value="marcocipriani/openfocuser/manager/res/Connect.png"/>
+                      <text value="Connect"/>
+                    </properties>
+                  </component>
+                  <component id="7a8a7" class="javax.swing.JButton" binding="disconnectServerButton">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <icon value="marcocipriani/openfocuser/manager/res/Disconnect.png"/>
+                      <text value="Disconnect"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <component id="b29a3" class="javax.swing.JSeparator">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="65489" class="javax.swing.JTextField" binding="remoteHostnameField">
+                <constraints>
+                  <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="d71d3" class="javax.swing.JSpinner" binding="remoteIndiPortField" custom-create="true">
+                <constraints>
+                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="68624" class="javax.swing.JSpinner" binding="localIndiPortField" custom-create="true">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+            </children>
+          </grid>
+          <grid id="fca0b" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="8" left="8" bottom="8" right="8"/>
+            <constraints>
+              <tabbedpane title="Pin management"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="fe0a2" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="digital_pins"/>
+                </properties>
+              </component>
+              <component id="6bd88" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="pwm_pins"/>
+                </properties>
+              </component>
+              <scrollpane id="47ace">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="10cda" class="marcocipriani.openfocuser.manager.pins.ArduinoPinsJTable" binding="digitalPinsJTable" custom-create="true">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+              <grid id="663a9" binding="digitalPinsManagementPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="9b722" class="javax.swing.JButton" binding="removeDigitalPinButton" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="remove"/>
+                    </properties>
+                  </component>
+                  <component id="c9f70" class="javax.swing.JButton" binding="addDigitalPinButton" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="add"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="c2313" binding="digitalPinsControlPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <visible value="false"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="ef219" class="javax.swing.JButton" binding="turnOffDigitalPinsButton">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Turn all off"/>
+                    </properties>
+                  </component>
+                  <component id="da2c4" class="javax.swing.JButton" binding="turnOnDigitalPinsButton">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Turn all on"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <scrollpane id="6fdf4">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="90de8" class="marcocipriani.openfocuser.manager.pins.ArduinoPinsJTable" binding="pwmPinsJTable" custom-create="true">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+              <grid id="61360" binding="pwmPinsManagementPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="37343" class="javax.swing.JButton" binding="removePwmPinButton" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="remove"/>
+                    </properties>
+                  </component>
+                  <component id="2e46a" class="javax.swing.JButton" binding="addPwmPinButton" custom-create="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="add"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="648c2" binding="pwmPinsControlPanel" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <visible value="false"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="2b5f2" class="javax.swing.JButton" binding="turnOffPwmPinsButton">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Set all to 0%"/>
+                    </properties>
+                  </component>
+                  <component id="5d1a4" class="javax.swing.JButton" binding="setHalfPowerPwmPinsButton">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Set all to 50%"/>
+                    </properties>
+                  </component>
+                  <component id="c98e8" class="javax.swing.JButton" binding="turnOnPwmPinsButton">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Set all to 100%"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
+          <grid id="5111f" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="8" left="8" bottom="8" right="8"/>
+            <constraints>
+              <tabbedpane title="Flash or update firmware"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
               <component id="7e8d3" class="javax.swing.JComboBox" binding="boardComboBox">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
               </component>
               <component id="c1525" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="board"/>
@@ -43,7 +356,7 @@
               </component>
               <component id="e930" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="firmware"/>
@@ -51,13 +364,13 @@
               </component>
               <component id="362e2" class="javax.swing.JComboBox" binding="fwComboBox">
                 <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
               </component>
               <component id="1d556" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="version"/>
@@ -65,7 +378,7 @@
               </component>
               <component id="8c7c3" class="javax.swing.JLabel" binding="fwVersionLabel">
                 <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="vX.Y"/>
@@ -73,15 +386,17 @@
               </component>
               <component id="a3de0" class="javax.swing.JButton" binding="updateFwButton">
                 <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="update"/>
+                  <enabled value="false"/>
+                  <icon value="marcocipriani/openfocuser/manager/res/Flash.png"/>
+                  <text value="Flash or update"/>
                 </properties>
               </component>
               <scrollpane id="4b264" binding="logsScrollPane">
                 <constraints>
-                  <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -97,197 +412,21 @@
               </scrollpane>
               <component id="8e2b" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="avrdude_output"/>
                 </properties>
               </component>
-              <component id="950d9" class="javax.swing.JLabel">
+              <component id="d9fff" class="javax.swing.JSeparator">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="serial_port"/>
-                </properties>
-              </component>
-              <component id="6e47e" class="javax.swing.JComboBox" binding="serialPortComboBox">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-              </component>
-              <component id="9453b" class="javax.swing.JButton" binding="refreshPortsButton">
-                <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="42" height="42"/>
-                    <maximum-size width="42" height="42"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <icon value="marcocipriani/openfocuser/manager/res/Refresh.png"/>
-                </properties>
               </component>
             </children>
           </grid>
-          <grid id="fca0b" layout-manager="GridLayoutManager" row-count="6" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="8" left="8" bottom="8" right="8"/>
-            <constraints>
-              <tabbedpane title-resource-bundle="marcocipriani/openfocuser/manager/res/strings" title-key="configure_plus_edition"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="fe0a2" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="digital_pins"/>
-                </properties>
-              </component>
-              <scrollpane id="47ace">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="cb854" class="javax.swing.JList" binding="digitalPinsList" custom-create="true">
-                    <constraints/>
-                    <properties/>
-                  </component>
-                </children>
-              </scrollpane>
-              <component id="9b722" class="javax.swing.JButton" binding="removeDigitalPinButton">
-                <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="remove"/>
-                </properties>
-              </component>
-              <component id="c3a39" class="javax.swing.JButton" binding="editDigitalPinButton">
-                <constraints>
-                  <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="edit"/>
-                </properties>
-              </component>
-              <component id="c9f70" class="javax.swing.JButton" binding="addDigitalPinButton">
-                <constraints>
-                  <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="add"/>
-                </properties>
-              </component>
-              <component id="6bd88" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="pwm_pins"/>
-                </properties>
-              </component>
-              <scrollpane id="6fdf4">
-                <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="23f78" class="javax.swing.JList" binding="pwmPinsList" custom-create="true">
-                    <constraints/>
-                    <properties/>
-                  </component>
-                </children>
-              </scrollpane>
-              <component id="37343" class="javax.swing.JButton" binding="removePwmPinButton">
-                <constraints>
-                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="remove"/>
-                </properties>
-              </component>
-              <component id="2311a" class="javax.swing.JButton" binding="editPwmPinButton">
-                <constraints>
-                  <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="edit"/>
-                </properties>
-              </component>
-              <component id="2e46a" class="javax.swing.JButton" binding="addPwmPinButton">
-                <constraints>
-                  <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="add"/>
-                </properties>
-              </component>
-              <toolbar id="f42f3">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="-1" height="20"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <floatable value="false"/>
-                </properties>
-                <border type="none"/>
-                <children>
-                  <component id="34d8e" class="javax.swing.JButton" binding="saveButton">
-                    <constraints/>
-                    <properties>
-                      <icon value="marcocipriani/openfocuser/manager/res/save.png"/>
-                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="save_configuration"/>
-                    </properties>
-                  </component>
-                  <component id="eb24d" class="javax.swing.JToolBar$Separator">
-                    <constraints/>
-                    <properties/>
-                  </component>
-                  <component id="b6d58" class="javax.swing.JButton" binding="sendConfigButton">
-                    <constraints/>
-                    <properties>
-                      <icon value="marcocipriani/openfocuser/manager/res/send.png"/>
-                      <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="send_to_another_computer"/>
-                    </properties>
-                  </component>
-                </children>
-              </toolbar>
-              <component id="e79c8" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="indi_server_port"/>
-                </properties>
-              </component>
-              <component id="68624" class="javax.swing.JSpinner" binding="indiPortField" custom-create="true">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="51bf6" class="javax.swing.JButton" binding="runServerButton">
-                <constraints>
-                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="run_server"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <grid id="32aeb" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="32aeb" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="8" left="8" bottom="8" right="8"/>
             <constraints>
               <tabbedpane title-resource-bundle="marcocipriani/openfocuser/manager/res/strings" title-key="about_openfocuser"/>
@@ -297,7 +436,7 @@
             <children>
               <component id="85b71" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="manager_version"/>
@@ -305,7 +444,7 @@
               </component>
               <component id="50ba9" class="javax.swing.JLabel" binding="managerVersionLabel">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="vX.Y"/>
@@ -313,7 +452,7 @@
               </component>
               <component id="5fa07" class="javax.swing.JButton" binding="websiteButton">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <icon value="marcocipriani/openfocuser/manager/res/Website.png"/>
@@ -322,12 +461,12 @@
               </component>
               <vspacer id="5075c">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <component id="30b21" class="javax.swing.JButton" binding="githubButton">
                 <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <icon value="marcocipriani/openfocuser/manager/res/GitHub.png"/>
@@ -336,7 +475,7 @@
               </component>
               <component id="f13e2" class="javax.swing.JButton" binding="issueReportButton">
                 <constraints>
-                  <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <icon value="marcocipriani/openfocuser/manager/res/Issue-report.png"/>
@@ -345,7 +484,7 @@
               </component>
               <component id="63c7a" class="javax.swing.JButton" binding="updateManagerButton">
                 <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
                     <preferred-size width="42" height="42"/>
                     <maximum-size width="42" height="42"/>
                   </grid>
@@ -356,23 +495,23 @@
               </component>
               <component id="a9b97" class="javax.swing.JLabel" binding="titleLabel">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="marcocipriani/openfocuser/manager/logo.png"/>
+                  <icon value="marcocipriani/openfocuser/manager/res/Logo.png"/>
                 </properties>
               </component>
               <grid id="3622b" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
                   <component id="8aa4b" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="prj_description"/>
@@ -380,7 +519,7 @@
                   </component>
                   <component id="ad566" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <font size="24" style="1"/>
@@ -389,10 +528,10 @@
                   </component>
                   <component id="f944d" class="javax.swing.JLabel" binding="codenameLabel">
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <font size="18" style="2"/>
+                      <font size="18" style="0"/>
                       <text value="Codename"/>
                     </properties>
                   </component>
@@ -403,10 +542,84 @@
                   </vspacer>
                 </children>
               </grid>
+              <component id="1dacd" class="javax.swing.JSeparator">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
             </children>
           </grid>
         </children>
       </tabbedpane>
+      <toolbar id="2db4">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="20"/>
+          </grid>
+        </constraints>
+        <properties>
+          <floatable value="false"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="34d8e" class="javax.swing.JButton" binding="saveConfigButton">
+            <constraints/>
+            <properties>
+              <icon value="marcocipriani/openfocuser/manager/res/Save.png"/>
+              <text value="Save configuration"/>
+            </properties>
+          </component>
+          <component id="b6d58" class="javax.swing.JButton" binding="sendConfigButton">
+            <constraints/>
+            <properties>
+              <icon value="marcocipriani/openfocuser/manager/res/Send.png"/>
+              <text value="Save to remove server"/>
+            </properties>
+          </component>
+          <component id="1a5a" class="javax.swing.JButton" binding="serialConnectionButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <enabled value="false"/>
+              <icon value="marcocipriani/openfocuser/manager/res/SerialConnection.png"/>
+              <text value="Serial connection"/>
+            </properties>
+          </component>
+        </children>
+      </toolbar>
+      <component id="950d9" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text resource-bundle="marcocipriani/openfocuser/manager/res/strings" key="serial_port"/>
+        </properties>
+      </component>
+      <component id="6e47e" class="javax.swing.JComboBox" binding="serialPortComboBox">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <editable value="true"/>
+        </properties>
+      </component>
+      <component id="9453b" class="javax.swing.JButton" binding="refreshPortsButton">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="42" height="42"/>
+            <maximum-size width="42" height="42"/>
+          </grid>
+        </constraints>
+        <properties>
+          <icon value="marcocipriani/openfocuser/manager/res/Refresh.png"/>
+        </properties>
+      </component>
     </children>
   </grid>
+  <buttonGroups>
+    <group name="indiConfigurationButtons">
+      <member id="582b8"/>
+      <member id="39e1a"/>
+    </group>
+  </buttonGroups>
 </form>

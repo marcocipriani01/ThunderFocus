@@ -1,52 +1,40 @@
 package marcocipriani.openfocuser.manager;
 
-import com.jcraft.jsch.UserInfo;
-import marcocipriani.openfocuser.manager.fwconf.Updater;
+import marcocipriani.openfocuser.manager.indi.INDIArduinoDriver;
+import marcocipriani.openfocuser.manager.indi.INDIServer;
 import marcocipriani.openfocuser.manager.io.ConnectionException;
 import marcocipriani.openfocuser.manager.io.ScpUploader;
 import marcocipriani.openfocuser.manager.io.SerialPortImpl;
-import marcocipriani.openfocuser.manager.plus.*;
+import marcocipriani.openfocuser.manager.pins.ArduinoPin;
+import marcocipriani.openfocuser.manager.pins.ArduinoPinsJTable;
+import marcocipriani.openfocuser.manager.updater.Updater;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URI;
+
+import static marcocipriani.openfocuser.manager.AppInfo.APP_LOGO;
 
 /**
- * The control panel.
+ * The app's control panel.
  *
  * @author marcocipriani01
- * @version 1.1
+ * @version 2.0
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class ControlPanel extends JFrame implements ActionListener {
-
-    /**
-     * Application icon (for swing).
-     */
-    public static Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(ControlPanel.class.
-            getResource("/marcocipriani/openfocuser/manager/logo.png"));
+public class ControlPanel extends JFrame {
 
     /**
      * The parent component.
      */
     private JPanel parent;
     /**
-     * The list of digital pins.
-     */
-    private JList<ArduinoPin> digitalPinsList;
-    /**
-     * The list of PWM pins.
-     */
-    private JList<ArduinoPin> pwmPinsList;
-    /**
      * Field for the INDI server's port.
      */
-    private JSpinner indiPortField;
+    private JSpinner localIndiPortField;
     /**
      * Button to add a new digital pin.
      */
@@ -64,21 +52,9 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
      */
     private JButton removePwmPinButton;
     /**
-     * Button to edit the selected digital pin.
-     */
-    private JButton editDigitalPinButton;
-    /**
-     * Button to edit the selected PWM pin.
-     */
-    private JButton editPwmPinButton;
-    /**
      * Button to save the pin config.
      */
-    private JButton saveButton;
-    /**
-     * Button to run the stand-alone INDI server.
-     */
-    private JButton runServerButton;
+    private JButton saveConfigButton;
     /**
      * Button to send the pin config to another computer.
      */
@@ -116,19 +92,38 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
     private JButton githubButton;
     private JButton issueReportButton;
     private JLabel codenameLabel;
-
+    private JButton connectServerButton;
+    private JButton disconnectServerButton;
     /**
-     * Model for the list of digital pins.
+     * Button to run the stand-alone INDI server.
      */
-    private DefaultListModel<ArduinoPin> digitalPinsModel;
-    /**
-     * Model for the list of PWM pins.
-     */
-    private DefaultListModel<ArduinoPin> pwmPinsModel;
+    private JButton startServerButton;
+    private JButton stopServerButton;
+    private JRadioButton startServerRadioButton;
+    private JRadioButton connectToRemoteHostRadioButton;
+    private JTextField remoteHostnameField;
+    private JSpinner remoteIndiPortField;
+    private JButton turnOffDigitalPinsButton;
+    private JButton turnOnDigitalPinsButton;
+    private JButton turnOffPwmPinsButton;
+    private JButton setHalfPowerPwmPinsButton;
+    private JButton turnOnPwmPinsButton;
+    private JPanel digitalPinsManagementPanel;
+    private JPanel pwmPinsManagementPanel;
+    private JPanel digitalPinsControlPanel;
+    private JPanel pwmPinsControlPanel;
+    private JPanel startStopServerPanel;
+    private JPanel connectDisconnectPanel;
+    private JButton serialConnectionButton;
+    private ArduinoPinsJTable digitalPinsJTable;
+    private ArduinoPinsJTable pwmPinsJTable;
+    private JTabbedPane mainTabbedPane;
     /**
      * FW update utility.
      */
     private Updater fwUpdater;
+    private AppInfo appInfo;
+    private Settings settings;
 
     /**
      * Class constructor.
@@ -143,64 +138,14 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                int operation = JOptionPane.showConfirmDialog(null, "Save and exit, exit or cancel?", AppInfo.APP_NAME,
+                int operation = JOptionPane.showConfirmDialog(ControlPanel.this, "Save and exit, exit or cancel?", AppInfo.APP_NAME,
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (operation == JOptionPane.YES_OPTION) {
                     saveConfig();
-                    Main.exit(Main.ExitCodes.OK);
+                    Utils.exit(Utils.ExitCodes.OK);
 
                 } else if (operation == JOptionPane.NO_OPTION) {
-                    Main.exit(Main.ExitCodes.OK);
-                }
-            }
-        });
-
-        saveButton.addActionListener(e -> saveConfig());
-        sendConfigButton.addActionListener(e -> {
-            Settings settings = saveConfig();
-            if (settings != null) {
-                String host = JOptionPane.showInputDialog(this, "Remote SSH server IP/address:", "SCP", JOptionPane.QUESTION_MESSAGE);
-                if (host != null) {
-                    String user = JOptionPane.showInputDialog(this, "Remote username:", "SCP", JOptionPane.QUESTION_MESSAGE);
-                    if (user != null) {
-                        try {
-                            ScpUploader.send(settings.getFile(), user, host, "/home/" + user + "/.config/OpenFocuser-Manager/Settings.json", new UserInfoProvider(this));
-                            Main.info("Settings uploaded to remote host!", this);
-
-                        } catch (ConnectionException ex) {
-                            Main.err(ex.getMessage(), ex, this);
-                        }
-                    }
-                }
-            }
-        });
-        runServerButton.addActionListener(e -> {
-            Settings settings = saveConfig();
-            if (settings != null) {
-                onRunServer(settings.getIndiPort());
-                dispose();
-            }
-        });
-
-        addDigitalPinButton.addActionListener(this);
-        removeDigitalPinButton.addActionListener(this);
-        editDigitalPinButton.addActionListener(this);
-        digitalPinsList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    editDigitalPin();
-                }
-            }
-        });
-        addPwmPinButton.addActionListener(this);
-        removePwmPinButton.addActionListener(this);
-        editPwmPinButton.addActionListener(this);
-        pwmPinsList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    editPwmPin();
+                    Utils.exit(Utils.ExitCodes.OK);
                 }
             }
         });
@@ -212,7 +157,7 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
                 @Override
                 public void print(String log) {
                     avrdudeLogs.append("\n" + log);
-                    scrollBar.setValue(scrollBar.getMaximum());
+                    scrollBar.setValue(scrollBar.getMaximum()); //TODO: it doesn't seem to work!
                 }
 
                 @Override
@@ -231,113 +176,246 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
             for (String p : SerialPortImpl.scanSerialPorts()) {
                 serialPortComboBox.addItem(p);
             }
-            refreshPortsButton.addActionListener(e -> {
-                boolean popupVisible = serialPortComboBox.isPopupVisible();
-                String selectedItem = (String) serialPortComboBox.getSelectedItem();
-                serialPortComboBox.removeAllItems();
-                for (String p : SerialPortImpl.scanSerialPorts()) {
-                    serialPortComboBox.addItem(p);
-                }
-                if (popupVisible) {
-                    SwingUtilities.invokeLater(() -> serialPortComboBox.showPopup());
-                }
-                serialPortComboBox.setSelectedItem(selectedItem);
-            });
-            updateFwButton.addActionListener(e -> {
-                Updater.Firmware selectedFw = (Updater.Firmware) fwComboBox.getSelectedItem();
-                if (selectedFw != null) {
-                    Updater.Board selectedBoard = (Updater.Board) boardComboBox.getSelectedItem();
-                    if (selectedBoard != null) {
-                        Object port = serialPortComboBox.getSelectedItem();
-                        if (port != null) {
-                            updateFwButton.setEnabled(false);
-                            fwUpdater.updateFirmware(selectedFw, selectedBoard, (String) port);
+            serialPortComboBox.setSelectedItem(settings.serialPort);
+            refreshPortsButton.addActionListener(this::actionPerformed);
+            updateFwButton.addActionListener(this::actionPerformed);
 
-                        } else {
-                            Main.err("Please select a port!", this);
-                        }
-
-                    } else {
-                        Main.err("The selected board isn't valid!", this);
-                    }
-
-                } else {
-                    Main.err("The selected firmware isn't valid!", this);
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Firmware updater tool not available!");
+        } catch (IOException | UnsupportedOperationException | IllegalStateException e) {
+            Utils.err("Firmware updater tool not available!", e, this);
             boardComboBox.setEnabled(false);
             fwComboBox.setEnabled(false);
-            updateFwButton.setText("Firmware updater tool not available!");
             updateFwButton.setEnabled(false);
             refreshPortsButton.setEnabled(false);
             serialPortComboBox.setEnabled(false);
         }
 
         try {
-            AppInfo appInfo = new AppInfo();
+            appInfo = new AppInfo();
             managerVersionLabel.setText(appInfo.getCurrentVersion());
-            updateManagerButton.addActionListener(e -> {
-                try {
-                    if (appInfo.checkForUpdates()) {
-                        if (JOptionPane.showConfirmDialog(this,
-                                "A newer version (" + appInfo.getLatestVersion() + ") is available! Download it?",
-                                AppInfo.APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                            launchBrowser(appInfo.getLatestVersionLink());
-                        }
-
-                    } else {
-                        Main.info("No updates found!", this);
-                    }
-
-                } catch (IOException | IllegalStateException | NumberFormatException ex) {
-                    Main.err("Unable to retrieve information about the latest version!", ex, ControlPanel.this);
-                }
-            });
+            updateManagerButton.addActionListener(this::actionPerformed);
 
         } catch (IOException | IllegalStateException | NullPointerException e) {
-            Main.err("Unable to retrieve information about the current version!", e, this);
+            if (!Utils.isDebugMode()) {
+                Utils.err("Unable to retrieve information about the current version!", e, this);
+            }
             updateManagerButton.setEnabled(false);
         }
 
-        websiteButton.addActionListener(e -> launchBrowser(AppInfo.WEBSITE));
-        issueReportButton.addActionListener(e -> launchBrowser(AppInfo.ISSUE_REPORT));
-        githubButton.addActionListener(e -> launchBrowser(AppInfo.GITHUB_REPO));
+        websiteButton.addActionListener(e -> Utils.launchBrowser(AppInfo.WEBSITE, this));
+        issueReportButton.addActionListener(e -> Utils.launchBrowser(AppInfo.ISSUE_REPORT, this));
+        githubButton.addActionListener(e -> Utils.launchBrowser(AppInfo.GITHUB_REPO, this));
+
+        saveConfigButton.addActionListener(e -> saveConfig());
+        sendConfigButton.addActionListener(this::actionPerformed);
+
+        remoteHostnameField.setText(settings.remoteHost);
+        startServerRadioButton.setSelected(!settings.preferRemoteServer);
+        startServerRadioButton.addActionListener(this::actionPerformed);
+        connectToRemoteHostRadioButton.setSelected(settings.preferRemoteServer);
+        connectToRemoteHostRadioButton.addActionListener(this::actionPerformed);
+        updateConfigurationTab();
+        startServerButton.addActionListener(this::actionPerformed);
+        stopServerButton.addActionListener(this::actionPerformed);
+        connectServerButton.addActionListener(this::actionPerformed);
+        disconnectServerButton.addActionListener(this::actionPerformed);
 
         pack();
         setMinimumSize(getPreferredSize());
-        setBounds(200, 150, 600, 450);
+        setBounds(300, 200, 750, 550);
         setVisible(true);
     }
 
     /**
-     * Opens the web browser.
-     *
-     * @param url an URL to open.
+     * Sets up the user interface.
      */
-    private void launchBrowser(String url) {
-        Desktop desktop;
-        if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(new URI(url));
-            } catch (Exception e) {
-                Main.err("Error while starting the web browser!", e, this);
-            }
+    private void createUIComponents() {
+        settings = Main.getSettings();
 
-        } else if (Main.COMPUTER_OS == Main.OperatingSystem.Linux) {
-            try {
-                Runtime.getRuntime().exec("xdg-open " + url);
+        localIndiPortField = new JSpinner(new SpinnerNumberModel(settings.localServerIndiPort, 10, 99999, 1));
+        JSpinner.NumberEditor editor1 = new JSpinner.NumberEditor(localIndiPortField, "#");
+        editor1.getTextField().setHorizontalAlignment(JTextField.LEFT);
+        localIndiPortField.setEditor(editor1);
 
-            } catch (IOException e) {
-                Main.err("Error while starting the web browser!", e, this);
-            }
+        remoteIndiPortField = new JSpinner(new SpinnerNumberModel(settings.remoteServerIndiPort, 10, 99999, 1));
+        JSpinner.NumberEditor editor2 = new JSpinner.NumberEditor(remoteIndiPortField, "#");
+        editor2.getTextField().setHorizontalAlignment(JTextField.LEFT);
+        remoteIndiPortField.setEditor(editor2);
+
+        digitalPinsJTable = new ArduinoPinsJTable(settings.digitalPins, false, true,
+                addDigitalPinButton = new JButton(), removeDigitalPinButton = new JButton(), this);
+        pwmPinsJTable = new ArduinoPinsJTable(settings.pwmPins, true, true,
+                addPwmPinButton = new JButton(), removePwmPinButton = new JButton(), this);
+    }
+
+    /**
+     * Saves all the configuration to the settings.
+     *
+     * @return {@code true} if everything was OK and the settings were been saved.
+     */
+    private boolean saveConfig() {
+        Utils.info("Saving settings...");
+        Object sp = serialPortComboBox.getSelectedItem();
+        if (sp != null) {
+            settings.serialPort = (String) sp;
+        }
+        int port = (int) localIndiPortField.getValue();
+        if (port < 50) {
+            Utils.err("Invalid local INDI server port!", this);
+            return false;
 
         } else {
-            Main.err("Error while starting the web browser!", this);
+            settings.localServerIndiPort = port;
         }
+        port = (int) remoteIndiPortField.getValue();
+        if (port < 50) {
+            Utils.err("Invalid remote INDI server port!", this);
+            return false;
+
+        } else {
+            settings.remoteServerIndiPort = port;
+        }
+        settings.preferRemoteServer = connectToRemoteHostRadioButton.isSelected();
+        if (settings.digitalPins.hasDuplicates(settings.pwmPins)) {
+            Utils.err("Duplicated pins found, please fix this in order to continue.", this);
+            return false;
+        }
+        try {
+            settings.save();
+
+        } catch (UncheckedIOException e) {
+            Utils.err(e);
+            return false;
+        }
+        return true;
+    }
+
+    private void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == updateFwButton) {
+            Updater.Firmware selectedFw = (Updater.Firmware) fwComboBox.getSelectedItem();
+            if (selectedFw != null) {
+                Updater.Board selectedBoard = (Updater.Board) boardComboBox.getSelectedItem();
+                if (selectedBoard != null) {
+                    Object port = serialPortComboBox.getSelectedItem();
+                    if (port != null) {
+                        updateFwButton.setEnabled(false);
+                        fwUpdater.updateFirmware(selectedFw, selectedBoard, (String) port);
+
+                    } else {
+                        Utils.err("Please select a port!", this);
+                    }
+
+                } else {
+                    Utils.err("The selected board isn't valid!", this);
+                }
+
+            } else {
+                Utils.err("The selected firmware isn't valid!", this);
+            }
+
+        } else if (source == refreshPortsButton) {
+            boolean popupVisible = serialPortComboBox.isPopupVisible();
+            String selectedItem = (String) serialPortComboBox.getSelectedItem();
+            serialPortComboBox.removeAllItems();
+            for (String p : SerialPortImpl.scanSerialPorts()) {
+                serialPortComboBox.addItem(p);
+            }
+            if (popupVisible) {
+                SwingUtilities.invokeLater(() -> serialPortComboBox.showPopup());
+            }
+            serialPortComboBox.setSelectedItem(selectedItem);
+
+        } else if (source == updateManagerButton) {
+            try {
+                if (appInfo.checkForUpdates()) {
+                    if (JOptionPane.showConfirmDialog(this,
+                            "A newer version (" + appInfo.getLatestVersion() + ") is available! Download it?",
+                            AppInfo.APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        Utils.launchBrowser(appInfo.getLatestVersionLink(), ControlPanel.this);
+                    }
+
+                } else {
+                    Utils.info("No updates found!", ControlPanel.this);
+                }
+
+            } catch (IOException | IllegalStateException | NumberFormatException ex) {
+                Utils.err("Unable to retrieve information about the latest version!", ex, ControlPanel.this);
+            }
+
+        } else if (source == sendConfigButton) {
+            if (saveConfig()) {
+                String host = JOptionPane.showInputDialog(this, "Remote SSH server IP/address:", "SCP", JOptionPane.QUESTION_MESSAGE);
+                if (host != null) {
+                    String user = JOptionPane.showInputDialog(this, "Remote username:", "SCP", JOptionPane.QUESTION_MESSAGE);
+                    if (user != null) {
+                        try {
+                            ScpUploader.send(settings.getFile(), user, host, "/home/" + user + "/.config/OpenFocuser-Manager/Settings.json",
+                                    new ScpUploader.UserInfoProvider(this));
+                            Utils.info("Settings uploaded to remote host!", this);
+
+                        } catch (ConnectionException ex) {
+                            Utils.err(ex.getMessage(), ex, this);
+                        }
+                    }
+                }
+            }
+
+        } else if (source == startServerRadioButton || source == connectToRemoteHostRadioButton) {
+            updateConfigurationTab();
+
+        } else if (source == startServerButton) {
+            if (saveConfig()) {
+                updateComponentsServerOrClientRunning(true, false);
+                Main.runServer(settings.localServerIndiPort);
+            }
+
+        } else if (source == stopServerButton) {
+            Main.stopServer();
+            updateComponentsServerOrClientRunning(false, false);
+
+        } else if (source == connectServerButton) {
+            updateComponentsServerOrClientRunning(true, true);
+
+        }
+
+        else if (source == disconnectServerButton) {
+
+            updateComponentsServerOrClientRunning(false, true);
+        }
+    }
+
+    private void updateComponentsServerOrClientRunning(boolean b, boolean isRemote) {
+        startServerRadioButton.setEnabled(!b);
+        connectToRemoteHostRadioButton.setEnabled(!b);
+        digitalPinsJTable.setEditMode(!b);
+        pwmPinsJTable.setEditMode(!b);
+        digitalPinsManagementPanel.setVisible(!b);
+        digitalPinsControlPanel.setVisible(b);
+        pwmPinsManagementPanel.setVisible(!b);
+        pwmPinsControlPanel.setVisible(b);
+        if (isRemote) {
+            connectServerButton.setEnabled(!b);
+            disconnectServerButton.setEnabled(b);
+
+        } else {
+            startServerButton.setEnabled(!b);
+            stopServerButton.setEnabled(b);
+        }
+        if (b) {
+            mainTabbedPane.setSelectedIndex(1);
+        }
+    }
+
+    private void updateConfigurationTab() {
+        boolean b = connectToRemoteHostRadioButton.isSelected();
+        settings.preferRemoteServer = b;
+
+        connectServerButton.setEnabled(b);
+        remoteHostnameField.setEnabled(b);
+        remoteIndiPortField.setEnabled(b);
+
+        startServerButton.setEnabled(!b);
+        localIndiPortField.setEnabled(!b);
     }
 
     /**
@@ -351,136 +429,11 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
     }
 
     /**
-     * Sets up the user interface.
-     */
-    private void createUIComponents() {
-        Settings settings = Main.getSettings();
-        indiPortField = new JSpinner(new SpinnerNumberModel(settings.getIndiPort(), 10, 99999, 1));
-
-        digitalPinsModel = new DefaultListModel<>();
-        for (ArduinoPin pin : settings.getDigitalPins().toArray()) {
-            digitalPinsModel.addElement(pin);
-        }
-        digitalPinsList = new JList<>(digitalPinsModel);
-        digitalPinsList.setLayoutOrientation(JList.VERTICAL);
-        digitalPinsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        digitalPinsList.getSelectionModel().addListSelectionListener(e -> {
-            boolean b = !((ListSelectionModel) e.getSource()).isSelectionEmpty();
-            removeDigitalPinButton.setEnabled(b);
-            editDigitalPinButton.setEnabled(b);
-        });
-
-        pwmPinsModel = new DefaultListModel<>();
-        for (ArduinoPin pin : settings.getPwmPins().toArray()) {
-            pwmPinsModel.addElement(pin);
-        }
-        pwmPinsList = new JList<>(pwmPinsModel);
-        pwmPinsList.setLayoutOrientation(JList.VERTICAL);
-        pwmPinsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        pwmPinsList.getSelectionModel().addListSelectionListener(e -> {
-            boolean b = !((ListSelectionModel) e.getSource()).isSelectionEmpty();
-            removePwmPinButton.setEnabled(b);
-            editPwmPinButton.setEnabled(b);
-        });
-    }
-
-    /**
-     * Saves all the configuration to the settings.
-     *
-     * @return the used {@link Settings} object. May be null if the saving failed.
-     */
-    private Settings saveConfig() {
-        Main.err("Saving settings...");
-        Settings settings = Main.getSettings();
-        int indiPort = (int) indiPortField.getValue();
-        if (indiPort < 50) {
-            Main.err("Invalid INDI port!", this);
-            return null;
-
-        } else {
-            settings.setIndiPort(indiPort);
-        }
-        try {
-            if (PinArray.findDuplicates(settings.getDigitalPins().toArray(), settings.getPwmPins().toArray())) {
-                Main.err("Duplicated pins found, please fix this in order to continue.", this);
-                return null;
-            }
-
-        } catch (IndexOutOfBoundsException e) {
-            Main.err(e.getMessage(), e, this);
-            return null;
-        }
-        try {
-            settings.save();
-
-        } catch (UncheckedIOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return settings;
-    }
-
-    /**
-     * Add/remove/edit digital and PWM pins button actions.
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
-        Settings settings = Main.getSettings();
-        if (source == addDigitalPinButton) {
-            ArduinoPin pin = askNewPin();
-            if (pin != null) {
-                settings.getDigitalPins().add(pin);
-                digitalPinsModel.addElement(pin);
-            }
-
-        } else if (source == removeDigitalPinButton) {
-            ArduinoPin item = digitalPinsList.getSelectedValue();
-            digitalPinsModel.removeElement(item);
-            settings.getDigitalPins().remove(item);
-
-        } else if (source == editDigitalPinButton) {
-            editDigitalPin();
-
-        } else if (source == addPwmPinButton) {
-            ArduinoPin pin = askNewPin();
-            if (pin != null) {
-                settings.getPwmPins().add(pin);
-                pwmPinsModel.addElement(pin);
-            }
-
-        } else if (source == removePwmPinButton) {
-            ArduinoPin item = pwmPinsList.getSelectedValue();
-            pwmPinsModel.removeElement(item);
-            settings.getPwmPins().remove(item);
-
-        } else if (source == editPwmPinButton) {
-            editPwmPin();
-        }
-    }
-
-    /**
-     * Shows a dialog to edit the selected PWM pin.
-     */
-    private void editPwmPin() {
-        new PwmPinDialog(this, pwmPinsList.getSelectedValue());
-        pwmPinsList.repaint();
-    }
-
-    /**
-     * Shows a dialog to edit the selected digital pin.
-     */
-    private void editDigitalPin() {
-        new DigitalPinDialog(this, digitalPinsList.getSelectedValue());
-        digitalPinsList.repaint();
-    }
-
-    /**
      * Shows a dialog to the user asking for a new pin's number.
      *
      * @return an {@link ArduinoPin} object representing the given pin, or {@code null}.
      */
-    private ArduinoPin askNewPin() {
+    public ArduinoPin askNewPin() {
         boolean check = true;
         int pin = -1;
         do {
@@ -491,155 +444,20 @@ public abstract class ControlPanel extends JFrame implements ActionListener {
                     return null;
                 }
                 pin = Integer.parseInt(input);
-                if ((pin < 2) || (pin > 99)) {
-                    Main.err("Invalid pin: " + pin + "\" is outside the allowed bounds (2 ≤ pin ≤ 99)!", this);
+                if ((pin < 2) || (pin > 12)) {
+                    Utils.err("Invalid pin: " + pin + " is outside the allowed bounds (2 ≤ pin ≤ 12)!", this);
+
+                } else if (settings.digitalPins.contains(pin) || settings.pwmPins.contains(pin)) {
+                    Utils.err("Pin " + pin + " is already defined!", this);
 
                 } else {
                     check = false;
                 }
 
             } catch (NumberFormatException e) {
-                Main.err("Invalid pin! Must be a number.", this);
+                Utils.err("Invalid pin! Must be a number.", this);
             }
         } while (check);
         return new ArduinoPin(pin, "Pin " + pin);
-    }
-
-    /**
-     * Invoked when the user wants to run the server.
-     *
-     * @param port the port of the server.
-     */
-    protected abstract void onRunServer(int port);
-
-    /**
-     * Abstract {@link JDialog} to ask the user for a pin, its name and its value.
-     *
-     * @author marcocipriani01
-     * @version 1.0
-     * @see DigitalPinDialog
-     * @see PwmPinDialog
-     */
-    public abstract static class AbstractPinDialog extends JDialog {
-
-        /**
-         * An Arduino pin.
-         */
-        protected ArduinoPin pin;
-
-        /**
-         * Class constructor.
-         *
-         * @param frame a parent window for this dialog.
-         * @param pin   a pin.
-         */
-        public AbstractPinDialog(JFrame frame, ArduinoPin pin) {
-            super(frame, "Pin editor", ModalityType.DOCUMENT_MODAL);
-            setIconImage(APP_LOGO);
-            this.pin = pin;
-        }
-
-        protected void setUpPinFields(JSpinner pinSpinner, JTextField nameTextField) {
-            pinSpinner.addChangeListener(e -> this.pin.setPin((int) pinSpinner.getValue()));
-            pinSpinner.setValue(pin.getPin());
-
-            nameTextField.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    updateName();
-                }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    updateName();
-                }
-
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    updateName();
-                }
-
-                public void updateName() {
-                    AbstractPinDialog.this.pin.setName(nameTextField.getText());
-                }
-            });
-            nameTextField.addActionListener(e -> dispose());
-            nameTextField.setText(pin.getName());
-        }
-
-        protected void showUp() {
-            setLocation(250, 250);
-            pack();
-            setVisible(true);
-        }
-
-        /**
-         * @return the stored pin.
-         */
-        public ArduinoPin getArduinoPin() {
-            return pin;
-        }
-    }
-
-    /**
-     * User info provider.
-     *
-     * @author marcocipriani01
-     * @author JCraft
-     * @version 1.0
-     * @see UserInfo
-     */
-    public static class UserInfoProvider implements UserInfo {
-
-        String password;
-        private JFrame parentWindow;
-
-        /**
-         * Class constructor.
-         *
-         * @param parentWindow parent window for dialogs.
-         */
-        public UserInfoProvider(JFrame parentWindow) {
-            this.parentWindow = parentWindow;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
-        }
-
-        @Override
-        public boolean promptYesNo(String str) {
-            return JOptionPane.showConfirmDialog(parentWindow, str, "SCP",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
-        }
-
-        @Override
-        public String getPassphrase() {
-            return null;
-        }
-
-        @Override
-        public boolean promptPassphrase(String message) {
-            return true;
-        }
-
-        @Override
-        public boolean promptPassword(String message) {
-            JTextField passwordField = new JPasswordField(20);
-            if (JOptionPane.showConfirmDialog(parentWindow, new Object[]{passwordField},
-                    message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION) {
-                password = passwordField.getText();
-                return true;
-
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public void showMessage(String message) {
-            JOptionPane.showMessageDialog(parentWindow, message, "SCP", JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 }

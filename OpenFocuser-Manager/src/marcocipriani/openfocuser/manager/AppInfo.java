@@ -1,5 +1,6 @@
 package marcocipriani.openfocuser.manager;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -14,7 +15,7 @@ import java.util.jar.Manifest;
  * @author marcocipriani01
  * @version 1.1
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class AppInfo {
 
     /**
@@ -24,7 +25,7 @@ public class AppInfo {
     /**
      * Current version codename.
      */
-    public static final String CODENAME = "Caph";
+    public static final String CODENAME = "Deneb";
     /**
      * Bug report page URL.
      */
@@ -45,7 +46,10 @@ public class AppInfo {
      * Download URL.
      */
     private static final String VERSION_DOWNLOAD_URL = "https://github.com/marcocipriani01/OpenFocuser/releases/download/{version}/OpenFocuser-Manager.{extension}";
-
+    /**
+     * Application icon (for swing).
+     */
+    public static Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(ControlPanel.class.getResource("/marcocipriani/openfocuser/manager/res/Logo.png"));
     /**
      * The latest app version code.
      */
@@ -95,7 +99,7 @@ public class AppInfo {
             if (line.contains("tag_name")) {
                 latestVersion = line.replace("\"tag_name\":", "").replace("\"", "").trim();
                 String extension;
-                if (Main.COMPUTER_OS == Main.OperatingSystem.Linux) {
+                if (Utils.COMPUTER_OS == Utils.OperatingSystem.Linux) {
                     extension = ".deb";
 
                 } else {

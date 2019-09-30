@@ -1,6 +1,7 @@
 #!/bin/bash
 cd $(dirname "$0")/..
 sed -i 's/#define EDITION 1/#define EDITION 0/g' Firmware/Config.h
+sed -i 's/#define EDITION 2/#define EDITION 0/g' Firmware/Config.h
 Builder/Arduino-CLI-Linux-64 compile -b arduino:avr:nano:cpu=atmega328old -o OpenFocuser Firmware/
 rm OpenFocuser.elf
 mv OpenFocuser.hex OpenFocuser-Manager/hex/OpenFocuser_OB.hex
@@ -23,3 +24,5 @@ mv OpenFocuser.hex OpenFocuser-Manager/hex/OpenFocuser_Plus_OB.hex
 Builder/Arduino-CLI-Linux-64 compile -b arduino:avr:nano:cpu=atmega328 -o OpenFocuser Firmware/
 rm OpenFocuser.elf
 mv OpenFocuser.hex OpenFocuser-Manager/hex/OpenFocuser_Plus.hex
+
+sed -i 's/#define EDITION 2/#define EDITION 1/g' Firmware/Config.h

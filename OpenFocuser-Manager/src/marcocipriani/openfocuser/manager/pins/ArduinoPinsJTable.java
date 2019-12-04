@@ -24,7 +24,7 @@ public class ArduinoPinsJTable extends JTable {
     private final boolean arePwmPins;
     private final JButton removePinButton;
     private final ControlPanel controlPanel;
-    private boolean editMode;
+    private boolean editMode = true;
     private PinArray pins;
 
     /**
@@ -32,16 +32,14 @@ public class ArduinoPinsJTable extends JTable {
      *
      * @param pins            The pins to manage and edit
      * @param arePwmPins      {@code true} if the pins are PWM pin (therefore use a slider to select their value)
-     * @param editMode        {@code true} to allow the name and the pin number columns to be edited.
      * @param addPinButton    a {@link JButton} that handles the addition of a new pin.
      * @param removePinButton a {@link JButton} that handles the removal of a new pin.
      * @param controlPanel    a {@link ControlPanel} object.
      */
-    public ArduinoPinsJTable(PinArray pins, boolean arePwmPins, boolean editMode, JButton addPinButton, JButton removePinButton, ControlPanel controlPanel) {
+    public ArduinoPinsJTable(PinArray pins, boolean arePwmPins, JButton addPinButton, JButton removePinButton, ControlPanel controlPanel) {
         super();
         this.pins = pins;
         this.arePwmPins = arePwmPins;
-        this.editMode = editMode;
         this.removePinButton = removePinButton;
         this.controlPanel = controlPanel;
 
@@ -138,7 +136,7 @@ public class ArduinoPinsJTable extends JTable {
                 }
 
                 case 2: {
-                    return editMode ? "Default value" : "Name";
+                    return "Default value";
                 }
             }
             return "";
@@ -218,7 +216,7 @@ public class ArduinoPinsJTable extends JTable {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex == 3 || editMode;
+            return editMode;
         }
 
         @Override

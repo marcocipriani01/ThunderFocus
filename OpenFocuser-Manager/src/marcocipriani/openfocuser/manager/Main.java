@@ -157,6 +157,7 @@ public class Main {
     public static void stopServer() {
         if (server != null) {
             server.stopServer();
+            server = null;
 
         } else {
             throw new ConnectionException("Server not started!", ConnectionException.Type.NOT_STARTED);

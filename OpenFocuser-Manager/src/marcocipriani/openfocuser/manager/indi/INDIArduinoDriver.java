@@ -6,14 +6,13 @@ import laazotea.indi.Constants.PropertyStates;
 import laazotea.indi.INDIException;
 import laazotea.indi.driver.*;
 import marcocipriani.openfocuser.manager.Main;
+import marcocipriani.openfocuser.manager.Settings;
 import marcocipriani.openfocuser.manager.Utils;
 import marcocipriani.openfocuser.manager.io.ConnectionException;
 import marcocipriani.openfocuser.manager.io.SerialMessageListener;
 import marcocipriani.openfocuser.manager.io.SerialPortImpl;
 import marcocipriani.openfocuser.manager.pins.ArduinoPin;
-import marcocipriani.openfocuser.manager.Settings;
 
-import javax.swing.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
@@ -29,6 +28,14 @@ import java.util.HashMap;
 public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandler, SerialMessageListener {
 
     public static final String DRIVER_NAME = "Arduino pin driver";
+    public static final String MANAGE_PINS_GROUP = "Manage Pins";
+    public static final String DIGITAL_PINS_PROP = "Digital pins";
+    public static final String PWM_PINS_PROP_NAME = "PWM pins";
+    public static final String SERIAL_CONNECTION_GROUP = "Serial connection";
+    public static final String SERIAL_PORT_PROP = "Serial port";
+    public static final String CONNECTION_PROP = "Connection";
+
+
     /**
      * The board to control.
      */
@@ -119,11 +126,11 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
     public INDIArduinoDriver(InputStream inputStream, OutputStream outputStream) {
         super(inputStream, outputStream);
         serialPortString = Main.getSettings().serialPort;
-        serialPortFieldProp = new INDITextProperty(this, "Serial port", "Serial port", "Serial connection",
+        serialPortFieldProp = new INDITextProperty(this, SERIAL_PORT_PROP, SERIAL_PORT_PROP, SERIAL_CONNECTION_GROUP,
                 PropertyStates.OK, PropertyPermissions.RW);
-        serialPortFieldElem = new INDITextElement(serialPortFieldProp, "Serial port", "Serial port", serialPortString);
+        serialPortFieldElem = new INDITextElement(serialPortFieldProp, SERIAL_PORT_PROP, SERIAL_PORT_PROP, serialPortString);
         scanSerialPorts();
-        connectionProp = new INDISwitchProperty(this, "Connection", "Serial connection", "Serial connection",
+        connectionProp = new INDISwitchProperty(this, CONNECTION_PROP, SERIAL_CONNECTION_GROUP, SERIAL_CONNECTION_GROUP,
                 PropertyStates.OK, PropertyPermissions.RW, Constants.SwitchRules.ONE_OF_MANY);
         connectElem = new INDISwitchElement(connectionProp, "Connect", "Connect", Constants.SwitchStatus.OFF);
         disconnectElem = new INDISwitchElement(connectionProp, "Disconnect", "Disconnect", Constants.SwitchStatus.ON);
@@ -188,7 +195,7 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                     throw new IllegalStateException("Duplicated pins found, please fix this in order to continue.");
                 }
                 pinsMap = new HashMap<>();
-                digitalPinProps = new INDISwitchProperty(this, "Digital pins", "Digital pins", "Manage Pins",
+                digitalPinProps = new INDISwitchProperty(this, DIGITAL_PINS_PROP, DIGITAL_PINS_PROP, MANAGE_PINS_GROUP,
                         PropertyStates.OK, PropertyPermissions.RW, Constants.SwitchRules.ANY_OF_MANY);
                 for (ArduinoPin pin : settings.digitalPins.toArray()) {
                     Utils.err("Defining digital pin: " + pin);
@@ -196,7 +203,7 @@ public class INDIArduinoDriver extends INDIDriver implements INDIConnectionHandl
                     pinsMap.put(new INDISwitchElement(digitalPinProps, "Pin " + pin.getPin(),
                             pin.getName(), pin.getValueIndi()), pin);
                 }
-                pwmPinsProp = new INDINumberProperty(this, "PWM pins", "PWM pins", "Manage Pins",
+                pwmPinsProp = new INDINumberProperty(this, PWM_PINS_PROP_NAME, PWM_PINS_PROP_NAME, MANAGE_PINS_GROUP,
                         PropertyStates.OK, PropertyPermissions.RW);
                 for (ArduinoPin pin : settings.pwmPins.toArray()) {
                     Utils.err("Defining PWM pin: " + pin);

@@ -1,7 +1,5 @@
 package marcocipriani.openfocuser.manager;
 
-import marcocipriani.openfocuser.manager.indi.INDIArduinoDriver;
-import marcocipriani.openfocuser.manager.indi.INDIServer;
 import marcocipriani.openfocuser.manager.io.ConnectionException;
 import marcocipriani.openfocuser.manager.io.ScpUploader;
 import marcocipriani.openfocuser.manager.io.SerialPortImpl;
@@ -27,61 +25,19 @@ import static marcocipriani.openfocuser.manager.AppInfo.APP_LOGO;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class ControlPanel extends JFrame {
 
-    /**
-     * The parent component.
-     */
     private JPanel parent;
-    /**
-     * Field for the INDI server's port.
-     */
     private JSpinner localIndiPortField;
-    /**
-     * Button to add a new digital pin.
-     */
     private JButton addDigitalPinButton;
-    /**
-     * Button to remove a digital pin.
-     */
     private JButton removeDigitalPinButton;
-    /**
-     * Button to add a new PWM pin.
-     */
     private JButton addPwmPinButton;
-    /**
-     * Button to remove a PWM pin.
-     */
     private JButton removePwmPinButton;
-    /**
-     * Button to save the pin config.
-     */
     private JButton saveConfigButton;
-    /**
-     * Button to send the pin config to another computer.
-     */
     private JButton sendConfigButton;
-    /**
-     * Combo box to select the right board for FW upload
-     */
     private JComboBox<Updater.Board> boardComboBox;
-    /**
-     * FW selection.
-     */
     private JComboBox<Updater.Firmware> fwComboBox;
-    /**
-     * Version of selected FW.
-     */
     private JLabel fwVersionLabel;
-    /**
-     * Update firmware button.
-     */
     private JButton updateFwButton;
-    /**
-     * Avrdude logs.
-     */
     private JTextArea avrdudeLogs;
-    /**
-     * Serial port selection.
-     */
     private JComboBox<String> serialPortComboBox;
     private JButton refreshPortsButton;
     private JScrollPane logsScrollPane;
@@ -92,35 +48,13 @@ public class ControlPanel extends JFrame {
     private JButton githubButton;
     private JButton issueReportButton;
     private JLabel codenameLabel;
-    private JButton connectServerButton;
-    private JButton disconnectServerButton;
-    /**
-     * Button to run the stand-alone INDI server.
-     */
     private JButton startServerButton;
     private JButton stopServerButton;
-    private JRadioButton startServerRadioButton;
-    private JRadioButton connectToRemoteHostRadioButton;
-    private JTextField remoteHostnameField;
-    private JSpinner remoteIndiPortField;
-    private JButton turnOffDigitalPinsButton;
-    private JButton turnOnDigitalPinsButton;
-    private JButton turnOffPwmPinsButton;
-    private JButton setHalfPowerPwmPinsButton;
-    private JButton turnOnPwmPinsButton;
-    private JPanel digitalPinsManagementPanel;
-    private JPanel pwmPinsManagementPanel;
-    private JPanel digitalPinsControlPanel;
-    private JPanel pwmPinsControlPanel;
     private JPanel startStopServerPanel;
-    private JPanel connectDisconnectPanel;
-    private JButton serialConnectionButton;
     private ArduinoPinsJTable digitalPinsJTable;
     private ArduinoPinsJTable pwmPinsJTable;
     private JTabbedPane mainTabbedPane;
-    /**
-     * FW update utility.
-     */
+
     private Updater fwUpdater;
     private AppInfo appInfo;
     private Settings settings;
@@ -208,16 +142,8 @@ public class ControlPanel extends JFrame {
         saveConfigButton.addActionListener(e -> saveConfig());
         sendConfigButton.addActionListener(this::actionPerformed);
 
-        remoteHostnameField.setText(settings.remoteHost);
-        startServerRadioButton.setSelected(!settings.preferRemoteServer);
-        startServerRadioButton.addActionListener(this::actionPerformed);
-        connectToRemoteHostRadioButton.setSelected(settings.preferRemoteServer);
-        connectToRemoteHostRadioButton.addActionListener(this::actionPerformed);
-        updateConfigurationTab();
         startServerButton.addActionListener(this::actionPerformed);
         stopServerButton.addActionListener(this::actionPerformed);
-        connectServerButton.addActionListener(this::actionPerformed);
-        disconnectServerButton.addActionListener(this::actionPerformed);
 
         pack();
         setMinimumSize(getPreferredSize());
@@ -236,14 +162,9 @@ public class ControlPanel extends JFrame {
         editor1.getTextField().setHorizontalAlignment(JTextField.LEFT);
         localIndiPortField.setEditor(editor1);
 
-        remoteIndiPortField = new JSpinner(new SpinnerNumberModel(settings.remoteServerIndiPort, 10, 99999, 1));
-        JSpinner.NumberEditor editor2 = new JSpinner.NumberEditor(remoteIndiPortField, "#");
-        editor2.getTextField().setHorizontalAlignment(JTextField.LEFT);
-        remoteIndiPortField.setEditor(editor2);
-
-        digitalPinsJTable = new ArduinoPinsJTable(settings.digitalPins, false, true,
+        digitalPinsJTable = new ArduinoPinsJTable(settings.digitalPins, false,
                 addDigitalPinButton = new JButton(), removeDigitalPinButton = new JButton(), this);
-        pwmPinsJTable = new ArduinoPinsJTable(settings.pwmPins, true, true,
+        pwmPinsJTable = new ArduinoPinsJTable(settings.pwmPins, true,
                 addPwmPinButton = new JButton(), removePwmPinButton = new JButton(), this);
     }
 
@@ -266,15 +187,6 @@ public class ControlPanel extends JFrame {
         } else {
             settings.localServerIndiPort = port;
         }
-        port = (int) remoteIndiPortField.getValue();
-        if (port < 50) {
-            Utils.err("Invalid remote INDI server port!", this);
-            return false;
-
-        } else {
-            settings.remoteServerIndiPort = port;
-        }
-        settings.preferRemoteServer = connectToRemoteHostRadioButton.isSelected();
         if (settings.digitalPins.hasDuplicates(settings.pwmPins)) {
             Utils.err("Duplicated pins found, please fix this in order to continue.", this);
             return false;
@@ -360,62 +272,28 @@ public class ControlPanel extends JFrame {
                 }
             }
 
-        } else if (source == startServerRadioButton || source == connectToRemoteHostRadioButton) {
-            updateConfigurationTab();
-
         } else if (source == startServerButton) {
             if (saveConfig()) {
-                updateComponentsServerOrClientRunning(true, false);
+                updateComponentsServerOrClientRunning(true);
                 Main.runServer(settings.localServerIndiPort);
             }
 
         } else if (source == stopServerButton) {
             Main.stopServer();
-            updateComponentsServerOrClientRunning(false, false);
-
-        } else if (source == connectServerButton) {
-            updateComponentsServerOrClientRunning(true, true);
-
-        }
-
-        else if (source == disconnectServerButton) {
-
-            updateComponentsServerOrClientRunning(false, true);
+            updateComponentsServerOrClientRunning(false);
         }
     }
 
-    private void updateComponentsServerOrClientRunning(boolean b, boolean isRemote) {
-        startServerRadioButton.setEnabled(!b);
-        connectToRemoteHostRadioButton.setEnabled(!b);
+    private void updateComponentsServerOrClientRunning(boolean b) {
         digitalPinsJTable.setEditMode(!b);
         pwmPinsJTable.setEditMode(!b);
-        digitalPinsManagementPanel.setVisible(!b);
-        digitalPinsControlPanel.setVisible(b);
-        pwmPinsManagementPanel.setVisible(!b);
-        pwmPinsControlPanel.setVisible(b);
-        if (isRemote) {
-            connectServerButton.setEnabled(!b);
-            disconnectServerButton.setEnabled(b);
-
-        } else {
-            startServerButton.setEnabled(!b);
-            stopServerButton.setEnabled(b);
-        }
-        if (b) {
-            mainTabbedPane.setSelectedIndex(1);
-        }
-    }
-
-    private void updateConfigurationTab() {
-        boolean b = connectToRemoteHostRadioButton.isSelected();
-        settings.preferRemoteServer = b;
-
-        connectServerButton.setEnabled(b);
-        remoteHostnameField.setEnabled(b);
-        remoteIndiPortField.setEnabled(b);
-
-        startServerButton.setEnabled(!b);
+        removeDigitalPinButton.setEnabled(!b);
+        addDigitalPinButton.setEnabled(!b);
+        removePwmPinButton.setEnabled(!b);
+        addPwmPinButton.setEnabled(!b);
         localIndiPortField.setEnabled(!b);
+        startServerButton.setEnabled(!b);
+        stopServerButton.setEnabled(b);
     }
 
     /**

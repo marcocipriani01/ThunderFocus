@@ -27,20 +27,6 @@ public class Settings {
     @SerializedName("Serial port")
     @Expose
     public String serialPort = "/dev/ttyUSB0";
-    /**
-     * Remote host ({@code true}) or local server ({@code false})
-     */
-    @SerializedName("Remote server")
-    @Expose
-    public boolean preferRemoteServer = true;
-    @SerializedName("Remote hostname or IP")
-    @Expose
-    public String remoteHost = "192.168.1.x";
-    @SerializedName("INDI server port on remote host")
-    @Expose
-    public int remoteServerIndiPort = 7625;
-    @SerializedName("INDI server port on local host")
-    @Expose
     public int localServerIndiPort = 7625;
     @SerializedName("Digital pins")
     @Expose
@@ -103,9 +89,6 @@ public class Settings {
         }
         for (ArduinoPin pin : s.pwmPins.toArray()) {
             pin.setValue(pin.getValuePwm());
-        }
-        if (s.remoteServerIndiPort <= 50) {
-            s.remoteServerIndiPort = 7625;
         }
         if (s.localServerIndiPort <= 50) {
             s.localServerIndiPort = 7625;

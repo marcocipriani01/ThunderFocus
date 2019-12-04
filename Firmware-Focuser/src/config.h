@@ -8,7 +8,7 @@
 // ----- Stepper driver configuration -----
 // Motor driver type: BasicStepperDriver (0), DRV8825 (1), A4988 (2) or DRV8834 (3)
 #define STEPPER_TYPE 1
-#define DRIVER_EN 7
+//#define DRIVER_EN 7
 #define DRIVER_DIR 2
 #define DRIVER_STEP 3
 
@@ -30,4 +30,3 @@
 //#define HC_SPEED_POT
 //#define BUTTON_UP
 //#define BUTTON_DOWN
-

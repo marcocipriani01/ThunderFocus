@@ -51,17 +51,6 @@ boolean isPowerOn = false;
 boolean isHalfStep = false;
 #endif
 
-#ifdef DRIVER_EN
-#if STEPPER_TYPE == 0
-BasicStepperDriver driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, DRIVER_EN);
-#elif STEPPER_TYPE == 1
-DRV8825 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1, MODE2, DRIVER_EN);
-#elif STEPPER_TYPE == 2
-A4988 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1, MODE2, DRIVER_EN);
-#elif STEPPER_TYPE == 3
-DRV8834 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1, DRIVER_EN);
-#endif
-#else
 #if STEPPER_TYPE == 0
 BasicStepperDriver driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP);
 #elif STEPPER_TYPE == 1
@@ -70,7 +59,6 @@ DRV8825 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1, MODE2);
 A4988 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1, MODE2);
 #elif STEPPER_TYPE == 3
 DRV8834 driver(STEPS_REV, DRIVER_DIR, DRIVER_STEP, MODE0, MODE1);
-#endif
 #endif
 #define SINGLE_STEP 1
 // Can be 1, 2, 4, 8 or 16
@@ -161,6 +149,9 @@ void setup() {
 
 	// ----- Motor driver -----
 	// Ignore Moonlite speed
+	#ifdef DRIVER_EN
+	pinMode(DRIVER_EN, OUTPUT);
+	#endif
 	driver.begin(MOTOR_RPM, FULL_STEP);
 	//stepper.setSpeed(MOTOR_RPM * STEPS_REV / 60);
 	//stepper.setMaxSpeed(MOTOR_PPS);
@@ -378,7 +369,7 @@ long hexToLong(char *line) {
 
 void turnOn() {
 #ifdef DRIVER_EN
-	driver.enable();
+	digitalWrite(DRIVER_EN, LOW);
 	isPowerOn = true;
 #endif
 	digitalWrite(LED, HIGH);
@@ -387,7 +378,7 @@ void turnOn() {
 
 void turnOff() {
 #ifdef DRIVER_EN
-	driver.disable();
+	digitalWrite(DRIVER_EN, HIGH);
 	isPowerOn = false;
 #endif
 	isRunning = false;

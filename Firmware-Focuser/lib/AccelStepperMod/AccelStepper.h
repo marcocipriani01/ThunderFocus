@@ -310,11 +310,20 @@ public:
 		DRIVER_ULN2003 = 2
 	} MotorInterfaceType;
 
-  typedef enum {
-    NONE = 0,
-    DRV8825 = 1,
-    A4988 = 2
-  } MicroSteppingDriver;
+	typedef enum {
+		NONE = 0,
+		DRV8825 = 1,
+		A4988 = 2
+	} MicroSteppingDriver;
+
+	typedef enum {
+		MOVING,
+		WAITING_STEP,
+		WAITING_STEP_BACKLASH,
+		IDLE,
+		BACKLASHING,
+		NO_DIRECTION
+	} CurrentState;
 
 	AccelStepper(uint8_t stepPin, uint8_t dirPin, uint8_t enablePin = 0xff);
 
@@ -330,11 +339,11 @@ public:
 
 	AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4);
 
-  void begin();
+	void begin();
 
-  void setMicroStepping(uint8_t fraction, MicroSteppingDriver driver = NONE);
+	void setMicroStepping(uint8_t fraction, MicroSteppingDriver driver = NONE);
 
-  void setMicroSteppingPins(uint8_t m0, uint8_t m1, uint8_t m2);
+	void setMicroSteppingPins(uint8_t m0, uint8_t m1, uint8_t m2);
 
 	/// Set the target position. The run() function will try to move the motor (at most one step per call)
 	/// from the current position to the target position set by the most
@@ -355,13 +364,13 @@ public:
 	/// preferably in your main loop. Note that each call to run() will make at most one step, and then only when a step is due,
 	/// based on the current speed and the time since the last step.
 	/// \return true if the motor is still running to the target position.
-	boolean run();
+	CurrentState run();
 
 	/// Poll the motor and step it if a step is due, implementing a constant
 	/// speed as set by the most recent call to setSpeed(). You must call this as
 	/// frequently as possible, but at least once per step interval,
 	/// \return true if the motor was stepped.
-	boolean runSpeed();
+	CurrentState runSpeed();
 
 	/// Sets the maximum permitted speed. The run() function will accelerate
 	/// up to the speed set by this function.
@@ -420,6 +429,10 @@ public:
 	/// happens to be right now.
 	void setCurrentPosition(long position);
 
+	void setBacklash(long backlash);
+
+	long getBacklash();
+
 	/// Moves the motor (with acceleration/deceleration)
 	/// to the target position and blocks until it is at
 	/// position. Dont use this in event loops, since it blocks.
@@ -428,7 +441,7 @@ public:
 	/// Runs at the currently selected speed until the target position is reached
 	/// Does not implement accelerations.
 	/// \return true if it stepped
-	boolean runSpeedToPosition();
+	CurrentState runSpeedToPosition();
 
 	/// Moves the motor (with acceleration/deceleration)
 	/// to the new target position and blocks until it is at
@@ -483,8 +496,9 @@ protected:
 	/// \brief Direction indicator
 	/// Symbolic names for the direction the motor is turning
 	typedef enum {
-		DIRECTION_CCW = 0, ///< Counter-Clockwise
-		DIRECTION_CW  = 1       ///< Clockwise
+		DIRECTION_NONE = 0,
+		DIRECTION_CCW = 1, ///< Counter-Clockwise
+		DIRECTION_CW  = 2       ///< Clockwise
 	} Direction;
 
 	/// Forces the library to compute a new instantaneous speed and set that as
@@ -497,9 +511,9 @@ protected:
 	/// move() or moveTo()
 	void computeNewSpeed();
 
-  void setDirPin(boolean val);
+	void setDirPin(boolean val);
 
-  void setStepPin(boolean val);
+	void setStepPin(boolean val);
 
 	void set4Pins(boolean one, boolean two, boolean three, boolean four);
 
@@ -512,10 +526,12 @@ protected:
 
 	/// Current direction motor is spinning in
 	/// Protected because some peoples subclasses need it to be so
-	boolean _direction;   // 1 == CW
+	uint8_t _direction;   // 1 == CW
 
 private:
-  void initVals();
+	void initVals();
+
+	void applyBacklashCompensation(uint8_t newDir);
 
 	/// Number of pins on the stepper motor. Permits 2 or 4. 2 pins is a
 	/// bipolar, and 4 pins is a unipolar.
@@ -524,15 +540,15 @@ private:
 	/// Arduino pin number assignments for the 2 or 4 pins required to interface to the
 	/// stepper motor or driver
 	uint8_t _stepPin_in1;
-  uint8_t _dirPin_in2;
+	uint8_t _dirPin_in2;
 	uint8_t _m0_in3;
-  uint8_t _m1_in4;
+	uint8_t _m1_in4;
 	uint8_t _m2;
 
 	/// Whether the _pins is inverted or not
-  boolean _stepPinInverted;
-  boolean _dirPinInverted;
-  uint8_t _microStepFraction;
+	boolean _stepPinInverted;
+	boolean _dirPinInverted;
+	uint8_t _microStepFraction;
 
 	/// The current absolution position in steps.
 	long _currentPos;                // Steps
@@ -541,6 +557,11 @@ private:
 	/// motor from the _currentPos to the _targetPos, taking into account the
 	/// max speed, acceleration and deceleration
 	long _targetPos;                 // Steps
+
+	long _backlash;
+
+	long _currentBacklash;
+	long _targetBacklash;
 
 	/// The current motos speed in steps per second
 	/// Positive is clockwise

@@ -54,7 +54,10 @@ void AccelStepper::initVals() {
 	_c0 = 0.0;
 	_cn = 0.0;
 	_cmin = 1.0;
-	_direction = DIRECTION_CCW;
+	_currentBacklash = 0;
+	_targetBacklash = 0;
+	_backlash = 0;
+	_direction = DIRECTION_NONE;
 	_stepPinInverted = false;
 	_dirPinInverted = false;
 	_microStepFraction = 1;
@@ -73,6 +76,18 @@ void AccelStepper::begin() {
 	} else if (_enablePin != 0xff) {
 		enableOutputs();
 	}
+}
+
+void AccelStepper::applyBacklashCompensation(uint8_t newDir) {
+	if ((_direction != DIRECTION_NONE) && (newDir != _direction)) {
+		if (newDir == DIRECTION_CW) {
+			_targetBacklash += _backlash;
+
+		} else if (newDir == DIRECTION_CCW) {
+			_targetBacklash -= _backlash;
+		}
+	}
+	_direction = newDir;
 }
 
 void AccelStepper::setMicroStepping(uint8_t fraction, MicroSteppingDriver driver) {
@@ -227,19 +242,29 @@ void AccelStepper::move(long relative) {
 // Implements steps according to the current step interval
 // You must call this at least once per step
 // returns true if a step occurred
-boolean AccelStepper::runSpeed() {
+AccelStepper::CurrentState AccelStepper::runSpeed() {
 	// Dont do anything unless we actually have a step interval
 	if (!_stepInterval) {
-		return false;
+		return IDLE;
 	}
 	unsigned long time = micros();
+	boolean backlashing = (_targetBacklash - _currentBacklash) != 0;
 	if (time - _lastStepTime >= _stepInterval / _microStepFraction) {
-		_currentPos += ((_direction == DIRECTION_CW) ? 1 : (-1));
-		step(_currentPos);
-		_lastStepTime = time; // Caution: does not account for costs in step()
-		return true;
+		_lastStepTime = time; // Caution: does not account for costs in step
+		if (_direction == DIRECTION_NONE) {
+			return NO_DIRECTION;
+		}
+		long correction = ((_direction == DIRECTION_CW) ? 1 : (-1));
+		if (backlashing) {
+			_currentBacklash += correction;
+			step(_currentPos + _currentBacklash);
+			return BACKLASHING;
+		}
+		_currentPos += correction;
+		step(_currentPos + _currentBacklash);
+		return MOVING;
 	}
-	return false;
+	return backlashing ? WAITING_STEP_BACKLASH : WAITING_STEP;
 }
 
 long AccelStepper::distanceToGo() {
@@ -261,10 +286,20 @@ void AccelStepper::setCurrentPosition(long position) {
 	_n = 0;
 	_stepInterval = 0;
 	_speed = 0.0;
+	_targetBacklash = 0;
+	_currentBacklash = 0;
+}
+
+void AccelStepper::setBacklash(long backlash) {
+	_backlash = backlash;
+}
+
+long AccelStepper::getBacklash() {
+	return _backlash;
 }
 
 void AccelStepper::computeNewSpeed() {
-	long distanceTo = distanceToGo();   // +ve is clockwise from curent location
+	long distanceTo = distanceToGo() + (_targetBacklash - _currentBacklash);   // +ve is clockwise from curent location
 	long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration));   // Equation 16
 
 	if (distanceTo == 0 && stepsToStop <= 1) {
@@ -296,14 +331,15 @@ void AccelStepper::computeNewSpeed() {
 		// Need to go anticlockwise from here, maybe decelerate
 		if (_n > 0) {
 			// Currently accelerating, need to decel now? Or maybe going the wrong way?
-			if ((stepsToStop >= -distanceTo) || _direction == DIRECTION_CW) {
+			if ((stepsToStop >= -distanceTo) || (_direction == DIRECTION_CW)) {
 				_n = -stepsToStop; // Start deceleration
 			}
 
 		} else if (_n < 0) {
 			// Currently decelerating, need to accel again?
-			if ((stepsToStop < -distanceTo) && _direction == DIRECTION_CCW)
+			if ((stepsToStop < -distanceTo) && (_direction == DIRECTION_CCW)) {
 				_n = -_n; // Start accceleration
+			}
 		}
 	}
 
@@ -311,7 +347,7 @@ void AccelStepper::computeNewSpeed() {
 	if (_n == 0) {
 		// First step from stopped
 		_cn = _c0;
-		_direction = (distanceTo > 0) ? DIRECTION_CW : DIRECTION_CCW;
+		applyBacklashCompensation((distanceTo > 0) ? DIRECTION_CW : DIRECTION_CCW);
 
 	} else {
 		// Subsequent step. Works for accel (n is +_ve) and decel (n is -ve).
@@ -330,11 +366,12 @@ void AccelStepper::computeNewSpeed() {
 // You must call this at least once per step, preferably in your main loop
 // If the motor is in the desired position, the cost is very small
 // returns true if the motor is still running to the target position.
-boolean AccelStepper::run() {
-	if (runSpeed()) {
+AccelStepper::CurrentState AccelStepper::run() {
+	CurrentState state = runSpeed();
+	if (state == MOVING || state == BACKLASHING) {
 		computeNewSpeed();
 	}
-	return _speed != 0.0 || distanceToGo() != 0;
+	return state;
 }
 
 void AccelStepper::setMaxSpeed(float speed) {
@@ -383,7 +420,7 @@ void AccelStepper::setSpeed(float speed) {
 
 	} else {
 		_stepInterval = fabs(1000000.0 / speed);
-		_direction = (speed > 0.0) ? DIRECTION_CW : DIRECTION_CCW;
+		applyBacklashCompensation((speed > 0.0) ? DIRECTION_CW : DIRECTION_CCW);
 	}
 	_speed = speed;
 }
@@ -406,7 +443,7 @@ void AccelStepper::step(long step) {
 	break;
 
 	case DRIVER: {
-		setDirPin(_direction);
+		setDirPin((_direction == DIRECTION_CCW) ? false : true);
 		setStepPin(HIGH);
 		// Delay the minimum allowed pulse width
 		delayMicroseconds(_minPulseWidth);
@@ -493,19 +530,19 @@ void AccelStepper::set4Pins(boolean one, boolean two, boolean three, boolean fou
 // Prevents power consumption on the outputs
 void AccelStepper::disableOutputs() {
 	switch (_interface) {
-		case FUNCTION: {
-			return;
-		}
+	case FUNCTION: {
+		return;
+	}
 
-		case DRIVER: {
-			setDirPin(LOW);
-		}
-		break;
+	case DRIVER: {
+		setDirPin(LOW);
+	}
+	break;
 
-		case DRIVER_ULN2003: {
-			set4Pins(LOW, LOW, LOW, LOW);
-		}
-		break;
+	case DRIVER_ULN2003: {
+		set4Pins(LOW, LOW, LOW, LOW);
+	}
+	break;
 	}
 	if (_enablePin != 0xff) {
 		pinMode(_enablePin, OUTPUT);
@@ -543,21 +580,18 @@ void AccelStepper::setPinsInverted(boolean dirPinInverted, boolean stepPinInvert
 
 // Blocks until the target position is reached and stopped
 void AccelStepper::runToPosition() {
-	while (run()) {
+	CurrentState state = run();
+	while (state != IDLE) {
 		;
 	}
 }
 
-boolean AccelStepper::runSpeedToPosition() {
+AccelStepper::CurrentState AccelStepper::runSpeedToPosition() {
 	if (_targetPos == _currentPos) {
-		return false;
+		return IDLE;
 	}
-	if (_targetPos >_currentPos) {
-		_direction = DIRECTION_CW;
-
-	} else {
-		_direction = DIRECTION_CCW;
-	}
+	applyBacklashCompensation((_targetPos >_currentPos) ?
+	                          DIRECTION_CW : DIRECTION_CCW);
 	return runSpeed();
 }
 

@@ -3,14 +3,15 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#define EEPROM_MARKER 'A'
+#define EEPROM_MARKER 'E'
 
 struct Settings {
 	uint8_t marker;
-	uint16_t currentPosition;
+	uint32_t currentPosition;
 	uint8_t speed;
 	uint8_t microstepEnabled;
 	uint8_t holdControlEnabled;
+	int32_t backlash;
 };
 
 void loadSettings();

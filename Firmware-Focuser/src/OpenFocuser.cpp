@@ -8,8 +8,13 @@
  */
 
 #include "OpenFocuser.h"
-// Firmware version - 3.2
-const String VERSION = "32";
+// Firmware version - 3.3
+const String VERSION = "33";
+
+// Focuser
+#if ENABLE_FOCUSER == true
+Focuser focuser;
+#endif
 
 #if PROTOCOL == 1
 // Size for the serial buffer
@@ -17,12 +22,7 @@ const String VERSION = "32";
 // Serial commands are stored in this buffer for parsing
 char serialBuffer[SERIAL_BUFFER_LENGTH];
 #elif PROTOCOL == 2
-unsigned long lastSendTime = 0;
-#endif
-
-// Focuser
-#if ENABLE_FOCUSER == true
-Focuser focuser;
+EasyFocuser easyFocuser(&focuser);
 #endif
 
 // Hand controller
@@ -54,7 +54,6 @@ float readTemperature() {
 TemperatureCompensation tempCompensation(readTemperature);
 #endif
 
-#ifdef SETTINGS_SUPPORT
 #if SETTINGS_SUPPORT == true
 // Settings data for EEPROM storage
 struct Settings settings;
@@ -76,12 +75,12 @@ void saveSettings() {
 	settings.speed = focuser.getSpeed();
 	settings.microstepEnabled = focuser.isMicrostepEnabled();
 	settings.holdControlEnabled = focuser.isHoldControlEnabled();
+	settings.backlash = focuser.getBacklash();
 	uint8_t* dst = (uint8_t*)&settings;
 	for (unsigned int i = 0; i < sizeof(Settings); ++i) {
 		EEPROM.update(i, dst[i]);
 	}
 }
-#endif
 #endif
 
 void setup() {
@@ -91,16 +90,17 @@ void setup() {
 #if PROTOCOL == 1
 	clearBuffer(serialBuffer, 8);
 #elif PROTOCOL == 2
-	efBoot();
+	easyFocuser.begin();
 #endif
 
 #if ENABLE_FOCUSER == true
-#ifdef SETTINGS_SUPPORT
 #if SETTINGS_SUPPORT == true
 	loadSettings();
 	if (settingsOk) {
 		focuser.begin((boolean) settings.holdControlEnabled,
-		              (boolean) settings.microstepEnabled, settings.speed);
+		              (boolean) settings.microstepEnabled,
+		              settings.speed,
+		              (long) settings.backlash);
 		if (settings.currentPosition != 0) {
 			focuser.setCurrentPos((unsigned long) settings.currentPosition);
 		}
@@ -108,9 +108,6 @@ void setup() {
 	} else {
 		focuser.begin();
 	}
-#else
-	focuser.begin();
-#endif
 #else
 	focuser.begin();
 #endif
@@ -138,7 +135,7 @@ void setup() {
 #endif
 
 #if PROTOCOL == 2
-	efReady();
+	easyFocuser.flagReady();
 #endif
 }
 
@@ -236,7 +233,7 @@ void handleSerial() {
 		}
 		break;
 
-#ifdef TEMP_SENSOR_TYPE
+#if ENABLE_TEMP_COMP == true
 #if TEMP_SENSOR_TYPE == 1
 		case M_INIT_TEMP_CONV: {
 			tempSensor.requestTemperatures();
@@ -246,7 +243,6 @@ void handleSerial() {
 #endif
 
 		case M_GET_TEMP: {
-#ifdef ENABLE_TEMP_COMP
 #if ENABLE_TEMP_COMP == true
 			char temperatureString[4];
 			int16_t convertedTemp = (int16_t) tempCompensation.getTemperature();
@@ -259,12 +255,10 @@ void handleSerial() {
 #else
 			Serial.print("0000#");
 #endif
-#endif
 		}
 		break;
 
 		case M_GET_TEMP_COEFF: {
-#ifdef ENABLE_TEMP_COMP
 #if ENABLE_TEMP_COMP == true
 			char tempCoeffString[2];
 			int8_t convertedCoeff = (int8_t) tempCompensation.getCompensationCoefficient();
@@ -277,11 +271,9 @@ void handleSerial() {
 #else
 			Serial.print("00#");
 #endif
-#endif
 		}
 		break;
 
-#ifdef ENABLE_TEMP_COMP
 #if ENABLE_TEMP_COMP == true
 		case M_SET_TEMP_COEFF: {
 			tempCompensation.setCompensationCoefficient(
@@ -303,7 +295,6 @@ void handleSerial() {
 			tempCompensation.setTempetatureOffset(0.5 * ((float) twoCharsToInt8(serialBuffer + 2)));
 		}
 		break;
-#endif
 #endif
 #endif
 
@@ -349,52 +340,7 @@ void handleSerial() {
 		}
 	}
 #elif PROTOCOL == 2
-	unsigned long currentTime = millis();
-	if (currentTime - lastSendTime >= EASYFOC_SERIAL_DELAY) {
-		Serial.println(focuser.getCurrentPos());
-		lastSendTime = currentTime;
-	}
-
-	EasyFocuserResult res = waitSerialCmd();
-	switch (res.cmd) {
-		case EF_RELATIVE: {
-			focuser.move(res.n);
-		}
-		break;
-
-		case EF_ABSOLUTE: {
-			focuser.moveToTargetPos(res.n);
-		}
-		break;
-
-		case EF_STOP: {
-			focuser.brake();
-		}
-		break;
-
-		case EF_SET_ZERO: {
-			focuser.setCurrentPos(0);
-		}
-		break;
-
-		case EF_POWERSAVE: {
-			focuser.setHoldControlEnabled(res.n > 0);
-		}
-		break;
-
-		case EF_SPEED: {
-			focuser.setSpeed(res.n);
-		}
-		break;
-
-		case EF_UNRECOGNIZED: {
-			break;
-		}
-
-		default: {
-			break;
-		}
-	}
+	easyFocuser.manage();
 #endif
 }
 
@@ -402,24 +348,14 @@ void loop() {
 	handleSerial();
 
 #if ENABLE_FOCUSER == true
-	switch (focuser.run()) {
-		case 1: {
-			flagSettings();
-#if PROTOCOL == 2
-			Serial.println("LArrivedSavingPosition");
-#endif
-		}
-		break;
-
-#if PROTOCOL == 2
-		case 2: {
-			Serial.println("LTurnOffPowerSave");
-		}
-		break;
-#endif
+	FocuserState state = focuser.run();
+	if (state == FS_JUST_ARRIVED) {
+		flagSettings();
 	}
+#if PROTOCOL == 2
+		easyFocuser.flagState(state);
+#endif
 
-#ifdef ENABLE_TEMP_COMP
 #if ENABLE_TEMP_COMP == true
 	if (tempCompensation.manage() && !focuser.hasToRun()) {
 		long correction = tempCompensation.getCompensatedMotorSteps();
@@ -428,21 +364,16 @@ void loop() {
 		}
 	}
 #endif
-#endif
 
-#ifdef ENABLE_HC
 #if ENABLE_HC == true
 	hc.manage();
 #endif
-#endif
 
-#ifdef SETTINGS_SUPPORT
 #if SETTINGS_SUPPORT == true
 	if (needToSaveSettings) {
 		saveSettings();
 		needToSaveSettings = false;
 	}
-#endif
 #endif
 #endif
 
@@ -452,9 +383,7 @@ void loop() {
 }
 
 inline void flagSettings() {
-#ifdef SETTINGS_SUPPORT
 #if SETTINGS_SUPPORT == true
 	needToSaveSettings = true;
-#endif
 #endif
 }

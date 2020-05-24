@@ -1,0 +1,4 @@
+#ifndef OPENFOCUSER_UUID_H
+#define OPENFOCUSER_UUID_H
+#define OPENFOCUSER_UUID F("99cdafa2-d28f-4124-88e0-84a831c577c1")
+#endif

@@ -17,7 +17,10 @@ Focuser::Focuser() :
 	isHcMoving = true;
 }
 
-void Focuser::begin(boolean initHoldControlEnabled, boolean initMicrostepEnabled, uint8_t initSpeed) {
+void Focuser::begin(boolean initHoldControlEnabled,
+                    boolean initMicrostepEnabled,
+                    uint8_t initSpeed,
+                    long backlash) {
 	pinMode(LED1, OUTPUT);
 #ifdef LED2
 	pinMode(LED2, OUTPUT);
@@ -31,6 +34,7 @@ void Focuser::begin(boolean initHoldControlEnabled, boolean initMicrostepEnabled
 	stepper.setMicroSteppingPins(MODE0, MODE1, MODE2);
 #endif
 #endif
+	stepper.setBacklash(backlash);
 	microstepEnabled = initMicrostepEnabled;
 	applyMicrostepGear();
 	speed = valToSpeed(initSpeed);
@@ -40,7 +44,7 @@ void Focuser::begin(boolean initHoldControlEnabled, boolean initMicrostepEnabled
 }
 
 void Focuser::begin() {
-	begin(DEFAULT_ENABLE_HOLD_CONTROL, true, 2);
+	begin(DEFAULT_ENABLE_HOLD_CONTROL, false, 2, 0);
 }
 
 void Focuser::moveToTargetPos(long newPos) {
@@ -83,24 +87,42 @@ unsigned long Focuser::getCurrentPos() {
 	return stepsToStepsRev(stepper.currentPosition());
 }
 
-uint8_t Focuser::run() {
+FocuserState Focuser::run() {
 	if (isMoving) {
-		stepper.run();
-		if (stepper.distanceToGo() == 0) {
-			isMoving = false;
-			applySpeed();
-			lastMovementTime = millis();
+		AccelStepper::CurrentState state = stepper.run();
+		switch (state) {
+			case AccelStepper::WAITING_STEP:
+			case AccelStepper::MOVING: {
+				return FS_MOVING;
+			}
+
+			case AccelStepper::WAITING_STEP_BACKLASH:
+			case AccelStepper::BACKLASHING: {
+				return FS_BACKLASHING;
+			}
+
+			case AccelStepper::IDLE: {
+				isMoving = false;
+				applySpeed();
+				lastMovementTime = millis();
 #ifdef LED2
-			digitalWrite(LED2, LOW);
+				digitalWrite(LED2, LOW);
 #endif
-			return 1;
+				return FS_JUST_ARRIVED;
+			}
+
+			default:
+			case AccelStepper::NO_DIRECTION: {
+				return FS_ERROR;
+			}
 		}
-		return 0;
 	}
-	if (powerOn && holdControlEnabled && ((millis() - lastMovementTime) >= DRIVER_POWER_TIMEOUT)) {
-		// Turn power off if active time period has passed;
-		turnOff();
-		return 2;
+	if (powerOn) {
+		// Turn power off if active time period has passed
+		if (holdControlEnabled && ((millis() - lastMovementTime) >= DRIVER_POWER_TIMEOUT)) {
+			turnOff();
+		}
+		return FS_HOLD_MOTOR;
 	}
 	unsigned long currentMillis = millis();
 	if (currentMillis - blinkStartTime >= BLINK_PERIOD) {
@@ -108,7 +130,7 @@ uint8_t Focuser::run() {
 		ledState = !ledState;
 		digitalWrite(LED1, ledState);
 	}
-	return 3;
+	return FS_POWERSAVE;
 }
 
 boolean Focuser::hasToRun() {
@@ -139,8 +161,8 @@ boolean Focuser::isMicrostepEnabled() {
 }
 
 void Focuser::setSpeed(Speed speedNew) {
+	speed = speedNew;
 	if (!isMoving) {
-		speed = speedNew;
 		applySpeed();
 	}
 }
@@ -151,6 +173,14 @@ void Focuser::setSpeed(uint8_t speedNew) {
 
 Speed Focuser::getSpeed() {
 	return speed;
+}
+
+void Focuser::setBacklash(long backlash) {
+	stepper.setBacklash(backlash);
+}
+
+long Focuser::getBacklash() {
+	return stepper.getBacklash();
 }
 
 void Focuser::setHCSpeedInterval(unsigned int rpmMinNew, unsigned int rpmMaxNew) {

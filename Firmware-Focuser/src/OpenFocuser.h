@@ -28,6 +28,13 @@
 // EasyFocuser light protocol
 #include "EasyFocuser.h"
 #include "Focuser.h"
+#if ENABLE_HC == true
+#include "HandController.h"
+#endif
+#elif PROTOCOL == 3
+#if ENABLE_ROTATOR == true
+#include "Rotator.h"
+#endif
 #endif
 
 // EEPROM library for settings storage

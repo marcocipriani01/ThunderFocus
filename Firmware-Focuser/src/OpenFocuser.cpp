@@ -377,7 +377,7 @@ void loop() {
 #endif
 #endif
 
-#if ENABLE_DEVMAN
+#if ENABLE_DEVMAN == true
 	managePFI();
 #endif
 }

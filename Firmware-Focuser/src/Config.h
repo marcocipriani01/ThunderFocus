@@ -7,7 +7,7 @@
 #define SERIAL_TIMEOUT 100
 
 // 1 = MoonLite full protocol, 2 = EasyFocuser light protocol, 3 = NiteCrawler
-#define PROTOCOL 2
+#define PROTOCOL 1
 #if PROTOCOL == 1
 #define SERIAL_SPEED 9600
 // Focuser motor
@@ -15,7 +15,7 @@
 // Device manager
 #define ENABLE_DEVMAN false
 // Hand controller
-#define ENABLE_HC true
+#define ENABLE_HC false
 // Temperature compensation support
 #define ENABLE_TEMP_COMP false
 // Rotator

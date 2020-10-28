@@ -226,7 +226,8 @@ boolean Focuser::hasJustStopped() {
 }
 
 void Focuser::applySpeed() {
-	stepper.setMaxSpeed(map(speed, 2, 20, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
+	stepper.setMaxSpeed(map(speed, FOCSPEED_FASTEST, FOCSPEED_SLOWEST, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
+	//stepper.setSpeed(map(speed, 2, 20, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
 }
 
 int Focuser::rpmToSpeed(int rpm) {

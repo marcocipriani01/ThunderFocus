@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#define EEPROM_MARKER 'E'
+#define EEPROM_MARKER 'B'
 
 struct Settings {
 	uint8_t marker;

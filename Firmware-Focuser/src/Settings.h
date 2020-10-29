@@ -9,7 +9,6 @@ struct Settings {
 	uint8_t marker;
 	uint32_t currentPosition;
 	uint8_t speed;
-	uint8_t microstepEnabled;
 	uint8_t holdControlEnabled;
 	int32_t backlash;
 };

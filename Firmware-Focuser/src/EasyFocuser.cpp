@@ -1,9 +1,8 @@
 #include "EasyFocuser.h"
-#include "OpenFocuserUUID.h"
 
 EasyFocuser::EasyFocuser(Focuser *f) {
 	focuser = f;
-	state = FS_ERROR;
+	state = FocuserState::FS_POWERSAVE;
 	lastSendTime = 0;
 }
 
@@ -75,10 +74,6 @@ void EasyFocuser::manage() {
 			long n = Serial.parseInt();
 			Serial.println(n);
 			focuser->setBacklash(n);
-
-		} else if (type.equals("U")) {
-			Serial.print("Product UUID = ");
-			Serial.println(OPENFOCUSER_UUID);
 
 		} else {
 			Serial.println("unknown");

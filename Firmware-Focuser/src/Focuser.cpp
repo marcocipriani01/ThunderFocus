@@ -4,7 +4,7 @@ Focuser::Focuser() :
 #if STEPPER_TYPE == 3
 	stepper(DRIVER_IN1, DRIVER_IN2, DRIVER_IN3, DRIVER_IN4)
 #else
-	stepper(DRIVER_STEP, DRIVER_DIR)
+	stepper(1, DRIVER_STEP, DRIVER_DIR)
 #endif
 {
 	stepper.setAcceleration(MOTOR_ACCEL);
@@ -18,33 +18,34 @@ Focuser::Focuser() :
 }
 
 void Focuser::begin(boolean initHoldControlEnabled,
-                    boolean initMicrostepEnabled,
                     uint8_t initSpeed,
                     long backlash) {
 	pinMode(LED1, OUTPUT);
 #ifdef LED2
 	pinMode(LED2, OUTPUT);
 #endif
-	stepper.begin();
 #ifdef DRIVER_EN
-	pinMode(DRIVER_EN, OUTPUT);
+	stepper.setEnablePin(DRIVER_EN);
+	stepper.setPinsInverted(false, false, true);
 #endif
-#if STEPPER_TYPE != 3
-#if STEPPER_TYPE != 0
-	stepper.setMicroSteppingPins(MODE0, MODE1, MODE2);
+#ifdef MODE0
+	digitalWrite(MODE0, HIGH);
 #endif
+#ifdef MODE1
+	digitalWrite(MODE1, HIGH);
+#endif
+#ifdef MODE2
+	digitalWrite(MODE2, HIGH);
 #endif
 	stepper.setBacklash(backlash);
-	microstepEnabled = initMicrostepEnabled;
-	applyMicrostepGear();
-	speed = valToSpeed(initSpeed);
+	speed = initSpeed;
 	applySpeed();
 	holdControlEnabled = initHoldControlEnabled;
 	turnOff();
 }
 
 void Focuser::begin() {
-	begin(DEFAULT_ENABLE_HOLD_CONTROL, false, 2, 0);
+	begin(DEFAULT_ENABLE_HOLD_CONTROL, 80, 0);
 }
 
 void Focuser::moveToTargetPos(long newPos) {
@@ -52,7 +53,7 @@ void Focuser::moveToTargetPos(long newPos) {
 	isHcMoving = false;
 	turnOn();
 	applySpeed();
-	stepper.moveTo(stepsToSteps(newPos));
+	stepper.moveTo(newPos);
 }
 
 void Focuser::move(long newPos) {
@@ -60,11 +61,11 @@ void Focuser::move(long newPos) {
 	isHcMoving = false;
 	turnOn();
 	applySpeed();
-	stepper.move(stepsToSteps(newPos));
+	stepper.move(newPos);
 }
 
 long Focuser::getTargetPos() {
-	return stepsToStepsRev(stepper.targetPosition());
+	return stepper.targetPosition();
 }
 
 void Focuser::brake() {
@@ -79,42 +80,27 @@ void Focuser::brake() {
 
 void Focuser::setCurrentPos(long newPos) {
 	if (!isMoving) {
-		stepper.setCurrentPosition(stepsToSteps(newPos));
+		stepper.setCurrentPosition(newPos);
 	}
 }
 
 unsigned long Focuser::getCurrentPos() {
-	return stepsToStepsRev(stepper.currentPosition());
+	return stepper.currentPosition();
 }
 
 FocuserState Focuser::run() {
 	if (isMoving) {
-		AccelStepper::CurrentState state = stepper.run();
-		switch (state) {
-			case AccelStepper::WAITING_STEP:
-			case AccelStepper::MOVING: {
-				return FS_MOVING;
-			}
+		if (stepper.run()) {
+			return FS_MOVING;
 
-			case AccelStepper::WAITING_STEP_BACKLASH:
-			case AccelStepper::BACKLASHING: {
-				return FS_BACKLASHING;
-			}
-
-			case AccelStepper::IDLE: {
-				isMoving = false;
-				applySpeed();
-				lastMovementTime = millis();
+		} else {
+			isMoving = false;
+			applySpeed();
+			lastMovementTime = millis();
 #ifdef LED2
-				digitalWrite(LED2, LOW);
+			digitalWrite(LED2, LOW);
 #endif
-				return FS_JUST_ARRIVED;
-			}
-
-			default:
-			case AccelStepper::NO_DIRECTION: {
-				return FS_ERROR;
-			}
+			return FS_JUST_ARRIVED;
 		}
 	}
 	if (powerOn) {
@@ -149,29 +135,14 @@ boolean Focuser::isPowerOn() {
 	return powerOn;
 }
 
-void Focuser::setMicrostepEnabled(boolean microstepEnabledNew) {
-	if (!isMoving) {
-		microstepEnabled = microstepEnabledNew;
-		applyMicrostepGear();
-	}
-}
-
-boolean Focuser::isMicrostepEnabled() {
-	return microstepEnabled;
-}
-
-void Focuser::setSpeed(Speed speedNew) {
+void Focuser::setSpeed(uint8_t speedNew) {
 	speed = speedNew;
 	if (!isMoving) {
 		applySpeed();
 	}
 }
 
-void Focuser::setSpeed(uint8_t speedNew) {
-	setSpeed(valToSpeed(speedNew));
-}
-
-Speed Focuser::getSpeed() {
+uint8_t Focuser::getSpeed() {
 	return speed;
 }
 
@@ -199,7 +170,7 @@ void Focuser::hCMove(unsigned int analogValue, boolean reverse) {
 		turnOn();
 		isHcMoving = true;
 		if (reverse) {
-			stepper.move(stepsToSteps(-steps));
+			stepper.move(-steps);
 #ifdef LED2
 			digitalWrite(LED1, LOW);
 			digitalWrite(LED2, HIGH);
@@ -208,7 +179,7 @@ void Focuser::hCMove(unsigned int analogValue, boolean reverse) {
 #endif
 
 		} else {
-			stepper.move(stepsToSteps(steps));
+			stepper.move(steps);
 			digitalWrite(LED1, HIGH);
 #ifdef LED2
 			digitalWrite(LED2, LOW);
@@ -226,27 +197,20 @@ boolean Focuser::hasJustStopped() {
 }
 
 void Focuser::applySpeed() {
-	stepper.setMaxSpeed(map(speed, FOCSPEED_FASTEST, FOCSPEED_SLOWEST, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
-	//stepper.setSpeed(map(speed, 2, 20, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
+	stepper.setMaxSpeed(map(speed, 0, 100, rpmToSpeed(MOTOR_RPM_MAX), rpmToSpeed(MOTOR_RPM_MIN)));
 }
 
 int Focuser::rpmToSpeed(int rpm) {
-	return rpm * 60 / STEPS_REV;
+	return rpm * 60.0 / STEPS_REV;
 }
 
 void Focuser::turnOn() {
-#ifdef DRIVER_EN
-	digitalWrite(DRIVER_EN, LOW);
-#endif
 	stepper.enableOutputs();
 	powerOn = true;
 	isMoving = true;
 }
 
 void Focuser::turnOff() {
-#ifdef DRIVER_EN
-	digitalWrite(DRIVER_EN, HIGH);
-#endif
 	stepper.disableOutputs();
 	powerOn = false;
 	isMoving = false;
@@ -254,66 +218,4 @@ void Focuser::turnOff() {
 #ifdef LED2
 	digitalWrite(LED2, LOW);
 #endif
-}
-
-uint8_t Focuser::getMicrostepGear() {
-	return microstepEnabled ? HALF_STEP : FULL_STEP;
-}
-
-void Focuser::applyMicrostepGear() {
-#if STEPPER_TYPE == 1
-	if (microstepEnabled) {
-		stepper.setMicroStepping(HALF_STEP, AccelStepper::DRV8825);
-
-	} else {
-		stepper.setMicroStepping(FULL_STEP, AccelStepper::DRV8825);
-	}
-#elif STEPPER_TYPE == 2
-	if (microstepEnabled) {
-		stepper.setMicroStepping(HALF_STEP, AccelStepper::A4988);
-
-	} else {
-		stepper.setMicroStepping(FULL_STEP, AccelStepper::A4988);
-	}
-#else
-	if (microstepEnabled) {
-		stepper.setMicroStepping(HALF_STEP);
-
-	} else {
-		stepper.setMicroStepping(FULL_STEP);
-	}
-#endif
-}
-
-long Focuser::stepsToSteps(long steps) {
-	return steps * SINGLE_STEP * getMicrostepGear();
-}
-
-long Focuser::stepsToStepsRev(long steps) {
-	return (steps / getMicrostepGear()) / SINGLE_STEP;
-}
-
-Speed Focuser::valToSpeed(uint8_t val) {
-	switch (val) {
-	case 2: {
-		return FOCSPEED_FASTEST;
-	}
-
-	case 4: {
-		return FOCSPEED_FAST;
-	}
-
-	case 8: {
-		return FOCSPEED_MID;
-	}
-
-	case 10: {
-		return FOCSPEED_SLOW;
-	}
-
-	case 20: {
-		return FOCSPEED_SLOWEST;
-	}
-	}
-	return FOCSPEED_FASTEST;
 }

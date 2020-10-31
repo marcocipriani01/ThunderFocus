@@ -9,8 +9,6 @@
 class EasyFocuser {
 public:
 	EasyFocuser(Focuser *f);
-	void begin();
-	void flagReady();
 	void manage();
 	void flagState(FocuserState s);
 

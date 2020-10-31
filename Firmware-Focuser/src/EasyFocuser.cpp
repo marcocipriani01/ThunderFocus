@@ -6,15 +6,6 @@ EasyFocuser::EasyFocuser(Focuser *f) {
 	lastSendTime = 0;
 }
 
-void EasyFocuser::begin() {
-	Serial.println("syncme");
-	Serial.println("LSetup");
-}
-
-void EasyFocuser::flagReady() {
-	Serial.println("R");
-}
-
 void EasyFocuser::flagState(FocuserState s) {
 	if (s != state) {
 		Serial.println((char) s);

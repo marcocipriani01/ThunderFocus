@@ -33,30 +33,6 @@ EasyFocuser easyFocuser(&focuser);
 HandController hc(&focuser);
 #endif
 
-// ----- Temperature compensation -----
-#if ENABLE_TEMP_COMP == true
-#if TEMP_SENSOR_TYPE == 1
-#include <OneWire.h>
-#include <DallasTemperature.h>
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature tempSensor(&oneWire);
-float readTemperature() {
-	if (!tempSensor.isConversionComplete()) {
-		tempSensor.setWaitForConversion(true);
-		tempSensor.requestTemperatures();
-		tempSensor.setWaitForConversion(false);
-	}
-	float tempC = tempSensor.getTempCByIndex(DS18S20_INDEX);
-	tempSensor.requestTemperatures();
-	if (tempC == DEVICE_DISCONNECTED_C) {
-		return ABSOLUTE_ZERO;
-	}
-	return tempC;
-}
-#endif
-TemperatureCompensation tempCompensation(readTemperature);
-#endif
-
 #if SETTINGS_SUPPORT == true
 // Settings data for EEPROM storage
 struct Settings settings;
@@ -91,8 +67,6 @@ void setup() {
 	Serial.setTimeout(SERIAL_TIMEOUT);
 #if PROTOCOL == 1
 	clearBuffer(serialBuffer, 8);
-#elif PROTOCOL == 2
-	easyFocuser.begin();
 #endif
 
 #if ENABLE_FOCUSER == true
@@ -113,13 +87,6 @@ void setup() {
 	focuser.begin();
 #endif
 
-#if ENABLE_TEMP_COMP == true
-#if TEMP_SENSOR_TYPE == 1
-	tempSensor.begin();
-	tempSensor.setWaitForConversion(false);
-#endif
-#endif
-
 #if ENABLE_HC == true
 	hc.begin();
 #endif
@@ -134,10 +101,6 @@ void setup() {
 		;
 	}
 #endif
-
-#if PROTOCOL == 2
-	easyFocuser.flagReady();
-#endif
 }
 
 void handleSerial() {
@@ -148,7 +111,6 @@ void handleSerial() {
 		MoonLiteCommand command = moonliteStringToEnum(serialBuffer);
 
 		switch (command) {
-#if ENABLE_FOCUSER == true
 		case M_STOP: {
 			focuser.brake();
 		}
@@ -200,7 +162,7 @@ void handleSerial() {
 		break;
 
 		case M_SET_SPEED: {
-			focuser.setSpeed(twoDecCharsToUint8(serialBuffer + 2));
+			focuser.setSpeed(map(twoDecCharsToUint8(serialBuffer + 2), 2, 20, 100, 10));
 			flagSettings();
 		}
 		break;
@@ -217,70 +179,15 @@ void handleSerial() {
 		}
 		break;
 
-#if ENABLE_TEMP_COMP == true
-#if TEMP_SENSOR_TYPE == 1
-		case M_INIT_TEMP_CONV: {
-			tempSensor.requestTemperatures();
-		}
-		break;
-#endif
-#endif
-
 		case M_GET_TEMP: {
-#if ENABLE_TEMP_COMP == true
-			char temperatureString[4];
-			int16_t convertedTemp = (int16_t) tempCompensation.getTemperature();
-			if (convertedTemp < 0) {
-				convertedTemp = (~convertedTemp) + 1;
-			}
-			sprintf(temperatureString, "%04X", convertedTemp);
-			Serial.print(temperatureString);
-			Serial.print("#");
-#else
 			Serial.print("0000#");
-#endif
 		}
 		break;
 
 		case M_GET_TEMP_COEFF: {
-#if ENABLE_TEMP_COMP == true
-			char tempCoeffString[2];
-			int8_t convertedCoeff = (int8_t) tempCompensation.getCompensationCoefficient();
-			if (convertedCoeff < 0) {
-				convertedCoeff = (~convertedCoeff) + 1;
-			}
-			sprintf(tempCoeffString, "%02X", convertedCoeff);
-			Serial.print(tempCoeffString);
-			Serial.print("#");
-#else
-			Serial.print("00#");
-#endif
+			Serial.print("0000#");
 		}
 		break;
-
-#if ENABLE_TEMP_COMP == true
-		case M_SET_TEMP_COEFF: {
-			tempCompensation.setCompensationCoefficient(
-				twoCharsToInt8(serialBuffer + 2));
-		}
-		break;
-
-		case M_ENABLE_TEMP_COMP: {
-			tempCompensation.enableCompensation();
-		}
-		break;
-
-		case M_DISABLE_TEMP_COMP: {
-			tempCompensation.disableCompensation();
-		}
-		break;
-
-		case M_SET_TEMP_CAL_OFFSET: {
-			tempCompensation.setTempetatureOffset(0.5 * ((float) twoCharsToInt8(serialBuffer + 2)));
-		}
-		break;
-#endif
-#endif
 
 #if ENABLE_DEVMAN == true
 		case M_SET_PIN: {
@@ -338,15 +245,6 @@ void loop() {
 	}
 #if PROTOCOL == 2
 	easyFocuser.flagState(state);
-#endif
-
-#if ENABLE_TEMP_COMP == true
-	if (tempCompensation.manage() && !focuser.hasToRun()) {
-		long correction = tempCompensation.getCompensatedMotorSteps();
-		if (correction != 0) {
-			focuser.move(correction);
-		}
-	}
 #endif
 
 #if ENABLE_HC == true

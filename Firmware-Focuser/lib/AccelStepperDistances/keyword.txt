@@ -1,0 +1,11 @@
+ 
+AccelStepperWithDistance       			KEYWORD1
+setMicroStep			    KEYWORD2
+setStepsPerRotation		    KEYWORD2
+setDistancePerRotation	    KEYWORD2
+getCurrentPositionDistance	KEYWORD2
+moveToDistance			    KEYWORD2
+runToNewDistance		    KEYWORD2
+setAnglePerRotation	      	KEYWORD2
+moveToAngle			        KEYWORD2
+runToNewAngle		    	KEYWORD2

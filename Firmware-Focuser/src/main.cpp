@@ -103,6 +103,35 @@ void setup() {
 #endif
 }
 
+void loop() {
+	handleSerial();
+
+#if ENABLE_FOCUSER == true
+	FocuserState state = focuser.run();
+	if (state == FS_JUST_ARRIVED) {
+		flagSettings();
+	}
+#if PROTOCOL == 2
+	easyFocuser.flagState(state);
+#endif
+
+#if ENABLE_HC == true
+	hc.manage();
+#endif
+
+#if SETTINGS_SUPPORT == true
+	if (needToSaveSettings) {
+		saveSettings();
+		needToSaveSettings = false;
+	}
+#endif
+#endif
+
+#if ENABLE_DEVMAN == true
+	managePFI();
+#endif
+}
+
 void handleSerial() {
 #if PROTOCOL == 1
 	if (Serial.available() && Serial.read() == ':') {
@@ -111,6 +140,7 @@ void handleSerial() {
 		MoonLiteCommand command = moonliteStringToEnum(serialBuffer);
 
 		switch (command) {
+#if ENABLE_FOCUSER == true
 		case M_STOP: {
 			focuser.brake();
 		}
@@ -188,6 +218,7 @@ void handleSerial() {
 			Serial.print("0000#");
 		}
 		break;
+#endif
 
 #if ENABLE_DEVMAN == true
 		case M_SET_PIN: {
@@ -232,35 +263,6 @@ void handleSerial() {
 	}
 #elif PROTOCOL == 2
 	easyFocuser.manage();
-#endif
-}
-
-void loop() {
-	handleSerial();
-
-#if ENABLE_FOCUSER == true
-	FocuserState state = focuser.run();
-	if (state == FS_JUST_ARRIVED) {
-		flagSettings();
-	}
-#if PROTOCOL == 2
-	easyFocuser.flagState(state);
-#endif
-
-#if ENABLE_HC == true
-	hc.manage();
-#endif
-
-#if SETTINGS_SUPPORT == true
-	if (needToSaveSettings) {
-		saveSettings();
-		needToSaveSettings = false;
-	}
-#endif
-#endif
-
-#if ENABLE_DEVMAN == true
-	managePFI();
 #endif
 }
 

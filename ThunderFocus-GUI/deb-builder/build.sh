@@ -16,3 +16,4 @@ read -p "Do you want to install the deb file now (y/n)? " re
 if [[ "$re" == "y" ]]; then
     dpkg -i ./ThunderFocus.deb
 fi
+mv ThunderFocus.deb ../../Installers

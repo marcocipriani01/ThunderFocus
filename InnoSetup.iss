@@ -23,6 +23,7 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename=ThunderFocus_installer
+OutputDir=Installers
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

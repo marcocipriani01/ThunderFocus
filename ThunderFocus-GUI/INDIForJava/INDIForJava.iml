@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../INDIForJava">
+      <sourceFolder url="file://$MODULE_DIR$/../INDIForJava/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="org.apache.directory.studio:org.apache.commons.codec:1.8" level="project" />
+    <orderEntry type="library" exported="" name="javax.websocket:javax.websocket-api:1.1" level="project" />
+    <orderEntry type="library" exported="" name="org.glassfish.tyrus:tyrus-client:1.15" level="project" />
+    <orderEntry type="library" exported="" name="org.jboss.jandex:jandex-maven-plugin:1.0.8" level="project" />
+    <orderEntry type="library" exported="" name="org.glassfish.tyrus:tyrus-server:1.15" level="project" />
+    <orderEntry type="library" exported="" name="com.thoughtworks.xstream:xstream:1.4.14" level="project" />
+    <orderEntry type="library" exported="" name="org.slf4j:slf4j-api:1.7.25" level="project" />
+  </component>
+</module>

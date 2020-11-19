@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"marcocipriani.openfocuser.manager"},{"l":"marcocipriani.openfocuser.manager.fwconf"},{"l":"marcocipriani.openfocuser.manager.indi"},{"l":"marcocipriani.openfocuser.manager.io"},{"l":"marcocipriani.openfocuser.manager.plus"}]

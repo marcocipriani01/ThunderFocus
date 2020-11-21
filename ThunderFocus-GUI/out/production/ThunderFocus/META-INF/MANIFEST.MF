@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Specification-Vendor: marcocipriani01
-Main-Class: marcocipriani01.thunder.focus.Main
-Name: marcocipriani01/thunder/focus
-Specification-Title: ThunderFocus
-Specification-Version: 2.0.0

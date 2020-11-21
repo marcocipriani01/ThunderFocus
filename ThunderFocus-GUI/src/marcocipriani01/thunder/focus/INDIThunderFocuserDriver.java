@@ -1,7 +1,5 @@
 package marcocipriani01.thunder.focus;
 
-import marcocipriani01.thunder.focus.EasyFocuser;
-import marcocipriani01.thunder.focus.Main;
 import marcocipriani01.thunder.focus.io.ConnectionException;
 import marcocipriani01.thunder.focus.io.SerialPortImpl;
 import marcocipriani01.thunder.focus.powerbox.ArduinoPin;
@@ -23,9 +21,10 @@ import java.util.HashMap;
  * @author marcocipriani01
  * @version 4.0
  */
-public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyFocuser.Listener {
+public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyFocuser.Listener, Settings.SettingsListener {
 
-    public static final String DRIVER_NAME = "ThunderFocuser";
+    public static final String DRIVER_NAME = "ThunderFocus";
+    public static final String CONNECTION_GROUP = "Connection";
     public static final String MANAGE_PINS_GROUP = "Manage Pins";
     public static final String DIGITAL_PINS_PROP = "Digital pins";
     public static final String PWM_PINS_PROP = "PWM pins";
@@ -88,44 +87,51 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     public INDIThunderFocuserDriver(INDIConnection connection) {
         super(connection);
 
-        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label("Connection").group("Connection")
+        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label(CONNECTION_GROUP).group(CONNECTION_GROUP)
                 .state(Constants.PropertyStates.OK).create();
         connectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.CONNECT)
                 .label("Connect").switchValue(Constants.SwitchStatus.OFF).create();
         disconnectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.DISCONNECT)
                 .label("Disconnect").switchValue(Constants.SwitchStatus.ON).create();
         addProperty(connectionProp);
-        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group("Connection")
+        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group(CONNECTION_GROUP)
                 .state(Constants.PropertyStates.OK).create();
         serialPortFieldElem = new INDIElementBuilder<>(INDITextElement.class, serialPortFieldProp)
-                .name(INDIStandardElement.PORT).label("Port").textValue(Main.settings.serialPort).create();
+                .name(INDIStandardElement.PORT).label("Port").textValue(Main.settings.getSerialPort()).create();
         addProperty(serialPortFieldProp);
         refreshSerialPorts();
 
-        focusRelPositionP = newNumberProperty().name(INDIStandardProperty.REL_FOCUS_POSITION).label("Relative").group("Control").create();
+        focusRelPositionP = newNumberProperty().name(INDIStandardProperty.REL_FOCUS_POSITION).label("Relative").group(CONTROL_GROUP).create();
         focusRelPositionE = focusRelPositionP.newElement().name(INDIStandardElement.FOCUS_RELATIVE_POSITION).label("Focus Movement").step(1d).numberFormat("%.0f")
                 .numberValue(100).minimum(0).maximum(2147483647).create();
 
-        focusDirectionP = newSwitchProperty().name(INDIStandardProperty.FOCUS_MOTION).label("Direction").group("Control").create();
+        focusDirectionP = newSwitchProperty().name(INDIStandardProperty.FOCUS_MOTION).label("Direction").group(CONTROL_GROUP).create();
         focusDirectionInE = focusDirectionP.newElement().name(INDIStandardElement.FOCUS_INWARD).label("Focus in").switchValue(Constants.SwitchStatus.OFF).create();
         focusDirectionOutE = focusDirectionP.newElement().name(INDIStandardElement.FOCUS_OUTWARD).label("Focus out").switchValue(Constants.SwitchStatus.ON).create();
 
-        syncFocusPositionP = newNumberProperty().name("FOCUS_SYNC").label("Sync position").group("Control").create();
+        syncFocusPositionP = newNumberProperty().name("FOCUS_SYNC").label("Sync position").group(CONTROL_GROUP).create();
         syncFocusPositionE = syncFocusPositionP.newElement().name("FOCUS_SYNC_VALUE").label("Sync position").step(1d).numberFormat("%.0f")
                 .numberValue(0).minimum(0).maximum(2147483647).create();
 
-        focuserMaxPositionP = newNumberProperty().name("FOCUS_MAX").label("Max position").group("Configuration").create();
+        focuserMaxPositionP = newNumberProperty().name("FOCUS_MAX").label("Max position").group(CONFIG_GROUP).create();
         focuserMaxPositionE = focuserMaxPositionP.newElement().name("FOCUS_MAX_VALUE").label("Max position").step(1d).numberFormat("%.0f")
-                .numberValue(Main.settings.fokMaxTravel).minimum(0).maximum(2147483647).create();
+                .numberValue(Main.settings.getFokMaxTravel()).minimum(0).maximum(2147483647).create();
 
-        focusReverseP = newSwitchProperty().name("FOCUS_REVERSE_MOTION").label("Reverse directions").group("Configuration").create();
+        focusReverseP = newSwitchProperty().name("FOCUS_REVERSE_MOTION").label("Reverse directions").group(CONFIG_GROUP).create();
         focusReverseEnE = focusReverseP.newElement().name("ENABLED").label("Enabled").switchValue(Constants.SwitchStatus.OFF).create();
         focusReverseDisE = focusReverseP.newElement().name("DISABLED").label("Disabled").switchValue(Constants.SwitchStatus.ON).create();
 
         Main.focuser.addListener(this);
         if (Main.focuser.isReady()) {
-            onReady();
+            onFokConnected();
         }
+    }
+
+    @Override
+    public void isBeingDestroyed() {
+        System.out.println("Destroying ThunderFocus INDI driver...");
+        Main.focuser.removeListener(this);
+        super.isBeingDestroyed();
     }
 
     @Override
@@ -208,7 +214,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
         if (portsListProp != null && getPropertiesAsList().contains(portsListProp)) {
             removeProperty(portsListProp);
         }
-        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group("Connection")
+        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group(CONNECTION_GROUP)
                 .state(Constants.PropertyStates.OK).create();
         searchElem = new INDIElementBuilder<>(INDISwitchElement.class, portsListProp).name("REFRESH_PORTS").label("Refresh")
                 .switchValue(Constants.SwitchStatus.ON).create();
@@ -286,7 +292,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 Double value = eAV.getValue();
                 if (element == focuserMaxPositionE) {
                     element.setValue(value);
-                    Main.settings.fokMaxTravel = value.intValue();
+                    Main.settings.setFokMaxTravel(value.intValue(), this);
                     break;
                 }
             }
@@ -328,8 +334,8 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 INDITextElement element = eAV.getElement();
                 String value = eAV.getValue();
                 if (element == serialPortFieldElem) {
-                    Main.settings.serialPort = value;
-                    element.setValue(Main.settings.serialPort);
+                    Main.settings.setSerialPort(value, this);
+                    element.setValue(value);
                     break;
                 }
             }
@@ -350,7 +356,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     if (value == Constants.SwitchStatus.ON) {
                         connectionProp.setState(Constants.PropertyStates.BUSY);
                         if (element == connectElem) {
-                            Main.focuser.connect(Main.settings.serialPort);
+                            Main.focuser.connect(Main.settings.getSerialPort());
                         } else if (element == disconnectElem) {
                             Main.focuser.disconnect();
                         }
@@ -373,8 +379,9 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     if (element == searchElem) {
                         refreshSerialPorts();
                     } else {
-                        Main.settings.serialPort = portsListElements.get(element);
-                        serialPortFieldElem.setValue(Main.settings.serialPort);
+                        String serialPort = portsListElements.get(element);
+                        Main.settings.setSerialPort(serialPort, this);
+                        serialPortFieldElem.setValue(serialPort);
                     }
                 }
             }
@@ -446,8 +453,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
         }
     }
 
-    @Override
-    public void onReady() {
+    private void onFokConnected() {
         pinsMap = new HashMap<>();
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
@@ -488,7 +494,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
         } else {
             focusReverseDisE.setValue(Constants.SwitchStatus.ON);
         }
-        focuserMaxPositionE.setValue(Main.settings.fokMaxTravel);
+        focuserMaxPositionE.setValue(Main.settings.getFokMaxTravel());
 
         connectElem.setValue(Constants.SwitchStatus.ON);
         disconnectElem.setValue(Constants.SwitchStatus.OFF);
@@ -526,7 +532,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     focusDirectionOutE.setValue(Constants.SwitchStatus.ON);
                     focusRelDirection = false;
                 } else {
-                    focusRelPositionE.setValue(- relPos);
+                    focusRelPositionE.setValue(-relPos);
                     focusDirectionInE.setValue(Constants.SwitchStatus.ON);
                     focusDirectionOutE.setValue(Constants.SwitchStatus.OFF);
                     focusRelDirection = true;
@@ -553,6 +559,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     @Override
     public void updateConnSate(EasyFocuser.ConnState connState) {
         switch (connState) {
+            case CONNECTED -> onFokConnected();
             case DISCONNECTED -> {
                 if (digitalPinProps != null) {
                     removeProperty(digitalPinProps);
@@ -590,7 +597,8 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     public boolean updateProperty(INDIProperty<?> property) {
         try {
             return super.updateProperty(property);
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
+            System.err.println("INDI driver updateProperty() error.");
             e.printStackTrace();
             return false;
         }
@@ -598,6 +606,37 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
 
     @Override
     public void onCriticalError(Exception e) {
+
+    }
+
+    @Override
+    public void update(Settings.Value what, int value) {
+        if (what == Settings.Value.FOK_MAX_TRAVEL) {
+            focuserMaxPositionE.setValue(value);
+            updateProperty(focuserMaxPositionP);
+        }
+    }
+
+    @Override
+    public void update(Settings.Value what, String value) {
+        if (what == Settings.Value.SERIAL_PORT) {
+            serialPortFieldElem.setValue(value);
+            updateProperty(serialPortFieldProp);
+        }
+    }
+
+    @Override
+    public void update(Settings.Value what, Settings.Units value) {
+
+    }
+
+    @Override
+    public void update(Settings.Value what, boolean value) {
+
+    }
+
+    @Override
+    public void update(Settings.Value what, PinArray value) {
 
     }
 }

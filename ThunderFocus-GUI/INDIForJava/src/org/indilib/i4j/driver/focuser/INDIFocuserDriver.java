@@ -52,6 +52,9 @@ import static org.indilib.i4j.properties.INDIStandardProperty.ABS_FOCUS_POSITION
  */
 public abstract class INDIFocuserDriver extends INDIDriver {
 
+    protected static final String CONTROL_GROUP = "Control";
+    protected static final String CONFIG_GROUP = "Configuration";
+
     /**
      * The last position to which the focuser has been sent (but it may have not
      * yet reached).
@@ -99,7 +102,7 @@ public abstract class INDIFocuserDriver extends INDIDriver {
      * Initializes the standard properties. MUST BE CALLED BY SUBDRIVERS.
      */
     protected void initializeStandardProperties() {
-        absFocusPositionP = newNumberProperty().name(ABS_FOCUS_POSITION).label("Absolute").group("Control").create();
+        absFocusPositionP = newNumberProperty().name(ABS_FOCUS_POSITION).label("Absolute").group(CONTROL_GROUP).create();
         focusAbsolutePositionE = absFocusPositionP.newElement().name("FOCUS_ABSOLUTE_POSITION").label("Focus Position").step(1).numberFormat("%.0f")
                 .numberValue(getInitialAbsPos()).minimum(getMinimumAbsPos()).maximum(getMaximumAbsPos()).create();
 
@@ -170,7 +173,7 @@ public abstract class INDIFocuserDriver extends INDIDriver {
      */
     protected void showSpeedProperty() {
         if (focusSpeedP == null) {
-            focusSpeedP = newNumberProperty().saveable(true).name("FOCUS_SPEED").label("Focus Speed").group("Configuration").create();
+            focusSpeedP = newNumberProperty().saveable(true).name("FOCUS_SPEED").label("Focus Speed").group(CONFIG_GROUP).create();
             focusSpeedValueE = focusSpeedP.getElement("FOCUS_SPEED_VALUE");
             if (focusSpeedValueE == null) {
                 focusSpeedValueE = focusSpeedP.newElement().name("").label("").numberValue(getMaximumSpeed()).maximum(getMaximumSpeed()).step(1).numberFormat("%.0f").create();
@@ -186,8 +189,8 @@ public abstract class INDIFocuserDriver extends INDIDriver {
      */
     protected void showStopFocusingProperty() {
         if (stopFocusingP == null) {
-            stopFocusingP = newSwitchProperty().name(INDIStandardProperty.FOCUS_ABORT_MOTION).label("Stop").group("Control").create();
-            stopFocusingP.newElement().name("Stop Focusing").create();
+            stopFocusingP = newSwitchProperty().name(INDIStandardProperty.FOCUS_ABORT_MOTION).label("Stop focuser").group(CONTROL_GROUP).create();
+            stopFocusingP.newElement().name("ABORT").label("Stop").create();
         }
         addProperty(stopFocusingP);
     }

@@ -12,13 +12,13 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("unused")
-public class EasyFocuser extends TimerTask implements SerialMessageListener {
+public class EasyFocuser implements SerialMessageListener {
 
     private final SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
     private final PinArray digitalPins = new PinArray();
     private final PinArray pwmPins = new PinArray();
+    private int timerCount = 0;
     private Listener exclusiveCaller = null;
     private ConnState connState = ConnState.DISCONNECTED;
     private FocuserState focuserState = FocuserState.NONE;
@@ -37,20 +37,6 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
         serialPort.addListener(this);
     }
 
-    @Override
-    public void run() {
-        if (!ready && serialPort.isConnected()) {
-            updConnSate(ConnState.TIMEOUT);
-            System.err.println("Resending focuser settings request");
-            try {
-                Commands.PRINT_SETTINGS.run(EasyFocuser.this, null);
-            } catch (InvalidParamException ignored) {
-            } catch (ConnectionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public boolean isConnected() {
         return serialPort.isConnected();
     }
@@ -62,16 +48,8 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
     public void connect(String port) throws ConnectionException {
         updConnSate(ConnState.TIMEOUT);
         serialPort.connect(port);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            Commands.PRINT_SETTINGS.run(this, null);
-        } catch (InvalidParamException ignored) {
-        }
-        new Timer("EasyFocuser timeout timer").schedule(this, 3000);
+        timerCount = 1;
+        new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
     }
 
     public void disconnect() throws ConnectionException {
@@ -160,11 +138,11 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
     }
 
     public int ticksToSteps(int ticks) {
-        return (int) ((((double) ticks) / ((double) Main.settings.fokTicksCount)) * ((double) Main.settings.fokMaxTravel));
+        return (int) ((((double) ticks) / ((double) Main.settings.getFokTicksCount())) * ((double) Main.settings.getFokMaxTravel()));
     }
 
     public int stepsToTicks(int steps) {
-        return (int) ((((double) steps) / ((double) Main.settings.fokMaxTravel)) * ((double) Main.settings.fokTicksCount));
+        return (int) ((((double) steps) / ((double) Main.settings.getFokMaxTravel())) * ((double) Main.settings.getFokTicksCount()));
     }
 
     @Override
@@ -240,25 +218,26 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
                         Pattern pattern = Pattern.compile("\\((.*?)\\)");
                         if (!l[7].equals("")) {
                             Matcher m = pattern.matcher(l[7]);
+                            PinArray pwmPins = Main.settings.getPwmPins();
                             while (m.find()) {
                                 String[] pinDescriptor = m.group(1).split("@");
                                 int pin = Integer.parseInt(pinDescriptor[0]), value = Integer.parseInt(pinDescriptor[1]);
-                                ArduinoPin existing = Main.settings.pwmPins.getPin(pin);
-                                pwmPins.add(new ArduinoPin(pin, existing == null ? ("Pin " + pin) : existing.getName(), value));
+                                ArduinoPin existing = pwmPins.getPin(pin);
+                                this.pwmPins.add(new ArduinoPin(pin, existing == null ? ("Pin " + pin) : existing.getName(), value));
                             }
                         }
                         if (!l[8].equals("")) {
                             Matcher m = pattern.matcher(l[8]);
+                            PinArray digitalPins = Main.settings.getDigitalPins();
                             while (m.find()) {
                                 String[] pinDescriptor = m.group(1).split("@");
                                 int pin = Integer.parseInt(pinDescriptor[0]), value = Integer.parseInt(pinDescriptor[1]);
-                                ArduinoPin existing = Main.settings.digitalPins.getPin(pin);
-                                digitalPins.add(new ArduinoPin(pin, existing == null ? ("Pin " + pin) : existing.getName(), value));
+                                ArduinoPin existing = digitalPins.getPin(pin);
+                                this.digitalPins.add(new ArduinoPin(pin, existing == null ? ("Pin " + pin) : existing.getName(), value));
                             }
                         }
                     }
                     ready = true;
-                    nOnReady();
                     updConnSate(ConnState.CONNECTED);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
@@ -279,12 +258,6 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
     public void onPortError(Exception e) {
         updConnSate(ConnState.ERROR);
         e.printStackTrace();
-    }
-
-    private void nOnReady() {
-        for (Listener l : listeners) {
-            l.onReady();
-        }
     }
 
     private void nOnReachedPos() {
@@ -328,7 +301,9 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
         SPEED,
         BACKLASH,
         REVERSE_DIR,
-        ENABLE_POWER_SAVE
+        ENABLE_POWER_SAVE,
+        PWM_PINS,
+        DIGITAL_PINS
     }
 
     public enum ConnState {
@@ -374,14 +349,14 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
             f.notifyListeners(caller, Parameters.REQUESTED_REL_POS);
         }),
         FOK_ABS_MOVE('A', 1,
-                (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.fokMaxTravel),
+                (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel()),
                 (f, caller, params) -> {
                     f.requestedPos = params[0];
                     f.notifyListeners(caller, Parameters.REQUESTED_POS);
                 }),
         FOK_STOP('S'),
         FOK_SET_ZERO('Z'),
-        FOK_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.fokMaxTravel)),
+        FOK_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
         FOK_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
                 (f, caller, params) -> {
                     f.speed = params[0];
@@ -402,7 +377,16 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
                     f.powerSaver = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.ENABLE_POWER_SAVE);
                 }),
-        POWER_BOX_SET('d', 2, (f, params) -> (params[0] >= 0) && (params[1] >= 0) && (params[1] <= 255));
+        POWER_BOX_SET('d', 2, (f, params) -> (params[0] >= 0) && (params[1] >= 0) && (params[1] <= 255),
+                (f, caller, params) -> {
+                    if (f.digitalPins.contains(params[0])) {
+                        f.digitalPins.getPin(params[0]).setValue(params[1]);
+                        f.notifyListeners(caller, Parameters.DIGITAL_PINS);
+                    } else if (f.pwmPins.contains(params[0])) {
+                        f.pwmPins.getPin(params[0]).setValue(params[1]);
+                        f.notifyListeners(caller, Parameters.PWM_PINS);
+                    }
+                });
         public final char id;
         public final int paramsCount;
         private ParamValidator validator = null;
@@ -456,15 +440,13 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
     }
 
     public interface Listener {
-        void onReady();
+        void updateConnSate(ConnState connState);
+
+        void updateFocuserState(FocuserState focuserState);
 
         void onReachedPos();
 
         void updateParam(Parameters p);
-
-        void updateFocuserState(FocuserState focuserState);
-
-        void updateConnSate(ConnState connState);
 
         void onCriticalError(Exception e);
     }
@@ -478,6 +460,37 @@ public class EasyFocuser extends TimerTask implements SerialMessageListener {
     public static class ThunderFocuserException extends RuntimeException {
         public ThunderFocuserException(String s) {
             super(s);
+        }
+    }
+
+    private class SendSettingsRequestTask extends TimerTask {
+        @Override
+        public void run() {
+            if (!ready && serialPort.isConnected()) {
+                try {
+                    System.err.println("Sending focuser settings request");
+                    Commands.PRINT_SETTINGS.run(EasyFocuser.this, null);
+                    timerCount++;
+                    if (timerCount < 5) {
+                        new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
+                    } else {
+                        System.err.println("Connection timeout, disconnecting.");
+                        disconnect();
+                    }
+                } catch (InvalidParamException ignored) {
+                } catch (ConnectionException e) {
+                    e.printStackTrace();
+                    if (e.getType() != ConnectionException.Type.UNABLE_TO_DISCONNECT) {
+                        try {
+                            disconnect();
+                        } catch (ConnectionException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    nOnCriticalError(e);
+                }
+            }
+
         }
     }
 }

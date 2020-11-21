@@ -14,7 +14,7 @@ import java.util.EventObject;
 public class ArduinoPinsJTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 45;
-    private boolean arePwmPins = false;
+    private boolean arePwmPins;
     private PinArray pins = null;
     private boolean editMode = true;
 

@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+import static marcocipriani01.thunder.focus.Main.APP_LOGO;
+
 public class BacklashCalibrationWindow extends JDialog implements EasyFocuser.Listener {
 
     private JButton acceptButton;
@@ -21,6 +23,7 @@ public class BacklashCalibrationWindow extends JDialog implements EasyFocuser.Li
 
     public BacklashCalibrationWindow(Frame owner) {
         super(owner, Main.APP_NAME, true);
+        setIconImage(APP_LOGO);
         Main.focuser.setExclusiveMode(this);
         setContentPane(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -58,21 +61,21 @@ public class BacklashCalibrationWindow extends JDialog implements EasyFocuser.Li
                 valueOutOfLimits(ex);
             }
         });
-        setBounds(450, 250, 420, 510);
-        setResizable(false);
 
         Main.focuser.addListener(this);
         Main.focuser.clearRequestedPositions();
-        setVisible(true);
         try {
             Main.focuser.run(EasyFocuser.Commands.FOK_SET_BACKLASH, this, 0);
-            Main.focuser.run(EasyFocuser.Commands.FOK_ABS_MOVE, this, Main.settings.fokMaxTravel / 2);
+            Main.focuser.run(EasyFocuser.Commands.FOK_ABS_MOVE, this, Main.settings.getFokMaxTravel() / 2);
         } catch (ConnectionException e) {
             connectionErr(e);
             dispose();
         } catch (EasyFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
+        setBounds(450, 250, 420, 510);
+        setResizable(false);
+        setVisible(true);
     }
 
     private void valueOutOfLimits(Exception e) {
@@ -88,6 +91,14 @@ public class BacklashCalibrationWindow extends JDialog implements EasyFocuser.Li
     @Override
     public void dispose() {
         super.dispose();
+        try {
+            Main.focuser.run(EasyFocuser.Commands.FOK_STOP, this);
+        } catch (ConnectionException e) {
+            connectionErr(e);
+            dispose();
+        } catch (EasyFocuser.InvalidParamException e) {
+            e.printStackTrace();
+        }
         Main.focuser.setExclusiveMode(null);
         Main.focuser.removeListener(this);
     }
@@ -99,11 +110,6 @@ public class BacklashCalibrationWindow extends JDialog implements EasyFocuser.Li
         oneStepButton.setEnabled(b);
         relMovSpinner.setEnabled(b);
         relMovButton.setEnabled(b);
-    }
-
-    @Override
-    public void onReady() {
-
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -20,7 +21,6 @@ import java.util.Locale;
  * @author marcocipriani01
  * @version 1.0
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Settings {
 
     /**
@@ -28,37 +28,39 @@ public class Settings {
      */
     private static final Gson serializer = new GsonBuilder()
             .setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
+    private static Path path = null;
+    private final ArrayList<SettingsListener> listeners = new ArrayList<>();
 
     @SerializedName("Theme")
     @Expose
-    public int theme = 0;
+    private int theme = 0;
     @SerializedName("Serial port")
     @Expose
-    public String serialPort = "";
+    private String serialPort = "";
     @SerializedName("Enable INDI")
     @Expose
-    public boolean enableIndi = false;
+    private boolean indiEnabled = false;
     @SerializedName("INDI port")
     @Expose
-    public int indiServerPort = 7626;
+    private int indiServerPort = 7626;
     @SerializedName("Show IP for INDI server")
     @Expose
-    public boolean showRemoteIndi = false;
+    private boolean showRemoteIndi = false;
     @SerializedName("Digital pins")
     @Expose
-    public PinArray digitalPins = new PinArray();
+    private PinArray digitalPins = new PinArray();
     @SerializedName("PWM pins")
     @Expose
-    public PinArray pwmPins = new PinArray();
+    private PinArray pwmPins = new PinArray();
     @SerializedName("Focuser ticks count")
     @Expose
-    public int fokTicksCount = 70;
+    private int fokTicksCount = 70;
     @SerializedName("Focuser ticks unit")
     @Expose
-    public Units fokTicksUnit = Units.TICKS;
+    private Units fokTicksUnit = Units.TICKS;
     @SerializedName("Focuser max travel")
     @Expose
-    public int fokMaxTravel = 32767;
+    private int fokMaxTravel = 32767;
 
     /**
      * Class constructor.
@@ -68,30 +70,27 @@ public class Settings {
     }
 
     private static Path getPath() throws IOException, IllegalStateException {
+        if (path != null) return path;
         String folder = System.getProperty("user.home"),
                 os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if (os.contains("win")) {
             folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
-
         } else if (os.contains("nux")) {
             folder += (folder.endsWith("/") ? "" : "/") + ".config/";
-
         } else if ((os.contains("mac")) || (os.contains("darwin"))) {
             folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
         }
-
         File f = new File(folder);
         if (f.exists()) {
             if (f.isFile()) {
                 throw new IllegalStateException("Unable to create config folder, already exists and is a file");
             }
-
         } else {
             if (!f.mkdirs()) {
                 throw new IOException("Unable to create config folder.");
             }
         }
-        return Paths.get(folder + File.separator + Main.APP_NAME + ".json");
+        return (path = Paths.get(folder + File.separator + Main.APP_NAME + ".json"));
     }
 
     public static Settings load() {
@@ -111,8 +110,143 @@ public class Settings {
         return s;
     }
 
+    public void addListener(SettingsListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(SettingsListener listener) {
+        listeners.remove(listener);
+    }
+
+    public int getTheme() {
+        return theme;
+    }
+
+    public void setTheme(int theme, SettingsListener caller) {
+        this.theme = theme;
+        update(Value.THEME, caller, theme);
+    }
+
+    public String getSerialPort() {
+        return serialPort;
+    }
+
+    public void setSerialPort(String serialPort, SettingsListener caller) {
+        this.serialPort = serialPort;
+        update(Value.SERIAL_PORT, caller, serialPort);
+    }
+
+    public boolean isIndiEnabled() {
+        return indiEnabled;
+    }
+
+    public void setIndiEnabled(boolean indiEnabled, SettingsListener caller) {
+        this.indiEnabled = indiEnabled;
+        update(Value.IS_INDI_ENABLED, caller, indiEnabled);
+    }
+
+    public int getIndiServerPort() {
+        return indiServerPort;
+    }
+
+    public void setIndiServerPort(int indiServerPort, SettingsListener caller) {
+        this.indiServerPort = indiServerPort;
+        update(Value.INDI_PORT, caller, indiServerPort);
+    }
+
+    public boolean getShowRemoteIndi() {
+        return showRemoteIndi;
+    }
+
+    public void setShowRemoteIndi(boolean showRemoteIndi, SettingsListener caller) {
+        this.showRemoteIndi = showRemoteIndi;
+        update(Value.SHOW_REMOTE_INDI, caller, showRemoteIndi);
+    }
+
+    public PinArray getDigitalPins() {
+        return digitalPins;
+    }
+
+    public void setDigitalPins(PinArray digitalPins, SettingsListener caller) {
+        this.digitalPins = digitalPins;
+        update(Value.DIGITAL_PINS, caller, digitalPins);
+    }
+
+    public PinArray getPwmPins() {
+        return pwmPins;
+    }
+
+    public void setPwmPins(PinArray pwmPins, SettingsListener caller) {
+        this.pwmPins = pwmPins;
+        update(Value.PWM_PINS, caller, pwmPins);
+    }
+
+    public int getFokTicksCount() {
+        return fokTicksCount;
+    }
+
+    public void setFokTicksCount(int fokTicksCount, SettingsListener caller) {
+        this.fokTicksCount = fokTicksCount;
+        update(Value.FOK_TICKS_COUNT, caller, fokTicksCount);
+    }
+
+    public Units getFokTicksUnit() {
+        return fokTicksUnit;
+    }
+
+    public void setFokTicksUnit(Units fokTicksUnit, SettingsListener caller) {
+        this.fokTicksUnit = fokTicksUnit;
+        update(Value.FOK_TICKS_UNIT, caller, fokTicksUnit);
+    }
+
+    public int getFokMaxTravel() {
+        return fokMaxTravel;
+    }
+
+    public void setFokMaxTravel(int fokMaxTravel, SettingsListener caller) {
+        this.fokMaxTravel = fokMaxTravel;
+        update(Value.FOK_MAX_TRAVEL, caller, fokMaxTravel);
+    }
+
     public void save() throws IOException {
         Files.write(getPath(), serializer.toJson(this).getBytes());
+    }
+
+    void update(Value what, SettingsListener notMe, int value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.update(what, value);
+        }
+    }
+
+    void update(Value what, SettingsListener notMe, String value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.update(what, value);
+        }
+    }
+
+    void update(Value what, SettingsListener notMe, Units value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.update(what, value);
+        }
+    }
+
+    void update(Value what, SettingsListener notMe, boolean value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.update(what, value);
+        }
+    }
+
+    void update(Value what, SettingsListener notMe, PinArray value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.update(what, value);
+        }
+    }
+
+    public enum Value {
+        THEME, SERIAL_PORT,
+        IS_INDI_ENABLED, SHOW_REMOTE_INDI, INDI_PORT,
+        FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL,
+        DIGITAL_PINS, PWM_PINS
     }
 
     public enum Units {
@@ -133,5 +267,17 @@ public class Settings {
         public String toString() {
             return name;
         }
+    }
+
+    public interface SettingsListener {
+        void update(Value what, int value);
+
+        void update(Value what, String value);
+
+        void update(Value what, Units value);
+
+        void update(Value what, boolean value);
+
+        void update(Value what, PinArray value);
     }
 }

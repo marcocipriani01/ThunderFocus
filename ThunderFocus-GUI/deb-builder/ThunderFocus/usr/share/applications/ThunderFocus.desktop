@@ -2,9 +2,9 @@
 Encoding=UTF-8
 Name=ThunderFocus
 Comment=ThunderFocus control panel
-Exec=/usr/bin/thunderfocus -c
+Exec=/usr/bin/thunderfocus
 Icon=/usr/share/ThunderFocus/logo.png
 Terminal=false
 Type=Application
-Categories=Application;Science;Astronomy;
+Categories=Education
 StartupNotify=true

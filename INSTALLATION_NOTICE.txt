@@ -1,4 +1,4 @@
-(EN) ThunderFocus is an open-source software designed to control compatible focusers. It is developed by Marco Cipriani and its source code is available on https://github.com/marcocipriani01/ThunderFocus.
+﻿(EN) ThunderFocus is an open-source software designed to control compatible focusers. It is developed by Marco Cipriani and its source code is available on https://github.com/marcocipriani01/ThunderFocus.
 Installing this software, the user accepts all the clauses, permissions and limits imposed by its license.
 
 (IT) ThunderFocus è un software open-source per il controllo di focheggiatori automatici compatibili. È sviluppato da Marco Cipriani e il codice sorgente è disponibile all'indirizzo https://github.com/marcocipriani01/ThunderFocus.

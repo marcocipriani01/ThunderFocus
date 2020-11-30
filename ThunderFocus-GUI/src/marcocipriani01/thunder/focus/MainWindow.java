@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 
 import static marcocipriani01.thunder.focus.Main.APP_NAME;
 
-public class MainWindow extends JFrame implements ChangeListener, ActionListener, KeyListener, FocusListener, ThuderFocuser.Listener, Settings.SettingsListener {
+public class MainWindow extends JFrame implements ChangeListener, ActionListener, KeyListener, FocusListener, ThunderFocuser.Listener, Settings.SettingsListener {
 
     private static final ImageIcon POWERBOX_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunder/focus/res/powerboxtab.png"));
     private final MiniWindow miniWindow = new MiniWindow() {
@@ -243,45 +243,45 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == stopButton) {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_STOP, this);
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
         } else if (source == fokOutButton || source == relativeMovField) {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, Integer.parseInt(relativeMovField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, Integer.parseInt(relativeMovField.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
 
         } else if (source == fokInButton) {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, -Integer.parseInt(relativeMovField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, -Integer.parseInt(relativeMovField.getText()));
             } catch (NumberFormatException ignored) {
-            } catch (ConnectionException | ThuderFocuser.InvalidParamException connectionException) {
+            } catch (ConnectionException | ThunderFocuser.InvalidParamException connectionException) {
                 connectionException.printStackTrace();
             }
 
         } else if (source == setRequestedPosButton || source == requestedPosField) {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, Integer.parseInt(requestedPosField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Integer.parseInt(requestedPosField.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
 
         } else if (source == setZeroButton) {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_ZERO, this);
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_ZERO, this);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
@@ -316,13 +316,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 posSlider.addChangeListener(this);
                 ticksPosSlider.addChangeListener(this);
                 try {
-                    Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
-                    Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_SPEED, this, fokSpeedSlider.getValue());
-                    Main.focuser.run(ThuderFocuser.Commands.FOK1_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
-                    Main.focuser.run(ThuderFocuser.Commands.FOK1_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
+                    Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
+                    Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_SPEED, this, fokSpeedSlider.getValue());
+                    Main.focuser.run(ThunderFocuser.Commands.FOK1_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
+                    Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
                 } catch (ConnectionException ex) {
                     connectionErr(ex);
-                } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+                } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                     valueOutOfLimits(ex);
                 }
             }
@@ -340,16 +340,16 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 PinArray dp = digitalPinsJTable.getPins();
                 Main.settings.setDigitalPins(new PinArray(dp), this);
                 for (ArduinoPin p : dp) {
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
                 PinArray ap = pwmPinsJTable.getPins();
                 Main.settings.setPwmPins(new PinArray(dp), this);
                 for (ArduinoPin p : ap) {
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
 
@@ -357,12 +357,12 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             try {
                 for (ArduinoPin p : Main.focuser.getPwmPins()) {
                     p.setValue(255);
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
                 pwmPinsJTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
@@ -370,38 +370,38 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             try {
                 for (ArduinoPin p : Main.focuser.getPwmPins()) {
                     p.setValue(0);
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
                 pwmPinsJTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
         } else if (source == dioOffButton) {
             try {
-                for (ArduinoPin p : Main.focuser.getDigitalPins()) {
+                for (ArduinoPin p : Main.focuser.getManagedPins()) {
                     p.setValue(0);
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
                 digitalPinsJTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
         } else if (source == dioOnButton) {
             try {
-                for (ArduinoPin p : Main.focuser.getDigitalPins()) {
+                for (ArduinoPin p : Main.focuser.getManagedPins()) {
                     p.setValue(255);
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
                 digitalPinsJTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
         }
@@ -484,13 +484,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         }
         try {
             if (source == posSlider) {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, posSlider.getValue());
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, posSlider.getValue());
             } else if (source == ticksPosSlider) {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, Main.focuser.ticksToSteps(ticksPosSlider.getValue()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Main.focuser.ticksToSteps(ticksPosSlider.getValue()));
             }
         } catch (ConnectionException ex) {
             connectionErr(ex);
-        } catch (ThuderFocuser.InvalidParamException ex) {
+        } catch (ThunderFocuser.InvalidParamException ex) {
             ex.printStackTrace();
         }
     }
@@ -557,7 +557,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void updateParam(ThuderFocuser.Parameters p) {
+    public void updateParam(ThunderFocuser.Parameters p) {
         SwingUtilities.invokeLater(() -> {
             switch (p) {
                 case REQUESTED_POS -> requestedPosField.setText(String.valueOf(Main.focuser.getRequestedPos()));
@@ -582,18 +582,18 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
                 case DIGITAL_PINS -> digitalPinsJTable.refresh();
-                case PWM_PINS -> pwmPinsJTable.refresh();
+                case MANAGED_PINS -> pwmPinsJTable.refresh();
             }
         });
     }
 
     @Override
-    public void updateFocuserState(ThuderFocuser.FocuserState focuserState) {
+    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
         SwingUtilities.invokeLater(() -> focuserStateLabel.setText(focuserState.getLabel()));
     }
 
     @Override
-    public void updateConnSate(ThuderFocuser.ConnState connState) {
+    public void updateConnSate(ThunderFocuser.ConnState connState) {
         SwingUtilities.invokeLater(() -> {
             connStatusLabel.setText(connState.getLabel());
             switch (connState) {
@@ -605,7 +605,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                         if (tabPane.getTabComponentAt(1) != powerBoxTab) {
                             tabPane.insertTab("Power box", POWERBOX_TAB, powerBoxTab, "", 1);
                         }
-                        digitalPinsJTable.setPins(Main.focuser.getDigitalPins());
+                        digitalPinsJTable.setPins(Main.focuser.getManagedPins());
                         pwmPinsJTable.setPins(Main.focuser.getPwmPins());
                     }
                     fokSpeedSlider.setValue(Main.focuser.getSpeed());

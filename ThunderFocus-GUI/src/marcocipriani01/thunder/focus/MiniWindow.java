@@ -34,10 +34,10 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
 
         left.addActionListener(e -> {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, null, -Integer.parseInt(field.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, null, -Integer.parseInt(field.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -45,10 +45,10 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
         left.setFocusTraversalKeysEnabled(false);
         right.addActionListener(e -> {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, null, Integer.parseInt(field.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, null, Integer.parseInt(field.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });

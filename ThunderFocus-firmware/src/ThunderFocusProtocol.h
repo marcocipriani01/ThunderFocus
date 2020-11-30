@@ -10,9 +10,15 @@
 #if TIME_CONTROL == true
 #include "SunKeeper.h"
 #endif
+#if TEMP_HUM_SENSOR == true
+#include "AmbientManager.h"
+#endif
 
 extern FocuserState lastFok1State;
 extern unsigned long lastThunderFocusSerialSend;
+#if TEMP_HUM_SENSOR == true
+extern unsigned long lastThunderFocusAmbientSend;
+#endif
 
 FocuserState thunderFocusManage(Focuser *focuser);
 void thunderFocusSerialEvent(Focuser *focuser);

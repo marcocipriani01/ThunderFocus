@@ -2,6 +2,9 @@
 
 FocuserState lastFok1State = FocuserState::FOCUSER_POWERSAVE;
 unsigned long lastThunderFocusSerialSend = 0;
+#if TEMP_HUM_SENSOR == true
+unsigned long lastThunderFocusAmbientSend = 0;
+#endif
 
 FocuserState thunderFocusManage(Focuser *focuser) {
 	FocuserState currentState = focuser->run();
@@ -11,13 +14,27 @@ FocuserState thunderFocusManage(Focuser *focuser) {
 	}
 	unsigned long currentTime = millis();
 	if (currentTime - lastThunderFocusSerialSend >= THUNDERFOCUS_SEND_DELAY) {
-		Serial.print("P");
+		Serial.print("S");
 		Serial.println(focuser->getCurrentPos());
 		lastThunderFocusSerialSend = currentTime;
 	}
 #if ENABLE_DEVMAN == true
 	if (devManage()) {
 		thunderFocusUpdPins();
+	}
+#endif
+#if TEMP_HUM_SENSOR == true
+	ambientManage();
+	if (currentTime - lastThunderFocusAmbientSend >= SENSORS_DELAY) {
+		Serial.print("J");
+		Serial.print(getTemperature());
+		Serial.print(",");
+		Serial.print(getHumidity());
+		Serial.print(",");
+		Serial.print(getDewPoint());
+		Serial.print(",");
+		Serial.println();
+		lastThunderFocusAmbientSend = currentTime;
 	}
 #endif
 	return currentState;

@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @author marcocipriani01
  * @version 4.0
  */
-public class INDIThunderFocuserDriver extends INDIFocuserDriver implements ThuderFocuser.Listener, Settings.SettingsListener {
+public class INDIThunderFocuserDriver extends INDIFocuserDriver implements ThunderFocuser.Listener, Settings.SettingsListener {
 
     public static final String DRIVER_NAME = "ThunderFocus";
     public static final String CONNECTION_GROUP = "Connection";
@@ -152,14 +152,14 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
     @Override
     public void absolutePositionHasBeenChanged() {
         try {
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, getDesiredAbsPosition());
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, getDesiredAbsPosition());
         } catch (ConnectionException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
-        } catch (ThuderFocuser.InvalidParamException e) {
+        } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
@@ -174,7 +174,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
     @Override
     public void speedHasBeenChanged() {
         try {
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_SPEED, this, getCurrentSpeed());
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_SPEED, this, getCurrentSpeed());
             desiredSpeedSet();
         } catch (ConnectionException e) {
             e.printStackTrace();
@@ -182,7 +182,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
             updateProperty(connectionProp);
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
-        } catch (ThuderFocuser.InvalidParamException e) {
+        } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
@@ -192,7 +192,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
     @Override
     public void stopHasBeenRequested() {
         try {
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_STOP, this);
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
             stopped();
         } catch (ConnectionException e) {
             e.printStackTrace();
@@ -200,7 +200,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
             updateProperty(connectionProp);
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
-        } catch (ThuderFocuser.InvalidParamException e) {
+        } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
@@ -245,7 +245,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                     ArduinoPin pin = pinsMap.get(element);
                     pin.setValue(eAV.getValue().intValue());
                     element.setValue((double) pin.getValuePwm());
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
@@ -255,7 +255,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                 updateProperty(connectionProp);
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
@@ -268,7 +268,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                     Double value = eAV.getValue();
                     if (element == focusRelPositionE) {
                         element.setValue(value);
-                        Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
+                        Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
                         break;
                     }
                 }
@@ -280,7 +280,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                 updateProperty(connectionProp);
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
@@ -306,7 +306,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                     Double value = eAV.getValue();
                     if (element == syncFocusPositionE) {
                         element.setValue(value);
-                        Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_POS, this, value.intValue());
+                        Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_POS, this, value.intValue());
                         break;
                     }
                 }
@@ -318,7 +318,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                 updateProperty(connectionProp);
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
@@ -397,7 +397,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                     Constants.SwitchStatus val = eAV.getValue();
                     pin.setValue(ArduinoPin.ValueType.INDI, val);
                     element.setValue(val);
-                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
@@ -407,7 +407,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                 updateProperty(connectionProp);
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
@@ -433,7 +433,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                     Constants.SwitchStatus value = eAV.getValue();
                     element.setValue(value);
                     if (value == Constants.SwitchStatus.ON) {
-                        Main.focuser.run(ThuderFocuser.Commands.FOK1_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
+                        Main.focuser.run(ThunderFocuser.Commands.FOK1_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
                         break;
                     }
                 }
@@ -445,7 +445,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
                 updateProperty(connectionProp);
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
@@ -458,7 +458,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
         if (Main.focuser.isPowerBox()) {
-            PinArray digitalPins = Main.focuser.getDigitalPins();
+            PinArray digitalPins = Main.focuser.getManagedPins();
             if (digitalPins.size() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
@@ -516,7 +516,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
     }
 
     @Override
-    public void updateParam(ThuderFocuser.Parameters p) {
+    public void updateParam(ThunderFocuser.Parameters p) {
         switch (p) {
             case CURRENT_POS -> positionChanged(Main.focuser.getCurrentPos());
             case SPEED -> speedChanged(Main.focuser.getSpeed());
@@ -549,15 +549,14 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thude
     }
 
     @Override
-    public void updateFocuserState(ThuderFocuser.FocuserState focuserState) {
-        switch (focuserState) {
-            case ERROR -> connectionProp.setState(Constants.PropertyStates.ALERT);
-            case NONE -> connectionProp.setState(Constants.PropertyStates.IDLE);
+    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
+        if (focuserState == ThunderFocuser.FocuserState.NONE) {
+            connectionProp.setState(Constants.PropertyStates.IDLE);
         }
     }
 
     @Override
-    public void updateConnSate(ThuderFocuser.ConnState connState) {
+    public void updateConnSate(ThunderFocuser.ConnState connState) {
         switch (connState) {
             case CONNECTED -> onFokConnected();
             case DISCONNECTED -> {

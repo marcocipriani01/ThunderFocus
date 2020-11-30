@@ -22,6 +22,7 @@ public class ArduinoPin {
     @Expose
     private String name = "Pin 0";
     private int value = 0;
+    private boolean autoModeEn = false;
 
     /**
      * Class constructor. For Gson only!
@@ -65,10 +66,19 @@ public class ArduinoPin {
         value = other.value;
         name = other.name;
         pin = other.pin;
+        autoModeEn = other.autoModeEn;
     }
 
     private static int constrain(int n) {
         return (n >= 255 ? 255 : (Math.max(n, 0)));
+    }
+
+    public boolean isAutoModeEn() {
+        return autoModeEn;
+    }
+
+    public void setAutoModeEn(boolean autoModeEn) {
+        this.autoModeEn = autoModeEn;
     }
 
     /**

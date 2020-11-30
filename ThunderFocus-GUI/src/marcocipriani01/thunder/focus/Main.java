@@ -15,7 +15,7 @@ public class Main {
     public static final String APP_NAME = "ThunderFocus";
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/marcocipriani01/thunder/focus/res/ThunderFocus.png"));
     public static final Settings settings = Settings.load();
-    public static final ThuderFocuser focuser = new ThuderFocuser();
+    public static final ThunderFocuser focuser = new ThunderFocuser();
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
 
     public static void main(String[] args) {

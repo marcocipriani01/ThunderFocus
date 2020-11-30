@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 
 import static marcocipriani01.thunder.focus.Main.APP_LOGO;
 
-public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.Listener {
+public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser.Listener {
 
     private JButton acceptButton;
     private JButton cancelButton;
@@ -33,31 +33,31 @@ public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.
 
         acceptButton.addActionListener(e -> {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_BACKLASH, this, count);
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, count);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException ex) {
+            } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
             dispose();
         });
         oneStepButton.addActionListener(e -> {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, 1);
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, 1);
                 setControlsEnabled(false);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
         relMovButton.addActionListener(e -> {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, (int) relMovSpinner.getValue());
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, (int) relMovSpinner.getValue());
                 setControlsEnabled(false);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
-            } catch (ThuderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -65,12 +65,12 @@ public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.
         Main.focuser.addListener(this);
         Main.focuser.clearRequestedPositions();
         try {
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_BACKLASH, this, 0);
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, Main.settings.getFokMaxTravel() / 2);
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, 0);
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Main.settings.getFokMaxTravel() / 2);
         } catch (ConnectionException e) {
             connectionErr(e);
             dispose();
-        } catch (ThuderFocuser.InvalidParamException e) {
+        } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
         setBounds(450, 250, 420, 510);
@@ -92,11 +92,11 @@ public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.
     public void dispose() {
         super.dispose();
         try {
-            Main.focuser.run(ThuderFocuser.Commands.FOK1_STOP, this);
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
         } catch (ConnectionException e) {
             connectionErr(e);
             dispose();
-        } catch (ThuderFocuser.InvalidParamException e) {
+        } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
         Main.focuser.setExclusiveMode(null);
@@ -120,19 +120,19 @@ public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.
             counterLabel.setText(String.valueOf(count));
         } else {
             try {
-                Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
                 initialMoveDone = true;
             } catch (ConnectionException e) {
                 connectionErr(e);
                 e.printStackTrace();
-            } catch (ThuderFocuser.InvalidParamException e) {
+            } catch (ThunderFocuser.InvalidParamException e) {
                 e.printStackTrace();
             }
         }
     }
 
     @Override
-    public void updateParam(ThuderFocuser.Parameters p) {
+    public void updateParam(ThunderFocuser.Parameters p) {
 
     }
 
@@ -142,12 +142,12 @@ public class BacklashCalibrationWindow extends JDialog implements ThuderFocuser.
     }
 
     @Override
-    public void updateFocuserState(ThuderFocuser.FocuserState focuserState) {
+    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
 
     }
 
     @Override
-    public void updateConnSate(ThuderFocuser.ConnState connState) {
+    public void updateConnSate(ThunderFocuser.ConnState connState) {
 
     }
 

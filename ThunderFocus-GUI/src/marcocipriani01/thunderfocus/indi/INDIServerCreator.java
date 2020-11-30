@@ -1,4 +1,4 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus.indi;
 
 import org.indilib.i4j.INDIException;
 import org.indilib.i4j.protocol.api.INDIConnection;

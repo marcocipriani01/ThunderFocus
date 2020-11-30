@@ -1,6 +1,7 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus;
 
-import marcocipriani01.thunder.focus.io.ConnectionException;
+import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.io.ConnectionException;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -8,8 +9,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import static marcocipriani01.thunder.focus.Main.APP_LOGO;
-import static marcocipriani01.thunder.focus.Main.APP_NAME;
+import static marcocipriani01.thunderfocus.Main.APP_LOGO;
+import static marcocipriani01.thunderfocus.Main.APP_NAME;
 
 public abstract class MiniWindow extends JFrame implements KeyListener {
 

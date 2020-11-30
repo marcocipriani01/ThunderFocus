@@ -1,4 +1,4 @@
-package marcocipriani01.thunder.focus.io;
+package marcocipriani01.thunderfocus.io;
 
 /**
  * Serial message listener interface.

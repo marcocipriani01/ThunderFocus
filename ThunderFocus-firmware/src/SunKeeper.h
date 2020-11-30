@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 #include "config.h"
-#if TIME_CONTROL == false || !defined(CORE_TEENSY)
-#error SunKeeper: time control disabled or CORE_TEENSY not defined
+#if TIME_CONTROL == true && !defined(CORE_TEENSY)
+#error SunKeeper: time control enabled and CORE_TEENSY not defined
 #endif
 #include <TimeLib.h>
 #include <SolarPosition.h>

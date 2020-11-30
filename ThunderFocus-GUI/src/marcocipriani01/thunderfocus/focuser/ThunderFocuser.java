@@ -1,12 +1,12 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus.focuser;
 
-import marcocipriani01.thunder.focus.io.ConnectionException;
-import marcocipriani01.thunder.focus.io.SerialMessageListener;
-import marcocipriani01.thunder.focus.io.SerialPortImpl;
-import marcocipriani01.thunder.focus.powerbox.ArduinoPin;
-import marcocipriani01.thunder.focus.powerbox.PinArray;
+import marcocipriani01.thunderfocus.Main;
+import marcocipriani01.thunderfocus.io.ConnectionException;
+import marcocipriani01.thunderfocus.io.SerialMessageListener;
+import marcocipriani01.thunderfocus.io.SerialPortImpl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -16,7 +16,8 @@ public class ThunderFocuser implements SerialMessageListener {
 
     private final SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
-    private final PinArray managedPins = new PinArray();
+    private String version = "?";
+    private PowerBox powerBox = null;
     private int timerCount = 0;
     private Listener exclusiveCaller = null;
     private ConnState connState = ConnState.DISCONNECTED;
@@ -30,10 +31,13 @@ public class ThunderFocuser implements SerialMessageListener {
     private int backlash = 0;
     private boolean reverseDir = false;
     private boolean powerSaver = false;
-    private boolean isPowerBox = false;
 
     public ThunderFocuser() {
         serialPort.addListener(this);
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public boolean isConnected() {
@@ -57,7 +61,8 @@ public class ThunderFocuser implements SerialMessageListener {
         ready = false;
         serialPort.disconnect();
         updConnSate(ConnState.DISCONNECTED);
-        managedPins.clear();
+        powerBox.clear();
+        powerBox = null;
     }
 
     public void addListener(Listener l) {
@@ -82,12 +87,12 @@ public class ThunderFocuser implements SerialMessageListener {
         }
     }
 
-    public boolean isPowerBox() {
-        return isPowerBox;
+    public PowerBox getPowerBox() {
+        return powerBox;
     }
 
-    public PinArray getManagedPins() {
-        return managedPins;
+    public boolean isPowerBox() {
+        return powerBox != null;
     }
 
     public int getRequestedPos() {
@@ -194,41 +199,43 @@ public class ThunderFocuser implements SerialMessageListener {
                 try {
                     System.out.println("Focuser settings: " + param);
                     String[] l = param.split(",");
-                    if (l[0].equals("0")) {
-                        nOnCriticalError(new ThunderFocuserException("ThunderFocus without a focuser module."));
-                        disconnect();
-                        return;
-                    }
-                    isPowerBox = l[1].equals("1");
-                    currentPos = Integer.parseInt(l[2]);
-                    speed = Integer.parseInt(l[3]);
-                    powerSaver = Integer.parseInt(l[4]) == 1;
-                    backlash = Integer.parseInt(l[5]);
-                    reverseDir = Integer.parseInt(l[6]) == 1;
-                    if (isPowerBox) {
+                    version = l[0];
+                    currentPos = Integer.parseInt(l[1]);
+                    speed = Integer.parseInt(l[2]);
+                    powerSaver = l[3].equals("1");
+                    backlash = Integer.parseInt(l[4]);
+                    reverseDir = l[5].equals("1");
+                    if (l[6].equals("1")) {
+                        powerBox = new PowerBox();
+                        powerBox.setAutoMode(Integer.parseInt(l[7]));
                         Pattern pattern = Pattern.compile("\\((.*?)\\)");
-                        if (!l[8].equals("")) {
-                            Matcher m = pattern.matcher(l[8]);
-                            PinArray digitalPins = Main.settings.getDigitalPins();
-                            while (m.find()) {
-                                String[] pinDescriptor = m.group(1).split("@");
-                                int pin = Integer.parseInt(pinDescriptor[0]), value = Integer.parseInt(pinDescriptor[1]);
-                                ArduinoPin existing = digitalPins.getPin(pin);
-                                this.managedPins.add(new ArduinoPin(pin, existing == null ? ("Pin " + pin) : existing.getName(), value));
-                            }
+                        Matcher m = pattern.matcher(l[8]);
+                        PowerBox digitalPins = Main.settings.getPowerBox();
+                        while (m.find()) {
+                            String[] rcvPin = m.group(1).split("%");
+                            int number = Integer.parseInt(rcvPin[0]), value = Integer.parseInt(rcvPin[1]);
+                            ArduinoPin stored = digitalPins.getPin(number);
+                            this.powerBox.add(new ArduinoPin(number,
+                                    stored == null ? ("Pin " + number) : stored.getName(),
+                                    value, rcvPin[2].equals("1"), rcvPin[3].equals("1")));
+                        }
+                        powerBox.setSupportsAmbient(l[9].equals("1"));
+                        if (l[10].equals("1")) {
+                            powerBox.setSupportsTime(true);
+                            run(Commands.SET_TIME_LAT_LONG, null, (int) (Calendar.getInstance().getTimeInMillis() / 1000L), 0, 0);
                         }
                     }
                     ready = true;
                     updConnSate(ConnState.CONNECTED);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                    nOnCriticalError(new ThunderFocuserException("The focuser responded with an illegal list of settings."));
+                    nOnCriticalError(new ConnectionException("The focuser responded with an illegal configuration.", ConnectionException.Type.PROTOCOL));
                     try {
                         disconnect();
                     } catch (ConnectionException ce) {
                         ce.printStackTrace();
                     }
-                } catch (ConnectionException e) {
+                } catch (ConnectionException | InvalidParamException e) {
                     e.printStackTrace();
                 }
             }
@@ -283,7 +290,8 @@ public class ThunderFocuser implements SerialMessageListener {
         BACKLASH,
         REVERSE_DIR,
         ENABLE_POWER_SAVE,
-        MANAGED_PINS
+        POWERBOX_PINS,
+        POWERBOX_AUTO_MODE
     }
 
     public enum ConnState {
@@ -318,12 +326,11 @@ public class ThunderFocuser implements SerialMessageListener {
         public String getLabel() {
             return label;
         }
-
     }
 
     public enum Commands {
         PRINT_CONFIG('C'),
-        SET_TIME('T', 1, (f, params) -> params[0] > 1577836800),
+        SET_TIME_LAT_LONG('T', 3, (f, params) -> params[0] > 1577836800),
         FOK1_REL_MOVE('R', 1, null, (f, caller, params) -> {
             f.requestedRelPos = params[0];
             f.notifyListeners(caller, Parameters.REQUESTED_REL_POS);
@@ -357,18 +364,22 @@ public class ThunderFocuser implements SerialMessageListener {
                     f.powerSaver = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.ENABLE_POWER_SAVE);
                 }),
-        POWER_BOX_SET('X', 2, (f, params) -> (params[0] >= 0) && (params[1] >= 0) && (params[1] <= 255),
+        POWER_BOX_SET('X', 2, (f, params) -> f.powerBox.contains(params[0]) && (params[1] >= 0) && (params[1] <= 255),
                 (f, caller, params) -> {
-                    if (f.managedPins.contains(params[0])) {
-                        f.managedPins.getPin(params[0]).setValue(params[1]);
-                        f.notifyListeners(caller, Parameters.MANAGED_PINS);
-                    }
+                    f.powerBox.getPin(params[0]).setValue(params[1]);
+                    f.notifyListeners(caller, Parameters.POWERBOX_PINS);
                 }),
-        POWER_BOX_SET_AUTO_MODE('K', 1, (f, params) -> (params[0] > 0) && (params[0] < DevManAutoModes.count()),
+        POWER_BOX_SET_AUTO_MODE('K', 1, (f, params) -> f.powerBox.supportedAutoModes().contains(PowerBox.AutoModes.values()[params[0]]),
                 (f, caller, params) -> {
+                    f.powerBox.setAutoMode(params[0]);
+                    f.notifyListeners(caller, Parameters.POWERBOX_AUTO_MODE);
+                }),
+        POWER_BOX_SET_PIN_AUTO('Y', 2, (f, params) -> f.powerBox.contains(params[0]) && ((params[1] == 0) || (params[1] == 1)),
+                (f, caller, params) -> {
+                    f.powerBox.get(params[0]).setAutoModeEn(params[1] == 1);
+                    f.notifyListeners(caller, Parameters.POWERBOX_PINS);
+                });
 
-                }),
-        POWER_BOX_SET_PIN_AUTO('Y', 2, (f, params) -> (params[0] > 0) && ((params [1] == 0) || (params [1] == 1)));
         public final char id;
         public final int paramsCount;
         private ParamValidator validator = null;
@@ -439,12 +450,6 @@ public class ThunderFocuser implements SerialMessageListener {
         }
     }
 
-    public static class ThunderFocuserException extends RuntimeException {
-        public ThunderFocuserException(String s) {
-            super(s);
-        }
-    }
-
     private class SendSettingsRequestTask extends TimerTask {
         @Override
         public void run() {
@@ -461,38 +466,14 @@ public class ThunderFocuser implements SerialMessageListener {
                     }
                 } catch (InvalidParamException ignored) {
                 } catch (ConnectionException e) {
-                    e.printStackTrace();
-                    if (e.getType() != ConnectionException.Type.UNABLE_TO_DISCONNECT) {
-                        try {
-                            disconnect();
-                        } catch (ConnectionException ex) {
-                            ex.printStackTrace();
-                        }
+                    try {
+                        disconnect();
+                    } catch (ConnectionException ex) {
+                        ex.printStackTrace();
                     }
                     nOnCriticalError(e);
                 }
             }
-
-        }
-    }
-
-    public enum DevManAutoModes {
-        NIGHT_ASTRONOMICAL,
-        NIGHT_CIVIL,
-        DAYTIME,
-        DEW_POINT_DIFF1,
-        DEW_POINT_DIFF2,
-        DEW_POINT_DIFF3,
-        DEW_POINT_DIFF5,
-        DEW_POINT_DIFF7,
-        HUMIDITY_90,
-        HUMIDITY_80,
-        HUMIDITY_70,
-        TEMP_FREEZE,
-        UNAVAILABLE;
-
-        public static int count() {
-            return values().length;
         }
     }
 }

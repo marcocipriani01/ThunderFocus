@@ -1,8 +1,10 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import marcocipriani01.thunder.focus.io.ConnectionException;
+import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.indi.INDIServerCreator;
+import marcocipriani01.thunderfocus.io.ConnectionException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +15,7 @@ import java.util.Locale;
 public class Main {
 
     public static final String APP_NAME = "ThunderFocus";
-    public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/marcocipriani01/thunder/focus/res/ThunderFocus.png"));
+    public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final Settings settings = Settings.load();
     public static final ThunderFocuser focuser = new ThunderFocuser();
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();

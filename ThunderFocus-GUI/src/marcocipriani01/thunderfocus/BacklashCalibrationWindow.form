@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="marcocipriani01.thunder.focus.BacklashCalibrationWindow">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="marcocipriani01.thunderfocus.BacklashCalibrationWindow">
   <grid id="cbd77" binding="parent" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="16" bottom="16" right="16"/>
     <constraints>
@@ -50,7 +50,7 @@
               <enabled value="false"/>
               <font size="22"/>
               <horizontalTextPosition value="2"/>
-              <icon value="marcocipriani01/thunder/focus/res/right.png"/>
+              <icon value="marcocipriani01/thunderfocus/res/right.png"/>
               <text value="Un passo"/>
             </properties>
           </component>
@@ -71,7 +71,7 @@
               <enabled value="false"/>
               <font size="22"/>
               <horizontalTextPosition value="2"/>
-              <icon value="marcocipriani01/thunder/focus/res/right.png"/>
+              <icon value="marcocipriani01/thunderfocus/res/right.png"/>
               <text value=""/>
             </properties>
           </component>
@@ -83,7 +83,7 @@
         </constraints>
         <properties>
           <horizontalAlignment value="0"/>
-          <icon value="marcocipriani01/thunder/focus/res/loading.gif"/>
+          <icon value="marcocipriani01/thunderfocus/res/loading.gif"/>
           <text value=""/>
         </properties>
       </component>

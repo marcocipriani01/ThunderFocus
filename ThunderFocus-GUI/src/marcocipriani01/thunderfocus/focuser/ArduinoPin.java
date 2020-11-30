@@ -1,4 +1,4 @@
-package marcocipriani01.thunder.focus.powerbox;
+package marcocipriani01.thunderfocus.focuser;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -22,6 +22,7 @@ public class ArduinoPin {
     @Expose
     private String name = "Pin 0";
     private int value = 0;
+    private boolean isPwm = false;
     private boolean autoModeEn = false;
 
     /**
@@ -39,22 +40,23 @@ public class ArduinoPin {
      */
     public ArduinoPin(int pin, String name) {
         this.pin = pin;
-        if (name != null) {
-            this.name = name;
-        }
+        this.name = name;
     }
 
     /**
      * Class constructor.
      *
-     * @param pin      the id of this pin (its number on the Arduino board).
-     * @param name     a name for this pin.
-     * @param pwmValue an initial value. Integer, 0→255
+     * @param pin   the id of this pin (its number on the Arduino board).
+     * @param name  a name for this pin.
+     * @param value an initial value. Integer, 0→255
      * @see #setValue(int)
      */
-    public ArduinoPin(int pin, String name, int pwmValue) {
-        this(pin, name);
-        this.value = constrain(pwmValue);
+    public ArduinoPin(int pin, String name, int value, boolean isPwm, boolean autoModeEn) {
+        this.pin = pin;
+        this.name = name;
+        this.value = constrain(value);
+        this.isPwm = isPwm;
+        this.autoModeEn = autoModeEn;
     }
 
     /**
@@ -73,6 +75,14 @@ public class ArduinoPin {
         return (n >= 255 ? 255 : (Math.max(n, 0)));
     }
 
+    public boolean isPwm() {
+        return isPwm;
+    }
+
+    public void setPwm(boolean pwm) {
+        isPwm = pwm;
+    }
+
     public boolean isAutoModeEn() {
         return autoModeEn;
     }
@@ -83,7 +93,6 @@ public class ArduinoPin {
 
     /**
      * @return The value of the pin, integer, 0→255
-     * @see ValueType#PWM
      */
     public int getValuePwm() {
         return value;
@@ -91,15 +100,13 @@ public class ArduinoPin {
 
     /**
      * @return The value of the pin, {@code true} or {@code false}
-     * @see ValueType#BOOLEAN
      */
     public boolean getValueBoolean() {
         return value > 100;
     }
 
     /**
-     * @return The value of the pin in percentage, {@link Constants.SwitchStatus#ON} or {@link Constants.SwitchStatus#OFF}
-     * @see ValueType#INDI
+     * @return The value of the pin, {@link Constants.SwitchStatus#ON} or {@link Constants.SwitchStatus#OFF}
      */
     public Constants.SwitchStatus getValueIndi() {
         return value > 100 ? Constants.SwitchStatus.ON : Constants.SwitchStatus.OFF;
@@ -108,45 +115,18 @@ public class ArduinoPin {
     /**
      * Sets a new value to this pin.
      *
-     * @param type  the type of value.
-     * @param value the initial value.
-     * @see ValueType
+     * @param value a new value for this pin, 0→255.
      */
-    public void setValue(ValueType type, Object value) {
-        Objects.requireNonNull(value, "Null value!");
-        switch (Objects.requireNonNull(type)) {
-            case PWM -> {
-                if (!(value instanceof Integer)) {
-                    throw new IllegalArgumentException("Invalid value!");
-                }
-                this.value = constrain((int) value);
-            }
-
-            case INDI -> {
-                if (!(value instanceof Constants.SwitchStatus)) {
-                    throw new IllegalArgumentException("Invalid value!");
-                }
-                this.value = value == Constants.SwitchStatus.ON ? 255 : 0;
-            }
-
-            case BOOLEAN -> {
-                if (!(value instanceof Boolean)) {
-                    throw new IllegalArgumentException("Invalid value!");
-                }
-                this.value = ((boolean) value) ? 255 : 0;
-            }
-
-            default -> throw new UnsupportedOperationException("Unsupported type of pin value!");
-        }
+    public void setValue(int value) {
+        this.value = isPwm ? constrain(value) : (value > 100 ? 255 : 0);
     }
 
-    /**
-     * Sets a new value to this pin.
-     *
-     * @param pwmValue a new value for this pin, 0→255.
-     */
-    public void setValue(int pwmValue) {
-        value = constrain(pwmValue);
+    public void setValue(boolean value) {
+        this.value = value ? 255 : 0;
+    }
+
+    public void setValue(Constants.SwitchStatus value) {
+        this.value = value == Constants.SwitchStatus.ON ? 255 : 0;
     }
 
     /**
@@ -179,24 +159,6 @@ public class ArduinoPin {
 
     @Override
     public String toString() {
-        return "Pin " + pin + " is \"" + name + "\", value: " + (value == 255 ? "high" : (value == 0 ? "low" : ((int) Math.round(value / 2.55) + "%")));
-    }
-
-    /**
-     * All the possible value types for Arduino pins.
-     *
-     * @author marcocipriani01
-     * @version 1.0
-     */
-    public enum ValueType {
-        /**
-         * Integer, 0→255
-         */
-        PWM,
-        /**
-         * {@link Constants.SwitchStatus#ON} or {@link Constants.SwitchStatus#OFF}
-         */
-        INDI,
-        BOOLEAN
+        return "Pin " + pin + " is \"" + name + "\", value: " + (isPwm ? value : (value > 100 ? "HIGH" : "LOW"));
     }
 }

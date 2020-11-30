@@ -1,4 +1,4 @@
-package marcocipriani01.thunder.focus.io;
+package marcocipriani01.thunderfocus.io;
 
 import java.io.IOException;
 
@@ -6,9 +6,8 @@ import java.io.IOException;
  * Exception related to connections, sockets, communication and data transfer in general.
  *
  * @author marcocipriani01
- * @version 1.1
+ * @version 1.2
  */
-@SuppressWarnings("unused")
 public class ConnectionException extends IOException {
 
     /**
@@ -127,93 +126,83 @@ public class ConnectionException extends IOException {
         /**
          * Generic or unknown error.
          */
-        UNKNOWN("UNKNOWN"),
+        UNKNOWN,
         /**
          * Not connected.
          */
-        NOT_CONNECTED("NOT_CONNECTED"),
+        NOT_CONNECTED,
         /**
          * Not started yet.
          */
-        NOT_STARTED("NOT_STARTED"),
+        NOT_STARTED,
         /**
          * Already started.
          */
-        ALREADY_STARTED("ALREADY_STARTED"),
+        ALREADY_STARTED,
         /**
          * Already connected.
          */
-        ALREADY_CONNECTED("ALREADY_CONNECTED"),
+        ALREADY_CONNECTED,
         /**
          * Generic, port busy.
          */
-        BUSY("BUSY"),
+        BUSY,
         /**
          * Error during the I/O.
          */
-        IO("IO"),
+        IO,
         /**
          * Error in input transfer.
          */
-        INPUT("INPUT"),
+        INPUT,
         /**
          * Error in output transfer.
          */
-        OUTPUT("OUTPUT"),
+        OUTPUT,
         /**
          * Error during connection.
          */
-        CONNECTION("CONNECTION"),
+        CONNECTION,
         /**
          * Error during connection, port busy.
          */
-        PORT_BUSY("PORT_BUSY"),
+        PORT_BUSY,
         /**
          * Error during connection, no port found.
          */
-        PORT_NOT_FOUND("PORT_NOT_FOUND"),
+        PORT_NOT_FOUND,
         /**
          * Host not found.
          */
-        HOST_NOT_FOUND("HOST_NOT_FOUND"),
+        HOST_NOT_FOUND,
         /**
          * Error during disconnection.
          */
-        UNABLE_TO_DISCONNECT("UNABLE_TO_DISCONNECT"),
+        UNABLE_TO_DISCONNECT,
         /**
          * Error that occurs when the client doesn't receive a response to an important request.
          */
-        NO_RESPONSE("NO_RESPONSE"),
+        NO_RESPONSE,
         /**
          * Error that occurs when the client doesn't receive a valid response to a request, or a received message was invalid.
          * Could be both a warning or a fatal error.
          */
-        PROTOCOL("PROTOCOL"),
+        PROTOCOL,
         /**
          * Occurs when the network interfaces are unreachable.
          */
-        NETWORK_ERROR("NETWORK_ERROR"),
+        NETWORK_ERROR,
         /**
          * Connection timeout.
          */
-        TIMEOUT("TIMEOUT"),
+        TIMEOUT,
         /**
          * Remote file not found.
          */
-        REMOTE_FILE_NOT_FOUND("REMOTE_FILE_NOT_FOUND"),
+        REMOTE_FILE_NOT_FOUND,
         /**
          * Operation cancelled by user.
          */
-        CANCELLED_BY_USER("CANCELLED_BY_USER");
-
-        private final String description;
-
-        Type(String description) {
-            this.description = "ERR_" + description;
-        }
-
-        public String getDescription() {
-            return description;
-        }
+        CANCELLED_BY_USER;
     }
 }

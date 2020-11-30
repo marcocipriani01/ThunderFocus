@@ -1,10 +1,11 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus;
 
-import marcocipriani01.thunder.focus.io.ConnectionException;
-import marcocipriani01.thunder.focus.io.SerialPortImpl;
-import marcocipriani01.thunder.focus.powerbox.ArduinoPin;
-import marcocipriani01.thunder.focus.powerbox.ArduinoPinsJTable;
-import marcocipriani01.thunder.focus.powerbox.PinArray;
+import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
+import marcocipriani01.thunderfocus.io.ConnectionException;
+import marcocipriani01.thunderfocus.io.SerialPortImpl;
+import marcocipriani01.thunderfocus.focuser.ArduinoPin;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -16,11 +17,11 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static marcocipriani01.thunder.focus.Main.APP_NAME;
+import static marcocipriani01.thunderfocus.Main.APP_NAME;
 
 public class MainWindow extends JFrame implements ChangeListener, ActionListener, KeyListener, FocusListener, ThunderFocuser.Listener, Settings.SettingsListener {
 
-    private static final ImageIcon POWERBOX_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunder/focus/res/powerboxtab.png"));
+    private static final ImageIcon POWERBOX_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
     private final MiniWindow miniWindow = new MiniWindow() {
         @Override
         protected void onHide() {
@@ -337,13 +338,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == applyPowerBoxButton) {
             try {
-                PinArray dp = digitalPinsJTable.getPins();
-                Main.settings.setDigitalPins(new PinArray(dp), this);
+                PowerBox dp = digitalPinsJTable.getPins();
+                Main.settings.setDigitalPins(new PowerBox(dp), this);
                 for (ArduinoPin p : dp) {
                     Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
-                PinArray ap = pwmPinsJTable.getPins();
-                Main.settings.setPwmPins(new PinArray(dp), this);
+                PowerBox ap = pwmPinsJTable.getPins();
+                Main.settings.setPwmPins(new PowerBox(dp), this);
                 for (ArduinoPin p : ap) {
                     Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
                 }
@@ -582,7 +583,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
                 case DIGITAL_PINS -> digitalPinsJTable.refresh();
-                case MANAGED_PINS -> pwmPinsJTable.refresh();
+                case POWERBOX_PINS -> pwmPinsJTable.refresh();
             }
         });
     }
@@ -698,7 +699,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void update(Settings.Value what, PinArray value) {
+    public void update(Settings.Value what, PowerBox value) {
 
     }
 }

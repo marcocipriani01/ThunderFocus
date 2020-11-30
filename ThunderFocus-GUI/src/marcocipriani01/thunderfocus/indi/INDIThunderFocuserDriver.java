@@ -1,9 +1,12 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus.indi;
 
-import marcocipriani01.thunder.focus.io.ConnectionException;
-import marcocipriani01.thunder.focus.io.SerialPortImpl;
-import marcocipriani01.thunder.focus.powerbox.ArduinoPin;
-import marcocipriani01.thunder.focus.powerbox.PinArray;
+import marcocipriani01.thunderfocus.Main;
+import marcocipriani01.thunderfocus.Settings;
+import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.io.ConnectionException;
+import marcocipriani01.thunderfocus.io.SerialPortImpl;
+import marcocipriani01.thunderfocus.focuser.ArduinoPin;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 import org.indilib.i4j.Constants;
 import org.indilib.i4j.driver.*;
 import org.indilib.i4j.driver.focuser.INDIFocuserDriver;
@@ -458,7 +461,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
         if (Main.focuser.isPowerBox()) {
-            PinArray digitalPins = Main.focuser.getManagedPins();
+            PowerBox digitalPins = Main.focuser.getManagedPins();
             if (digitalPins.size() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
@@ -470,7 +473,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
                 }
                 addProperty(digitalPinProps);
             }
-            PinArray pwmPins = Main.focuser.getPwmPins();
+            PowerBox pwmPins = Main.focuser.getPwmPins();
             if (pwmPins.size() > 0) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).create();
@@ -635,7 +638,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     }
 
     @Override
-    public void update(Settings.Value what, PinArray value) {
+    public void update(Settings.Value what, PowerBox value) {
 
     }
 }

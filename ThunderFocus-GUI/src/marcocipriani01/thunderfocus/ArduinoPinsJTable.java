@@ -1,4 +1,7 @@
-package marcocipriani01.thunder.focus.powerbox;
+package marcocipriani01.thunderfocus;
+
+import marcocipriani01.thunderfocus.focuser.ArduinoPin;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -14,8 +17,7 @@ import java.util.EventObject;
 public class ArduinoPinsJTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 45;
-    private final boolean arePwmPins;
-    private PinArray pins = null;
+    private PowerBox pins = null;
     private boolean editMode = true;
 
     /**
@@ -70,11 +72,11 @@ public class ArduinoPinsJTable extends JTable {
         columnModel.getColumn(2).setMaxWidth(Math.round(tW / 2.0f) + 1);
     }
 
-    public PinArray getPins() {
+    public PowerBox getPins() {
         return pins;
     }
 
-    public void setPins(PinArray pins) {
+    public void setPins(PowerBox pins) {
         this.pins = pins;
         setTableRowsHeight();
     }
@@ -115,7 +117,7 @@ public class ArduinoPinsJTable extends JTable {
 
     /**
      * The model of this table.
-     * Sets the values of the pin in the {@link PinArray} and returns up-to-date values to the table.
+     * Sets the values of the pin in the {@link PowerBox} and returns up-to-date values to the table.
      *
      * @author marcocipriani01
      * @version 1.0
@@ -140,31 +142,6 @@ public class ArduinoPinsJTable extends JTable {
         @Override
         public int getRowCount() {
             return (pins == null) ? 0 : pins.size();
-        }
-
-        /**
-         * Adds an {@link ArduinoPin} to the {@link PinArray} and to the table.
-         *
-         * @param pin a pin.
-         */
-        void add(ArduinoPin pin) {
-            if (pins == null) throw new NullPointerException("Null pins list.");
-            if (pin == null) throw new NullPointerException("Null pin.");
-            pins.add(pin);
-            fireTableDataChanged();
-            setTableRowsHeight();
-        }
-
-        /**
-         * Removes an {@link ArduinoPin} from the {@link PinArray} and from the table.
-         *
-         * @param pin a pin.
-         */
-        void remove(ArduinoPin pin) {
-            if (pins == null) throw new NullPointerException("Null pins list.");
-            pins.remove(pin);
-            fireTableDataChanged();
-            setTableRowsHeight();
         }
 
         @Override

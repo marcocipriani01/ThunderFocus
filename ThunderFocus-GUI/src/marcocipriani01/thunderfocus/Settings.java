@@ -1,10 +1,10 @@
-package marcocipriani01.thunder.focus;
+package marcocipriani01.thunderfocus;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import marcocipriani01.thunder.focus.powerbox.PinArray;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,12 +46,6 @@ public class Settings {
     @SerializedName("Show IP for INDI server")
     @Expose
     private boolean showRemoteIndi = false;
-    @SerializedName("Digital pins")
-    @Expose
-    private PinArray digitalPins = new PinArray();
-    @SerializedName("PWM pins")
-    @Expose
-    private PinArray pwmPins = new PinArray();
     @SerializedName("Focuser ticks count")
     @Expose
     private int fokTicksCount = 70;
@@ -61,6 +55,9 @@ public class Settings {
     @SerializedName("Focuser max travel")
     @Expose
     private int fokMaxTravel = 32767;
+    @SerializedName("Powerbox data")
+    @Expose
+    private PowerBox powerBox = new PowerBox();
 
     /**
      * Class constructor.
@@ -163,22 +160,13 @@ public class Settings {
         update(Value.SHOW_REMOTE_INDI, caller, showRemoteIndi);
     }
 
-    public PinArray getDigitalPins() {
-        return digitalPins;
+    public PowerBox getPowerBox() {
+        return powerBox;
     }
 
-    public void setDigitalPins(PinArray digitalPins, SettingsListener caller) {
-        this.digitalPins = digitalPins;
-        update(Value.DIGITAL_PINS, caller, digitalPins);
-    }
-
-    public PinArray getPwmPins() {
-        return pwmPins;
-    }
-
-    public void setPwmPins(PinArray pwmPins, SettingsListener caller) {
-        this.pwmPins = pwmPins;
-        update(Value.PWM_PINS, caller, pwmPins);
+    public void setDigitalPins(PowerBox digitalPins, SettingsListener caller) {
+        this.powerBox = digitalPins;
+        update(Value.POWERBOX_PINS, caller, digitalPins);
     }
 
     public int getFokTicksCount() {
@@ -236,7 +224,7 @@ public class Settings {
         }
     }
 
-    void update(Value what, SettingsListener notMe, PinArray value) {
+    void update(Value what, SettingsListener notMe, PowerBox value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.update(what, value);
         }
@@ -246,7 +234,7 @@ public class Settings {
         THEME, SERIAL_PORT,
         IS_INDI_ENABLED, SHOW_REMOTE_INDI, INDI_PORT,
         FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL,
-        DIGITAL_PINS, PWM_PINS
+        POWERBOX_PINS
     }
 
     public enum Units {
@@ -278,6 +266,6 @@ public class Settings {
 
         void update(Value what, boolean value);
 
-        void update(Value what, PinArray value);
+        void update(Value what, PowerBox value);
     }
 }

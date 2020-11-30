@@ -49,8 +49,6 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print("C");
 				Serial.print(FIRMWARE_VERSION);
 				Serial.print(",");
-				Serial.print(1);
-				Serial.print(",");
 				Serial.print(focuser->getCurrentPos());
 				Serial.print(",");
 				Serial.print(focuser->getSpeed());
@@ -66,22 +64,28 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(",");
 				Serial.print(getDevManAutoMode());
 				Serial.print(",");
-				Serial.print(TIME_CONTROL);
-				Serial.print(",");
-				Serial.print(TEMP_HUM_SENSOR);
-				Serial.print(",");
 				for (byte i = 0; i < getManagedPinsCount(); i++) {
 					Pin pin = getManagedPin(i);
 					Serial.print("(");
 					Serial.print(pin.number);
 					Serial.print("%");
-					Serial.print(pin.isPwm);
-					Serial.print("%");
 					Serial.print(pin.value);
 					Serial.print("%");
-					Serial.print((int) pin.autoModeEn);
+					Serial.print(pin.isPwm);
+					Serial.print("%");
+					Serial.print(pin.autoModeEn);
 					Serial.print(")");
 				}
+				Serial.print(",");
+				Serial.print(TEMP_HUM_SENSOR);
+				Serial.print(",");
+				Serial.print(TIME_CONTROL);
+#if TIME_CONTROL == true
+				Serial.print(",");
+				Serial.print(getWorldLat());
+				Serial.print(",");
+				Serial.print(getWorldLong());
+#endif
 #endif
 				Serial.println();
 				break;
@@ -193,7 +197,9 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				setTeensyTime(Serial.parseInt());
 				double lat = Serial.parseInt();
 				double lng = Serial.parseInt();
-				setWorldCoord(lat / 1000.0, lng / 1000.0);
+				if (lat != 0 && lng != 0) {
+					setWorldCoord(lat / 1000.0, lng / 1000.0);
+				}
 				break;
 			}
 #endif

@@ -144,10 +144,10 @@ boolean setPinAutoMode(byte pin, boolean autoModeEn) {
 	for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
 		if (pin == pins[i].number){
 			pins[i].autoModeEn = autoModeEn;
-			processAutoMode(true);
-			return;
+			return processAutoMode(true);
 		}
 	}
+	return false;
 }
 
 DevManAutoModes getDevManAutoMode() {

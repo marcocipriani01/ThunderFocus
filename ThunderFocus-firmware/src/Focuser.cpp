@@ -1,16 +1,16 @@
 #include "Focuser.h"
 
 Focuser::Focuser() :
-#if STEPPER_TYPE == 3
-	stepper(AccelStepper::FULL4WIRE, DRIVER_IN1, DRIVER_IN3, DRIVER_IN2, DRIVER_IN4)
+#if FOK1_STEPPER == DRIVER_POLOLU
+	stepper(AccelStepper::DRIVER, FOK1_STEP, FOK1_DIR)
+#elif FOK1_STEPPER == DRIVER_ULN2003
+	stepper(AccelStepper::FULL4WIRE, FOK1_IN1, FOK1_IN2, FOK1_IN3, FOK1_IN4)
 #else
-	stepper(AccelStepper::DRIVER, DRIVER_STEP, DRIVER_DIR)
+#error Unsupported focuser driver
 #endif
 {
-	stepper.setAcceleration(MOTOR_ACCEL);
-	ledState = false;
-	blinkStartTime = millis();
-	lastMovementTime = blinkStartTime;
+	stepper.setAcceleration(FOK1_ACCEL);
+	lastMovementTime = millis();
 	powerOn = false;
 	isMoving = false;
 	isHcMoving = true;
@@ -20,27 +20,23 @@ void Focuser::begin(boolean initHoldControlEnabled,
                     uint8_t initSpeed,
                     long backlash,
 					boolean reverseDir) {
-	pinMode(FOK_LED1, OUTPUT);
-#ifdef FOK_LED2
-	pinMode(FOK_LED2, OUTPUT);
-#endif
-#ifdef DRIVER_EN
-	stepper.setEnablePin(DRIVER_EN);
+#ifdef FOK1_EN
+	stepper.setEnablePin(FOK1_EN);
 	stepper.setPinsInverted(reverseDir, false, true);
 #else
 	stepper.setPinsInverted(reverseDir, false, false);
 #endif
-#ifdef MODE0
-	pinMode(MODE0, OUTPUT);
-	digitalWrite(MODE0, HIGH);
+#ifdef FOK1_MODE0
+	pinMode(FOK1_MODE0, OUTPUT);
+	digitalWrite(FOK1_MODE0, HIGH);
 #endif
-#ifdef MODE1
-	pinMode(MODE1, OUTPUT);
-	digitalWrite(MODE1, HIGH);
+#ifdef FOK1_MODE1
+	pinMode(FOK1_MODE1, OUTPUT);
+	digitalWrite(FOK1_MODE1, HIGH);
 #endif
-#ifdef MODE2
-	pinMode(MODE2, OUTPUT);
-	digitalWrite(MODE2, HIGH);
+#ifdef FOK1_MODE2
+	pinMode(FOK1_MODE2, OUTPUT);
+	digitalWrite(FOK1_MODE2, HIGH);
 #endif
 	stepper.setBacklash(backlash);
 	speed = initSpeed;
@@ -50,11 +46,10 @@ void Focuser::begin(boolean initHoldControlEnabled,
 }
 
 void Focuser::begin() {
-	begin(DEFAULT_ENABLE_HOLD_CONTROL, 80, 0, DEFAULT_DIRECTION_INVERT);
+	begin(FOK1_HOLD_CONTROL, 80, 0, FOK1_DIR_INVERT);
 }
 
 void Focuser::moveToTargetPos(long newPos) {
-	pinMode(FOK_LED1, HIGH);
 	isHcMoving = false;
 	turnOn();
 	applySpeed();
@@ -62,7 +57,6 @@ void Focuser::moveToTargetPos(long newPos) {
 }
 
 void Focuser::move(long newPos) {
-	pinMode(FOK_LED1, HIGH);
 	isHcMoving = false;
 	turnOn();
 	applySpeed();
@@ -74,13 +68,7 @@ long Focuser::getTargetPos() {
 }
 
 void Focuser::brake() {
-	if (isMoving) {
-		stepper.stop();
-		digitalWrite(FOK_LED1, HIGH);
-#ifdef FOK_LED2
-		digitalWrite(FOK_LED2, HIGH);
-#endif
-	}
+	if (isMoving) stepper.stop();
 }
 
 void Focuser::setCurrentPos(long newPos) {
@@ -97,30 +85,22 @@ FocuserState Focuser::run() {
 	unsigned long time = millis();
 	if (isMoving) {
 		if (stepper.run()) {
-			return FS_MOVING;
+			return FocuserState::FOCUSER_MOVING;
 		} else {
 			isMoving = false;
 			applySpeed();
 			lastMovementTime = time;
-#ifdef FOK_LED2
-			digitalWrite(FOK_LED2, LOW);
-#endif
-			return FS_JUST_ARRIVED;
+			return FocuserState::FOCUSER_ARRIVED;
 		}
 	}
 	if (powerOn) {
 		// Turn power off if active time period has passed
-		if (holdControlEnabled && ((time - lastMovementTime) >= DRIVER_POWER_TIMEOUT)) {
+		if (holdControlEnabled && ((time - lastMovementTime) >= FOK1_POWER_TIMEOUT)) {
 			turnOff();
 		}
-		return FS_HOLD_MOTOR;
+		return FocuserState::FOCUSER_HOLD;
 	}
-	if (time - blinkStartTime >= FOK_LED_BLINK_PERIOD) {
-		blinkStartTime = time;
-		ledState = !ledState;
-		digitalWrite(FOK_LED1, ledState);
-	}
-	return FS_POWERSAVE;
+	return FocuserState::FOCUSER_POWERSAVE;
 }
 
 boolean Focuser::isRunning() {
@@ -187,25 +167,14 @@ void Focuser::hCMove(unsigned int analogValue, boolean reverse) {
 		isHcMoving = true;
 		if (reverse) {
 			stepper.move(-steps);
-#ifdef FOK_LED2
-			digitalWrite(FOK_LED1, LOW);
-			digitalWrite(FOK_LED2, HIGH);
-#else
-			digitalWrite(FOK_LED1, HIGH);
-#endif
-
 		} else {
 			stepper.move(steps);
-			digitalWrite(FOK_LED1, HIGH);
-#ifdef FOK_LED2
-			digitalWrite(FOK_LED2, LOW);
-#endif
 		}
 	}
 }
 
 void Focuser::applySpeed() {
-	stepper.setMaxSpeed(map(speed, 0, 100, MOTOR_PPS_MIN, MOTOR_PPS_MAX));
+	stepper.setMaxSpeed(map(speed, 0, 100, FOK1_PPS_MIN, FOK1_PPS_MAX));
 }
 
 void Focuser::turnOn() {
@@ -218,8 +187,4 @@ void Focuser::turnOff() {
 	stepper.disableOutputs();
 	powerOn = false;
 	isMoving = false;
-	digitalWrite(FOK_LED1, LOW);
-#ifdef FOK_LED2
-	digitalWrite(FOK_LED2, LOW);
-#endif
 }

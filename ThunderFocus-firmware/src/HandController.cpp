@@ -6,25 +6,25 @@ HandController::HandController(Focuser *focuser) {
 }
 
 void HandController::begin() {
-	pinMode(BUTTON_UP, INPUT_PULLUP);
-	pinMode(BUTTON_DOWN, INPUT_PULLUP);
-	f->setHCSpeedInterval(MOTOR_HC_PPS_MIN, MOTOR_HC_PPS_MAX);
-	f->setHCMaxStepsPerPush(MAX_STEPS_PUSH);
+	pinMode(FOK1_HC_LEFT, INPUT_PULLUP);
+	pinMode(FOK1_HC_RIGHT, INPUT_PULLUP);
+	f->setHCSpeedInterval(FOK1_HC_PPS_MIN, FOK1_HC_PPS_MAX);
+	f->setHCMaxStepsPerPush(FOK1_HC_MAX_STEPS);
 }
 
 void HandController::manage() {
 	unsigned long currentTime = millis();
-	unsigned int val = analogRead(HC_SPEED_POT);
+	unsigned int val = analogRead(FOK1_HC_KNOB);
 	if ((currentTime - lastButtonTime) >=
-	    ((unsigned long) map(val, 0, 1023, BUTTONS_CHECK_DELAY_MINSPEED, BUTTONS_CHECK_DELAY_MAXSPEED))) {
+	    ((unsigned long) map(val, 0, 1023, FOK1_HC_MIN_SPEED_DELAY, FOK1_HC_MAX_SPEED_DELAY))) {
 		lastButtonTime = currentTime;
-		if (digitalRead(BUTTON_UP) == LOW && digitalRead(BUTTON_DOWN) == HIGH) {
+		if (digitalRead(FOK1_HC_RIGHT) == LOW && digitalRead(FOK1_HC_LEFT) == HIGH) {
 			f->hCMove(val, false);
 
-		} else if (digitalRead(BUTTON_DOWN) == LOW && digitalRead(BUTTON_UP) == HIGH) {
+		} else if (digitalRead(FOK1_HC_LEFT) == LOW && digitalRead(FOK1_HC_RIGHT) == HIGH) {
 			f->hCMove(val, true);
 
-		} else if (digitalRead(BUTTON_DOWN) == LOW && digitalRead(BUTTON_UP) == LOW) {
+		} else if (digitalRead(FOK1_HC_LEFT) == LOW && digitalRead(FOK1_HC_RIGHT) == LOW) {
 			f->brake();
 		}
 	}

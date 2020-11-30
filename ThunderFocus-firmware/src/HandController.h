@@ -2,8 +2,7 @@
 #define HAND_CONTROLLER_H
 
 #include <Arduino.h>
-// Configuration
-#include "HandControllerConfig.h"
+#include "config.h"
 #include "Focuser.h"
 
 class HandController {

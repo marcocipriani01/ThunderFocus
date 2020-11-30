@@ -1,22 +1,19 @@
-#ifndef FOCUSER_LIB_H
-#define FOCUSER_LIB_H
+#ifndef FOCUSER_H
+#define FOCUSER_H
 
 #include <Arduino.h>
-// Configuration
-#include "FocuserConfig.h"
+#include "config.h"
 // Stepper driver libraries
 #include <AccelStepper.h>
 
-enum FocuserState
-{
-	FS_MOVING = (int)'M',
-	FS_HOLD_MOTOR = (int)'H',
-	FS_JUST_ARRIVED = (int)'A',
-	FS_POWERSAVE = (int)'P'
+enum FocuserState {
+	FOCUSER_MOVING = (int)'M',
+	FOCUSER_HOLD = (int)'H',
+	FOCUSER_ARRIVED = (int)'A',
+	FOCUSER_POWERSAVE = (int)'P'
 };
 
-class Focuser
-{
+class Focuser {
 public:
 	Focuser();
 	void begin(boolean initHoldControlEnabled,
@@ -59,10 +56,6 @@ private:
 	unsigned int hCMinPPS;
 	unsigned int hCMaxPPS;
 	long maxStepsPerPush;
-
-	// ----- Status LED -----
-	boolean ledState;
-	unsigned long blinkStartTime;
 
 	void applySpeed();
 	int rpmToSpeed(int rpm);

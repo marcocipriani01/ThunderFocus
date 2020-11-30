@@ -15,4 +15,10 @@ ThunderFocus is an open-source telescope focuser. It has its own contorl softwar
 - [Material icons](https://material.io/resources/icons/) by Google, [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
 - [Arduino Core APIs](https://github.com/arduino/Arduino) by Arduino, [LGPL v3 license](https://github.com/arduino/Arduino/blob/master/license.txt)
 - [AccelStepper](https://www.airspayce.com/mikem/arduino/AccelStepper/) by Mike McCauley (with modifications), [GPL v3 license](https://www.gnu.org/licenses/gpl-3.0.html)
+- [Arduino Time Library](https://github.com/PaulStoffregen/Time) by Michael Margolis, [LGPL v2.1 license](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+- [SolarPosition library](https://github.com/KenWillmott/SolarPosition) by Ken Willmott
+  - Based on the program [_Arduino Uno and Solar Position Calculations_](http://www.instesre.org/ArduinoDocuments.htm), © David R. Brooks, issued under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+  - Uses equations from the book [_Astronomical Algorithms_ by Jean Meeus](https://www.willbell.com/math/mc1.HTM), published by Willmann-Bell, Inc., Richmond, VA
+- [Adafruit Unified Sensor Driver](https://github.com/adafruit/Adafruit_Sensor) by Adafruit, [Apache License 2.0](https://github.com/adafruit/Adafruit_Sensor/blob/master/LICENSE.txt)
+- [DHT sensor library](https://github.com/adafruit/DHT-sensor-library) by Adafruit, [MIT license](https://github.com/adafruit/DHT-sensor-library/blob/master/license.txt)
 - [Telescope icon](https://www.flaticon.com/free-icon/telescope_547425?term=telescope&page=1&position=9&related_item_id=547425) by Freepik, [Flaticon license](https://www.freepikcompany.com/legal#nav-flaticon)

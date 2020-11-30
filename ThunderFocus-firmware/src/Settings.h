@@ -3,20 +3,24 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#define EEPROM_MARKER 'A'
+#if ENABLE_DEVMAN == true
+#include "DevManager.h"
+#endif
 
 struct Settings {
 	uint8_t marker;
-#if ENABLE_FOCUSER == true
-	uint32_t currentPosition;
-	uint8_t speed;
-	uint8_t holdControlEnabled;
-	int32_t backlash;
-	boolean reverseDir;
-#endif
+	long fok1Pos;
+	uint8_t fok1Speed;
+	long fok1Backlash;
+	boolean fok1HoldControl;
+	boolean fok1Reverse;
 #if ENABLE_DEVMAN == true
-	uint8_t devsPwmStates[DEVMAN_PWM_COUNT];
-	boolean devsDioStates[DEVMAN_DIO_COUNT];
+	Pin devManPins[MANAGED_PINS_COUNT];
+	DevManAutoModes devManAutoMode;
+#endif
+#if TIME_CONTROL == true
+	float worldLat;
+	float worldLong;
 #endif
 };
 

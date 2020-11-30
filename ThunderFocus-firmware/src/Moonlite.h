@@ -3,8 +3,7 @@
 
 #include <Arduino.h>
 
-typedef enum
-{
+typedef enum {
 	M_INIT_TEMP_CONV,
 	M_STOP,
 	M_GET_CURRENT_POS,
@@ -28,16 +27,12 @@ typedef enum
 	M_SET_TEMP_CAL_OFFSET,
 	M_ENABLE_HOLD,
 	M_DISABLE_HOLD,
-	M_GET_BOARD_TYPE,
-	M_SET_PIN,
-	M_RESET_PINS,
 	M_UNRECOGNIZED
 } MoonLiteCommand;
 
-#define NUM_MOONLITE_COMMANDS 26
+#define NUM_MOONLITE_COMMANDS 23
 
-const static struct
-{
+const static struct {
 	MoonLiteCommand val;
 	const char *str;
 
@@ -64,54 +59,42 @@ const static struct
 	{M_DISABLE_TEMP_COMP, "-"},
 	{M_SET_TEMP_CAL_OFFSET, "PO"},
 	{M_ENABLE_HOLD, "HE"},
-	{M_DISABLE_HOLD, "HD"},
-	{M_GET_BOARD_TYPE, "BT"},
-	{M_SET_PIN, "AV"},
-	{M_RESET_PINS, "RS"}};
+	{M_DISABLE_HOLD, "HD"}};
 
-MoonLiteCommand moonliteStringToEnum(char *buffer)
-{
-	for (int i = 0; i < NUM_MOONLITE_COMMANDS; ++i)
-	{
-		if (strncmp(buffer, MoonLiteMapping[i].str, 2) == 0)
-		{
+MoonLiteCommand moonliteStringToEnum(char *buffer) {
+	for (int i = 0; i < NUM_MOONLITE_COMMANDS; ++i) {
+		if (strncmp(buffer, MoonLiteMapping[i].str, 2) == 0) {
 			return MoonLiteMapping[i].val;
 		}
 	}
 	return M_UNRECOGNIZED;
 }
 
-uint16_t fourCharsToUint16(char *buffer)
-{
+uint16_t fourCharsToUint16(char *buffer) {
 	long int result = strtol(buffer, NULL, 16);
 	return (uint16_t)(result & 0xFFFF);
 }
 
-uint8_t twoCharsToUint8(char *buffer)
-{
+uint8_t twoCharsToUint8(char *buffer) {
 	long int result = strtol(buffer, NULL, 16);
 	return (uint8_t)(result & 0xFF);
 }
 
-uint8_t twoDecCharsToUint8(char *buffer)
-{
+uint8_t twoDecCharsToUint8(char *buffer) {
 	long int result = strtol(buffer, NULL, 10);
 	return (uint8_t)(result & 0xFF);
 }
 
-int8_t twoCharsToInt8(char *buffer)
-{
+int8_t twoCharsToInt8(char *buffer) {
 	long int result = strtol(buffer, NULL, 16);
 	int8_t val = (int8_t)(result & 0xFF);
-	if (val > 127)
-	{
+	if (val > 127) {
 		val = ~(val - 1);
 	}
 	return val;
 }
 
-void clearBuffer(char *buffer, uint16_t length)
-{
+void clearBuffer(char *buffer, uint16_t length) {
 	memset(buffer, 0, length);
 }
 

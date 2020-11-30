@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @author marcocipriani01
  * @version 4.0
  */
-public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyFocuser.Listener, Settings.SettingsListener {
+public class INDIThunderFocuserDriver extends INDIFocuserDriver implements ThuderFocuser.Listener, Settings.SettingsListener {
 
     public static final String DRIVER_NAME = "ThunderFocus";
     public static final String CONNECTION_GROUP = "Connection";
@@ -152,14 +152,14 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     @Override
     public void absolutePositionHasBeenChanged() {
         try {
-            Main.focuser.run(EasyFocuser.Commands.FOK_ABS_MOVE, this, getDesiredAbsPosition());
+            Main.focuser.run(ThuderFocuser.Commands.FOK1_ABS_MOVE, this, getDesiredAbsPosition());
         } catch (ConnectionException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
-        } catch (EasyFocuser.InvalidParamException e) {
+        } catch (ThuderFocuser.InvalidParamException e) {
             e.printStackTrace();
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
@@ -174,7 +174,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     @Override
     public void speedHasBeenChanged() {
         try {
-            Main.focuser.run(EasyFocuser.Commands.FOK_SET_SPEED, this, getCurrentSpeed());
+            Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_SPEED, this, getCurrentSpeed());
             desiredSpeedSet();
         } catch (ConnectionException e) {
             e.printStackTrace();
@@ -182,7 +182,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
             updateProperty(connectionProp);
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
-        } catch (EasyFocuser.InvalidParamException e) {
+        } catch (ThuderFocuser.InvalidParamException e) {
             e.printStackTrace();
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
@@ -192,7 +192,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     @Override
     public void stopHasBeenRequested() {
         try {
-            Main.focuser.run(EasyFocuser.Commands.FOK_STOP, this);
+            Main.focuser.run(ThuderFocuser.Commands.FOK1_STOP, this);
             stopped();
         } catch (ConnectionException e) {
             e.printStackTrace();
@@ -200,7 +200,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
             updateProperty(connectionProp);
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
-        } catch (EasyFocuser.InvalidParamException e) {
+        } catch (ThuderFocuser.InvalidParamException e) {
             e.printStackTrace();
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
@@ -245,7 +245,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     ArduinoPin pin = pinsMap.get(element);
                     pin.setValue(eAV.getValue().intValue());
                     element.setValue((double) pin.getValuePwm());
-                    Main.focuser.run(EasyFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
@@ -255,7 +255,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 updateProperty(connectionProp);
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
-            } catch (EasyFocuser.InvalidParamException e) {
+            } catch (ThuderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
@@ -268,7 +268,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     Double value = eAV.getValue();
                     if (element == focusRelPositionE) {
                         element.setValue(value);
-                        Main.focuser.run(EasyFocuser.Commands.FOK_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
+                        Main.focuser.run(ThuderFocuser.Commands.FOK1_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
                         break;
                     }
                 }
@@ -280,7 +280,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 updateProperty(connectionProp);
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
-            } catch (EasyFocuser.InvalidParamException e) {
+            } catch (ThuderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
@@ -306,7 +306,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     Double value = eAV.getValue();
                     if (element == syncFocusPositionE) {
                         element.setValue(value);
-                        Main.focuser.run(EasyFocuser.Commands.FOK_SET_POS, this, value.intValue());
+                        Main.focuser.run(ThuderFocuser.Commands.FOK1_SET_POS, this, value.intValue());
                         break;
                     }
                 }
@@ -318,7 +318,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 updateProperty(connectionProp);
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
-            } catch (EasyFocuser.InvalidParamException e) {
+            } catch (ThuderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
@@ -397,7 +397,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     Constants.SwitchStatus val = eAV.getValue();
                     pin.setValue(ArduinoPin.ValueType.INDI, val);
                     element.setValue(val);
-                    Main.focuser.run(EasyFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThuderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
@@ -407,7 +407,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 updateProperty(connectionProp);
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
-            } catch (EasyFocuser.InvalidParamException e) {
+            } catch (ThuderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
@@ -433,7 +433,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                     Constants.SwitchStatus value = eAV.getValue();
                     element.setValue(value);
                     if (value == Constants.SwitchStatus.ON) {
-                        Main.focuser.run(EasyFocuser.Commands.FOK_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
+                        Main.focuser.run(ThuderFocuser.Commands.FOK1_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
                         break;
                     }
                 }
@@ -445,7 +445,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
                 updateProperty(connectionProp);
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
-            } catch (EasyFocuser.InvalidParamException e) {
+            } catch (ThuderFocuser.InvalidParamException e) {
                 e.printStackTrace();
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
@@ -516,7 +516,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     }
 
     @Override
-    public void updateParam(EasyFocuser.Parameters p) {
+    public void updateParam(ThuderFocuser.Parameters p) {
         switch (p) {
             case CURRENT_POS -> positionChanged(Main.focuser.getCurrentPos());
             case SPEED -> speedChanged(Main.focuser.getSpeed());
@@ -549,7 +549,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     }
 
     @Override
-    public void updateFocuserState(EasyFocuser.FocuserState focuserState) {
+    public void updateFocuserState(ThuderFocuser.FocuserState focuserState) {
         switch (focuserState) {
             case ERROR -> connectionProp.setState(Constants.PropertyStates.ALERT);
             case NONE -> connectionProp.setState(Constants.PropertyStates.IDLE);
@@ -557,7 +557,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements EasyF
     }
 
     @Override
-    public void updateConnSate(EasyFocuser.ConnState connState) {
+    public void updateConnSate(ThuderFocuser.ConnState connState) {
         switch (connState) {
             case CONNECTED -> onFokConnected();
             case DISCONNECTED -> {

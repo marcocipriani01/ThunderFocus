@@ -12,7 +12,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EasyFocuser implements SerialMessageListener {
+public class ThuderFocuser implements SerialMessageListener {
 
     private final SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
@@ -33,7 +33,7 @@ public class EasyFocuser implements SerialMessageListener {
     private boolean powerSaver = false;
     private boolean isPowerBox = false;
 
-    public EasyFocuser() {
+    public ThuderFocuser() {
         serialPort.addListener(this);
     }
 
@@ -343,41 +343,43 @@ public class EasyFocuser implements SerialMessageListener {
     }
 
     public enum Commands {
-        PRINT_SETTINGS('Q'),
-        FOK_REL_MOVE('R', 1, null, (f, caller, params) -> {
+        PRINT_CONFIG('C'),
+        SET_TIME('T'),
+        GET_AMBIENT('J'),
+        FOK1_REL_MOVE('R', 1, null, (f, caller, params) -> {
             f.requestedRelPos = params[0];
             f.notifyListeners(caller, Parameters.REQUESTED_REL_POS);
         }),
-        FOK_ABS_MOVE('A', 1,
+        FOK1_ABS_MOVE('A', 1,
                 (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel()),
                 (f, caller, params) -> {
                     f.requestedPos = params[0];
                     f.notifyListeners(caller, Parameters.REQUESTED_POS);
                 }),
-        FOK_STOP('S'),
-        FOK_SET_ZERO('Z'),
-        FOK_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
-        FOK_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
+        FOK1_STOP('S'),
+        FOK1_SET_POS('Z', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
+        FOK1_SET_ZERO('W'),
+        FOK1_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
                 (f, caller, params) -> {
                     f.speed = params[0];
                     f.notifyListeners(caller, Parameters.SPEED);
                 }),
-        FOK_SET_BACKLASH('B', 1, (f, params) -> (params[0] >= 0),
+        FOK1_SET_BACKLASH('B', 1, (f, params) -> (params[0] >= 0),
                 (f, caller, params) -> {
                     f.backlash = params[0];
                     f.notifyListeners(caller, Parameters.BACKLASH);
                 }),
-        FOK_REVERSE_DIR('C', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
+        FOK1_REVERSE_DIR('D', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
                 (f, caller, params) -> {
                     f.reverseDir = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.REVERSE_DIR);
                 }),
-        FOK_POWER_SAVER('H', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
+        FOK1_POWER_SAVER('H', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
                 (f, caller, params) -> {
                     f.powerSaver = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.ENABLE_POWER_SAVE);
                 }),
-        POWER_BOX_SET('d', 2, (f, params) -> (params[0] >= 0) && (params[1] >= 0) && (params[1] <= 255),
+        POWER_BOX_SET('X', 2, (f, params) -> (params[0] >= 0) && (params[1] >= 0) && (params[1] <= 255),
                 (f, caller, params) -> {
                     if (f.digitalPins.contains(params[0])) {
                         f.digitalPins.getPin(params[0]).setValue(params[1]);
@@ -386,7 +388,8 @@ public class EasyFocuser implements SerialMessageListener {
                         f.pwmPins.getPin(params[0]).setValue(params[1]);
                         f.notifyListeners(caller, Parameters.PWM_PINS);
                     }
-                });
+                }),
+        POWER_BOX_SET_AUTO_MODE('K');
         public final char id;
         public final int paramsCount;
         private ParamValidator validator = null;
@@ -412,7 +415,7 @@ public class EasyFocuser implements SerialMessageListener {
         }
 
         @SuppressWarnings("StringConcatenationInLoop")
-        private void run(EasyFocuser f, Listener caller, int... params) throws ConnectionException, InvalidParamException {
+        private void run(ThuderFocuser f, Listener caller, int... params) throws ConnectionException, InvalidParamException {
             String cmd = "$" + id;
             if (params.length != paramsCount) {
                 throw new InvalidParamException("Missing/too much EasyFocuser parameters.");
@@ -430,12 +433,12 @@ public class EasyFocuser implements SerialMessageListener {
         }
 
         private interface ParamValidator {
-            boolean validate(EasyFocuser f, int[] params);
+            boolean validate(ThuderFocuser f, int[] params);
 
         }
 
         private interface OnDone {
-            void onDone(EasyFocuser f, Listener caller, int[] params);
+            void onDone(ThuderFocuser f, Listener caller, int[] params);
         }
     }
 
@@ -469,7 +472,7 @@ public class EasyFocuser implements SerialMessageListener {
             if (!ready && serialPort.isConnected()) {
                 try {
                     System.err.println("Sending focuser settings request");
-                    Commands.PRINT_SETTINGS.run(EasyFocuser.this, null);
+                    Commands.PRINT_CONFIG.run(ThuderFocuser.this, null);
                     timerCount++;
                     if (timerCount < 5) {
                         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);

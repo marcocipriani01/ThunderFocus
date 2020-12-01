@@ -4,7 +4,7 @@
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
 #define SERIAL_TIMEOUT 100
-#define STATUS_LED 9
+//#define STATUS_LED 9
 #define STATUS_LED_BLINK_PERIOD 300
 #define PROTOCOL PROTOCOL_THUNDERFOCUS
 
@@ -37,9 +37,9 @@
 #define FOK1_HOLD_CONTROL false
 #define FOK1_POWER_TIMEOUT 30000
 #elif FOK1_STEPPER == DRIVER_ULN2003
-#define FOK1_IN1 23
-#define FOK1_IN2 21
-#define FOK1_IN3 22
+#define FOK1_IN1 21
+#define FOK1_IN2 22
+#define FOK1_IN3 23
 #define FOK1_IN4 20
 #define FOK1_ACCEL 80
 #define FOK1_PPS_MIN 40
@@ -65,10 +65,11 @@
 // ============================== DEVICE MANAGER CONFIG ==============================
 // ===================================================================================
 #if ENABLE_DEVMAN == true
-#define MANAGED_PINS_COUNT 3
+#define MANAGED_PINS_COUNT 4
 #define MANAGED_PINS {{0, true, 0, false},  \
 					{1, true, 0, false},    \
-					{2, true, 0, false}}
+					{2, true, 0, false},	\
+					{9, false, 0, false}}
 #define AUTOMATIC_DEVMAN_TIMER 30000
 #define AUTOMATIC_DEVMAN_THRESHOLD 20
 

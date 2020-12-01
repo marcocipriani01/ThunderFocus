@@ -87,7 +87,7 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
         super.setVisible(b);
         if (b) {
             SwingUtilities.invokeLater(() -> {
-                field.setText(String.valueOf(Main.focuser.getRequestedRelPos()));
+                field.setText(String.valueOf(Math.abs(Main.focuser.getRequestedRelPos())));
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {

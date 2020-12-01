@@ -58,8 +58,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JSlider fokSpeedSlider;
     private JCheckBox fokPowerSaverBox;
     private JCheckBox fokReverseDirBox;
-    private ArduinoPinsJTable pwmPinsJTable;
-    private ArduinoPinsJTable digitalPinsJTable;
+    private JPowerBoxTable powerBoxTable;
     private JButton applyPowerBoxButton;
     private JButton saveConfigButton;
     private JCheckBox enableINDIServerBox;
@@ -70,13 +69,12 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JLabel timeout;
     private JTextPane infoPane;
     private JToggleButton pinWindowButton;
-    private JButton pwmOffButton;
-    private JButton pwmOnButton;
-    private JButton dioOffButton;
-    private JButton dioOnButton;
+    private JButton powerBoxOffButton;
+    private JButton powerBoxOnButton;
     private JLabel indiStatusLabel;
     private JTabbedPane tabPane;
     private JPanel powerBoxTab;
+    private JComboBox<PowerBox.AutoModes> powerBoxAutoModeBox;
 
     public MainWindow() {
         super(APP_NAME);
@@ -106,11 +104,11 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         setKeyListeners(parent, connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, requestedPosField,
                 aboutLabel, currentPosField, ticksPosSlider, posSlider, relativeMovField, pinWindowButton,
-                pwmOnButton, pwmOffButton, dioOffButton, dioOnButton);
+                powerBoxOnButton, powerBoxOffButton);
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton,
                 applyPowerBoxButton, copyIndiDriverNameButton, saveConfigButton,
-                pwmOnButton, pwmOffButton, dioOffButton, dioOnButton);
+                powerBoxOnButton, powerBoxOffButton);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
         relativeMovField.addActionListener(this);
@@ -172,8 +170,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 Main.settings.getFokMaxTravel(), 1, 2147483647, 1));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.focuser.getBacklash(), 0, 200, 1));
-        digitalPinsJTable = new ArduinoPinsJTable(false);
-        pwmPinsJTable = new ArduinoPinsJTable(true);
+        powerBoxTable = new JPowerBoxTable();
+        powerBoxAutoModeBox = new JComboBox<>();
     }
 
     private void refreshDriverName() {
@@ -338,15 +336,24 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == applyPowerBoxButton) {
             try {
-                PowerBox dp = digitalPinsJTable.getPins();
-                Main.settings.setDigitalPins(new PowerBox(dp), this);
-                for (ArduinoPin p : dp) {
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                PowerBox powerBox = powerBoxTable.getPowerBox();
+                Main.settings.setPowerBox(new PowerBox(powerBox), this);
+                try {
+                    Main.settings.save();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
-                PowerBox ap = pwmPinsJTable.getPins();
-                Main.settings.setPwmPins(new PowerBox(dp), this);
-                for (ArduinoPin p : ap) {
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                PowerBox.AutoModes autoMode = (PowerBox.AutoModes) powerBoxAutoModeBox.getSelectedItem();
+                if (autoMode != null) {
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
+                }
+                for (ArduinoPin p : powerBox.asList()) {
+                    int number = p.getNumber();
+                    if (p.isAutoModeEn()) {
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, this, number, 1);
+                    } else {
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, number, p.getValuePwm());
+                    }
                 }
             } catch (ConnectionException ex) {
                 connectionErr(ex);
@@ -354,52 +361,26 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 valueOutOfLimits(ex);
             }
 
-        } else if (source == pwmOnButton) {
+        } else if (source == powerBoxOnButton) {
             try {
-                for (ArduinoPin p : Main.focuser.getPwmPins()) {
+                for (ArduinoPin p : Main.focuser.getPowerBox().asList()) {
                     p.setValue(255);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
                 }
-                pwmPinsJTable.refresh();
+                powerBoxTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
 
-        } else if (source == pwmOffButton) {
+        } else if (source == powerBoxOffButton) {
             try {
-                for (ArduinoPin p : Main.focuser.getPwmPins()) {
+                for (ArduinoPin p : Main.focuser.getPowerBox().asList()) {
                     p.setValue(0);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
                 }
-                pwmPinsJTable.refresh();
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
-                ex.printStackTrace();
-            }
-
-        } else if (source == dioOffButton) {
-            try {
-                for (ArduinoPin p : Main.focuser.getManagedPins()) {
-                    p.setValue(0);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
-                }
-                digitalPinsJTable.refresh();
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
-                ex.printStackTrace();
-            }
-
-        } else if (source == dioOnButton) {
-            try {
-                for (ArduinoPin p : Main.focuser.getManagedPins()) {
-                    p.setValue(255);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getPin(), p.getValuePwm());
-                }
-                digitalPinsJTable.refresh();
+                powerBoxTable.refresh();
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
@@ -455,12 +436,11 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         fokSpeedSlider.setEnabled(connected);
         fokReverseDirBox.setEnabled(connected);
         fokPowerSaverBox.setEnabled(connected);
-        boolean powerBox = connected && Main.focuser.isPowerBox();
-        pwmOnButton.setEnabled(powerBox);
-        pwmOffButton.setEnabled(powerBox);
-        dioOnButton.setEnabled(powerBox);
-        dioOffButton.setEnabled(powerBox);
-        applyPowerBoxButton.setEnabled(powerBox);
+        boolean pbEn = connected && Main.focuser.isPowerBox();
+        powerBoxOnButton.setEnabled(pbEn);
+        powerBoxOffButton.setEnabled(pbEn);
+        powerBoxAutoModeBox.setEnabled(pbEn);
+        applyPowerBoxButton.setEnabled(pbEn);
     }
 
     private void startOrStopINDI(boolean forceRestart) {
@@ -477,10 +457,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     public void stateChanged(ChangeEvent event) {
         Object source = event.getSource();
         if (source == tabPane) {
-            if (tabPane.getSelectedComponent() == powerBoxTab) {
-                digitalPinsJTable.fixWidths();
-                pwmPinsJTable.fixWidths();
-            }
+            if (tabPane.getSelectedComponent() == powerBoxTab) powerBoxTable.fixWidths();
             return;
         }
         try {
@@ -562,7 +539,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         SwingUtilities.invokeLater(() -> {
             switch (p) {
                 case REQUESTED_POS -> requestedPosField.setText(String.valueOf(Main.focuser.getRequestedPos()));
-                case REQUESTED_REL_POS -> relativeMovField.setText(String.valueOf(Main.focuser.getRequestedRelPos()));
+                case REQUESTED_REL_POS -> relativeMovField.setText(String.valueOf(Math.abs(Main.focuser.getRequestedRelPos())));
                 case CURRENT_POS -> {
                     currentPosField.setText(String.valueOf(Main.focuser.getCurrentPos()));
                     if (!posSlider.hasFocus()) {
@@ -582,8 +559,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case BACKLASH -> fokBacklashSpinner.setValue(Main.focuser.getBacklash());
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
-                case DIGITAL_PINS -> digitalPinsJTable.refresh();
-                case POWERBOX_PINS -> pwmPinsJTable.refresh();
+                case POWERBOX_PINS -> powerBoxTable.refresh();
             }
         });
     }
@@ -598,7 +574,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         SwingUtilities.invokeLater(() -> {
             connStatusLabel.setText(connState.getLabel());
             switch (connState) {
-                case CONNECTED: {
+                case CONNECTED_READY: {
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
@@ -606,8 +582,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                         if (tabPane.getTabComponentAt(1) != powerBoxTab) {
                             tabPane.insertTab("Power box", POWERBOX_TAB, powerBoxTab, "", 1);
                         }
-                        digitalPinsJTable.setPins(Main.focuser.getManagedPins());
-                        pwmPinsJTable.setPins(Main.focuser.getPwmPins());
+                        PowerBox powerBox = Main.focuser.getPowerBox();
+                        powerBoxTable.setPowerBox(powerBox);
+                        boolean supportsAutoModes = powerBox.supportsAutoModes();
+                        powerBoxAutoModeBox.setEnabled(supportsAutoModes);
+                        if (supportsAutoModes) {
+                            powerBoxAutoModeBox.setModel(new DefaultComboBoxModel<>(powerBox.supportedAutoModesArray()));
+                        }
                     }
                     fokSpeedSlider.setValue(Main.focuser.getSpeed());
                     fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
@@ -628,6 +609,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 }
                 case DISCONNECTED: {
                     enableComponents(false);
+                    powerBoxTable.setPowerBox(null);
                 }
                 case ERROR: {
                     ok.setVisible(false);

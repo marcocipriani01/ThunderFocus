@@ -1,17 +1,22 @@
 package marcocipriani01.thunderfocus.focuser;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Represents a list of Arduino pins.
+ * Represents a powerbox.
  *
  * @author marcocipriani01
- * @version 1.2
+ * @version 2.0
  * @see ArduinoPin
  */
 public class PowerBox {
 
+    @Expose
+    @SerializedName("List")
     private final ArrayList<ArduinoPin> pins = new ArrayList<>();
     private AutoModes autoMode = AutoModes.NIGHT_ASTRONOMICAL;
     private boolean supportsTime = false;
@@ -23,6 +28,7 @@ public class PowerBox {
     public PowerBox() {
 
     }
+
     /**
      * Copy constructor.
      */
@@ -30,6 +36,29 @@ public class PowerBox {
         for (ArduinoPin ap : pb.pins) {
             pins.add(new ArduinoPin(ap));
         }
+        this.autoMode = pb.autoMode;
+        this.supportsTime = pb.supportsTime;
+        this.supportsAmbient = pb.supportsAmbient;
+    }
+
+    public ArrayList<ArduinoPin> asList() {
+        return pins;
+    }
+
+    public ArrayList<ArduinoPin> asListOnlyPwm() {
+        ArrayList<ArduinoPin> list = new ArrayList<>();
+        for (ArduinoPin ap : pins) {
+            if (ap.isPwm()) list.add(ap);
+        }
+        return list;
+    }
+
+    public ArrayList<ArduinoPin> asListOnlyDigital() {
+        ArrayList<ArduinoPin> list = new ArrayList<>();
+        for (ArduinoPin ap : pins) {
+            if (!ap.isPwm()) list.add(ap);
+        }
+        return list;
     }
 
     public AutoModes getAutoMode() {
@@ -64,6 +93,22 @@ public class PowerBox {
         return pins.size();
     }
 
+    public int countDigitalPins() {
+        int count = 0;
+        for (ArduinoPin ap : pins) {
+            if (!ap.isPwm()) count++;
+        }
+        return count;
+    }
+
+    public int countPwmPins() {
+        int count = 0;
+        for (ArduinoPin ap : pins) {
+            if (ap.isPwm()) count++;
+        }
+        return count;
+    }
+
     public ArduinoPin get(int index) {
         return pins.get(index);
     }
@@ -78,7 +123,7 @@ public class PowerBox {
      */
     public boolean contains(int pin) {
         for (ArduinoPin ap : pins) {
-            if (ap.getPin() == pin) {
+            if (ap.getNumber() == pin) {
                 return true;
             }
         }
@@ -93,9 +138,9 @@ public class PowerBox {
         if (pin == null) {
             throw new NullPointerException("Null pin!");
         }
-        int param = pin.getPin();
+        int param = pin.getNumber();
         for (ArduinoPin ap : pins) {
-            if (ap.getPin() == param) {
+            if (ap.getNumber() == param) {
                 return true;
             }
         }
@@ -104,7 +149,7 @@ public class PowerBox {
 
     public ArduinoPin getPin(int pin) {
         for (ArduinoPin ap : pins) {
-            if (ap.getPin() == pin) {
+            if (ap.getNumber() == pin) {
                 return ap;
             }
         }
@@ -121,7 +166,7 @@ public class PowerBox {
 
     void remove(ArduinoPin pin) {
         for (int i = 0; i < pins.size(); i++) {
-            if (pins.get(i).getPin() == pin.getPin()) {
+            if (pins.get(i).getNumber() == pin.getNumber()) {
                 pins.remove(i);
                 return;
             }
@@ -163,6 +208,10 @@ public class PowerBox {
             list.add(AutoModes.TEMP_FREEZE);
         }
         return list;
+    }
+
+    public boolean supportsAutoModes() {
+        return supportsAmbient || supportsTime;
     }
 
     public enum AutoModes {

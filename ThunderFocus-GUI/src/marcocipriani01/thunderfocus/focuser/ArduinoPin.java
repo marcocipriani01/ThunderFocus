@@ -16,8 +16,8 @@ import java.util.Objects;
 public class ArduinoPin {
 
     @Expose
-    @SerializedName("Pin")
-    private int pin = 0;
+    @SerializedName("Number")
+    private int number = 0;
     @SerializedName("Name")
     @Expose
     private String name = "Pin 0";
@@ -35,24 +35,24 @@ public class ArduinoPin {
     /**
      * Class constructor. Value = 0.
      *
-     * @param pin  the id of this pin (its number on the Arduino board).
+     * @param number  the id of this pin (its number on the Arduino board).
      * @param name a name for this pin.
      */
-    public ArduinoPin(int pin, String name) {
-        this.pin = pin;
+    public ArduinoPin(int number, String name) {
+        this.number = number;
         this.name = name;
     }
 
     /**
      * Class constructor.
      *
-     * @param pin   the id of this pin (its number on the Arduino board).
+     * @param number   the id of this pin (its number on the Arduino board).
      * @param name  a name for this pin.
      * @param value an initial value. Integer, 0→255
      * @see #setValue(int)
      */
-    public ArduinoPin(int pin, String name, int value, boolean isPwm, boolean autoModeEn) {
-        this.pin = pin;
+    public ArduinoPin(int number, String name, int value, boolean isPwm, boolean autoModeEn) {
+        this.number = number;
         this.name = name;
         this.value = constrain(value);
         this.isPwm = isPwm;
@@ -67,7 +67,7 @@ public class ArduinoPin {
     public ArduinoPin(ArduinoPin other) {
         value = other.value;
         name = other.name;
-        pin = other.pin;
+        number = other.number;
         autoModeEn = other.autoModeEn;
     }
 
@@ -132,15 +132,15 @@ public class ArduinoPin {
     /**
      * @return the pin id.
      */
-    public int getPin() {
-        return pin;
+    public int getNumber() {
+        return number;
     }
 
     /**
-     * @param pin a new pin id.
+     * @param number a new pin id.
      */
-    public void setPin(int pin) {
-        this.pin = pin;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     /**
@@ -159,6 +159,6 @@ public class ArduinoPin {
 
     @Override
     public String toString() {
-        return "Pin " + pin + " is \"" + name + "\", value: " + (isPwm ? value : (value > 100 ? "HIGH" : "LOW"));
+        return "Pin " + number + " is \"" + name + "\", value: " + (isPwm ? value : (value > 100 ? "HIGH" : "LOW"));
     }
 }

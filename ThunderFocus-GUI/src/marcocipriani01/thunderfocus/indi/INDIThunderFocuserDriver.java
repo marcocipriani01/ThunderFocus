@@ -2,11 +2,11 @@ package marcocipriani01.thunderfocus.indi;
 
 import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.thunderfocus.Settings;
+import marcocipriani01.thunderfocus.focuser.ArduinoPin;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
-import marcocipriani01.thunderfocus.focuser.ArduinoPin;
-import marcocipriani01.thunderfocus.focuser.PowerBox;
 import org.indilib.i4j.Constants;
 import org.indilib.i4j.driver.*;
 import org.indilib.i4j.driver.focuser.INDIFocuserDriver;
@@ -248,7 +248,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
                     ArduinoPin pin = pinsMap.get(element);
                     pin.setValue(eAV.getValue().intValue());
                     element.setValue((double) pin.getValuePwm());
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
@@ -398,9 +398,9 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
                     INDISwitchElement element = eAV.getElement();
                     ArduinoPin pin = pinsMap.get(element);
                     Constants.SwitchStatus val = eAV.getValue();
-                    pin.setValue(ArduinoPin.ValueType.INDI, val);
+                    pin.setValue(val);
                     element.setValue(val);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getPin(), pin.getValuePwm());
+                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
@@ -461,27 +461,24 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
         if (Main.focuser.isPowerBox()) {
-            PowerBox digitalPins = Main.focuser.getManagedPins();
-            if (digitalPins.size() > 0) {
+            PowerBox powerBox = Main.focuser.getPowerBox();
+            if (powerBox.countDigitalPins() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
-                for (ArduinoPin pin : digitalPins) {
+                for (ArduinoPin pin : powerBox.asListOnlyDigital()) {
                     String pinName = pin.getName();
-                    pinsMap.put(
-                            new INDIElementBuilder<>(INDISwitchElement.class, digitalPinProps).name(pinName)
-                                    .label(pinName).switchValue(pin.getValueIndi()).create(), pin);
+                    pinsMap.put(new INDIElementBuilder<>(INDISwitchElement.class, digitalPinProps).name(pinName)
+                            .label(pinName).switchValue(pin.getValueIndi()).create(), pin);
                 }
                 addProperty(digitalPinProps);
             }
-            PowerBox pwmPins = Main.focuser.getPwmPins();
-            if (pwmPins.size() > 0) {
+            if (powerBox.countPwmPins() > 0) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).create();
-                for (ArduinoPin pin : pwmPins) {
+                for (ArduinoPin pin : powerBox.asListOnlyPwm()) {
                     String pinName = pin.getName();
-                    pinsMap.put(
-                            new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName).label(pinName)
-                                    .step(1).numberFormat("%.0f").maximum(255.0).numberValue(pin.getValuePwm()).create(), pin);
+                    pinsMap.put(new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName).label(pinName)
+                            .step(1).numberFormat("%.0f").maximum(255.0).numberValue(pin.getValuePwm()).create(), pin);
                 }
                 addProperty(pwmPinsProp);
             }
@@ -561,7 +558,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     @Override
     public void updateConnSate(ThunderFocuser.ConnState connState) {
         switch (connState) {
-            case CONNECTED -> onFokConnected();
+            case CONNECTED_READY -> onFokConnected();
             case DISCONNECTED -> {
                 if (digitalPinProps != null) {
                     removeProperty(digitalPinProps);

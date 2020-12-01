@@ -164,9 +164,9 @@ public class Settings {
         return powerBox;
     }
 
-    public void setDigitalPins(PowerBox digitalPins, SettingsListener caller) {
-        this.powerBox = digitalPins;
-        update(Value.POWERBOX_PINS, caller, digitalPins);
+    public void setPowerBox(PowerBox powerBox, SettingsListener caller) {
+        this.powerBox = powerBox;
+        update(Value.POWERBOX_PINS, caller, powerBox);
     }
 
     public int getFokTicksCount() {

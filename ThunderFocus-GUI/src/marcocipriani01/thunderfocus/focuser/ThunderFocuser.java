@@ -226,7 +226,7 @@ public class ThunderFocuser implements SerialMessageListener {
                         }
                     }
                     ready = true;
-                    updConnSate(ConnState.CONNECTED);
+                    updConnSate(ConnState.CONNECTED_READY);
 
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     nOnCriticalError(new ConnectionException("The focuser responded with an illegal configuration.", ConnectionException.Type.PROTOCOL));
@@ -296,7 +296,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
     public enum ConnState {
         DISCONNECTED("disconnesso"),
-        CONNECTED("connesso"),
+        CONNECTED_READY("connesso"),
         TIMEOUT("timeout"),
         ERROR("errore");
 

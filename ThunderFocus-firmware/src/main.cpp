@@ -109,6 +109,11 @@ void setup() {
 	hc.begin();
 #endif
 
+#ifdef STATUS_LED
+	pinMode(STATUS_LED, OUTPUT);
+	digitalWrite(STATUS_LED, HIGH);
+#endif
+
 #if defined(__AVR_ATmega32U4__)
 	while (!Serial) {
 		;

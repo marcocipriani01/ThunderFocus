@@ -6,28 +6,25 @@ import marcocipriani01.thunderfocus.focuser.PowerBox;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-import java.util.EventObject;
 
 /**
  * JTable for viewing, editing and rendering {@link ArduinoPin} objects.
  *
  * @author marcocipriani01
- * @version 1.0
+ * @version 2.0
  */
-public class ArduinoPinsJTable extends JTable {
+public class JPowerBoxTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 45;
-    private PowerBox pins = null;
-    private boolean editMode = true;
+    private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer(255, 0);
+    private PowerBox powerBox = null;
 
     /**
      * Class constructor. Initializes the JTable.
-     *
-     * @param arePwmPins {@code true} if the pins are PWM pin (therefore use a slider to select their value)
      */
-    public ArduinoPinsJTable(boolean arePwmPins) {
+    public JPowerBoxTable() {
         super();
-        setModel(new ArduinoPinsTableModel());
+        setModel(new PowerBoxTableModel());
         setRowSelectionAllowed(true);
         setCellSelectionEnabled(false);
         setColumnSelectionAllowed(false);
@@ -36,74 +33,47 @@ public class ArduinoPinsJTable extends JTable {
         tableHeader.setReorderingAllowed(false);
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-        selectionModel.addListSelectionListener(this);
         setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        TableColumn c2 = columnModel.getColumn(2);
-        if (this.arePwmPins = arePwmPins) {
-            SliderEditorAndRenderer editorAndRenderer = new SliderEditorAndRenderer(255, 0);
-            c2.setCellEditor(editorAndRenderer);
-            c2.setCellRenderer(editorAndRenderer);
-        }
-    }
-
-    @Override
-    public TableCellEditor getCellEditor(int row, int column) {
-        return super.getCellEditor(row, column);
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer(int row, int column) {
-        return super.getCellRenderer(row, column);
+        //selectionModel.addListSelectionListener(this);
     }
 
     public void refresh() {
-        ((ArduinoPinsTableModel) getModel()).fireTableDataChanged();
+        ((PowerBoxTableModel) getModel()).fireTableDataChanged();
         setTableRowsHeight();
     }
 
     public void fixWidths() {
+        if (powerBox == null) return;
         int tW = getWidth();
-        columnModel.getColumn(0).setMaxWidth(Math.round(tW / 3.0f) + 1);
-        DefaultTableCellRenderer centerTextRenderer = new DefaultTableCellRenderer();
-        centerTextRenderer.setHorizontalAlignment(JLabel.CENTER);
+        TableColumn c0 = columnModel.getColumn(0);
         TableColumn c1 = columnModel.getColumn(1);
-        c1.setCellRenderer(centerTextRenderer);
-        c1.setMaxWidth(Math.round(tW / 6.0f) + 1);
-        columnModel.getColumn(2).setMaxWidth(Math.round(tW / 2.0f) + 1);
+        TableColumn c2 = columnModel.getColumn(2);
+        if (powerBox.supportsAutoModes()) {
+            c0.setMaxWidth(Math.round(tW / 3.4773523480f) + 1);
+            DefaultTableCellRenderer centerTextRenderer = new DefaultTableCellRenderer();
+            centerTextRenderer.setHorizontalAlignment(JLabel.CENTER);
+            c1.setCellRenderer(centerTextRenderer);
+            c1.setMaxWidth(Math.round(tW / 6.4773523480f) + 1);
+            c2.setMaxWidth(Math.round(tW / 2.4773523480f) + 1);
+            columnModel.getColumn(2).setMaxWidth(Math.round(tW / 6.4773523480f) + 1);
+        } else {
+            c0.setMaxWidth(Math.round(tW / 3.0f) + 1);
+            DefaultTableCellRenderer centerTextRenderer = new DefaultTableCellRenderer();
+            centerTextRenderer.setHorizontalAlignment(JLabel.CENTER);
+            c1.setCellRenderer(centerTextRenderer);
+            c1.setMaxWidth(Math.round(tW / 6.0f) + 1);
+            c2.setMaxWidth(Math.round(tW / 2.0f) + 1);
+        }
     }
 
-    public PowerBox getPins() {
-        return pins;
+    public PowerBox getPowerBox() {
+        return powerBox;
     }
 
-    public void setPins(PowerBox pins) {
-        this.pins = pins;
+    public void setPowerBox(PowerBox powerBox) {
+        this.powerBox = powerBox;
+        ((PowerBoxTableModel) dataModel).fireTableStructureChanged();
         setTableRowsHeight();
-    }
-
-    /**
-     * @return the selected pin in the table.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public ArduinoPin getSelectedPin() {
-        return pins.get(super.getSelectedRow());
-    }
-
-    /**
-     * @return {@code true} if the editing of the pin is enabled.
-     */
-    @SuppressWarnings("unused")
-    public boolean isEditMode() {
-        return editMode;
-    }
-
-    /**
-     * Sets whether or not the editing mode should be on.
-     *
-     * @param editMode {@code true} to allow the name and the pin number columns to be edited.
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
     }
 
     /**
@@ -115,14 +85,33 @@ public class ArduinoPinsJTable extends JTable {
         }
     }
 
+    @Override
+    public TableCellRenderer getCellRenderer(int row, int column) {
+        if (column != 2) return super.getCellRenderer(row, column);
+        if (powerBox.get(row).isPwm()) {
+            return sliderEditorAndRenderer;
+        }
+        return getDefaultRenderer(Boolean.class);
+    }
+
+    @Override
+    public TableCellEditor getCellEditor(int row, int column) {
+        if (column != 2) return super.getCellEditor(row, column);
+        if (powerBox.get(row).isPwm()) {
+            return sliderEditorAndRenderer;
+        }
+        return getDefaultEditor(Boolean.class);
+    }
+
     /**
      * The model of this table.
      * Sets the values of the pin in the {@link PowerBox} and returns up-to-date values to the table.
      *
      * @author marcocipriani01
-     * @version 1.0
+     * @version 2.0
      */
-    private class ArduinoPinsTableModel extends AbstractTableModel {
+    private class PowerBoxTableModel extends AbstractTableModel {
+
         @Override
         public String getColumnName(int col) {
             switch (col) {
@@ -135,18 +124,48 @@ public class ArduinoPinsJTable extends JTable {
                 case 2 -> {
                     return "Valore";
                 }
+                case 3 -> {
+                    return "Auto";
+                }
             }
             return "";
         }
 
         @Override
         public int getRowCount() {
-            return (pins == null) ? 0 : pins.size();
+            return (powerBox == null) ? 0 : powerBox.size();
         }
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return (powerBox == null) ? 0 : (powerBox.supportsAutoModes() ? 4 : 3);
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            if (powerBox == null) throw new NullPointerException("Null pins list.");
+            ArduinoPin pin = powerBox.get(rowIndex);
+            switch (columnIndex) {
+                case 0 -> {
+                    return pin.getName();
+                }
+                case 1 -> {
+                    return pin.getNumber();
+                }
+                case 2 -> {
+                    if (pin.isPwm()) {
+                        return pin.getValuePwm();
+                    } else {
+                        return pin.getValueBoolean();
+                    }
+                }
+                case 3 -> {
+                    return powerBox.get(rowIndex).isAutoModeEn();
+                }
+                default -> {
+                    return "";
+                }
+            }
         }
 
         @Override
@@ -156,7 +175,10 @@ public class ArduinoPinsJTable extends JTable {
                     return Integer.class;
                 }
                 case 2 -> {
-                    return arePwmPins ? Integer.class : Boolean.class;
+                    return Object.class;
+                }
+                case 3 -> {
+                    return Boolean.class;
                 }
                 default -> {
                     return String.class;
@@ -165,40 +187,29 @@ public class ArduinoPinsJTable extends JTable {
         }
 
         @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if (pins == null) throw new NullPointerException("Null pins list.");
-            ArduinoPin pin = pins.get(rowIndex);
-            switch (columnIndex) {
-                case 0 -> {
-                    return pin.getName();
-                }
-                case 1 -> {
-                    return pin.getPin();
-                }
-                case 2 -> {
-                    return arePwmPins ? pin.getValuePwm() : pin.getValueBoolean();
-                }
-                default -> {
-                    return "";
-                }
-            }
-        }
-
-        @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return editMode && (columnIndex != 1);
+            if (powerBox.get(rowIndex).isAutoModeEn()) return (columnIndex != 1 && columnIndex != 2);
+            return (columnIndex != 1);
         }
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if (pins == null) throw new NullPointerException("Null pins list.");
-            ArduinoPin pin = pins.get(rowIndex);
+            if (powerBox == null) throw new NullPointerException("Null pins list.");
+            ArduinoPin pin = powerBox.get(rowIndex);
             switch (columnIndex) {
                 case 0 -> pin.setName((String) aValue);
 
-                case 1 -> pin.setPin((int) aValue);
+                case 1 -> pin.setNumber((int) aValue);
 
-                case 2 -> pin.setValue(arePwmPins ? ArduinoPin.ValueType.PWM : ArduinoPin.ValueType.BOOLEAN, aValue);
+                case 2 -> {
+                    if (pin.isPwm()) {
+                        pin.setValue((int) aValue);
+                    } else {
+                        pin.setValue((boolean) aValue);
+                    }
+                }
+
+                case 3 -> pin.setAutoModeEn((boolean) aValue);
             }
             fireTableCellUpdated(rowIndex, columnIndex);
         }
@@ -261,21 +272,6 @@ public class ArduinoPinsJTable extends JTable {
         @Override
         public Object getCellEditorValue() {
             return editorSlider.getValue();
-        }
-
-        @Override
-        public boolean isCellEditable(EventObject anEvent) {
-            return true;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            return super.stopCellEditing();
-        }
-
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
         }
     }
 }

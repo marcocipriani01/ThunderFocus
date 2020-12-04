@@ -31,9 +31,7 @@ FocuserState thunderFocusManage(Focuser *focuser) {
 		Serial.print(",");
 		Serial.print(getHumidity());
 		Serial.print(",");
-		Serial.print(getDewPoint());
-		Serial.print(",");
-		Serial.println();
+		Serial.println(getDewPoint());
 		lastThunderFocusAmbientSend = currentTime;
 	}
 #endif

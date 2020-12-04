@@ -55,7 +55,7 @@ public class JPowerBoxTable extends JTable {
             c1.setCellRenderer(centerTextRenderer);
             c1.setMaxWidth(Math.round(tW / 6.4773523480f) + 1);
             c2.setMaxWidth(Math.round(tW / 2.4773523480f) + 1);
-            columnModel.getColumn(2).setMaxWidth(Math.round(tW / 6.4773523480f) + 1);
+            columnModel.getColumn(3).setMaxWidth(Math.round(tW / 6.4773523480f) + 1);
         } else {
             c0.setMaxWidth(Math.round(tW / 3.0f) + 1);
             DefaultTableCellRenderer centerTextRenderer = new DefaultTableCellRenderer();
@@ -88,7 +88,7 @@ public class JPowerBoxTable extends JTable {
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
         if (column != 2) return super.getCellRenderer(row, column);
-        if (powerBox.get(row).isPwm()) {
+        if (powerBox.getIndex(row).isPwm()) {
             return sliderEditorAndRenderer;
         }
         return getDefaultRenderer(Boolean.class);
@@ -97,7 +97,7 @@ public class JPowerBoxTable extends JTable {
     @Override
     public TableCellEditor getCellEditor(int row, int column) {
         if (column != 2) return super.getCellEditor(row, column);
-        if (powerBox.get(row).isPwm()) {
+        if (powerBox.getIndex(row).isPwm()) {
             return sliderEditorAndRenderer;
         }
         return getDefaultEditor(Boolean.class);
@@ -144,7 +144,7 @@ public class JPowerBoxTable extends JTable {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             if (powerBox == null) throw new NullPointerException("Null pins list.");
-            ArduinoPin pin = powerBox.get(rowIndex);
+            ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
                 case 0 -> {
                     return pin.getName();
@@ -160,7 +160,7 @@ public class JPowerBoxTable extends JTable {
                     }
                 }
                 case 3 -> {
-                    return powerBox.get(rowIndex).isAutoModeEn();
+                    return powerBox.getIndex(rowIndex).isAutoModeEn();
                 }
                 default -> {
                     return "";
@@ -188,14 +188,14 @@ public class JPowerBoxTable extends JTable {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (powerBox.get(rowIndex).isAutoModeEn()) return (columnIndex != 1 && columnIndex != 2);
+            if (powerBox.getIndex(rowIndex).isAutoModeEn()) return (columnIndex != 1 && columnIndex != 2);
             return (columnIndex != 1);
         }
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             if (powerBox == null) throw new NullPointerException("Null pins list.");
-            ArduinoPin pin = powerBox.get(rowIndex);
+            ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
                 case 0 -> pin.setName((String) aValue);
 

@@ -1,11 +1,18 @@
 package marcocipriani01.thunderfocus;
 
+import marcocipriani01.thunderfocus.focuser.ArduinoPin;
+import marcocipriani01.thunderfocus.focuser.PowerBox;
 import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
 import marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
-import marcocipriani01.thunderfocus.focuser.ArduinoPin;
-import marcocipriani01.thunderfocus.focuser.PowerBox;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.dial.*;
+import org.jfree.chart.ui.GradientPaintTransformType;
+import org.jfree.chart.ui.StandardGradientPaintTransformer;
+import org.jfree.data.general.DefaultValueDataset;
+import org.jfree.data.general.ValueDataset;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -75,6 +82,12 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JTabbedPane tabPane;
     private JPanel powerBoxTab;
     private JComboBox<PowerBox.AutoModes> powerBoxAutoModeBox;
+    private ChartPanel tempChartPanel;
+    private ChartPanel humChartPanel;
+    private ChartPanel dewPointChartPanel;
+    private DefaultValueDataset tempDataset;
+    private DefaultValueDataset humidityDataset;
+    private DefaultValueDataset dewPointDataset;
 
     public MainWindow() {
         super(APP_NAME);
@@ -159,6 +172,79 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         setVisible(true);
     }
 
+    public JFreeChart createStandardDialChart(String title, ValueDataset dataset,
+                                              double lowerBound, double upperBound) {
+        DialPlot dialplot = new DialPlot();
+        dialplot.setDataset(dataset);
+        dialplot.setDialFrame(new StandardDialFrame());
+        dialplot.setBackground(new DialBackground());
+        DialTextAnnotation dialtextannotation = new DialTextAnnotation(title);
+        dialtextannotation.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        dialtextannotation.setRadius(0.55D);
+        dialplot.addLayer(dialtextannotation);
+        DialValueIndicator dialvalueindicator = new DialValueIndicator(0);
+        dialvalueindicator.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        dialplot.addLayer(dialvalueindicator);
+        StandardDialScale standarddialscale = new StandardDialScale(lowerBound, upperBound, -140D, -260D, 10D, 9);
+        standarddialscale.setTickRadius(0.88D);
+        standarddialscale.setTickLabelOffset(0.15);
+        standarddialscale.setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        dialplot.addScale(0, standarddialscale);
+        dialplot.addPointer(new DialPointer.Pin());
+        DialCap dialcap = new DialCap();
+        dialplot.setCap(dialcap);
+        return new JFreeChart(dialplot);
+    }
+
+    public JFreeChart createTemperatureDialChart(String title, ValueDataset dataset, Color baseColor, Color pointerColor) {
+        JFreeChart jfreechart = createStandardDialChart(title, dataset, -20D, 50D);
+        DialPlot dialplot = (DialPlot) jfreechart.getPlot();
+        StandardDialRange range1 = new StandardDialRange(-20D, -5D, Color.RED);
+        range1.setInnerRadius(0.5D);
+        dialplot.addLayer(range1);
+        StandardDialRange range2 = new StandardDialRange(-5, 5D, Color.ORANGE);
+        range2.setInnerRadius(0.5D);
+        dialplot.addLayer(range2);
+        StandardDialRange range3 = new StandardDialRange(0D, 38D, Color.GREEN);
+        range3.setInnerRadius(0.5D);
+        dialplot.addLayer(range3);
+        StandardDialRange range4 = new StandardDialRange(38D, 50D, Color.RED);
+        range4.setInnerRadius(0.5D);
+        dialplot.addLayer(range4);
+        GradientPaint gradientpaint = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), baseColor);
+        DialBackground dialbackground = new DialBackground(gradientpaint);
+        dialbackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
+        dialplot.setBackground(dialbackground);
+        dialplot.removePointer(0);
+        DialPointer.Pointer pointer = new DialPointer.Pointer();
+        pointer.setFillPaint(pointerColor);
+        dialplot.addPointer(pointer);
+        return jfreechart;
+    }
+
+    public JFreeChart createHumidityDialChart(String title, ValueDataset dataset, Color baseColor, Color pointerColor) {
+        JFreeChart jfreechart = createStandardDialChart(title, dataset, 0D, 100D);
+        DialPlot dialplot = (DialPlot) jfreechart.getPlot();
+        StandardDialRange range0 = new StandardDialRange(0D, 80D, Color.GREEN);
+        range0.setInnerRadius(0.5D);
+        dialplot.addLayer(range0);
+        StandardDialRange range1 = new StandardDialRange(80D, 90D, Color.ORANGE);
+        range1.setInnerRadius(0.5D);
+        dialplot.addLayer(range1);
+        StandardDialRange range2 = new StandardDialRange(90D, 100D, Color.RED);
+        range2.setInnerRadius(0.5D);
+        dialplot.addLayer(range2);
+        GradientPaint gradientpaint = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), baseColor);
+        DialBackground dialbackground = new DialBackground(gradientpaint);
+        dialbackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
+        dialplot.setBackground(dialbackground);
+        dialplot.removePointer(0);
+        DialPointer.Pointer pointer = new DialPointer.Pointer();
+        pointer.setFillPaint(pointerColor);
+        dialplot.addPointer(pointer);
+        return jfreechart;
+    }
+
     private void createUIComponents() {
         indiPortSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.settings.getIndiServerPort(), 1024, 9999, 1));
@@ -172,6 +258,16 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 Main.focuser.getBacklash(), 0, 200, 1));
         powerBoxTable = new JPowerBoxTable();
         powerBoxAutoModeBox = new JComboBox<>();
+
+        tempDataset = new DefaultValueDataset(10D);
+        tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset, new Color(255, 82, 82), new Color(41, 182, 246)));
+        tempChartPanel.setPreferredSize(new Dimension(240, 220));
+        humidityDataset = new DefaultValueDataset(70D);
+        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
+        humChartPanel.setPreferredSize(new Dimension(240, 220));
+        dewPointDataset = new DefaultValueDataset(10D);
+        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada", dewPointDataset, new Color(38, 166, 154), new Color(255, 145, 0)));
+        dewPointChartPanel.setPreferredSize(new Dimension(240, 220));
     }
 
     private void refreshDriverName() {
@@ -560,6 +656,12 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
+                case POWERBOX_AMBIENT_DATA -> {
+                    PowerBox powerBox = Main.focuser.getPowerBox();
+                    tempDataset.setValue(powerBox.getTemperature());
+                    humidityDataset.setValue(powerBox.getHumidity());
+                    dewPointDataset.setValue(powerBox.getDewPoint());
+                }
             }
         });
     }
@@ -633,7 +735,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void update(Settings.Value what, int value) {
+    public void updateSetting(Settings.Value what, int value) {
         SwingUtilities.invokeLater(() -> {
             switch (what) {
                 case THEME -> appThemeCombo.setSelectedIndex(value);
@@ -651,14 +753,14 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void update(Settings.Value what, String value) {
+    public void updateSetting(Settings.Value what, String value) {
         if (what == Settings.Value.SERIAL_PORT) {
             SwingUtilities.invokeLater(() -> serialPortComboBox.setSelectedItem(value));
         }
     }
 
     @Override
-    public void update(Settings.Value what, Settings.Units value) {
+    public void updateSetting(Settings.Value what, Settings.Units value) {
         if (what == Settings.Value.FOK_TICKS_UNIT) {
             SwingUtilities.invokeLater(() -> {
                 fokUnitsCombo.setSelectedItem(value);
@@ -668,7 +770,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void update(Settings.Value what, boolean value) {
+    public void updateSetting(Settings.Value what, boolean value) {
         SwingUtilities.invokeLater(() -> {
             switch (what) {
                 case IS_INDI_ENABLED -> {
@@ -681,7 +783,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void update(Settings.Value what, PowerBox value) {
+    public void updateSetting(Settings.Value what, PowerBox value) {
 
     }
 }

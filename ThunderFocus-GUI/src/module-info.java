@@ -4,4 +4,5 @@ module ThunderFocus {
     requires jssc;
     requires com.google.gson;
     requires com.formdev.flatlaf;
+    requires org.jfree.jfreechart;
 }

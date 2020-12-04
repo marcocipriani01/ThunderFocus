@@ -17,6 +17,7 @@ extern double integrationHumidity;
 extern int sensIntegrationCount;
 extern double dewPoint;
 
+void ambientInit();
 void ambientManage();
 double getHumidity();
 double getTemperature();

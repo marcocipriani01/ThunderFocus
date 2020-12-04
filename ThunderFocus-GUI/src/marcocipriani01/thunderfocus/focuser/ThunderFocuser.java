@@ -170,11 +170,9 @@ public class ThunderFocuser implements SerialMessageListener {
                                 notifyListeners(null, Parameters.CURRENT_POS);
                                 notifyListeners(null, Parameters.CURRENT_POS_TICKS);
                             }
-
                         } catch (NumberFormatException e) {
                             System.err.println("Non-integer position received: \"" + param + "\"");
                         }
-
                     } else {
                         System.err.println("Empty position message!");
                     }
@@ -191,6 +189,19 @@ public class ThunderFocuser implements SerialMessageListener {
 
                 case 'P' -> // Power save
                         updFocuserState(FocuserState.POWER_SAVE);
+
+                case 'J' -> { // Ambient
+                    try {
+                        String[] split = param.split(",");
+                        powerBox.setTemperature(Double.parseDouble(split[0]));
+                        powerBox.setHumidity(Double.parseDouble(split[1]));
+                        powerBox.setDewPoint(Double.parseDouble(split[2]));
+                        notifyListeners(null, Parameters.POWERBOX_AMBIENT_DATA);
+                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException | NullPointerException e) {
+                        System.err.println("Error in ambient data!");
+                        e.printStackTrace();
+                    }
+                }
 
                 default -> System.err.println("Unknown message received: \"" + msg + "\"");
             }
@@ -291,7 +302,8 @@ public class ThunderFocuser implements SerialMessageListener {
         REVERSE_DIR,
         ENABLE_POWER_SAVE,
         POWERBOX_PINS,
-        POWERBOX_AUTO_MODE
+        POWERBOX_AUTO_MODE,
+        POWERBOX_AMBIENT_DATA
     }
 
     public enum ConnState {
@@ -376,7 +388,7 @@ public class ThunderFocuser implements SerialMessageListener {
                 }),
         POWER_BOX_SET_PIN_AUTO('Y', 2, (f, params) -> f.powerBox.contains(params[0]) && ((params[1] == 0) || (params[1] == 1)),
                 (f, caller, params) -> {
-                    f.powerBox.get(params[0]).setAutoModeEn(params[1] == 1);
+                    f.powerBox.getPin(params[0]).setAutoModeEn(params[1] == 1);
                     f.notifyListeners(caller, Parameters.POWERBOX_PINS);
                 });
 

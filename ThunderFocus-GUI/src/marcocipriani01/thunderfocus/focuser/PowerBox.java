@@ -15,12 +15,18 @@ import java.util.Arrays;
  */
 public class PowerBox {
 
+    public static final double ABSOLUTE_ZERO = -273.15;
+    public static final double INVALID_HUMIDITY = -1;
+
     @Expose
     @SerializedName("List")
     private final ArrayList<ArduinoPin> pins = new ArrayList<>();
     private AutoModes autoMode = AutoModes.NIGHT_ASTRONOMICAL;
     private boolean supportsTime = false;
     private boolean supportsAmbient = false;
+    private double temperature = ABSOLUTE_ZERO;
+    private double humidity = INVALID_HUMIDITY;
+    private double dewPoint = ABSOLUTE_ZERO;
 
     /**
      * Class constructor. Initializes an empty list.
@@ -39,6 +45,33 @@ public class PowerBox {
         this.autoMode = pb.autoMode;
         this.supportsTime = pb.supportsTime;
         this.supportsAmbient = pb.supportsAmbient;
+        this.temperature = pb.temperature;
+        this.humidity = pb.humidity;
+        this.dewPoint = pb.dewPoint;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    void setTemperature(double temperature) {
+        this.temperature = temperature;
+    }
+
+    public double getHumidity() {
+        return humidity;
+    }
+
+    void setHumidity(double humidity) {
+        this.humidity = humidity;
+    }
+
+    public double getDewPoint() {
+        return dewPoint;
+    }
+
+    void setDewPoint(double dewPoint) {
+        this.dewPoint = dewPoint;
     }
 
     public ArrayList<ArduinoPin> asList() {
@@ -109,7 +142,7 @@ public class PowerBox {
         return count;
     }
 
-    public ArduinoPin get(int index) {
+    public ArduinoPin getIndex(int index) {
         return pins.get(index);
     }
 
@@ -239,7 +272,8 @@ public class PowerBox {
             return values().length;
         }
 
-        public String getLabel() {
+        @Override
+        public String toString() {
             return label;
         }
     }

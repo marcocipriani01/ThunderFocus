@@ -202,31 +202,31 @@ public class Settings {
 
     void update(Value what, SettingsListener notMe, int value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.update(what, value);
+            if (l != notMe) l.updateSetting(what, value);
         }
     }
 
     void update(Value what, SettingsListener notMe, String value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.update(what, value);
+            if (l != notMe) l.updateSetting(what, value);
         }
     }
 
     void update(Value what, SettingsListener notMe, Units value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.update(what, value);
+            if (l != notMe) l.updateSetting(what, value);
         }
     }
 
     void update(Value what, SettingsListener notMe, boolean value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.update(what, value);
+            if (l != notMe) l.updateSetting(what, value);
         }
     }
 
     void update(Value what, SettingsListener notMe, PowerBox value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.update(what, value);
+            if (l != notMe) l.updateSetting(what, value);
         }
     }
 
@@ -258,14 +258,14 @@ public class Settings {
     }
 
     public interface SettingsListener {
-        void update(Value what, int value);
+        void updateSetting(Value what, int value);
 
-        void update(Value what, String value);
+        void updateSetting(Value what, String value);
 
-        void update(Value what, Units value);
+        void updateSetting(Value what, Units value);
 
-        void update(Value what, boolean value);
+        void updateSetting(Value what, boolean value);
 
-        void update(Value what, PowerBox value);
+        void updateSetting(Value what, PowerBox value);
     }
 }

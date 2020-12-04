@@ -14,6 +14,10 @@ void beginDevMan() {
 	initTime();
 #endif
 
+#if TEMP_HUM_SENSOR == true
+	ambientInit();
+#endif
+
 	for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
 		pinMode(pins[i].number, OUTPUT);
 		pins[i].value = 0;
@@ -186,6 +190,8 @@ void setDevManAutoMode(DevManAutoModes autoMode) {
 }
 
 byte pwmMap(double in, double min, double max) {
+	if (in < min) return 0;
+	if (in >= max) return 255;
 	return (in - min) * (255.0 - AUTOMATIC_DEVMAN_THRESHOLD) / (max - min) + AUTOMATIC_DEVMAN_THRESHOLD;
 }
 
@@ -224,8 +230,8 @@ boolean dewPointDevManage(double triggerDiff) {
 	double dewPoint = getDewPoint(), temperature = getTemperature();
 	if ((dewPoint != TEMP_ABSOLUTE_ZERO) && (temperature != TEMP_ABSOLUTE_ZERO)) {
 		double tempDiff = temperature - triggerDiff;
-		return forEachAutoPin(pwmMap(constrain(dewPoint, tempDiff, temperature),
-			tempDiff, temperature), temperature - dewPoint <= triggerDiff);
+		return forEachAutoPin(pwmMap(dewPoint,tempDiff, temperature),
+			temperature - dewPoint <= triggerDiff);
 	}
 	return false;
 }
@@ -233,8 +239,7 @@ boolean dewPointDevManage(double triggerDiff) {
 boolean humidityDevManage(double triggerHum) {
 	double humidity = getHumidity();
 	if (humidity != HUMIDITY_INVALID) {
-		return forEachAutoPin(pwmMap(
-			constrain(humidity, triggerHum - 5.0, triggerHum + 5.0), triggerHum - 5.0, triggerHum + 5.0),
+		return forEachAutoPin(pwmMap(humidity, triggerHum - 5.0, triggerHum + 5.0),
 			humidity >= triggerHum);
 	}
 	return false;

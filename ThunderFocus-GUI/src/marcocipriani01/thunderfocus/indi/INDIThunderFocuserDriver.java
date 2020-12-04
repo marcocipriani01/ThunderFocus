@@ -609,7 +609,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     }
 
     @Override
-    public void update(Settings.Value what, int value) {
+    public void updateSetting(Settings.Value what, int value) {
         if (what == Settings.Value.FOK_MAX_TRAVEL) {
             focuserMaxPositionE.setValue(value);
             updateProperty(focuserMaxPositionP);
@@ -617,7 +617,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     }
 
     @Override
-    public void update(Settings.Value what, String value) {
+    public void updateSetting(Settings.Value what, String value) {
         if (what == Settings.Value.SERIAL_PORT) {
             serialPortFieldElem.setValue(value);
             updateProperty(serialPortFieldProp);
@@ -625,17 +625,17 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     }
 
     @Override
-    public void update(Settings.Value what, Settings.Units value) {
+    public void updateSetting(Settings.Value what, Settings.Units value) {
 
     }
 
     @Override
-    public void update(Settings.Value what, boolean value) {
+    public void updateSetting(Settings.Value what, boolean value) {
 
     }
 
     @Override
-    public void update(Settings.Value what, PowerBox value) {
+    public void updateSetting(Settings.Value what, PowerBox value) {
 
     }
 }

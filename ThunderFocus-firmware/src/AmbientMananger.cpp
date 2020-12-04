@@ -9,6 +9,10 @@ double integrationHumidity = 0.0;
 int sensIntegrationCount = 0;
 double dewPoint = TEMP_ABSOLUTE_ZERO;
 
+void ambientInit() {
+	dhtSensor.begin();
+}
+
 void ambientManage() {
     unsigned long currentTime = millis();
 	if (currentTime - lastSensorsCheck >= SENSORS_DELAY) {

@@ -2,8 +2,6 @@
 cd "$(dirname "$0")"
 echo "Cleaning..."
 rm ./ThunderFocus.deb 2> /dev/null
-echo "Copying files..."
-cp ../out/artifacts/ThunderFocus_jar/ThunderFocus.jar ThunderFocus/usr/share/ThunderFocus/ThunderFocus.jar
 echo "Setting permissions..."
 chmod +x ThunderFocus/usr/share/applications/ThunderFocus.desktop
 chmod +x ThunderFocus/usr/bin/thunderfocus

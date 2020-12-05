@@ -19,8 +19,8 @@ struct Settings {
 	DevManAutoModes devManAutoMode;
 #endif
 #if TIME_CONTROL == true
-	float worldLat;
-	float worldLong;
+	double worldLat;
+	double worldLong;
 #endif
 };
 

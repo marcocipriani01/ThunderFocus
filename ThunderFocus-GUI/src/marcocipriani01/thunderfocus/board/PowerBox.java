@@ -1,4 +1,4 @@
-package marcocipriani01.thunderfocus.focuser;
+package marcocipriani01.thunderfocus.board;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -27,6 +27,9 @@ public class PowerBox {
     private double temperature = ABSOLUTE_ZERO;
     private double humidity = INVALID_HUMIDITY;
     private double dewPoint = ABSOLUTE_ZERO;
+    private double latitude = 0.0;
+    private double longitude = 0.0;
+    private double sunElev = Double.MIN_VALUE;
 
     /**
      * Class constructor. Initializes an empty list.
@@ -48,6 +51,33 @@ public class PowerBox {
         this.temperature = pb.temperature;
         this.humidity = pb.humidity;
         this.dewPoint = pb.dewPoint;
+        this.latitude = pb.latitude;
+        this.longitude = pb.longitude;
+        this.sunElev = pb.sunElev;
+    }
+
+    public double getSunElev() {
+        return sunElev;
+    }
+
+    void setSunElev(double sunElev) {
+        this.sunElev = sunElev;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public double getTemperature() {
@@ -78,7 +108,7 @@ public class PowerBox {
         return pins;
     }
 
-    public ArrayList<ArduinoPin> asListOnlyPwm() {
+    public ArrayList<ArduinoPin> listOnlyPwm() {
         ArrayList<ArduinoPin> list = new ArrayList<>();
         for (ArduinoPin ap : pins) {
             if (ap.isPwm()) list.add(ap);
@@ -86,7 +116,7 @@ public class PowerBox {
         return list;
     }
 
-    public ArrayList<ArduinoPin> asListOnlyDigital() {
+    public ArrayList<ArduinoPin> listOnlyDigital() {
         ArrayList<ArduinoPin> list = new ArrayList<>();
         for (ArduinoPin ap : pins) {
             if (!ap.isPwm()) list.add(ap);
@@ -106,7 +136,7 @@ public class PowerBox {
         this.autoMode = AutoModes.values()[index];
     }
 
-    public boolean isSupportsTime() {
+    public boolean supportsTime() {
         return supportsTime;
     }
 
@@ -114,7 +144,7 @@ public class PowerBox {
         this.supportsTime = supportsTime;
     }
 
-    public boolean isSupportsAmbient() {
+    public boolean supportsAmbient() {
         return supportsAmbient;
     }
 

@@ -2,9 +2,9 @@ package marcocipriani01.thunderfocus.indi;
 
 import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.thunderfocus.Settings;
-import marcocipriani01.thunderfocus.focuser.ArduinoPin;
-import marcocipriani01.thunderfocus.focuser.PowerBox;
-import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.board.ArduinoPin;
+import marcocipriani01.thunderfocus.board.PowerBox;
+import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 import org.indilib.i4j.Constants;
@@ -465,7 +465,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
             if (powerBox.countDigitalPins() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
-                for (ArduinoPin pin : powerBox.asListOnlyDigital()) {
+                for (ArduinoPin pin : powerBox.listOnlyDigital()) {
                     String pinName = pin.getName();
                     pinsMap.put(new INDIElementBuilder<>(INDISwitchElement.class, digitalPinProps).name(pinName)
                             .label(pinName).switchValue(pin.getValueIndi()).create(), pin);
@@ -475,7 +475,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
             if (powerBox.countPwmPins() > 0) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).create();
-                for (ArduinoPin pin : powerBox.asListOnlyPwm()) {
+                for (ArduinoPin pin : powerBox.listOnlyPwm()) {
                     String pinName = pin.getName();
                     pinsMap.put(new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName).label(pinName)
                             .step(1).numberFormat("%.0f").maximum(255.0).numberValue(pin.getValuePwm()).create(), pin);

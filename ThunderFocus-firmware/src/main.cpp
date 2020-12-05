@@ -31,6 +31,7 @@ HandController hc(&focuser);
 struct Settings settings;
 // Flag for requesting settings to be saved
 boolean needToSaveSettings = false;
+unsigned long lastTimeSettingsSave = 0;
 
 void loadSettings() {
 	uint8_t* dst = (uint8_t*)&settings;
@@ -55,11 +56,14 @@ void loadSettings() {
 		setDevManAutoMode(settings.devManAutoMode);
 #endif
 #if TIME_CONTROL == true
-		setWorldCoord(settings.worldLat, settings.worldLong);
+		if ((!isnan(settings.worldLat)) && (!isnan(settings.worldLong))) {
+			setWorldCoord(settings.worldLat, settings.worldLong);
+		}
 #endif
 	} else {
 		settings.marker = EEPROM_VERSION;
 		focuser.begin();
+		saveSettings();
 	}
 }
 
@@ -95,6 +99,17 @@ void setup() {
 	clearBuffer(serialBuffer, 8);
 #endif
 
+#ifdef STATUS_LED
+	pinMode(STATUS_LED, OUTPUT);
+#if STATUS_LED_MANAGED == true
+	digitalWrite(STATUS_LED, HIGH);
+	delay(400);
+	digitalWrite(STATUS_LED, LOW);
+#else
+	digitalWrite(STATUS_LED, HIGH);
+#endif
+#endif
+
 #if ENABLE_DEVMAN == true
 	beginDevMan();
 #endif
@@ -107,11 +122,6 @@ void setup() {
 
 #if FOK1_ENABLE_HC == true
 	hc.begin();
-#endif
-
-#ifdef STATUS_LED
-	pinMode(STATUS_LED, OUTPUT);
-	digitalWrite(STATUS_LED, HIGH);
 #endif
 
 #if defined(__AVR_ATmega32U4__)
@@ -140,9 +150,13 @@ void loop() {
 #endif
 
 #if SETTINGS_SUPPORT == true
-	if (needToSaveSettings) {
-		saveSettings();
-		needToSaveSettings = false;
+	unsigned long currentTime = millis();
+	if (currentTime - lastTimeSettingsSave >= SETTINGS_SAVE_DELAY) {
+		if (needToSaveSettings) {
+			saveSettings();
+			needToSaveSettings = false;
+		}
+		lastTimeSettingsSave = currentTime;
 	}
 #endif
 }
@@ -254,6 +268,8 @@ inline void flagSettings() {
 
 #if PROTOCOL == PROTOCOL_THUNDERFOCUS
 void serialEvent() {
-	thunderFocusSerialEvent(&focuser);
+	if (thunderFocusSerialEvent(&focuser)) {
+		flagSettings();
+	}
 }
 #endif

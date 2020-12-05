@@ -18,7 +18,7 @@
         <properties>
           <icon value="marcocipriani01/thunderfocus/res/go-neg.png"/>
           <text value="In"/>
-          <toolTipText value="Movimento relativo all'indietro"/>
+          <toolTipText value="Movimento relativo all'indietro."/>
         </properties>
       </component>
       <component id="757bb" class="javax.swing.JTextField" binding="field">
@@ -31,7 +31,7 @@
           <font size="14"/>
           <horizontalAlignment value="0"/>
           <text value="10"/>
-          <toolTipText value="Movimento relativo in passi"/>
+          <toolTipText value="Movimento relativo in passi."/>
         </properties>
       </component>
       <component id="fce9f" class="javax.swing.JButton" binding="right">
@@ -45,7 +45,7 @@
           <horizontalTextPosition value="2"/>
           <icon value="marcocipriani01/thunderfocus/res/go.png"/>
           <text value="Out"/>
-          <toolTipText value="Movimento relativo in avanti"/>
+          <toolTipText value="Movimento relativo in avanti."/>
         </properties>
       </component>
       <component id="2a1b3" class="javax.swing.JLabel">

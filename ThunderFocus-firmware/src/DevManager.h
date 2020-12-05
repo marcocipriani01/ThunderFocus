@@ -36,6 +36,9 @@ struct Pin {
 extern Pin pins[];
 extern DevManAutoModes devManAutoMode;
 extern unsigned long lastDevManTime;
+#if TIME_CONTROL == true
+extern double calculatedSunElev;
+#endif
 
 void beginDevMan();
 boolean devManage();
@@ -45,13 +48,13 @@ byte getManagedPinsCount();
 void updatePin(byte pin, byte value);
 boolean setPinAutoMode(byte pin, boolean autoModeEn);
 DevManAutoModes getDevManAutoMode();
-void setDevManAutoMode(DevManAutoModes autoMode);
+boolean setDevManAutoMode(DevManAutoModes autoMode);
 
 byte pwmMap(double in, double min, double max);
 boolean forEachAutoPin(byte pwm, boolean digital);
 
 #if TIME_CONTROL == true
-boolean sunDevManage(double trigger);
+double getCalculatedSunElev();
 #endif
 #if TEMP_HUM_SENSOR == true
 boolean dewPointDevManage(double triggerDiff);

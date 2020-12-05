@@ -1,7 +1,7 @@
 package marcocipriani01.thunderfocus;
 
-import marcocipriani01.thunderfocus.focuser.ArduinoPin;
-import marcocipriani01.thunderfocus.focuser.PowerBox;
+import marcocipriani01.thunderfocus.board.ArduinoPin;
+import marcocipriani01.thunderfocus.board.PowerBox;
 
 import javax.swing.*;
 import javax.swing.table.*;

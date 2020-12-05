@@ -2,7 +2,7 @@ package marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.thunderfocus.indi.INDIServerCreator;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 
@@ -38,11 +38,7 @@ public class Main {
     public static void exit(int code) {
         indiServerCreator.stop();
         if (focuser.isConnected()) {
-            try {
-                focuser.disconnect();
-            } catch (ConnectionException e) {
-                e.printStackTrace();
-            }
+            focuser.disconnect();
         }
         System.exit(code);
     }

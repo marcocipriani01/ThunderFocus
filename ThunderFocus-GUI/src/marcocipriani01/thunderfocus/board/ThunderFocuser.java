@@ -1,20 +1,17 @@
-package marcocipriani01.thunderfocus.focuser;
+package marcocipriani01.thunderfocus.board;
 
 import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialMessageListener;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ThunderFocuser implements SerialMessageListener {
 
-    private final SerialPortImpl serialPort = new SerialPortImpl();
+    private SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
     private String version = "?";
     private PowerBox powerBox = null;
@@ -55,13 +52,20 @@ public class ThunderFocuser implements SerialMessageListener {
         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
     }
 
-    public void disconnect() throws ConnectionException {
+    public void disconnect() {
         updConnSate(ConnState.TIMEOUT);
         updFocuserState(FocuserState.NONE);
         ready = false;
-        serialPort.disconnect();
+        try {
+            serialPort.disconnect();
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+            serialPort = new SerialPortImpl();
+        }
         updConnSate(ConnState.DISCONNECTED);
-        powerBox.clear();
+        if (powerBox != null) {
+            powerBox.clear();
+        }
         powerBox = null;
     }
 
@@ -161,20 +165,17 @@ public class ThunderFocuser implements SerialMessageListener {
                         System.out.println("Message from focuser: \"" + param + "\"");
 
                 case 'S' -> { // Pos
-                    if (param.length() > 0) {
-                        try {
-                            int newCurrentPos = Integer.parseInt(param);
-                            if (newCurrentPos != currentPos) {
-                                currentPos = newCurrentPos;
-                                currentPosTicks = stepsToTicks(currentPos);
-                                notifyListeners(null, Parameters.CURRENT_POS);
-                                notifyListeners(null, Parameters.CURRENT_POS_TICKS);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.err.println("Non-integer position received: \"" + param + "\"");
+                    try {
+                        int newCurrentPos = Integer.parseInt(param);
+                        if (newCurrentPos != currentPos) {
+                            currentPos = newCurrentPos;
+                            currentPosTicks = stepsToTicks(currentPos);
+                            notifyListeners(null, Parameters.CURRENT_POS);
+                            notifyListeners(null, Parameters.CURRENT_POS_TICKS);
                         }
-                    } else {
-                        System.err.println("Empty position message!");
+                    } catch (Exception e) {
+                        System.err.println("Error in position data!");
+                        e.printStackTrace();
                     }
                 }
 
@@ -197,8 +198,37 @@ public class ThunderFocuser implements SerialMessageListener {
                         powerBox.setHumidity(Double.parseDouble(split[1]));
                         powerBox.setDewPoint(Double.parseDouble(split[2]));
                         notifyListeners(null, Parameters.POWERBOX_AMBIENT_DATA);
-                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException | NullPointerException e) {
+                    } catch (Exception e) {
                         System.err.println("Error in ambient data!");
+                        e.printStackTrace();
+                    }
+                }
+
+                case 'Y' -> { // Pins
+                    try {
+                        String[] split = param.split(",");
+                        powerBox.setAutoMode(Integer.parseInt(split[0]));
+                        Pattern pattern = Pattern.compile("\\((.*?)\\)");
+                        Matcher m = pattern.matcher(split[1]);
+                        while (m.find()) {
+                            String[] rcvPin = m.group(1).split("%");
+                            int number = Integer.parseInt(rcvPin[0]), value = Integer.parseInt(rcvPin[1]);
+                            this.powerBox.getPin(number).setValue(value);
+                        }
+                        notifyListeners(null, Parameters.POWERBOX_AUTO_MODE);
+                        notifyListeners(null, Parameters.POWERBOX_PINS);
+                    } catch (Exception e) {
+                        System.err.println("Error in pins data!");
+                        e.printStackTrace();
+                    }
+                }
+
+                case 'T' -> { // Sun elevation
+                    try {
+                        powerBox.setSunElev(Double.parseDouble(param));
+                        notifyListeners(null, Parameters.POWERBOX_SUN_ELEV);
+                    } catch (Exception e) {
+                        System.err.println("Error in Sun elevation data!");
                         e.printStackTrace();
                     }
                 }
@@ -210,7 +240,7 @@ public class ThunderFocuser implements SerialMessageListener {
                 try {
                     System.out.println("Focuser settings: " + param);
                     String[] l = param.split(",");
-                    version = l[0];
+                    version = l[0].charAt(0) + "." + l[0].charAt(1);
                     currentPos = Integer.parseInt(l[1]);
                     speed = Integer.parseInt(l[2]);
                     powerSaver = l[3].equals("1");
@@ -233,21 +263,17 @@ public class ThunderFocuser implements SerialMessageListener {
                         powerBox.setSupportsAmbient(l[9].equals("1"));
                         if (l[10].equals("1")) {
                             powerBox.setSupportsTime(true);
-                            run(Commands.SET_TIME_LAT_LONG, null, (int) (Calendar.getInstance().getTimeInMillis() / 1000L), 0, 0);
+                            powerBox.setLatitude(Double.parseDouble(l[11]));
+                            powerBox.setLongitude(Double.parseDouble(l[12]));
+                            Commands.SET_TIME_LAT_LONG.run(this, null, (int) (System.currentTimeMillis() / 1000L), 0, 0);
                         }
                     }
                     ready = true;
                     updConnSate(ConnState.CONNECTED_READY);
 
-                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                } catch (Exception e) {
                     nOnCriticalError(new ConnectionException("The focuser responded with an illegal configuration.", ConnectionException.Type.PROTOCOL));
-                    try {
-                        disconnect();
-                    } catch (ConnectionException ce) {
-                        ce.printStackTrace();
-                    }
-                } catch (ConnectionException | InvalidParamException e) {
-                    e.printStackTrace();
+                    disconnect();
                 }
             }
         }
@@ -303,7 +329,9 @@ public class ThunderFocuser implements SerialMessageListener {
         ENABLE_POWER_SAVE,
         POWERBOX_PINS,
         POWERBOX_AUTO_MODE,
-        POWERBOX_AMBIENT_DATA
+        POWERBOX_AMBIENT_DATA,
+        POWERBOX_WORLD_COORD,
+        POWERBOX_SUN_ELEV
     }
 
     public enum ConnState {
@@ -342,7 +370,13 @@ public class ThunderFocuser implements SerialMessageListener {
 
     public enum Commands {
         PRINT_CONFIG('C'),
-        SET_TIME_LAT_LONG('T', 3, (f, params) -> params[0] > 1577836800),
+        SET_TIME_LAT_LONG('T', 3, (f, params) -> true, (f, caller, params) -> {
+            if ((params[1] != 0) && (params[2] != 0)) {
+                f.powerBox.setLatitude(((double) params[1]) / 1000.0);
+                f.powerBox.setLongitude(((double) params[2]) / 1000.0);
+                f.notifyListeners(caller, Parameters.POWERBOX_WORLD_COORD);
+            }
+        }),
         FOK1_REL_MOVE('R', 1, null, (f, caller, params) -> {
             f.requestedRelPos = params[0];
             f.notifyListeners(caller, Parameters.REQUESTED_REL_POS);
@@ -473,16 +507,12 @@ public class ThunderFocuser implements SerialMessageListener {
                     if (timerCount < 5) {
                         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
                     } else {
-                        System.err.println("Connection timeout, disconnecting.");
                         disconnect();
+                        nOnCriticalError(new IllegalStateException("Connection timeout, disconnecting."));
                     }
                 } catch (InvalidParamException ignored) {
                 } catch (ConnectionException e) {
-                    try {
-                        disconnect();
-                    } catch (ConnectionException ex) {
-                        ex.printStackTrace();
-                    }
+                    disconnect();
                     nOnCriticalError(e);
                 }
             }

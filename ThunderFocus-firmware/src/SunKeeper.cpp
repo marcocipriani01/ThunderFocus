@@ -1,28 +1,27 @@
 #include "SunKeeper.h"
 
-float sunKeepLat = 0;
-float sunKeepLong = 0;
+double sunKeepLat = 0.0;
+double sunKeepLong = 0.0;
 
 void initTime() {
     setSyncProvider(getTeensyTime);
-    SolarPosition::setTimeProvider(getTeensyTime);
 }
 
-void setWorldCoord(float lat, float lng) {
+void setWorldCoord(double lat, double lng) {
     sunKeepLat = lat;
     sunKeepLong = lng;
 }
 
-float getWorldLat() {
+double getWorldLat() {
     return sunKeepLat;
 }
 
-float getWorldLong() {
+double getWorldLong() {
     return sunKeepLong;
 }
 
-float getSolarElevation() {
-	return (calculateSolarPosition(getTeensyTime(), sunKeepLat, sunKeepLong).elevation) * RAD_TO_DEG;
+double getSolarElevation() {
+	return (calculateSolarPosition(getTeensyTime(), sunKeepLat * DEG_TO_RAD, sunKeepLong * DEG_TO_RAD).elevation) * RAD_TO_DEG;
 }
 
 void setTeensyTime(unsigned long currentTime) {

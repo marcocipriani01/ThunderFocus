@@ -16,6 +16,7 @@
           <enabled value="false"/>
           <font style="1"/>
           <text value="Accetta"/>
+          <toolTipText value="Salva i dati della calibrazione."/>
         </properties>
       </component>
       <component id="5723f" class="javax.swing.JButton" binding="cancelButton">
@@ -25,6 +26,7 @@
         <properties>
           <focusable value="false"/>
           <text value="Annulla"/>
+          <toolTipText value="Annulla calibrazione."/>
         </properties>
       </component>
       <hspacer id="103cf">
@@ -52,6 +54,7 @@
               <horizontalTextPosition value="2"/>
               <icon value="marcocipriani01/thunderfocus/res/right.png"/>
               <text value="Un passo"/>
+              <toolTipText value="Fai un passo solo."/>
             </properties>
           </component>
           <component id="4b1c1" class="javax.swing.JSpinner" binding="relMovSpinner" custom-create="true">
@@ -61,6 +64,7 @@
             <properties>
               <enabled value="false"/>
               <font size="24"/>
+              <toolTipText value="Numero passi."/>
             </properties>
           </component>
           <component id="2a6cd" class="javax.swing.JButton" binding="relMovButton">
@@ -72,7 +76,7 @@
               <font size="22"/>
               <horizontalTextPosition value="2"/>
               <icon value="marcocipriani01/thunderfocus/res/right.png"/>
-              <text value=""/>
+              <toolTipText value="Muovi."/>
             </properties>
           </component>
         </children>
@@ -85,6 +89,7 @@
           <horizontalAlignment value="0"/>
           <icon value="marcocipriani01/thunderfocus/res/loading.gif"/>
           <text value=""/>
+          <toolTipText value="Caricamento..."/>
         </properties>
       </component>
       <component id="95b87" class="javax.swing.JLabel" binding="counterLabel">
@@ -98,6 +103,7 @@
           <horizontalAlignment value="0"/>
           <horizontalTextPosition value="0"/>
           <text value="0"/>
+          <toolTipText value="Numero di passi di backlash."/>
         </properties>
       </component>
       <component id="f582e" class="javax.swing.JLabel">

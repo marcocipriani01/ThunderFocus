@@ -5,6 +5,9 @@ unsigned long lastThunderFocusSerialSend = 0;
 #if TEMP_HUM_SENSOR == true
 unsigned long lastThunderFocusAmbientSend = 0;
 #endif
+#if TIME_CONTROL == true
+unsigned long lastThunderFocusSunPosSend = 0;
+#endif
 
 FocuserState thunderFocusManage(Focuser *focuser) {
 	FocuserState currentState = focuser->run();
@@ -27,18 +30,24 @@ FocuserState thunderFocusManage(Focuser *focuser) {
 	ambientManage();
 	if (currentTime - lastThunderFocusAmbientSend >= SENSORS_DELAY) {
 		Serial.print("J");
-		Serial.print(getTemperature());
+		Serial.print(getTemperature(), 1);
 		Serial.print(",");
-		Serial.print(getHumidity());
+		Serial.print(getHumidity(), 1);
 		Serial.print(",");
-		Serial.println(getDewPoint());
+		Serial.println(getDewPoint(), 1);
 		lastThunderFocusAmbientSend = currentTime;
+	}
+#endif
+#if TIME_CONTROL == true
+	if (currentTime - lastThunderFocusSunPosSend >= AUTOMATIC_DEVMAN_TIMER) {
+		thunderFocusUpdSunPos();
+		lastThunderFocusSunPosSend = currentTime;
 	}
 #endif
 	return currentState;
 }
 
-void thunderFocusSerialEvent(Focuser *focuser) {
+boolean thunderFocusSerialEvent(Focuser *focuser) {
 	while (Serial.available()) {
 		if (Serial.read() == '$') {
 			Serial.println("LFoundCmd");
@@ -80,12 +89,28 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(TIME_CONTROL);
 #if TIME_CONTROL == true
 				Serial.print(",");
-				Serial.print(getWorldLat());
+				Serial.print(getWorldLat(), 3);
 				Serial.print(",");
-				Serial.print(getWorldLong());
+				Serial.print(getWorldLong(), 3);
 #endif
 #endif
 				Serial.println();
+#if TIME_CONTROL == true
+				Serial.print("LStoredTime=");
+				Serial.print(hour());
+				Serial.print(":");
+				Serial.print(minute());
+				Serial.print(":");
+				Serial.print(second());
+				Serial.print(" ");
+				Serial.print(day());
+				Serial.print("/");
+				Serial.print(month());
+				Serial.print("/");
+				Serial.print(year());
+				Serial.println(" UTC");
+				thunderFocusUpdSunPos();
+#endif
 				break;
 			}
 
@@ -116,13 +141,13 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("LSetPos="));
 				Serial.println(n);
 				focuser->setCurrentPos(n);
-				break;
+				return true;
 			}
 
 			case 'W': {
 				Serial.println(F("LSetZero"));
 				focuser->setCurrentPos(0);
-				break;
+				return true;
 			}
 
 			case 'H': {
@@ -130,7 +155,7 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("LHoldControl="));
 				Serial.println(b);
 				focuser->setHoldControlEnabled(b);
-				break;
+				return true;
 			}
 
 			case 'V': {
@@ -138,7 +163,7 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("LSpeed="));
 				Serial.println(n);
 				focuser->setSpeed(n);
-				break;
+				return true;
 			}
 
 			case 'B': {
@@ -146,7 +171,7 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("LBacklash="));
 				Serial.println(n);
 				focuser->setBacklash(n);
-				break;
+				return true;
 			}
 
 			case 'D': {
@@ -154,7 +179,7 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("LDirReverse="));
 				Serial.println(b);
 				focuser->setDirReverse(b);
-				break;
+				return true;
 			}
 
 #if ENABLE_DEVMAN == true
@@ -166,15 +191,17 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print(F("@"));
 				Serial.println(value);
 				updatePin(pin, value);
-				break;
+				return true;
 			}
 
 			case 'K': {
 				DevManAutoModes am = (DevManAutoModes) Serial.parseInt();
 				Serial.print(F("LSetAutoMode="));
 				Serial.println((int) am);
-				setDevManAutoMode(am);
-				break;
+				if (setDevManAutoMode(am)) {
+					thunderFocusUpdPins();
+				}
+				return true;
 			}
 
 			case 'Y': {
@@ -187,16 +214,28 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 				if (setPinAutoMode(pin, amEn)) {
 					thunderFocusUpdPins();
 				}
+				return true;
 			}
 #endif
 
 #if TIME_CONTROL == true
 			case 'T': {
-				setTeensyTime(Serial.parseInt());
-				double lat = Serial.parseInt();
-				double lng = Serial.parseInt();
+				unsigned long t = Serial.parseInt();
+				if (t != 0) {
+					setTeensyTime(t);
+					Serial.print(F("LSetTime="));
+					Serial.println(t);
+				}
+				long lat = Serial.parseInt();
+				long lng = Serial.parseInt();
 				if (lat != 0 && lng != 0) {
-					setWorldCoord(lat / 1000.0, lng / 1000.0);
+					setWorldCoord(((double) lat) / 1000.0, ((double) lng) / 1000.0);
+					Serial.print(F("LSetWorldCoord="));
+					Serial.print(lat);
+					Serial.print(",");
+					Serial.println(lng);
+					thunderFocusUpdSunPos();
+					return true;
 				}
 				break;
 			}
@@ -204,6 +243,7 @@ void thunderFocusSerialEvent(Focuser *focuser) {
 			}
 		}
 	}
+	return false;
 }
 
 #if ENABLE_DEVMAN == true
@@ -213,12 +253,21 @@ void thunderFocusUpdPins() {
 	Serial.print(",");
 	for (byte i = 0; i < getManagedPinsCount(); i++) {
 		Pin pin = getManagedPin(i);
-		Serial.print("(");
-		Serial.print(pin.number);
-		Serial.print("%");
-		Serial.print(pin.value);
-		Serial.print(")");
+		if (pin.autoModeEn) {
+			Serial.print("(");
+			Serial.print(pin.number);
+			Serial.print("%");
+			Serial.print(pin.value);
+			Serial.print(")");
+		}
 	}
 	Serial.println();
+}
+#endif
+
+#if TIME_CONTROL == true
+inline void thunderFocusUpdSunPos() {
+	Serial.print("T");
+	Serial.println(getCalculatedSunElev(), 2);
 }
 #endif

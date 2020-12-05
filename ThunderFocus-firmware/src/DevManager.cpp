@@ -3,6 +3,9 @@
 Pin pins[] = MANAGED_PINS;
 DevManAutoModes devManAutoMode = DevManAutoModes::NIGHT_ASTRONOMICAL;
 unsigned long lastDevManTime = 0;
+#if TIME_CONTROL == true
+double calculatedSunElev = 0;
+#endif
 
 void beginDevMan() {
 	// Polar finder illuminator
@@ -47,19 +50,21 @@ boolean processAutoMode(boolean force) {
 	if (devManAutoMode != DevManAutoModes::UNAVAILABLE) {
 		unsigned long currentTime = millis();
 		if (force || ((currentTime - lastDevManTime) >= AUTOMATIC_DEVMAN_TIMER)) {
+#if TIME_CONTROL == true
+			calculatedSunElev = getSolarElevation();
+#endif
 			switch (devManAutoMode) {
 #if TIME_CONTROL == true
 			case DevManAutoModes::NIGHT_ASTRONOMICAL: {
-				hasChanged = sunDevManage(-18.0);
+				hasChanged = forEachAutoPin(pwmMap(calculatedSunElev, -15.0, -21.0), calculatedSunElev <= -18.0);
 				break;
 			}
 			case DevManAutoModes::NIGHT_CIVIL: {
-				hasChanged = sunDevManage(-6.0);
+				hasChanged = forEachAutoPin(pwmMap(calculatedSunElev, -3.0, -9.0), calculatedSunElev <= -6.0);
 				break;
 			}
 			case DevManAutoModes::DAYTIME: {
-				double elev = getSolarElevation();
-				forEachAutoPin(pwmMap(constrain(elev, 0.0, 3.0), 0.0, 3.0), elev > 0.0);
+				hasChanged = forEachAutoPin(pwmMap(calculatedSunElev, 0.0, 3.0), calculatedSunElev > 0.0);
 				break;
 			}
 #endif
@@ -102,8 +107,7 @@ boolean processAutoMode(boolean force) {
 			case DevManAutoModes::TEMP_FREEZE: {
 				double temperature = getTemperature();
 				if (temperature != TEMP_ABSOLUTE_ZERO) {
-					hasChanged = forEachAutoPin(pwmMap(
-						constrain(temperature, 2.0, 4.0), 4.0, 2.0), temperature <= 3.0);
+					hasChanged = forEachAutoPin(pwmMap(temperature, 4.0, 2.0), temperature <= 3.0);
 				}
 				break;
 			}
@@ -158,14 +162,14 @@ DevManAutoModes getDevManAutoMode() {
 	return devManAutoMode;
 }
 
-void setDevManAutoMode(DevManAutoModes autoMode) {
+boolean setDevManAutoMode(DevManAutoModes autoMode) {
 	switch (autoMode) {
 #if TIME_CONTROL == true
 	case DevManAutoModes::NIGHT_ASTRONOMICAL:
 	case DevManAutoModes::NIGHT_CIVIL:
 	case DevManAutoModes::DAYTIME: {
 		devManAutoMode = autoMode;
-		break;
+		return processAutoMode(true);
 	}
 #endif
 #if TEMP_HUM_SENSOR == true
@@ -179,19 +183,25 @@ void setDevManAutoMode(DevManAutoModes autoMode) {
 	case DevManAutoModes::HUMIDITY_70:
 	case DevManAutoModes::TEMP_FREEZE: {
 		devManAutoMode = autoMode;
-		break;
+		return processAutoMode(true);
 	}
 #endif
 	default: {
 		devManAutoMode = DevManAutoModes::UNAVAILABLE;
-		break;
+		return true;
 	}
 	}
+	return false;
 }
 
 byte pwmMap(double in, double min, double max) {
-	if (in < min) return 0;
-	if (in >= max) return 255;
+	if (max > min) {
+		if (in <= min) return 0;
+		if (in >= max) return 255;
+	} else {
+		if (in >= min) return 0;
+		if (in <= max) return 255;
+	}
 	return (in - min) * (255.0 - AUTOMATIC_DEVMAN_THRESHOLD) / (max - min) + AUTOMATIC_DEVMAN_THRESHOLD;
 }
 
@@ -219,9 +229,8 @@ boolean forEachAutoPin(byte pwm, boolean digital) {
 }
 
 #if TIME_CONTROL == true
-boolean sunDevManage(double trigger) {
-	double elev = getSolarElevation();
-	return forEachAutoPin(pwmMap(constrain(elev, trigger - 3.0, trigger + 3.0), trigger + 3.0, trigger - 3.0), elev <= trigger);
+double getCalculatedSunElev() {
+	return calculatedSunElev;
 }
 #endif
 
@@ -229,9 +238,7 @@ boolean sunDevManage(double trigger) {
 boolean dewPointDevManage(double triggerDiff) {
 	double dewPoint = getDewPoint(), temperature = getTemperature();
 	if ((dewPoint != TEMP_ABSOLUTE_ZERO) && (temperature != TEMP_ABSOLUTE_ZERO)) {
-		double tempDiff = temperature - triggerDiff;
-		return forEachAutoPin(pwmMap(dewPoint,tempDiff, temperature),
-			temperature - dewPoint <= triggerDiff);
+		return forEachAutoPin(pwmMap(dewPoint, temperature - triggerDiff, temperature), (temperature - dewPoint) <= triggerDiff);
 	}
 	return false;
 }
@@ -239,8 +246,7 @@ boolean dewPointDevManage(double triggerDiff) {
 boolean humidityDevManage(double triggerHum) {
 	double humidity = getHumidity();
 	if (humidity != HUMIDITY_INVALID) {
-		return forEachAutoPin(pwmMap(humidity, triggerHum - 5.0, triggerHum + 5.0),
-			humidity >= triggerHum);
+		return forEachAutoPin(pwmMap(humidity, triggerHum - 5.0, triggerHum + 5.0), humidity >= triggerHum);
 	}
 	return false;
 }

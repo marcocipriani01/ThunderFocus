@@ -1,8 +1,8 @@
 package marcocipriani01.thunderfocus;
 
-import marcocipriani01.thunderfocus.focuser.ArduinoPin;
-import marcocipriani01.thunderfocus.focuser.PowerBox;
-import marcocipriani01.thunderfocus.focuser.ThunderFocuser;
+import marcocipriani01.thunderfocus.board.ArduinoPin;
+import marcocipriani01.thunderfocus.board.PowerBox;
+import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
 import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
@@ -29,6 +29,7 @@ import static marcocipriani01.thunderfocus.Main.APP_NAME;
 public class MainWindow extends JFrame implements ChangeListener, ActionListener, KeyListener, FocusListener, ThunderFocuser.Listener, Settings.SettingsListener {
 
     private static final ImageIcon POWERBOX_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
+    private static final ImageIcon AMBIENT_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/ambienttab.png"));
     private final MiniWindow miniWindow = new MiniWindow() {
         @Override
         protected void onHide() {
@@ -85,6 +86,14 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private ChartPanel tempChartPanel;
     private ChartPanel humChartPanel;
     private ChartPanel dewPointChartPanel;
+    private JPanel ambientTab;
+    private JPanel powerBoxConfigPanel;
+    private JSpinner powerBoxLatSpinner;
+    private JSpinner powerBoxLongSpinner;
+    private JTextField sunElevationField;
+    private JLabel powerBoxAutoModeLabel;
+    private JLabel sunElevationLabel;
+    private JLabel boardVersionLabel;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -103,7 +112,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         });
         parent.registerKeyboardAction(e -> askClose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        tabPane.removeTabAt(1);
+        removeTab(powerBoxTab);
+        removeTab(ambientTab);
         tabPane.addChangeListener(this);
 
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -168,7 +178,7 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         startOrStopINDI(false);
 
         setResizable(false);
-        setBounds(350, 150, 750, 750);
+        setBounds(350, 150, 750, 770);
         setVisible(true);
     }
 
@@ -258,14 +268,16 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 Main.focuser.getBacklash(), 0, 200, 1));
         powerBoxTable = new JPowerBoxTable();
         powerBoxAutoModeBox = new JComboBox<>();
+        powerBoxLatSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
+        powerBoxLongSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
 
-        tempDataset = new DefaultValueDataset(10D);
+        tempDataset = new DefaultValueDataset(-20D);
         tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset, new Color(255, 82, 82), new Color(41, 182, 246)));
         tempChartPanel.setPreferredSize(new Dimension(240, 220));
-        humidityDataset = new DefaultValueDataset(70D);
+        humidityDataset = new DefaultValueDataset(0D);
         humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
         humChartPanel.setPreferredSize(new Dimension(240, 220));
-        dewPointDataset = new DefaultValueDataset(10D);
+        dewPointDataset = new DefaultValueDataset(-20D);
         dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada", dewPointDataset, new Color(38, 166, 154), new Color(255, 145, 0)));
         dewPointChartPanel.setPreferredSize(new Dimension(240, 220));
     }
@@ -319,19 +331,20 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             serialPortComboBox.showPopup();
 
         } else if (source == connectButton) {
-            try {
-                if (Main.focuser.isConnected()) {
-                    Main.focuser.disconnect();
-                } else if (serialPortComboBox.getSelectedItem() != null) {
-                    String port = (String) serialPortComboBox.getSelectedItem();
-                    Main.settings.setSerialPort(port, this);
+            if (Main.focuser.isConnected()) {
+                Main.focuser.disconnect();
+            } else if (serialPortComboBox.getSelectedItem() != null) {
+                String port = (String) serialPortComboBox.getSelectedItem();
+                Main.settings.setSerialPort(port, this);
+                try {
                     Main.focuser.connect(port);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Nessuna porta disponibile o selezionata.", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                } catch (ConnectionException ex) {
+                    connectionErr(ex);
                 }
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
+            } else {
+                JOptionPane.showMessageDialog(this, "Nessuna porta disponibile o selezionata.", APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
+
 
         } else if (source == pinWindowButton) {
             setAlwaysOnTop(pinWindowButton.isSelected());
@@ -415,6 +428,10 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_SPEED, this, fokSpeedSlider.getValue());
                     Main.focuser.run(ThunderFocuser.Commands.FOK1_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
                     Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
+                    if (Main.focuser.isPowerBox() && Main.focuser.getPowerBox().supportsAmbient()) {
+                        Main.focuser.run(ThunderFocuser.Commands.SET_TIME_LAT_LONG, this, 0,
+                                (int) (((double) powerBoxLatSpinner.getValue()) * 1000), (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
+                    }
                 } catch (ConnectionException ex) {
                     connectionErr(ex);
                 } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -428,7 +445,6 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 ioException.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Impossibile salvare la configurazione!", APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
-            tabPane.setSelectedIndex(0);
 
         } else if (source == applyPowerBoxButton) {
             try {
@@ -460,8 +476,10 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         } else if (source == powerBoxOnButton) {
             try {
                 for (ArduinoPin p : Main.focuser.getPowerBox().asList()) {
-                    p.setValue(255);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                    if (!p.isAutoModeEn()) {
+                        p.setValue(255);
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                    }
                 }
                 powerBoxTable.refresh();
             } catch (ConnectionException ex) {
@@ -473,8 +491,10 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         } else if (source == powerBoxOffButton) {
             try {
                 for (ArduinoPin p : Main.focuser.getPowerBox().asList()) {
-                    p.setValue(0);
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                    if (!p.isAutoModeEn()) {
+                        p.setValue(0);
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                    }
                 }
                 powerBoxTable.refresh();
             } catch (ConnectionException ex) {
@@ -656,12 +676,29 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
+                case POWERBOX_AUTO_MODE -> powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
                 case POWERBOX_AMBIENT_DATA -> {
                     PowerBox powerBox = Main.focuser.getPowerBox();
-                    tempDataset.setValue(powerBox.getTemperature());
-                    humidityDataset.setValue(powerBox.getHumidity());
-                    dewPointDataset.setValue(powerBox.getDewPoint());
+                    double temperature = powerBox.getTemperature();
+                    if (temperature == PowerBox.ABSOLUTE_ZERO) {
+                        tempDataset.setValue(-20D);
+                    } else {
+                        tempDataset.setValue(temperature);
+                    }
+                    double humidity = powerBox.getHumidity();
+                    if (humidity == PowerBox.INVALID_HUMIDITY) {
+                        humidityDataset.setValue(0D);
+                    } else {
+                        humidityDataset.setValue(humidity);
+                    }
+                    double dewPoint = powerBox.getDewPoint();
+                    if (dewPoint == PowerBox.ABSOLUTE_ZERO) {
+                        dewPointDataset.setValue(-20D);
+                    } else {
+                        dewPointDataset.setValue(dewPoint);
+                    }
                 }
+                case POWERBOX_SUN_ELEV -> sunElevationField.setText(Main.focuser.getPowerBox().getSunElev() + "°");
             }
         });
     }
@@ -677,20 +714,39 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             connStatusLabel.setText(connState.getLabel());
             switch (connState) {
                 case CONNECTED_READY: {
+                    boardVersionLabel.setText("Rilevata scheda ThunderFocus v" + Main.focuser.getVersion() + "! ");
+                    boardVersionLabel.setVisible(true);
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        boardVersionLabel.setVisible(false);
+                    }, "Board version hider").start();
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
                     if (Main.focuser.isPowerBox()) {
-                        if (tabPane.getTabComponentAt(1) != powerBoxTab) {
-                            tabPane.insertTab("Power box", POWERBOX_TAB, powerBoxTab, "", 1);
-                        }
+                        tabPane.insertTab("Power box", POWERBOX_TAB, powerBoxTab, "", 1);
                         PowerBox powerBox = Main.focuser.getPowerBox();
                         powerBoxTable.setPowerBox(powerBox);
                         boolean supportsAutoModes = powerBox.supportsAutoModes();
-                        powerBoxAutoModeBox.setEnabled(supportsAutoModes);
+                        powerBoxAutoModeLabel.setVisible(supportsAutoModes);
+                        powerBoxAutoModeBox.setVisible(supportsAutoModes);
                         if (supportsAutoModes) {
                             powerBoxAutoModeBox.setModel(new DefaultComboBoxModel<>(powerBox.supportedAutoModesArray()));
+                            powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
                         }
+                        if (powerBox.supportsAmbient()) {
+                            tabPane.insertTab("Sensori", AMBIENT_TAB, ambientTab, "", 2);
+                            powerBoxLatSpinner.setValue(powerBox.getLatitude());
+                            powerBoxLongSpinner.setValue(powerBox.getLongitude());
+                            powerBoxConfigPanel.setVisible(true);
+                        }
+                        boolean supportsTime = powerBox.supportsTime();
+                        sunElevationLabel.setVisible(supportsTime);
+                        sunElevationField.setVisible(supportsTime);
+                        sunElevationField.setText("?");
                     }
                     fokSpeedSlider.setValue(Main.focuser.getSpeed());
                     fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
@@ -710,6 +766,9 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     break;
                 }
                 case DISCONNECTED: {
+                    powerBoxConfigPanel.setVisible(false);
+                    removeTab(ambientTab);
+                    removeTab(powerBoxTab);
                     enableComponents(false);
                     powerBoxTable.setPowerBox(null);
                 }
@@ -727,6 +786,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 }
             }
         });
+    }
+
+    private void removeTab(Component tab) {
+        int i = tabPane.indexOfComponent(tab);
+        if (i != -1) {
+            tabPane.removeTabAt(i);
+        }
     }
 
     @Override

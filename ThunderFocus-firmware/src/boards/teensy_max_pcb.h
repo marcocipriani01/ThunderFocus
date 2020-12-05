@@ -4,7 +4,8 @@
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
 #define SERIAL_TIMEOUT 100
-//#define STATUS_LED 9
+#define STATUS_LED 9
+#define STATUS_LED_MANAGED true
 #define STATUS_LED_BLINK_PERIOD 300
 #define PROTOCOL PROTOCOL_THUNDERFOCUS
 
@@ -81,11 +82,10 @@
 
 // ---------- Time ----------
 #if defined(CORE_TEENSY)
-#define TIME_CONTROL false
+#define TIME_CONTROL true
 #else
 #define TIME_CONTROL false
 #endif
-#define SUN_CHECK_DELAY 60000
 
 // ---------- Polar finder illuminator ----------
 #define ENABLE_PFI false
@@ -106,6 +106,7 @@
 #if defined(__AVR__) || defined(CORE_TEENSY)
 #define SETTINGS_SUPPORT true
 #define EEPROM_VERSION 1
+#define SETTINGS_SAVE_DELAY 5000
 #else
 #define SETTINGS_SUPPORT false
 #endif

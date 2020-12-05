@@ -5,6 +5,7 @@
     <method v="2">
       <option name="BuildArtifacts" enabled="true">
         <artifact name="ThunderFocus:jar" />
+        <artifact name="ThunderFocus_debian:jar" />
       </option>
     </method>
   </configuration>

@@ -44,7 +44,7 @@
 #define FOK1_IN4 20
 #define FOK1_ACCEL 80
 #define FOK1_PPS_MIN 40
-#define FOK1_PPS_MAX 100
+#define FOK1_PPS_MAX 700
 #define FOK1_HOLD_CONTROL true
 #define FOK1_POWER_TIMEOUT 2000
 #define FOK1_DIR_INVERT false
@@ -77,8 +77,8 @@
 // ---------- Ambient sensors ----------
 #define TEMP_HUM_SENSOR true
 #define DHT22_PIN 8
-#define SENSORS_DELAY 3000 //10000
-#define SENSORS_DATAPOINTS 2 //12
+#define SENSORS_DELAY 10000
+#define SENSORS_DATAPOINTS 6
 
 // ---------- Time ----------
 #if defined(CORE_TEENSY)

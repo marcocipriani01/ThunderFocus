@@ -6,8 +6,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{0CB03723-F857-483A-9367-BEB9EEA10421}
 AppName=ThunderFocus
-AppVersion=2.0
-;AppVerName=ThunderFocus 2.0
+AppVersion=2.1
+;AppVerName=ThunderFocus 2.1
 AppPublisher=marcocipriani01
 AppPublisherURL=https://marcocipriani01.github.io/
 AppSupportURL=https://marcocipriani01.github.io/

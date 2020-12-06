@@ -15,8 +15,8 @@ import java.util.Arrays;
  */
 public class PowerBox {
 
-    public static final double ABSOLUTE_ZERO = -273.15;
-    public static final double INVALID_HUMIDITY = -1;
+    public static final double ABSOLUTE_ZERO = -273.0;
+    public static final double INVALID_HUMIDITY = -1.0;
 
     @Expose
     @SerializedName("List")

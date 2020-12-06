@@ -28,7 +28,7 @@ FocuserState thunderFocusManage(Focuser *focuser) {
 #endif
 #if TEMP_HUM_SENSOR == true
 	ambientManage();
-	if (currentTime - lastThunderFocusAmbientSend >= SENSORS_DELAY) {
+	if (currentTime - lastThunderFocusAmbientSend >= AUTOMATIC_DEVMAN_TIMER) {
 		Serial.print("J");
 		Serial.print(getTemperature(), 1);
 		Serial.print(",");

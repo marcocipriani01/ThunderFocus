@@ -5,7 +5,7 @@
 #include "config.h"
 #include <DHT.h>
 #include <math.h>
-#define TEMP_ABSOLUTE_ZERO -273.15
+#define TEMP_ABSOLUTE_ZERO -273
 #define HUMIDITY_INVALID -1
 
 extern DHT dhtSensor;

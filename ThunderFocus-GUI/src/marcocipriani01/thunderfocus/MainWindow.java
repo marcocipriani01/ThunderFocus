@@ -8,11 +8,16 @@ import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.plot.dial.*;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.chart.ui.GradientPaintTransformType;
 import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.ValueDataset;
+import org.jfree.data.time.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -23,6 +28,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 import static marcocipriani01.thunderfocus.Main.APP_NAME;
 
@@ -94,9 +100,14 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JLabel powerBoxAutoModeLabel;
     private JLabel sunElevationLabel;
     private JLabel boardVersionLabel;
+    private ChartPanel timeSensorsChart;
+    private JButton cleanGraphButton;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
+    private TimeSeries tempSeries;
+    private TimeSeries dewPointSeries;
+    private TimeSeries humiditySeries;
 
     public MainWindow() {
         super(APP_NAME);
@@ -124,14 +135,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             }
         });
         infoPane.setCaretPosition(0);
-        setKeyListeners(parent, connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
-                setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, requestedPosField,
-                aboutLabel, currentPosField, ticksPosSlider, posSlider, relativeMovField, pinWindowButton,
-                powerBoxOnButton, powerBoxOffButton);
+        setKeyListeners(parent, setRequestedPosButton, setZeroButton, fokInButton, fokOutButton, miniWindowButton,
+                stopButton, requestedPosField, aboutLabel, currentPosField, ticksPosSlider, posSlider,
+                relativeMovField, pinWindowButton);
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton,
                 applyPowerBoxButton, copyIndiDriverNameButton, saveConfigButton,
-                powerBoxOnButton, powerBoxOffButton);
+                powerBoxOnButton, powerBoxOffButton, cleanGraphButton);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
         relativeMovField.addActionListener(this);
@@ -275,11 +285,38 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset, new Color(255, 82, 82), new Color(41, 182, 246)));
         tempChartPanel.setPreferredSize(new Dimension(240, 220));
         humidityDataset = new DefaultValueDataset(0D);
-        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
+        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset, new Color(38, 166, 154), new Color(255, 145, 0)));
         humChartPanel.setPreferredSize(new Dimension(240, 220));
         dewPointDataset = new DefaultValueDataset(-20D);
-        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada", dewPointDataset, new Color(38, 166, 154), new Color(255, 145, 0)));
+        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada", dewPointDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
         dewPointChartPanel.setPreferredSize(new Dimension(240, 220));
+
+        TimeSeriesCollection tempGraphDataset = new TimeSeriesCollection();
+        tempSeries = new TimeSeries("Temperatura");
+        tempGraphDataset.addSeries(tempSeries);
+        dewPointSeries = new TimeSeries("P.to di rugiada");
+        tempGraphDataset.addSeries(dewPointSeries);
+        TimeSeriesCollection humGraphDataset = new TimeSeriesCollection();
+        humiditySeries = new TimeSeries("Umidità");
+        humGraphDataset.addSeries(humiditySeries);
+        XYPlot plot = new XYPlot();
+        plot.setDataset(0, tempGraphDataset);
+        plot.setDataset(1, humGraphDataset);
+        XYSplineRenderer tempRend = new XYSplineRenderer();
+        tempRend.setSeriesShapesVisible(0, false);
+        tempRend.setSeriesShapesVisible(1, false);
+        plot.setRenderer(0, tempRend);
+        XYSplineRenderer humRend = new XYSplineRenderer();
+        humRend.setSeriesShapesVisible(0, false);
+        plot.setRenderer(1, humRend);
+        plot.setRangeAxis(0, new NumberAxis("Temp. e p.to di rugiada (°C)"));
+        NumberAxis humAxis = new NumberAxis("Umidità (%)");
+        humAxis.setRange(0.0, 100.0);
+        plot.setRangeAxis(1, humAxis);
+        plot.setDomainAxis(new DateAxis());
+        plot.mapDatasetToRangeAxis(0, 0);
+        plot.mapDatasetToRangeAxis(1, 1);
+        timeSensorsChart = new ChartPanel(new JFreeChart(plot));
     }
 
     private void refreshDriverName() {
@@ -502,6 +539,11 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
             }
+
+        } else if (source == cleanGraphButton) {
+            tempSeries.clear();
+            dewPointSeries.clear();
+            humiditySeries.clear();
         }
     }
 
@@ -680,22 +722,26 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 case POWERBOX_AMBIENT_DATA -> {
                     PowerBox powerBox = Main.focuser.getPowerBox();
                     double temperature = powerBox.getTemperature();
+                    Second instant = new Second(new Date());
                     if (temperature == PowerBox.ABSOLUTE_ZERO) {
                         tempDataset.setValue(-20D);
                     } else {
                         tempDataset.setValue(temperature);
+                        tempSeries.add(instant, temperature);
                     }
                     double humidity = powerBox.getHumidity();
                     if (humidity == PowerBox.INVALID_HUMIDITY) {
                         humidityDataset.setValue(0D);
                     } else {
                         humidityDataset.setValue(humidity);
+                        humiditySeries.add(instant, humidity);
                     }
                     double dewPoint = powerBox.getDewPoint();
                     if (dewPoint == PowerBox.ABSOLUTE_ZERO) {
                         dewPointDataset.setValue(-20D);
                     } else {
                         dewPointDataset.setValue(dewPoint);
+                        dewPointSeries.add(instant, dewPoint);
                     }
                 }
                 case POWERBOX_SUN_ELEV -> sunElevationField.setText(Main.focuser.getPowerBox().getSunElev() + "°");

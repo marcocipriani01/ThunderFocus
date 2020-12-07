@@ -1,11 +1,11 @@
 package marcocipriani01.thunderfocus.indi;
 
+import marcocipriani01.simplesocket.ConnectionException;
 import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.thunderfocus.Settings;
 import marcocipriani01.thunderfocus.board.ArduinoPin;
 import marcocipriani01.thunderfocus.board.PowerBox;
 import marcocipriani01.thunderfocus.board.ThunderFocuser;
-import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 import org.indilib.i4j.Constants;
 import org.indilib.i4j.driver.*;
@@ -625,17 +625,22 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
     }
 
     @Override
-    public void updateSetting(Settings.Value what, Settings.Units value) {
-
-    }
-
-    @Override
     public void updateSetting(Settings.Value what, boolean value) {
 
     }
 
     @Override
-    public void updateSetting(Settings.Value what, PowerBox value) {
+    public void updateSetting(Settings.Units value) {
+
+    }
+
+    @Override
+    public void updateSetting(PowerBox value) {
+
+    }
+
+    @Override
+    public void updateSetting(Settings.ExternalControl value) {
 
     }
 }

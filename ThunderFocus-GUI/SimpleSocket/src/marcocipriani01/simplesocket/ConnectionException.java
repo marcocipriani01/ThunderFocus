@@ -1,4 +1,4 @@
-package marcocipriani01.thunderfocus.io;
+package marcocipriani01.simplesocket;
 
 import java.io.IOException;
 

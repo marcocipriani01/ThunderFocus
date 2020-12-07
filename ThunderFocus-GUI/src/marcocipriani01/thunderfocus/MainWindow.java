@@ -1,10 +1,10 @@
 package marcocipriani01.thunderfocus;
 
+import marcocipriani01.simplesocket.ConnectionException;
 import marcocipriani01.thunderfocus.board.ArduinoPin;
 import marcocipriani01.thunderfocus.board.PowerBox;
 import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
-import marcocipriani01.thunderfocus.io.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -17,7 +17,9 @@ import org.jfree.chart.ui.GradientPaintTransformType;
 import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.ValueDataset;
-import org.jfree.data.time.*;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -31,11 +33,16 @@ import java.net.URISyntaxException;
 import java.util.Date;
 
 import static marcocipriani01.thunderfocus.Main.APP_NAME;
+import static marcocipriani01.thunderfocus.Settings.ExternalControl.*;
 
-public class MainWindow extends JFrame implements ChangeListener, ActionListener, KeyListener, FocusListener, ThunderFocuser.Listener, Settings.SettingsListener {
+public class MainWindow extends JFrame implements
+        ChangeListener, ActionListener, KeyListener, FocusListener,
+        ThunderFocuser.Listener, Settings.SettingsListener {
 
-    private static final ImageIcon POWERBOX_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
-    private static final ImageIcon AMBIENT_TAB = new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/ambienttab.png"));
+    private static final ImageIcon POWERBOX_TAB =
+            new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
+    private static final ImageIcon AMBIENT_TAB =
+            new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/ambienttab.png"));
     private final MiniWindow miniWindow = new MiniWindow() {
         @Override
         protected void onHide() {
@@ -75,7 +82,6 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JPowerBoxTable powerBoxTable;
     private JButton applyPowerBoxButton;
     private JButton saveConfigButton;
-    private JCheckBox enableINDIServerBox;
     private JSpinner indiPortSpinner;
     private JTextField driverNameBox;
     private JComboBox<String> localOrRemoteCombo;
@@ -99,9 +105,15 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     private JTextField sunElevationField;
     private JLabel powerBoxAutoModeLabel;
     private JLabel sunElevationLabel;
-    private JLabel boardVersionLabel;
     private ChartPanel timeSensorsChart;
     private JButton cleanGraphButton;
+    private JLabel ascomStatusLabel;
+    private JLabel versionLabel;
+    private JRadioButton indiServerRadio;
+    private JRadioButton ascomBridgeRadio;
+    private JRadioButton disableExtControlRadio;
+    private JSpinner ascomPortSpinner;
+    private JScrollPane configScrollPane;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -126,7 +138,14 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         removeTab(powerBoxTab);
         removeTab(ambientTab);
         tabPane.addChangeListener(this);
+        configScrollPane.getVerticalScrollBar().setUnitIncrement(10);
 
+        String version = Main.getAppVersion();
+        if (version == null) {
+            versionLabel.setText("Versione sconosciuta!");
+        } else {
+            versionLabel.setText("v" + version + " ");
+        }
         aboutLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         aboutLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -153,7 +172,10 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         localOrRemoteCombo.addItemListener(e -> refreshDriverName());
         refreshDriverName();
         appThemeCombo.setSelectedIndex(Main.settings.getTheme());
-        enableINDIServerBox.setSelected(Main.settings.isIndiEnabled());
+        Settings.ExternalControl externalControl = Main.settings.getExternalControl();
+        ascomBridgeRadio.setSelected(externalControl == ASCOM);
+        disableExtControlRadio.setSelected(externalControl == NONE);
+        indiServerRadio.setSelected(externalControl == INDI);
 
         parent.addMouseListener(new MouseAdapter() {
             @Override
@@ -168,7 +190,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     Main.openBrowser(e.getURL().toURI(), this);
                 } catch (URISyntaxException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(MainWindow.this, "Errore durante l'apertura del browser!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(MainWindow.this,
+                            "Errore durante l'apertura del browser!", APP_NAME, JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -216,7 +239,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         return new JFreeChart(dialplot);
     }
 
-    public JFreeChart createTemperatureDialChart(String title, ValueDataset dataset, Color baseColor, Color pointerColor) {
+    public JFreeChart createTemperatureDialChart(String title,
+                                                 ValueDataset dataset, Color baseColor, Color pointerColor) {
         JFreeChart jfreechart = createStandardDialChart(title, dataset, -20D, 50D);
         DialPlot dialplot = (DialPlot) jfreechart.getPlot();
         StandardDialRange range1 = new StandardDialRange(-20D, -5D, Color.RED);
@@ -233,7 +257,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         dialplot.addLayer(range4);
         GradientPaint gradientpaint = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), baseColor);
         DialBackground dialbackground = new DialBackground(gradientpaint);
-        dialbackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
+        dialbackground.setGradientPaintTransformer(
+                new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
         dialplot.setBackground(dialbackground);
         dialplot.removePointer(0);
         DialPointer.Pointer pointer = new DialPointer.Pointer();
@@ -256,7 +281,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         dialplot.addLayer(range2);
         GradientPaint gradientpaint = new GradientPaint(new Point(), new Color(255, 255, 255), new Point(), baseColor);
         DialBackground dialbackground = new DialBackground(gradientpaint);
-        dialbackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
+        dialbackground.setGradientPaintTransformer(
+                new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
         dialplot.setBackground(dialbackground);
         dialplot.removePointer(0);
         DialPointer.Pointer pointer = new DialPointer.Pointer();
@@ -267,7 +293,9 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
     private void createUIComponents() {
         indiPortSpinner = new JSpinner(new SpinnerNumberModel(
-                Main.settings.getIndiServerPort(), 1024, 9999, 1));
+                Main.settings.getIndiServerPort(), 1024, 99999, 1));
+        ascomPortSpinner = new JSpinner(new SpinnerNumberModel(
+                Main.settings.getAscomBridgePort(), 1024, 99999, 1));
         fokTicksCountSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.settings.getFokTicksCount(), 10, 2147483647, 1));
         fokUnitsCombo = new JComboBox<>(Settings.Units.values());
@@ -282,13 +310,16 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         powerBoxLongSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
 
         tempDataset = new DefaultValueDataset(-20D);
-        tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset, new Color(255, 82, 82), new Color(41, 182, 246)));
+        tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset,
+                new Color(255, 82, 82), new Color(41, 182, 246)));
         tempChartPanel.setPreferredSize(new Dimension(240, 220));
         humidityDataset = new DefaultValueDataset(0D);
-        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset, new Color(38, 166, 154), new Color(255, 145, 0)));
+        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset,
+                new Color(38, 166, 154), new Color(255, 145, 0)));
         humChartPanel.setPreferredSize(new Dimension(240, 220));
         dewPointDataset = new DefaultValueDataset(-20D);
-        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada", dewPointDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
+        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada",
+                dewPointDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
         dewPointChartPanel.setPreferredSize(new Dimension(240, 220));
 
         TimeSeriesCollection tempGraphDataset = new TimeSeriesCollection();
@@ -330,14 +361,35 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     private void askClose() {
-        MainWindow.this.setState(Frame.NORMAL);
-        toFront();
-        requestFocus();
-        if (JOptionPane.showConfirmDialog(this, "Uscire dall'applicazione?", APP_NAME,
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            Main.focuser.removeListener(this);
-            dispose();
-            Main.exit(0);
+        if (Main.isAscomRunning() && (Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS)) {
+            try {
+                setState(Frame.ICONIFIED);
+                SystemTray tray = SystemTray.getSystemTray();
+                TrayIcon trayIcon = new TrayIcon(Main.APP_LOGO, APP_NAME);
+                trayIcon.setImageAutoSize(true);
+                trayIcon.setToolTip(APP_NAME);
+                trayIcon.addActionListener(e -> {
+                    tray.remove(trayIcon);
+                    setState(Frame.NORMAL);
+                    toFront();
+                    requestFocus();
+                });
+                tray.add(trayIcon);
+                trayIcon.displayMessage(APP_NAME, "Ponte ASCOM in background.", TrayIcon.MessageType.INFO);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            setState(Frame.NORMAL);
+            toFront();
+            requestFocus();
+            if (JOptionPane.showConfirmDialog(this,
+                    "Uscire dall'applicazione?\nQuesta operazione terminerà il server\nINDI e il ponte ASCOM.",
+                    APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                Main.focuser.removeListener(this);
+                dispose();
+                Main.exit(0);
+            }
         }
     }
 
@@ -379,9 +431,9 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     connectionErr(ex);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Nessuna porta disponibile o selezionata.", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Nessuna porta disponibile o selezionata.",
+                        APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
-
 
         } else if (source == pinWindowButton) {
             setAlwaysOnTop(pinWindowButton.isSelected());
@@ -397,7 +449,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == fokOutButton || source == relativeMovField) {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, Integer.parseInt(relativeMovField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this,
+                        Integer.parseInt(relativeMovField.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -406,7 +459,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == fokInButton) {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, -Integer.parseInt(relativeMovField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this,
+                        -Integer.parseInt(relativeMovField.getText()));
             } catch (NumberFormatException ignored) {
             } catch (ConnectionException | ThunderFocuser.InvalidParamException connectionException) {
                 connectionException.printStackTrace();
@@ -414,7 +468,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == setRequestedPosButton || source == requestedPosField) {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Integer.parseInt(requestedPosField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this,
+                        Integer.parseInt(requestedPosField.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -435,10 +490,13 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             setState(Frame.ICONIFIED);
 
         } else if (source == copyIndiDriverNameButton) {
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(driverNameBox.getText()), null);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+                    new StringSelection(driverNameBox.getText()), null);
 
         } else if (source == fokBacklashCalButton) {
-            if (JOptionPane.showConfirmDialog(this, "Procedere? Attenzione: il focheggiatore verrà mosso, assicurarsi che questo non interrompa eventuali sessioni osservative. " +
+            if (JOptionPane.showConfirmDialog(this,
+                    "Procedere? Attenzione: il focheggiatore verrà mosso, assicurarsi che " +
+                            "questo non interrompa eventuali sessioni osservative. " +
                             "Inoltre, è molto importante che i limiti del focheggiatore siano ben impostati.",
                     APP_NAME, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                 new BacklashCalibrationWindow(this);
@@ -446,10 +504,18 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
         } else if (source == saveConfigButton) {
             Main.settings.setTheme(appThemeCombo.getSelectedIndex(), this);
-            Main.settings.setIndiEnabled(enableINDIServerBox.isSelected(), this);
+            if (indiServerRadio.isSelected()) {
+                Main.settings.setExternalControl(INDI, this);
+            } else if (ascomBridgeRadio.isSelected()) {
+                Main.settings.setExternalControl(ASCOM, this);
+            } else {
+                Main.settings.setExternalControl(NONE, this);
+            }
             Main.settings.setShowRemoteIndi(localOrRemoteCombo.getSelectedIndex() == 1, this);
             int oldIndiPort = Main.settings.getIndiServerPort();
             Main.settings.setIndiServerPort((int) indiPortSpinner.getValue(), this);
+            int oldAscomPort = Main.settings.getAscomBridgePort();
+            Main.settings.setAscomBridgePort((int) ascomPortSpinner.getValue(), this);
             if (Main.focuser.isConnected() && Main.focuser.isReady()) {
                 Main.settings.setFokTicksCount((int) fokTicksCountSpinner.getValue(), this);
                 Main.settings.setFokTicksUnit(Settings.Units.values()[fokUnitsCombo.getSelectedIndex()], this);
@@ -467,7 +533,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
                     if (Main.focuser.isPowerBox() && Main.focuser.getPowerBox().supportsAmbient()) {
                         Main.focuser.run(ThunderFocuser.Commands.SET_TIME_LAT_LONG, this, 0,
-                                (int) (((double) powerBoxLatSpinner.getValue()) * 1000), (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
+                                (int) (((double) powerBoxLatSpinner.getValue()) * 1000),
+                                (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
                     }
                 } catch (ConnectionException ex) {
                     connectionErr(ex);
@@ -476,11 +543,15 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                 }
             }
             startOrStopINDI(Main.settings.getIndiServerPort() != oldIndiPort);
+            if (Main.focuser.isConnected()) {
+                startOrStopASCOM(Main.settings.getAscomBridgePort() != oldAscomPort);
+            }
             try {
                 Main.settings.save();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Impossibile salvare la configurazione!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Impossibile salvare la configurazione!",
+                        APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
 
         } else if (source == applyPowerBoxButton) {
@@ -602,12 +673,36 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     private void startOrStopINDI(boolean forceRestart) {
-        if (Main.settings.isIndiEnabled()) {
+        if (Main.settings.getExternalControl() == INDI) {
             Main.indiServerCreator.start(Main.settings.getIndiServerPort(), forceRestart);
             indiStatusLabel.setText("Server avviato");
         } else {
             Main.indiServerCreator.stop();
             indiStatusLabel.setText("Server non attivo");
+        }
+    }
+
+    private void startOrStopASCOM(boolean forceRestart) {
+        try {
+            if (Main.settings.getExternalControl() == ASCOM) {
+                if (Main.isAscomRunning()) {
+                    if (forceRestart) {
+                        Main.ascomFocuserBridge.close();
+                        Main.ascomFocuserBridge = new ASCOMFocuserBridge(Main.settings.getAscomBridgePort());
+                        Main.ascomFocuserBridge.connect();
+                    }
+                } else {
+                    Main.ascomFocuserBridge = new ASCOMFocuserBridge(Main.settings.getAscomBridgePort());
+                    Main.ascomFocuserBridge.connect();
+                }
+                ascomStatusLabel.setText("Ponte attivo");
+            } else {
+                Main.ascomFocuserBridge.close();
+                ascomStatusLabel.setText("Ponte non attivo");
+            }
+        } catch (ConnectionException e) {
+            onCriticalError(e);
+            ascomStatusLabel.setText("Errore!");
         }
     }
 
@@ -622,7 +717,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             if (source == posSlider) {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, posSlider.getValue());
             } else if (source == ticksPosSlider) {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Main.focuser.ticksToSteps(ticksPosSlider.getValue()));
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE,
+                        this, Main.focuser.ticksToSteps(ticksPosSlider.getValue()));
             }
         } catch (ConnectionException ex) {
             connectionErr(ex);
@@ -697,7 +793,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
         SwingUtilities.invokeLater(() -> {
             switch (p) {
                 case REQUESTED_POS -> requestedPosField.setText(String.valueOf(Main.focuser.getRequestedPos()));
-                case REQUESTED_REL_POS -> relativeMovField.setText(String.valueOf(Math.abs(Main.focuser.getRequestedRelPos())));
+                case REQUESTED_REL_POS -> relativeMovField.setText(
+                        String.valueOf(Math.abs(Main.focuser.getRequestedRelPos())));
                 case CURRENT_POS -> {
                     currentPosField.setText(String.valueOf(Main.focuser.getCurrentPos()));
                     if (!posSlider.hasFocus()) {
@@ -760,15 +857,6 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
             connStatusLabel.setText(connState.getLabel());
             switch (connState) {
                 case CONNECTED_READY: {
-                    boardVersionLabel.setText("Rilevata scheda ThunderFocus v" + Main.focuser.getVersion() + "! ");
-                    boardVersionLabel.setVisible(true);
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException ignored) {
-                        }
-                        boardVersionLabel.setVisible(false);
-                    }, "Board version hider").start();
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
@@ -809,9 +897,19 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
                     requestedPosField.setText(currentPosStr);
                     relativeMovField.setText(String.valueOf(Main.focuser.getRequestedRelPos()));
                     enableComponents(true);
+                    startOrStopASCOM(false);
                     break;
                 }
                 case DISCONNECTED: {
+                    if (Main.isAscomRunning()) {
+                        try {
+                            Main.ascomFocuserBridge.close();
+                            ascomStatusLabel.setText("Ponte non attivo");
+                        } catch (ConnectionException ex) {
+                            onCriticalError(ex);
+                            ascomStatusLabel.setText("Errore!");
+                        }
+                    }
                     powerBoxConfigPanel.setVisible(false);
                     removeTab(ambientTab);
                     removeTab(powerBoxTab);
@@ -843,7 +941,8 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
 
     @Override
     public void onCriticalError(Exception e) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainWindow.this, "Errore inaspettato!", APP_NAME, JOptionPane.ERROR_MESSAGE));
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainWindow.this,
+                "Errore inaspettato!", APP_NAME, JOptionPane.ERROR_MESSAGE));
     }
 
     @Override
@@ -872,30 +971,29 @@ public class MainWindow extends JFrame implements ChangeListener, ActionListener
     }
 
     @Override
-    public void updateSetting(Settings.Value what, Settings.Units value) {
-        if (what == Settings.Value.FOK_TICKS_UNIT) {
-            SwingUtilities.invokeLater(() -> {
-                fokUnitsCombo.setSelectedItem(value);
-                updateUnitsLabel();
-            });
-        }
+    public void updateSetting(Settings.Value what, boolean value) {
+        if (what == Settings.Value.SHOW_REMOTE_INDI) SwingUtilities.invokeLater(() ->
+                localOrRemoteCombo.setSelectedItem(value ? 1 : 0));
     }
 
     @Override
-    public void updateSetting(Settings.Value what, boolean value) {
+    public void updateSetting(Settings.Units value) {
         SwingUtilities.invokeLater(() -> {
-            switch (what) {
-                case IS_INDI_ENABLED -> {
-                    enableINDIServerBox.setSelected(value);
-                    indiStatusLabel.setText(Main.indiServerCreator.isRunning() ? "Server avviato" : "Server non attivo");
-                }
-                case SHOW_REMOTE_INDI -> localOrRemoteCombo.setSelectedItem(value ? 1 : 0);
-            }
+            fokUnitsCombo.setSelectedItem(value);
+            updateUnitsLabel();
         });
     }
 
     @Override
-    public void updateSetting(Settings.Value what, PowerBox value) {
+    public void updateSetting(PowerBox value) {
 
+    }
+
+    @Override
+    public void updateSetting(Settings.ExternalControl value) {
+        ascomBridgeRadio.setSelected(value == ASCOM);
+        disableExtControlRadio.setSelected(value == NONE);
+        indiServerRadio.setSelected(value == INDI);
+        indiStatusLabel.setText(Main.indiServerCreator.isRunning() ? "Server avviato" : "Server non attivo");
     }
 }

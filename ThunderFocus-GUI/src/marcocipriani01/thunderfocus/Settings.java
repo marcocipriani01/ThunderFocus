@@ -37,12 +37,15 @@ public class Settings {
     @SerializedName("Serial port")
     @Expose
     private String serialPort = "";
-    @SerializedName("Enable INDI")
+    @SerializedName("External control")
     @Expose
-    private boolean indiEnabled = false;
+    private ExternalControl externalControl = ExternalControl.NONE;
     @SerializedName("INDI port")
     @Expose
     private int indiServerPort = 7626;
+    @SerializedName("ASCOM port")
+    @Expose
+    private int ascomBridgePort = 5001;
     @SerializedName("Show IP for INDI server")
     @Expose
     private boolean showRemoteIndi = false;
@@ -68,14 +71,11 @@ public class Settings {
 
     private static Path getPath() throws IOException, IllegalStateException {
         if (path != null) return path;
-        String folder = System.getProperty("user.home"),
-                os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        if (os.contains("win")) {
-            folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
-        } else if (os.contains("nux")) {
-            folder += (folder.endsWith("/") ? "" : "/") + ".config/";
-        } else if ((os.contains("mac")) || (os.contains("darwin"))) {
-            folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
+        String folder = System.getProperty("user.home");
+        switch (Main.OPERATING_SYSTEM) {
+            case WINDOWS -> folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
+            case LINUX -> folder += (folder.endsWith("/") ? "" : "/") + ".config/";
+            case MACOS -> folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
         }
         File f = new File(folder);
         if (f.exists()) {
@@ -133,13 +133,15 @@ public class Settings {
         update(Value.SERIAL_PORT, caller, serialPort);
     }
 
-    public boolean isIndiEnabled() {
-        return indiEnabled;
+    public ExternalControl getExternalControl() {
+        return externalControl;
     }
 
-    public void setIndiEnabled(boolean indiEnabled, SettingsListener caller) {
-        this.indiEnabled = indiEnabled;
-        update(Value.IS_INDI_ENABLED, caller, indiEnabled);
+    public void setExternalControl(ExternalControl externalControl, SettingsListener caller) {
+        this.externalControl = externalControl;
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(externalControl);
+        }
     }
 
     public int getIndiServerPort() {
@@ -149,6 +151,15 @@ public class Settings {
     public void setIndiServerPort(int indiServerPort, SettingsListener caller) {
         this.indiServerPort = indiServerPort;
         update(Value.INDI_PORT, caller, indiServerPort);
+    }
+
+    public int getAscomBridgePort() {
+        return ascomBridgePort;
+    }
+
+    public void setAscomBridgePort(int ascomBridgePort, SettingsListener caller) {
+        this.ascomBridgePort = ascomBridgePort;
+        update(Value.ASCOM_PORT, caller, ascomBridgePort);
     }
 
     public boolean getShowRemoteIndi() {
@@ -166,7 +177,9 @@ public class Settings {
 
     public void setPowerBox(PowerBox powerBox, SettingsListener caller) {
         this.powerBox = powerBox;
-        update(Value.POWERBOX_PINS, caller, powerBox);
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(powerBox);
+        }
     }
 
     public int getFokTicksCount() {
@@ -184,7 +197,9 @@ public class Settings {
 
     public void setFokTicksUnit(Units fokTicksUnit, SettingsListener caller) {
         this.fokTicksUnit = fokTicksUnit;
-        update(Value.FOK_TICKS_UNIT, caller, fokTicksUnit);
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(fokTicksUnit);
+        }
     }
 
     public int getFokMaxTravel() {
@@ -212,29 +227,15 @@ public class Settings {
         }
     }
 
-    void update(Value what, SettingsListener notMe, Units value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
     void update(Value what, SettingsListener notMe, boolean value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
         }
     }
 
-    void update(Value what, SettingsListener notMe, PowerBox value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
     public enum Value {
-        THEME, SERIAL_PORT,
-        IS_INDI_ENABLED, SHOW_REMOTE_INDI, INDI_PORT,
-        FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL,
-        POWERBOX_PINS
+        THEME, SERIAL_PORT, SHOW_REMOTE_INDI, INDI_PORT,
+        FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL, ASCOM_PORT
     }
 
     public enum Units {
@@ -257,15 +258,21 @@ public class Settings {
         }
     }
 
+    public enum ExternalControl {
+        NONE, ASCOM, INDI
+    }
+
     public interface SettingsListener {
         void updateSetting(Value what, int value);
 
         void updateSetting(Value what, String value);
 
-        void updateSetting(Value what, Units value);
-
         void updateSetting(Value what, boolean value);
 
-        void updateSetting(Value what, PowerBox value);
+        void updateSetting(Units value);
+
+        void updateSetting(PowerBox value);
+
+        void updateSetting(ExternalControl value);
     }
 }

@@ -1,7 +1,7 @@
 package marcocipriani01.thunderfocus;
 
 import marcocipriani01.thunderfocus.board.ThunderFocuser;
-import marcocipriani01.thunderfocus.io.ConnectionException;
+import marcocipriani01.simplesocket.ConnectionException;
 
 import javax.swing.*;
 import java.awt.*;

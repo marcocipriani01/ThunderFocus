@@ -1,6 +1,8 @@
 package marcocipriani01.thunderfocus.io;
 
 import jssc.*;
+import marcocipriani01.simplesocket.ConnectionException;
+import marcocipriani01.thunderfocus.Main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,8 +66,7 @@ public class SerialPortImpl implements SerialPortEventListener {
      * @return an array containing all the available and not busy ports.
      */
     public static String[] scanSerialPorts() {
-        String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        if ((os.contains("mac")) || (os.contains("darwin"))) {
+        if (Main.OPERATING_SYSTEM == Main.OperatingSystem.MACOS) {
             try {
                 Process process = new ProcessBuilder("ls", "-1", "/dev/tty.*").start();
                 BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -79,7 +80,6 @@ public class SerialPortImpl implements SerialPortEventListener {
                 } catch (InterruptedException ignored) {
                 }
                 return devs.toArray(new String[0]);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

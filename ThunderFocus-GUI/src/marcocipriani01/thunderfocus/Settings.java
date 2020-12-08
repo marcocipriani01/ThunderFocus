@@ -13,7 +13,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Stores all the app's settings.
@@ -28,7 +27,8 @@ public class Settings {
      */
     private static final Gson serializer = new GsonBuilder()
             .setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-    private static Path path = null;
+    private static Path filePath = null;
+    private static String folder = null;
     private final ArrayList<SettingsListener> listeners = new ArrayList<>();
 
     @SerializedName("Theme")
@@ -37,12 +37,15 @@ public class Settings {
     @SerializedName("Serial port")
     @Expose
     private String serialPort = "";
-    @SerializedName("Enable INDI")
+    @SerializedName("External control")
     @Expose
-    private boolean indiEnabled = false;
+    private ExternalControl externalControl = ExternalControl.NONE;
     @SerializedName("INDI port")
     @Expose
     private int indiServerPort = 7626;
+    @SerializedName("ASCOM port")
+    @Expose
+    private int ascomBridgePort = 5001;
     @SerializedName("Show IP for INDI server")
     @Expose
     private boolean showRemoteIndi = false;
@@ -58,6 +61,9 @@ public class Settings {
     @SerializedName("Powerbox data")
     @Expose
     private PowerBox powerBox = new PowerBox();
+    @SerializedName("Auto connect")
+    @Expose
+    private boolean autoConnect = false;
 
     /**
      * Class constructor.
@@ -66,34 +72,33 @@ public class Settings {
 
     }
 
-    private static Path getPath() throws IOException, IllegalStateException {
-        if (path != null) return path;
-        String folder = System.getProperty("user.home"),
-                os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-        if (os.contains("win")) {
-            folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
-        } else if (os.contains("nux")) {
-            folder += (folder.endsWith("/") ? "" : "/") + ".config/";
-        } else if ((os.contains("mac")) || (os.contains("darwin"))) {
-            folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
+    public static String getSettingsFolder() throws IOException {
+        if (Settings.folder != null) return Settings.folder;
+        String folder = System.getProperty("user.home");
+        switch (Main.OPERATING_SYSTEM) {
+            case WINDOWS -> folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
+            case LINUX -> folder += (folder.endsWith("/") ? "" : "/") + ".config/";
+            case MACOS -> folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
+            case OTHER -> folder += (folder.endsWith(File.separator) ? "" : File.separator);
         }
         File f = new File(folder);
         if (f.exists()) {
-            if (f.isFile()) {
-                throw new IllegalStateException("Unable to create config folder, already exists and is a file");
-            }
+            if (f.isFile()) throw new IOException("Unable to create the config folder, already exists and is a file");
         } else {
-            if (!f.mkdirs()) {
-                throw new IOException("Unable to create config folder.");
-            }
+            if (!f.mkdirs()) throw new IOException("Unable to create the config folder.");
         }
-        return (path = Paths.get(folder + File.separator + Main.APP_NAME + ".json"));
+        return (Settings.folder = folder);
+    }
+
+    private static Path getSettingsFilePath() throws IOException {
+        if (filePath != null) return filePath;
+        return (filePath = Paths.get(getSettingsFolder() + Main.APP_NAME + ".json"));
     }
 
     public static Settings load() {
         Settings s;
         try {
-            s = serializer.fromJson(new String(Files.readAllBytes(getPath())), Settings.class);
+            s = serializer.fromJson(new String(Files.readAllBytes(getSettingsFilePath())), Settings.class);
         } catch (NoSuchFileException e) {
             return new Settings();
         } catch (Exception e) {
@@ -101,10 +106,22 @@ public class Settings {
             return new Settings();
         }
         // Normalize invalid values
-        if (s.indiServerPort <= 1024) {
-            s.indiServerPort = 7625;
-        }
+        if (s.indiServerPort <= 1024) s.indiServerPort = 7625;
+        if (s.ascomBridgePort <= 1024) s.ascomBridgePort = 5001;
         return s;
+    }
+
+    public void save() throws IOException {
+        Files.write(getSettingsFilePath(), serializer.toJson(this).getBytes());
+    }
+
+    public boolean getAutoConnect() {
+        return autoConnect;
+    }
+
+    public void setAutoConnect(boolean autoConnect, SettingsListener caller) {
+        this.autoConnect = autoConnect;
+        update(Value.AUTO_CONNECT, caller, this.autoConnect);
     }
 
     public void addListener(SettingsListener listener) {
@@ -133,13 +150,15 @@ public class Settings {
         update(Value.SERIAL_PORT, caller, serialPort);
     }
 
-    public boolean isIndiEnabled() {
-        return indiEnabled;
+    public ExternalControl getExternalControl() {
+        return externalControl;
     }
 
-    public void setIndiEnabled(boolean indiEnabled, SettingsListener caller) {
-        this.indiEnabled = indiEnabled;
-        update(Value.IS_INDI_ENABLED, caller, indiEnabled);
+    public void setExternalControl(ExternalControl externalControl, SettingsListener caller) {
+        this.externalControl = externalControl;
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(externalControl);
+        }
     }
 
     public int getIndiServerPort() {
@@ -149,6 +168,15 @@ public class Settings {
     public void setIndiServerPort(int indiServerPort, SettingsListener caller) {
         this.indiServerPort = indiServerPort;
         update(Value.INDI_PORT, caller, indiServerPort);
+    }
+
+    public int getAscomBridgePort() {
+        return ascomBridgePort;
+    }
+
+    public void setAscomBridgePort(int ascomBridgePort, SettingsListener caller) {
+        this.ascomBridgePort = ascomBridgePort;
+        update(Value.ASCOM_PORT, caller, ascomBridgePort);
     }
 
     public boolean getShowRemoteIndi() {
@@ -166,7 +194,9 @@ public class Settings {
 
     public void setPowerBox(PowerBox powerBox, SettingsListener caller) {
         this.powerBox = powerBox;
-        update(Value.POWERBOX_PINS, caller, powerBox);
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(powerBox);
+        }
     }
 
     public int getFokTicksCount() {
@@ -184,7 +214,9 @@ public class Settings {
 
     public void setFokTicksUnit(Units fokTicksUnit, SettingsListener caller) {
         this.fokTicksUnit = fokTicksUnit;
-        update(Value.FOK_TICKS_UNIT, caller, fokTicksUnit);
+        for (SettingsListener l : listeners) {
+            if (l != caller) l.updateSetting(fokTicksUnit);
+        }
     }
 
     public int getFokMaxTravel() {
@@ -194,10 +226,6 @@ public class Settings {
     public void setFokMaxTravel(int fokMaxTravel, SettingsListener caller) {
         this.fokMaxTravel = fokMaxTravel;
         update(Value.FOK_MAX_TRAVEL, caller, fokMaxTravel);
-    }
-
-    public void save() throws IOException {
-        Files.write(getPath(), serializer.toJson(this).getBytes());
     }
 
     void update(Value what, SettingsListener notMe, int value) {
@@ -212,29 +240,15 @@ public class Settings {
         }
     }
 
-    void update(Value what, SettingsListener notMe, Units value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
     void update(Value what, SettingsListener notMe, boolean value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
         }
     }
 
-    void update(Value what, SettingsListener notMe, PowerBox value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
     public enum Value {
-        THEME, SERIAL_PORT,
-        IS_INDI_ENABLED, SHOW_REMOTE_INDI, INDI_PORT,
-        FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL,
-        POWERBOX_PINS
+        THEME, SERIAL_PORT, SHOW_REMOTE_INDI, INDI_PORT,
+        FOK_TICKS_COUNT, FOK_MAX_TRAVEL, AUTO_CONNECT, ASCOM_PORT
     }
 
     public enum Units {
@@ -257,15 +271,21 @@ public class Settings {
         }
     }
 
+    public enum ExternalControl {
+        NONE, ASCOM, INDI
+    }
+
     public interface SettingsListener {
         void updateSetting(Value what, int value);
 
         void updateSetting(Value what, String value);
 
-        void updateSetting(Value what, Units value);
-
         void updateSetting(Value what, boolean value);
 
-        void updateSetting(Value what, PowerBox value);
+        void updateSetting(Units value);
+
+        void updateSetting(PowerBox value);
+
+        void updateSetting(ExternalControl value);
     }
 }

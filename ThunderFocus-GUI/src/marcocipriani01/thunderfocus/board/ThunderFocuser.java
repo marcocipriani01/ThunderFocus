@@ -1,7 +1,7 @@
 package marcocipriani01.thunderfocus.board;
 
 import marcocipriani01.thunderfocus.Main;
-import marcocipriani01.thunderfocus.io.ConnectionException;
+import marcocipriani01.simplesocket.ConnectionException;
 import marcocipriani01.thunderfocus.io.SerialMessageListener;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 
@@ -13,7 +13,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
     private SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
-    private String version = "?";
+    private String version = "<?>";
     private PowerBox powerBox = null;
     private int timerCount = 0;
     private Listener exclusiveCaller = null;

@@ -4,11 +4,7 @@
 #include <Arduino.h>
 #include "config.h"
 
-#if PROTOCOL == PROTOCOL_MOONLITE
-#include "Moonlite.h"
-#elif PROTOCOL == PROTOCOL_THUNDERFOCUS
 #include "ThunderFocusProtocol.h"
-#endif
 
 #include "Focuser.h"
 #if FOK1_ENABLE_HC == true
@@ -27,7 +23,6 @@
 #include "Settings.h"
 #endif
 
-void handleSerial();
 inline void flagSettings();
 
 #endif

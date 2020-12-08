@@ -9,6 +9,7 @@ ThunderFocus is an open-source telescope focuser. It has its own contorl softwar
 - [OpenJDK 14](https://openjdk.java.net/) by Oracle, [GPL v2 license with linking exception](https://openjdk.java.net/legal/gplv2+ce.html)
 - [AdoptOpenJDK builds](https://adoptopenjdk.net/index.html) with HotSpot VM, by AdoptOpenJDK, [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
 - [INDIForJava](http://indiforjava.sourceforge.net/stage/index.html) by Sergio Alonso and Richard van Nieuwenhoven, [LGPL v3 license](http://indiforjava.sourceforge.net/stage/license.html)
+- [ASCOM .NET libraries](https://www.ascom-standards.org/) by The ASCOM Initiative, [ASCOM Open Source License](https://github.com/ASCOMInitiative/ASCOMPlatform/blob/master/LICENSE.txt)
 - [jssc](https://github.com/java-native/jssc) by java-native and scream3r, [LGPL v3 license](https://github.com/java-native/jssc/blob/master/LICENSE.txt)
 - [FlatLaf](https://github.com/JFormDesigner/FlatLaf/) by JFormDesigner, [Apache 2.0 license](https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE)
 - [Gson](https://github.com/google/gson) by Google, [Apache 2.0 license](https://github.com/google/gson/blob/master/LICENSE)

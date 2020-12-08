@@ -35,6 +35,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/jssc-2.9.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/native-lib-loader-2.3.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/jfreechart-1.5.1.jar" path-in-jar="/" />
+      <element id="module-output" name="SimpleSocket" />
     </root>
   </artifact>
 </component>

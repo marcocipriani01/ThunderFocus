@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="a4c2d" layout-manager="GridLayoutManager" row-count="1" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="a4c2d" layout-manager="GridLayoutManager" row-count="1" column-count="16" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="8" bottom="0" right="8"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false">
@@ -40,7 +40,7 @@
           </component>
           <component id="c3288" class="javax.swing.JLabel" binding="err">
             <constraints>
-              <grid row="0" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="15" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="marcocipriani01/thunderfocus/res/err.png"/>
@@ -86,7 +86,7 @@
           </component>
           <component id="d7a73" class="javax.swing.JLabel" binding="ok">
             <constraints>
-              <grid row="0" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="13" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="marcocipriani01/thunderfocus/res/ok.png"/>
@@ -97,7 +97,7 @@
           </component>
           <hspacer id="84a2b">
             <constraints>
-              <grid row="0" column="9" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="12" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
           <component id="7ee30" class="javax.swing.JLabel">
@@ -130,7 +130,7 @@
           </component>
           <component id="9c038" class="javax.swing.JLabel" binding="timeout">
             <constraints>
-              <grid row="0" column="11" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="14" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="marcocipriani01/thunderfocus/res/timeout.png"/>
@@ -139,9 +139,37 @@
               <visible value="false"/>
             </properties>
           </component>
+          <component id="56a15" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="9" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="11" style="1"/>
+              <text value="ASCOM:"/>
+              <toolTipText value="Stato di ASCOM."/>
+            </properties>
+          </component>
+          <component id="70dda" class="javax.swing.JLabel" binding="ascomStatusLabel">
+            <constraints>
+              <grid row="0" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <text value="Ponte non attivo"/>
+              <toolTipText value="Stato di ASCOM."/>
+            </properties>
+          </component>
+          <component id="9a264" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="0" column="11" row-span="1" col-span="1" vsize-policy="6" hsize-policy="0" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <orientation value="1"/>
+            </properties>
+          </component>
         </children>
       </grid>
-      <grid id="2388" layout-manager="GridLayoutManager" row-count="6" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="2388" layout-manager="GridLayoutManager" row-count="5" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="4" left="12" bottom="8" right="12"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -212,7 +240,7 @@
           </grid>
           <tabbedpane id="9048a" binding="tabPane">
             <constraints>
-              <grid row="5" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -653,387 +681,437 @@
                   </component>
                 </children>
               </grid>
-              <grid id="1003b" layout-manager="GridLayoutManager" row-count="15" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="16" left="16" bottom="16" right="16"/>
+              <scrollpane id="2731a" binding="configScrollPane">
                 <constraints>
                   <tabbedpane title="Configurazione" icon="marcocipriani01/thunderfocus/res/configtab.png"/>
                 </constraints>
                 <properties>
-                  <minimumSize width="24" height="24"/>
-                  <preferredSize width="24" height="300"/>
+                  <horizontalScrollBarPolicy value="31"/>
+                  <verticalScrollBarPolicy value="22"/>
                 </properties>
-                <border type="none">
-                  <color color="-2039584"/>
-                </border>
+                <border type="none"/>
                 <children>
-                  <component id="996f5" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="12" style="1"/>
-                      <text value="Tema:"/>
-                    </properties>
-                  </component>
-                  <component id="42b65" class="javax.swing.JComboBox" binding="appThemeCombo">
-                    <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <model>
-                        <item value="Chiaro"/>
-                        <item value="Scuro"/>
-                        <item value="Sistema"/>
-                      </model>
-                      <toolTipText value="Tema dell'applicazione."/>
-                    </properties>
-                  </component>
-                  <component id="f1c6b" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="12" style="1"/>
-                      <text value="Server INDI:"/>
-                    </properties>
-                  </component>
-                  <component id="5f620" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="12" style="1"/>
-                      <text value="Focheggiatore:"/>
-                    </properties>
-                  </component>
-                  <component id="6338e" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Limiti:"/>
-                    </properties>
-                  </component>
-                  <component id="d17d" class="javax.swing.JSpinner" binding="fokTicksCountSpinner" custom-create="true">
-                    <constraints>
-                      <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <toolTipText value="Limite del focheggiatore (nell'unità di misura specificata)."/>
-                    </properties>
-                  </component>
-                  <component id="2b952" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="7" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="18" style="1"/>
-                      <text value="="/>
-                    </properties>
-                  </component>
-                  <component id="c27b8" class="javax.swing.JComboBox" binding="fokUnitsCombo" custom-create="true">
-                    <constraints>
-                      <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <toolTipText value="Unità di misura del limite."/>
-                    </properties>
-                  </component>
-                  <component id="18172" class="javax.swing.JSpinner" binding="fokMaxTravelSpinner" custom-create="true">
-                    <constraints>
-                      <grid row="7" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <toolTipText value="Corrispondente misura in passi."/>
-                    </properties>
-                  </component>
-                  <component id="9c431" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Backlash:"/>
-                    </properties>
-                  </component>
-                  <component id="f89b8" class="javax.swing.JSpinner" binding="fokBacklashSpinner" custom-create="true">
-                    <constraints>
-                      <grid row="8" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <toolTipText value="Backlash del focheggiatore (per compensazione)."/>
-                    </properties>
-                  </component>
-                  <component id="cb39c" class="javax.swing.JButton" binding="fokBacklashCalButton">
-                    <constraints>
-                      <grid row="9" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <text value="Calibrazione backlash"/>
-                      <toolTipText value="Avvia il calibratore del backlash."/>
-                    </properties>
-                  </component>
-                  <component id="2be38" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Velocità:"/>
-                      <visible value="true"/>
-                    </properties>
-                  </component>
-                  <component id="dade7" class="javax.swing.JSlider" binding="fokSpeedSlider">
-                    <constraints>
-                      <grid row="10" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <majorTickSpacing value="10"/>
-                      <maximum value="100"/>
-                      <minimum value="0"/>
-                      <minorTickSpacing value="5"/>
-                      <paintLabels value="true"/>
-                      <paintTicks value="true"/>
-                      <snapToTicks value="true"/>
-                      <toolTipText value="Velocità del focheggiatore."/>
-                      <value value="100"/>
-                      <visible value="true"/>
-                    </properties>
-                  </component>
-                  <component id="7619e" class="javax.swing.JCheckBox" binding="fokReverseDirBox">
-                    <constraints>
-                      <grid row="11" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <text value="Inverti direzioni"/>
-                      <toolTipText value="Inverti tutte le direzioni del focheggiatore."/>
-                    </properties>
-                  </component>
-                  <component id="c9212" class="javax.swing.JCheckBox" binding="fokPowerSaverBox">
-                    <constraints>
-                      <grid row="12" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <enabled value="false"/>
-                      <text value="Modalità risparmio energetico"/>
-                      <toolTipText value="Se attiva, spegne il motore al termine dei movimenti per risparmiare energia."/>
-                    </properties>
-                  </component>
-                  <component id="48d0c" class="javax.swing.JCheckBox" binding="enableINDIServerBox">
-                    <constraints>
-                      <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Abilita"/>
-                      <toolTipText value="Abilita il server INDI (per controllo con Linux e MacOS)."/>
-                    </properties>
-                  </component>
-                  <component id="8f0bd" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font style="2"/>
-                      <text value="Applicato al riavvio dell'app"/>
-                    </properties>
-                  </component>
-                  <component id="d4a29" class="javax.swing.JSpinner" binding="indiPortSpinner" custom-create="true">
-                    <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <toolTipText value="Porta del server INDI."/>
-                    </properties>
-                  </component>
-                  <component id="a3bc8" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Porta:"/>
-                    </properties>
-                  </component>
-                  <component id="a8078" class="javax.swing.JSeparator">
-                    <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
+                  <grid id="1003b" layout-manager="GridLayoutManager" row-count="20" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="16" left="16" bottom="16" right="16"/>
+                    <constraints/>
                     <properties/>
-                  </component>
-                  <component id="1c01c" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Driver:"/>
-                    </properties>
-                  </component>
-                  <component id="3a278" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="7" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="passi"/>
-                    </properties>
-                  </component>
-                  <component id="34a26" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="8" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="passi"/>
-                    </properties>
-                  </component>
-                  <component id="792db" class="javax.swing.JButton" binding="saveConfigButton">
-                    <constraints>
-                      <grid row="14" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
-                        <preferred-size width="-1" height="42"/>
-                        <maximum-size width="-1" height="42"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <icon value="marcocipriani01/thunderfocus/res/save.png"/>
-                      <text value="Salva"/>
-                      <toolTipText value="Salva la configurazione."/>
-                    </properties>
-                  </component>
-                  <grid id="d53fe" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="0" left="0" bottom="0" right="0"/>
-                    <constraints>
-                      <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                    <border type="none"/>
+                    <border type="none">
+                      <color color="-2039584"/>
+                    </border>
                     <children>
-                      <component id="c0e0e" class="javax.swing.JTextField" binding="driverNameBox">
+                      <component id="996f5" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                          <horizontalAlignment value="0"/>
-                          <text value=""/>
-                          <toolTipText value="Nome del driver INDI, da inserire nel profilo di KStars."/>
-                        </properties>
-                      </component>
-                      <component id="52dde" class="javax.swing.JButton" binding="copyIndiDriverNameButton">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                            <preferred-size width="36" height="36"/>
-                            <maximum-size width="36" height="36"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <icon value="marcocipriani01/thunderfocus/res/copy.png"/>
-                          <toolTipText value="Copia nome driver."/>
-                        </properties>
-                      </component>
-                      <component id="f2c9" class="javax.swing.JComboBox" binding="localOrRemoteCombo">
-                        <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <model>
-                            <item value="Locale"/>
-                            <item value="IP"/>
-                          </model>
-                          <toolTipText value="Imposta la modalità di connessione al driver."/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
-                  <grid id="7ea7e" binding="powerBoxConfigPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="0" left="0" bottom="4" right="0"/>
-                    <constraints>
-                      <grid row="13" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <visible value="true"/>
-                    </properties>
-                    <border type="none"/>
-                    <children>
-                      <component id="20e99" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Latitudine:"/>
-                        </properties>
-                      </component>
-                      <component id="698a4" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Longitudine:"/>
-                        </properties>
-                      </component>
-                      <component id="db28d" class="javax.swing.JSpinner" binding="powerBoxLongSpinner" custom-create="true">
-                        <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <toolTipText value="Longitudine GPS attuale (per calcolo posizione Sole)."/>
-                        </properties>
-                      </component>
-                      <component id="eed3e" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="° N"/>
-                        </properties>
-                      </component>
-                      <component id="235e3" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="° E"/>
-                        </properties>
-                      </component>
-                      <component id="360dc" class="javax.swing.JSeparator">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties/>
-                      </component>
-                      <component id="f66f5" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="12" style="1"/>
-                          <text value="Powerbox:"/>
+                          <text value="Tema:"/>
                         </properties>
                       </component>
-                      <component id="a4b7b" class="javax.swing.JSpinner" binding="powerBoxLatSpinner" custom-create="true">
+                      <component id="42b65" class="javax.swing.JComboBox" binding="appThemeCombo">
                         <constraints>
-                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <toolTipText value="Latitudine GPS attuale (per calcolo posizione Sole)."/>
+                          <model>
+                            <item value="Chiaro"/>
+                            <item value="Scuro"/>
+                            <item value="Sistema"/>
+                          </model>
+                          <toolTipText value="Tema dell'applicazione."/>
                         </properties>
                       </component>
-                      <component id="73658" class="javax.swing.JLabel">
+                      <component id="5f620" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font size="12" style="1"/>
+                          <text value="Focheggiatore:"/>
+                        </properties>
+                      </component>
+                      <component id="6338e" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Limiti:"/>
+                        </properties>
+                      </component>
+                      <component id="d17d" class="javax.swing.JSpinner" binding="fokTicksCountSpinner" custom-create="true">
+                        <constraints>
+                          <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <toolTipText value="Limite del focheggiatore (nell'unità di misura specificata)."/>
+                        </properties>
+                      </component>
+                      <component id="2b952" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="12" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font size="18" style="1"/>
+                          <text value="="/>
+                        </properties>
+                      </component>
+                      <component id="c27b8" class="javax.swing.JComboBox" binding="fokUnitsCombo" custom-create="true">
+                        <constraints>
+                          <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <toolTipText value="Unità di misura del limite."/>
+                        </properties>
+                      </component>
+                      <component id="18172" class="javax.swing.JSpinner" binding="fokMaxTravelSpinner" custom-create="true">
+                        <constraints>
+                          <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <toolTipText value="Corrispondente misura in passi."/>
+                        </properties>
+                      </component>
+                      <component id="9c431" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Backlash:"/>
+                        </properties>
+                      </component>
+                      <component id="f89b8" class="javax.swing.JSpinner" binding="fokBacklashSpinner" custom-create="true">
+                        <constraints>
+                          <grid row="13" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <toolTipText value="Backlash del focheggiatore (per compensazione)."/>
+                        </properties>
+                      </component>
+                      <component id="cb39c" class="javax.swing.JButton" binding="fokBacklashCalButton">
+                        <constraints>
+                          <grid row="14" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <text value="Calibrazione backlash"/>
+                          <toolTipText value="Avvia il calibratore del backlash."/>
+                        </properties>
+                      </component>
+                      <component id="2be38" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Velocità:"/>
+                          <visible value="true"/>
+                        </properties>
+                      </component>
+                      <component id="dade7" class="javax.swing.JSlider" binding="fokSpeedSlider">
+                        <constraints>
+                          <grid row="15" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <majorTickSpacing value="10"/>
+                          <maximum value="100"/>
+                          <minimum value="0"/>
+                          <minorTickSpacing value="5"/>
+                          <paintLabels value="true"/>
+                          <paintTicks value="true"/>
+                          <snapToTicks value="true"/>
+                          <toolTipText value="Velocità del focheggiatore."/>
+                          <value value="100"/>
+                          <visible value="true"/>
+                        </properties>
+                      </component>
+                      <component id="7619e" class="javax.swing.JCheckBox" binding="fokReverseDirBox">
+                        <constraints>
+                          <grid row="16" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <text value="Inverti direzioni"/>
+                          <toolTipText value="Inverti tutte le direzioni del focheggiatore."/>
+                        </properties>
+                      </component>
+                      <component id="c9212" class="javax.swing.JCheckBox" binding="fokPowerSaverBox">
+                        <constraints>
+                          <grid row="17" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <text value="Modalità risparmio energetico"/>
+                          <toolTipText value="Se attiva, spegne il motore al termine dei movimenti per risparmiare energia."/>
+                        </properties>
+                      </component>
+                      <component id="8f0bd" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font style="2"/>
-                          <text value="Precisione: tre cifre dopo la virgola"/>
+                          <text value="Applicato al riavvio dell'app."/>
+                        </properties>
+                      </component>
+                      <component id="d4a29" class="javax.swing.JSpinner" binding="indiPortSpinner" custom-create="true">
+                        <constraints>
+                          <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <toolTipText value="Porta del server INDI."/>
+                        </properties>
+                      </component>
+                      <component id="a3bc8" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Porta:"/>
+                        </properties>
+                      </component>
+                      <component id="a8078" class="javax.swing.JSeparator">
+                        <constraints>
+                          <grid row="10" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="1c01c" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Driver:"/>
+                        </properties>
+                      </component>
+                      <component id="3a278" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="passi"/>
+                        </properties>
+                      </component>
+                      <component id="34a26" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="13" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="passi"/>
+                        </properties>
+                      </component>
+                      <component id="792db" class="javax.swing.JButton" binding="saveConfigButton">
+                        <constraints>
+                          <grid row="19" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                            <preferred-size width="-1" height="42"/>
+                            <maximum-size width="-1" height="42"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <icon value="marcocipriani01/thunderfocus/res/save.png"/>
+                          <text value="Salva"/>
+                          <toolTipText value="Salva la configurazione."/>
+                        </properties>
+                      </component>
+                      <grid id="d53fe" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="5" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="c0e0e" class="javax.swing.JTextField" binding="driverNameBox">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <editable value="false"/>
+                              <horizontalAlignment value="0"/>
+                              <text value=""/>
+                              <toolTipText value="Nome del driver INDI, da inserire nel profilo di KStars."/>
+                            </properties>
+                          </component>
+                          <component id="52dde" class="javax.swing.JButton" binding="copyIndiDriverNameButton">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                                <preferred-size width="36" height="36"/>
+                                <maximum-size width="36" height="36"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <icon value="marcocipriani01/thunderfocus/res/copy.png"/>
+                              <toolTipText value="Copia nome driver."/>
+                            </properties>
+                          </component>
+                          <component id="f2c9" class="javax.swing.JComboBox" binding="localOrRemoteCombo">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <model>
+                                <item value="Locale"/>
+                                <item value="IP"/>
+                              </model>
+                              <toolTipText value="Imposta la modalità di connessione al driver."/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <grid id="7ea7e" binding="powerBoxConfigPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="4" right="0"/>
+                        <constraints>
+                          <grid row="18" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <visible value="true"/>
+                        </properties>
+                        <border type="none"/>
+                        <children>
+                          <component id="20e99" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Latitudine:"/>
+                            </properties>
+                          </component>
+                          <component id="698a4" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="Longitudine:"/>
+                            </properties>
+                          </component>
+                          <component id="db28d" class="javax.swing.JSpinner" binding="powerBoxLongSpinner" custom-create="true">
+                            <constraints>
+                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="Longitudine GPS attuale (per calcolo posizione Sole)."/>
+                            </properties>
+                          </component>
+                          <component id="eed3e" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="° N"/>
+                            </properties>
+                          </component>
+                          <component id="235e3" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="° E"/>
+                            </properties>
+                          </component>
+                          <component id="360dc" class="javax.swing.JSeparator">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                          </component>
+                          <component id="f66f5" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="12" style="1"/>
+                              <text value="Powerbox:"/>
+                            </properties>
+                          </component>
+                          <component id="a4b7b" class="javax.swing.JSpinner" binding="powerBoxLatSpinner" custom-create="true">
+                            <constraints>
+                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <toolTipText value="Latitudine GPS attuale (per calcolo posizione Sole)."/>
+                            </properties>
+                          </component>
+                          <component id="73658" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font style="2"/>
+                              <text value="Precisione: tre cifre dopo la virgola"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                      <component id="48217" class="javax.swing.JSpinner" binding="ascomPortSpinner" custom-create="true">
+                        <constraints>
+                          <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <toolTipText value="Porta del ponte ASCOM."/>
+                        </properties>
+                      </component>
+                      <component id="b0d16" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Porta:"/>
+                        </properties>
+                      </component>
+                      <component id="2f782" class="javax.swing.JRadioButton" binding="indiServerRadio">
+                        <constraints>
+                          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="1"/>
+                          <text value="Server INDI:"/>
+                        </properties>
+                      </component>
+                      <component id="20501" class="javax.swing.JRadioButton" binding="disableExtControlRadio">
+                        <constraints>
+                          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="1"/>
+                          <text value="Disabilita controlli esterni"/>
+                        </properties>
+                      </component>
+                      <component id="606bf" class="javax.swing.JRadioButton" binding="ascomBridgeRadio">
+                        <constraints>
+                          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="1"/>
+                          <text value="Ponte ASCOM:"/>
+                        </properties>
+                      </component>
+                      <component id="b3799" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="8" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="2"/>
+                          <text value="Il ponte si avvia solo alla connessione con la scheda."/>
+                        </properties>
+                      </component>
+                      <component id="fbc37" class="javax.swing.JCheckBox" binding="autoConnectBox">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="1"/>
+                          <text value="Connetti automaticamente all'avvio"/>
                         </properties>
                       </component>
                     </children>
                   </grid>
                 </children>
-              </grid>
+              </scrollpane>
               <scrollpane id="f7975">
                 <constraints>
                   <tabbedpane title="Info" icon="marcocipriani01/thunderfocus/res/infotab.png"/>
@@ -1049,7 +1127,7 @@
                       <contentType value="text/html"/>
                       <editable value="false"/>
                       <font size="14"/>
-                      <text value="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &lt;strong&gt;ThunderFocus&amp;#160;&lt;/strong&gt;&amp;#232; un software open-source per il &#10;      controllo di focheggiatori compatibili, sviluppato da &lt;strong&gt;Marco &#10;      Cipriani&lt;/strong&gt;. Il codice sorgente del progetto &amp;#232; reperibile su &lt;a href=&quot;https://github.com/marcocipriani01/ThunderFocus&quot;&gt;GitHub&lt;/a&gt; &#10;      ed &amp;#232; sottoposto alla licenza software &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;GNU &#10;      General Public License versione 3&lt;/a&gt;. Utilizzando questo software si &#10;      accettano tutte le condizioni della sua licenza.&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Altri progetti alla pagina &lt;a href=&quot;https://marcocipriani01.github.io/&quot;&gt;marcocipriani01.github.io&lt;/a&gt;!&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Librerie utilizzate:&#10;    &lt;/p&gt;&#10;    &lt;ul type=&quot;disc&quot;&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://openjdk.java.net/&quot;&gt;OpenJDK 14&lt;/a&gt; di Oracle, &lt;a href=&quot;https://openjdk.java.net/legal/gplv2+ce.html&quot;&gt;licenza &#10;        GPL v2 con eccezione linking&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://adoptopenjdk.net/index.html&quot;&gt;AdoptOpenJDK builds&lt;/a&gt; &#10;        con HotSpot VM, di AdoptOpenJDK, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/index.html&quot;&gt;INDIForJava&lt;/a&gt; &#10;        di Sergio Alonso e Richard van Nieuwenhoven, &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/license.html&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/java-native/jssc&quot;&gt;jssc&lt;/a&gt; di java-native &#10;        e scream3r, &lt;a href=&quot;https://github.com/java-native/jssc/blob/master/LICENSE.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/&quot;&gt;FlatLaf&lt;/a&gt; di &#10;        JFormDesigner, &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/google/gson&quot;&gt;Gson&lt;/a&gt; di Google, &lt;a href=&quot;https://github.com/google/gson/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://material.io/resources/icons/&quot;&gt;Material icons&lt;/a&gt; di &#10;        Google, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0.html&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/arduino/Arduino&quot;&gt;Arduino Core APIs&lt;/a&gt; di &#10;        Arduino, &lt;a href=&quot;https://github.com/arduino/Arduino/blob/master/license.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.airspayce.com/mikem/arduino/AccelStepper/&quot;&gt;AccelStepper&lt;/a&gt; &#10;        di Mike McCauley (con modifiche), &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;licenza &#10;        GPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/PaulStoffregen/Time&quot;&gt;Arduino Time Library&lt;/a&gt; &#10;        di Michael Margolis, &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html&quot;&gt;licenza &#10;        LGPL v2.1&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/KenWillmott/SolarPosition&quot;&gt;SolarPosition &#10;        library&lt;/a&gt; di Ken Willmott&#10;&#10;        &lt;ul type=&quot;disc&quot;&gt;&#10;          &lt;li&gt;&#10;            Basato su &lt;a href=&quot;http://www.instesre.org/ArduinoDocuments.htm&quot;&gt;Arduino &#10;            Uno and Solar Position Calculations&lt;/a&gt;, &amp;#169; David R. Brooks, &#10;            rilasciato sotto &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-nd/4.0/&quot;&gt;licenza &#10;            Creative Commons BY-NC-ND 4.0 International&lt;/a&gt;&#10;          &lt;/li&gt;&#10;          &lt;li&gt;&#10;            Utilizza equazioni prese da &lt;a href=&quot;https://www.willbell.com/math/mc1.HTM&quot;&gt;&lt;i&gt;Astronomical &#10;            Algorithms&lt;/i&gt; di Jean Meeus&lt;/a&gt;, pubblicato da Willmann-Bell, &#10;            Inc., Richmond, VA&#10;          &lt;/li&gt;&#10;        &lt;/ul&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.flaticon.com/free-icon/telescope_547425?term=telescope&amp;page=1&amp;position=9&amp;related_item_id=547425&quot;&gt;Telescope &#10;        icon&lt;/a&gt; di Freepik, &lt;a href=&quot;https://www.freepikcompany.com/legal#nav-flaticon&quot;&gt;licenza &#10;        Flaticon&lt;/a&gt;&#10;      &lt;/li&gt;&#10;    &lt;/ul&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
+                      <text value="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &lt;strong&gt;ThunderFocus&amp;#160;&lt;/strong&gt;&amp;#232; un software open-source per il &#10;      controllo di focheggiatori compatibili, sviluppato da &lt;strong&gt;Marco &#10;      Cipriani&lt;/strong&gt;. Il codice sorgente del progetto &amp;#232; reperibile su &lt;a href=&quot;https://github.com/marcocipriani01/ThunderFocus&quot;&gt;GitHub&lt;/a&gt; &#10;      ed &amp;#232; sottoposto alla licenza software &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;GNU &#10;      General Public License versione 3&lt;/a&gt;. Utilizzando questo software si &#10;      accettano tutte le condizioni della sua licenza.&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Altri progetti alla pagina &lt;a href=&quot;https://marcocipriani01.github.io/&quot;&gt;marcocipriani01.github.io&lt;/a&gt;!&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Librerie utilizzate:&#10;    &lt;/p&gt;&#10;    &lt;ul type=&quot;disc&quot;&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://openjdk.java.net/&quot;&gt;OpenJDK 14&lt;/a&gt; di Oracle, &lt;a href=&quot;https://openjdk.java.net/legal/gplv2+ce.html&quot;&gt;licenza &#10;        GPL v2 con eccezione linking&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://adoptopenjdk.net/index.html&quot;&gt;AdoptOpenJDK builds&lt;/a&gt; &#10;        con HotSpot VM, di AdoptOpenJDK, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/index.html&quot;&gt;INDIForJava&lt;/a&gt; &#10;        di Sergio Alonso e Richard van Nieuwenhoven, &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/license.html&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.ascom-standards.org/&quot;&gt;ASCOM .NET libraries&lt;/a&gt;, &#10;        The ASCOM Initiative, &lt;a href=&quot;https://github.com/ASCOMInitiative/ASCOMPlatform/blob/master/LICENSE.txt&quot;&gt;ASCOM &#10;        Open Source License&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/java-native/jssc&quot;&gt;jssc&lt;/a&gt; di java-native &#10;        e scream3r, &lt;a href=&quot;https://github.com/java-native/jssc/blob/master/LICENSE.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/&quot;&gt;FlatLaf&lt;/a&gt; di &#10;        JFormDesigner, &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/google/gson&quot;&gt;Gson&lt;/a&gt; di Google, &lt;a href=&quot;https://github.com/google/gson/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://material.io/resources/icons/&quot;&gt;Material icons&lt;/a&gt; di &#10;        Google, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0.html&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/arduino/Arduino&quot;&gt;Arduino Core APIs&lt;/a&gt; di &#10;        Arduino, &lt;a href=&quot;https://github.com/arduino/Arduino/blob/master/license.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.airspayce.com/mikem/arduino/AccelStepper/&quot;&gt;AccelStepper&lt;/a&gt; &#10;        di Mike McCauley (con modifiche), &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;licenza &#10;        GPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/PaulStoffregen/Time&quot;&gt;Arduino Time Library&lt;/a&gt; &#10;        di Michael Margolis, &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html&quot;&gt;licenza &#10;        LGPL v2.1&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/KenWillmott/SolarPosition&quot;&gt;SolarPosition &#10;        library&lt;/a&gt; di Ken Willmott&#10;&#10;        &lt;ul type=&quot;disc&quot;&gt;&#10;          &lt;li&gt;&#10;            Basato su &lt;a href=&quot;http://www.instesre.org/ArduinoDocuments.htm&quot;&gt;Arduino &#10;            Uno and Solar Position Calculations&lt;/a&gt;, &amp;#169; David R. Brooks, &#10;            rilasciato sotto &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-nd/4.0/&quot;&gt;licenza &#10;            Creative Commons BY-NC-ND 4.0 International&lt;/a&gt;&#10;          &lt;/li&gt;&#10;          &lt;li&gt;&#10;            Utilizza equazioni prese da &lt;a href=&quot;https://www.willbell.com/math/mc1.HTM&quot;&gt;&lt;i&gt;Astronomical &#10;            Algorithms&lt;/i&gt; di Jean Meeus&lt;/a&gt;, pubblicato da Willmann-Bell, &#10;            Inc., Richmond, VA&#10;          &lt;/li&gt;&#10;        &lt;/ul&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.flaticon.com/free-icon/telescope_547425?term=telescope&amp;page=1&amp;position=9&amp;related_item_id=547425&quot;&gt;Telescope &#10;        icon&lt;/a&gt; di Freepik, &lt;a href=&quot;https://www.freepikcompany.com/legal#nav-flaticon&quot;&gt;licenza &#10;        Flaticon&lt;/a&gt;&#10;      &lt;/li&gt;&#10;    &lt;/ul&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
                     </properties>
                   </component>
                 </children>
@@ -1079,7 +1157,7 @@
           </component>
           <component id="26160" class="javax.swing.JLabel" binding="aboutLabel">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                 <minimum-size width="-1" height="20"/>
               </grid>
             </constraints>
@@ -1089,13 +1167,13 @@
               <toolTipText value="Visita sito"/>
             </properties>
           </component>
-          <component id="8d5e7" class="javax.swing.JLabel">
+          <component id="8d5e7" class="javax.swing.JLabel" binding="versionLabel">
             <constraints>
-              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font style="2"/>
-              <text value="v2.1 "/>
+              <text value="vX.Y "/>
               <toolTipText value="Versione del software"/>
             </properties>
           </component>
@@ -1117,21 +1195,15 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="98d15" class="javax.swing.JLabel" binding="boardVersionLabel">
-            <constraints>
-              <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="-1" height="30"/>
-              </grid>
-            </constraints>
-            <properties>
-              <font size="14" style="3"/>
-              <horizontalAlignment value="0"/>
-              <text value="Rilevata scheda ThunderFocus vX.Y! "/>
-              <visible value="false"/>
-            </properties>
-          </component>
         </children>
       </grid>
     </children>
   </grid>
+  <buttonGroups>
+    <group name="externalControllerRadioButton">
+      <member id="2f782"/>
+      <member id="20501"/>
+      <member id="606bf"/>
+    </group>
+  </buttonGroups>
 </form>

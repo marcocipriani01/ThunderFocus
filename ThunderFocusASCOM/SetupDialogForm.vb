@@ -26,11 +26,6 @@ Public Class SetupDialogForm
     End Sub
 
     Private Sub SetupDialogForm_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load ' Form load event handler
-        Application.EnableVisualStyles()
-        InitUI()
-    End Sub
-
-    Private Sub InitUI()
         SocketPortSpinner.Value = Focuser.socketPort
         DebugCheckBox.Checked = Focuser.traceState
     End Sub

@@ -114,6 +114,7 @@ public class MainWindow extends JFrame implements
     private JRadioButton disableExtControlRadio;
     private JSpinner ascomPortSpinner;
     private JScrollPane configScrollPane;
+    private JCheckBox autoConnectBox;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -196,6 +197,8 @@ public class MainWindow extends JFrame implements
             }
         });
 
+        boolean autoConnect = Main.settings.getAutoConnect();
+        autoConnectBox.setSelected(autoConnect);
         boolean selectPort = false;
         String serialPort = Main.settings.getSerialPort();
         for (String p : SerialPortImpl.scanSerialPorts()) {
@@ -204,7 +207,17 @@ public class MainWindow extends JFrame implements
                 selectPort = true;
             }
         }
-        if (selectPort) serialPortComboBox.setSelectedItem(serialPort);
+        if (selectPort) {
+            serialPortComboBox.setSelectedItem(serialPort);
+            if (autoConnect && (!Main.focuser.isConnected())) {
+                Main.settings.setSerialPort(serialPort, this);
+                try {
+                    Main.focuser.connect(serialPort);
+                } catch (ConnectionException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
 
         Main.focuser.addListener(this);
         Main.settings.addListener(this);
@@ -361,18 +374,43 @@ public class MainWindow extends JFrame implements
     }
 
     private void askClose() {
-        if (Main.isAscomRunning() && (Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS)) {
+        if ((Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS) && Main.isAscomRunning()
+                && (Main.ascomFocuserBridge.getClientsCount() > 0)) {
             try {
-                setState(Frame.ICONIFIED);
+                setVisible(false);
                 SystemTray tray = SystemTray.getSystemTray();
                 TrayIcon trayIcon = new TrayIcon(Main.APP_LOGO, APP_NAME);
                 trayIcon.setImageAutoSize(true);
                 trayIcon.setToolTip(APP_NAME);
-                trayIcon.addActionListener(e -> {
-                    tray.remove(trayIcon);
-                    setState(Frame.NORMAL);
-                    toFront();
-                    requestFocus();
+                trayIcon.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        tray.remove(trayIcon);
+                        setVisible(true);
+                        setState(Frame.NORMAL);
+                        toFront();
+                        requestFocus();
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+
+                    }
                 });
                 tray.add(trayIcon);
                 trayIcon.displayMessage(APP_NAME, "Ponte ASCOM in background.", TrayIcon.MessageType.INFO);
@@ -383,8 +421,11 @@ public class MainWindow extends JFrame implements
             setState(Frame.NORMAL);
             toFront();
             requestFocus();
-            if (JOptionPane.showConfirmDialog(this,
-                    "Uscire dall'applicazione?\nQuesta operazione terminerà il server\nINDI e il ponte ASCOM.",
+            String msg = "Uscire dall'applicazione?";
+            if (Main.isAscomRunning() || Main.indiServerCreator.isRunning()) {
+                msg += "\nQuesta operazione terminerà il server\nINDI e il ponte ASCOM.";
+            }
+            if (JOptionPane.showConfirmDialog(this, msg,
                     APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 Main.focuser.removeListener(this);
                 dispose();
@@ -511,6 +552,7 @@ public class MainWindow extends JFrame implements
             } else {
                 Main.settings.setExternalControl(NONE, this);
             }
+            Main.settings.setAutoConnect(autoConnectBox.isSelected(), this);
             Main.settings.setShowRemoteIndi(localOrRemoteCombo.getSelectedIndex() == 1, this);
             int oldIndiPort = Main.settings.getIndiServerPort();
             Main.settings.setIndiServerPort((int) indiPortSpinner.getValue(), this);
@@ -972,8 +1014,12 @@ public class MainWindow extends JFrame implements
 
     @Override
     public void updateSetting(Settings.Value what, boolean value) {
-        if (what == Settings.Value.SHOW_REMOTE_INDI) SwingUtilities.invokeLater(() ->
-                localOrRemoteCombo.setSelectedItem(value ? 1 : 0));
+        SwingUtilities.invokeLater(() -> {
+            switch (what) {
+                case SHOW_REMOTE_INDI -> localOrRemoteCombo.setSelectedItem(value ? 1 : 0);
+                case AUTO_CONNECT -> autoConnectBox.setSelected(value);
+            }
+        });
     }
 
     @Override

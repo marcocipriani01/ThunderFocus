@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run ThunderFocus" type="JarApplication" activateToolWindowBeforeRun="false">
+  <configuration default="false" name="Run ThunderFocus" type="JarApplication" activateToolWindowBeforeRun="false" singleton="false">
     <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/ThunderFocus_jar/ThunderFocus.jar" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">

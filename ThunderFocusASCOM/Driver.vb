@@ -27,12 +27,13 @@
 
 Imports System.Net
 Imports System.Net.Sockets
+Imports System.Threading
 Imports ASCOM.Astrometry
 Imports ASCOM.Astrometry.AstroUtils
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 
-<Guid("c61410a6-004e-4ae5-88da-c8c9c879e66e")>
+<Guid("863670cf-a7a6-4314-9479-c99e1c6fce06")>
 <ClassInterface(ClassInterfaceType.None)>
 Public Class Focuser
 
@@ -72,11 +73,15 @@ Public Class Focuser
             Try
                 Dim socketBuffer As Byte() = New Byte(1023) {}
                 Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                Return Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+                Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+                TL.LogMessage("ReadSocket", rcv)
+                Return rcv
             Catch ex As Exception
-                TL.LogMessage("SendSocket", ex.Message)
+                TL.LogMessage("ReadSocket", ex.Message)
                 Connected = False
             End Try
+        Else
+            TL.LogMessage("ReadSocket", "Ignoring read attempt.")
         End If
         Return String.Empty
     End Function
@@ -84,6 +89,7 @@ Public Class Focuser
     Private Sub sendSocket(msg As String)
         If Connected = True Then
             Try
+                TL.LogMessage("Connected Set", "Sending " + msg)
                 Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
                 socket.SendBufferSize = bytesToSend.Length
                 socket.Send(bytesToSend)
@@ -91,6 +97,8 @@ Public Class Focuser
                 TL.LogMessage("SendSocket", ex.Message)
                 Connected = False
             End Try
+        Else
+            TL.LogMessage("ReadSocket", "Ignoring send attempt (" + msg + ")")
         End If
     End Sub
 
@@ -114,7 +122,7 @@ Public Class Focuser
         socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
         socket.NoDelay = True
         socket.ReceiveTimeout = 500
-        socket.SendTimeout = 2000
+        socket.SendTimeout = 1000
 
         TL.LogMessage("Focuser", "Completed initialisation")
     End Sub
@@ -131,15 +139,17 @@ Public Class Focuser
     ''' THIS IS THE ONLY PLACE WHERE SHOWING USER INTERFACE IS ALLOWED!
     ''' </summary>
     Public Sub SetupDialog() Implements IFocuserV3.SetupDialog
+        Application.EnableVisualStyles()
         If IsConnected Then
-            MessageBox.Show("Già connesso!")
+            MessageBox.Show("Ponte in esecuzione, utilizzare il pannello di controllo per la configurazione.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            Using F As SetupDialogForm = New SetupDialogForm()
+                Dim result As System.Windows.Forms.DialogResult = F.ShowDialog()
+                If result = DialogResult.OK Then
+                    WriteProfile()
+                End If
+            End Using
         End If
-        Using F As SetupDialogForm = New SetupDialogForm()
-            Dim result As System.Windows.Forms.DialogResult = F.ShowDialog()
-            If result = DialogResult.OK Then
-                WriteProfile()
-            End If
-        End Using
     End Sub
 
     Public ReadOnly Property SupportedActions() As ArrayList Implements IFocuserV3.SupportedActions
@@ -195,11 +205,19 @@ Public Class Focuser
                 Try
                     Dim remoteEP As IPEndPoint = New IPEndPoint(ipAddress, socketPort)
                     socket.Connect(remoteEP)
-                    sendSocket("ThunderFocusPing")
-                    If readSocket().Contains("ThunderFocusPingOK") Then
+                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("ThunderFocusPing" + Environment.NewLine)
+                    socket.SendBufferSize = bytesToSend.Length
+                    socket.Send(bytesToSend)
+                    Thread.Sleep(200)
+                    Dim socketBuffer As Byte() = New Byte(1023) {}
+                    Dim bytesRec As Integer = socket.Receive(socketBuffer)
+                    Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+                    If rcv.Contains("ThunderFocusPingOK") Then
                         connectedState = True
+                        TL.LogMessage("Connected Set", "Ping OK.")
                     Else
                         connectedState = False
+                        TL.LogMessage("Connected Set", "Ping not OK!")
                     End If
                 Catch ex As Exception
                     TL.LogMessage("Connected Set", "Connection exception! " + ex.Message)
@@ -258,6 +276,7 @@ Public Class Focuser
     End Property
 
     Public Sub Dispose() Implements IFocuserV3.Dispose
+        TL.LogMessage("Dispose", "Disposing...")
         Connected = False
         TL.Enabled = False
         TL.Dispose()
@@ -419,7 +438,6 @@ Public Class Focuser
     ''' </summary>
     Private ReadOnly Property IsConnected As Boolean
         Get
-            ' TODO check that the driver hardware connection exists and is connected to the hardware
             Return connectedState
         End Get
     End Property

@@ -3,20 +3,10 @@
 // ===================================================================================
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
-#define SERIAL_TIMEOUT 100
 #define STATUS_LED 9
 #define STATUS_LED_MANAGED true
 #define STATUS_LED_BLINK_PERIOD 300
-#define PROTOCOL PROTOCOL_THUNDERFOCUS
-
-#if PROTOCOL == PROTOCOL_MOONLITE
-#define SERIAL_SPEED 9600
-#define ENABLE_DEVMAN false
-#elif PROTOCOL == PROTOCOL_THUNDERFOCUS
-#define SERIAL_SPEED 115200
-#define THUNDERFOCUS_SEND_DELAY 150
 #define ENABLE_DEVMAN true
-#endif
 
 // ===================================================================================
 // ============================== FOCUSER CONFIGURATION ==============================

@@ -209,4 +209,8 @@ public abstract class SimpleServer extends StringNetPort {
     protected abstract void onNewClient(Socket client);
 
     protected abstract void onClientRemoved(Socket client);
+
+    public int getClientsCount() {
+        return clients.size();
+    }
 }

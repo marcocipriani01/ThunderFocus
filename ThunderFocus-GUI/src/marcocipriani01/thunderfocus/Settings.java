@@ -13,7 +13,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Stores all the app's settings.
@@ -28,7 +27,8 @@ public class Settings {
      */
     private static final Gson serializer = new GsonBuilder()
             .setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-    private static Path path = null;
+    private static Path filePath = null;
+    private static String folder = null;
     private final ArrayList<SettingsListener> listeners = new ArrayList<>();
 
     @SerializedName("Theme")
@@ -61,6 +61,9 @@ public class Settings {
     @SerializedName("Powerbox data")
     @Expose
     private PowerBox powerBox = new PowerBox();
+    @SerializedName("Auto connect")
+    @Expose
+    private boolean autoConnect = false;
 
     /**
      * Class constructor.
@@ -69,31 +72,33 @@ public class Settings {
 
     }
 
-    private static Path getPath() throws IOException, IllegalStateException {
-        if (path != null) return path;
+    public static String getSettingsFolder() throws IOException {
+        if (Settings.folder != null) return Settings.folder;
         String folder = System.getProperty("user.home");
         switch (Main.OPERATING_SYSTEM) {
             case WINDOWS -> folder += (folder.endsWith("\\") ? "" : "\\") + "AppData\\Roaming\\" + Main.APP_NAME + "\\";
             case LINUX -> folder += (folder.endsWith("/") ? "" : "/") + ".config/";
             case MACOS -> folder += (folder.endsWith("/") ? "" : "/") + "Library/Preferences/" + Main.APP_NAME + "/";
+            case OTHER -> folder += (folder.endsWith(File.separator) ? "" : File.separator);
         }
         File f = new File(folder);
         if (f.exists()) {
-            if (f.isFile()) {
-                throw new IllegalStateException("Unable to create config folder, already exists and is a file");
-            }
+            if (f.isFile()) throw new IOException("Unable to create the config folder, already exists and is a file");
         } else {
-            if (!f.mkdirs()) {
-                throw new IOException("Unable to create config folder.");
-            }
+            if (!f.mkdirs()) throw new IOException("Unable to create the config folder.");
         }
-        return (path = Paths.get(folder + File.separator + Main.APP_NAME + ".json"));
+        return (Settings.folder = folder);
+    }
+
+    private static Path getSettingsFilePath() throws IOException {
+        if (filePath != null) return filePath;
+        return (filePath = Paths.get(getSettingsFolder() + Main.APP_NAME + ".json"));
     }
 
     public static Settings load() {
         Settings s;
         try {
-            s = serializer.fromJson(new String(Files.readAllBytes(getPath())), Settings.class);
+            s = serializer.fromJson(new String(Files.readAllBytes(getSettingsFilePath())), Settings.class);
         } catch (NoSuchFileException e) {
             return new Settings();
         } catch (Exception e) {
@@ -101,10 +106,22 @@ public class Settings {
             return new Settings();
         }
         // Normalize invalid values
-        if (s.indiServerPort <= 1024) {
-            s.indiServerPort = 7625;
-        }
+        if (s.indiServerPort <= 1024) s.indiServerPort = 7625;
+        if (s.ascomBridgePort <= 1024) s.ascomBridgePort = 5001;
         return s;
+    }
+
+    public void save() throws IOException {
+        Files.write(getSettingsFilePath(), serializer.toJson(this).getBytes());
+    }
+
+    public boolean getAutoConnect() {
+        return autoConnect;
+    }
+
+    public void setAutoConnect(boolean autoConnect, SettingsListener caller) {
+        this.autoConnect = autoConnect;
+        update(Value.AUTO_CONNECT, caller, this.autoConnect);
     }
 
     public void addListener(SettingsListener listener) {
@@ -211,10 +228,6 @@ public class Settings {
         update(Value.FOK_MAX_TRAVEL, caller, fokMaxTravel);
     }
 
-    public void save() throws IOException {
-        Files.write(getPath(), serializer.toJson(this).getBytes());
-    }
-
     void update(Value what, SettingsListener notMe, int value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
@@ -235,7 +248,7 @@ public class Settings {
 
     public enum Value {
         THEME, SERIAL_PORT, SHOW_REMOTE_INDI, INDI_PORT,
-        FOK_TICKS_COUNT, FOK_TICKS_UNIT, FOK_MAX_TRAVEL, ASCOM_PORT
+        FOK_TICKS_COUNT, FOK_MAX_TRAVEL, AUTO_CONNECT, ASCOM_PORT
     }
 
     public enum Units {

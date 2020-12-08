@@ -691,7 +691,7 @@
                 </properties>
                 <border type="none"/>
                 <children>
-                  <grid id="1003b" layout-manager="GridLayoutManager" row-count="19" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="1003b" layout-manager="GridLayoutManager" row-count="20" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="16" left="16" bottom="16" right="16"/>
                     <constraints/>
                     <properties/>
@@ -723,7 +723,7 @@
                       </component>
                       <component id="5f620" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="12" style="1"/>
@@ -732,7 +732,7 @@
                       </component>
                       <component id="6338e" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Limiti:"/>
@@ -740,7 +740,7 @@
                       </component>
                       <component id="d17d" class="javax.swing.JSpinner" binding="fokTicksCountSpinner" custom-create="true">
                         <constraints>
-                          <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -749,7 +749,7 @@
                       </component>
                       <component id="2b952" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="11" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="18" style="1"/>
@@ -758,7 +758,7 @@
                       </component>
                       <component id="c27b8" class="javax.swing.JComboBox" binding="fokUnitsCombo" custom-create="true">
                         <constraints>
-                          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -767,7 +767,7 @@
                       </component>
                       <component id="18172" class="javax.swing.JSpinner" binding="fokMaxTravelSpinner" custom-create="true">
                         <constraints>
-                          <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -776,7 +776,7 @@
                       </component>
                       <component id="9c431" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Backlash:"/>
@@ -784,7 +784,7 @@
                       </component>
                       <component id="f89b8" class="javax.swing.JSpinner" binding="fokBacklashSpinner" custom-create="true">
                         <constraints>
-                          <grid row="12" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="13" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -793,7 +793,7 @@
                       </component>
                       <component id="cb39c" class="javax.swing.JButton" binding="fokBacklashCalButton">
                         <constraints>
-                          <grid row="13" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="14" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -803,7 +803,7 @@
                       </component>
                       <component id="2be38" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Velocità:"/>
@@ -812,7 +812,7 @@
                       </component>
                       <component id="dade7" class="javax.swing.JSlider" binding="fokSpeedSlider">
                         <constraints>
-                          <grid row="14" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="15" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -830,7 +830,7 @@
                       </component>
                       <component id="7619e" class="javax.swing.JCheckBox" binding="fokReverseDirBox">
                         <constraints>
-                          <grid row="15" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="16" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -840,7 +840,7 @@
                       </component>
                       <component id="c9212" class="javax.swing.JCheckBox" binding="fokPowerSaverBox">
                         <constraints>
-                          <grid row="16" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="17" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -859,7 +859,7 @@
                       </component>
                       <component id="d4a29" class="javax.swing.JSpinner" binding="indiPortSpinner" custom-create="true">
                         <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Porta del server INDI."/>
@@ -867,7 +867,7 @@
                       </component>
                       <component id="a3bc8" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Porta:"/>
@@ -875,13 +875,13 @@
                       </component>
                       <component id="a8078" class="javax.swing.JSeparator">
                         <constraints>
-                          <grid row="9" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="10" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                       </component>
                       <component id="1c01c" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Driver:"/>
@@ -889,7 +889,7 @@
                       </component>
                       <component id="3a278" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="11" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="passi"/>
@@ -897,7 +897,7 @@
                       </component>
                       <component id="34a26" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="13" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="passi"/>
@@ -905,7 +905,7 @@
                       </component>
                       <component id="792db" class="javax.swing.JButton" binding="saveConfigButton">
                         <constraints>
-                          <grid row="18" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                          <grid row="19" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
                             <preferred-size width="-1" height="42"/>
                             <maximum-size width="-1" height="42"/>
                           </grid>
@@ -919,7 +919,7 @@
                       <grid id="d53fe" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
-                          <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="1" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                         <border type="none"/>
@@ -966,7 +966,7 @@
                       <grid id="7ea7e" binding="powerBoxConfigPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="4" right="0"/>
                         <constraints>
-                          <grid row="17" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <grid row="18" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <visible value="true"/>
@@ -1049,7 +1049,7 @@
                       </grid>
                       <component id="48217" class="javax.swing.JSpinner" binding="ascomPortSpinner" custom-create="true">
                         <constraints>
-                          <grid row="6" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Porta del ponte ASCOM."/>
@@ -1057,7 +1057,7 @@
                       </component>
                       <component id="b0d16" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Porta:"/>
@@ -1065,7 +1065,7 @@
                       </component>
                       <component id="2f782" class="javax.swing.JRadioButton" binding="indiServerRadio">
                         <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font style="1"/>
@@ -1074,7 +1074,7 @@
                       </component>
                       <component id="20501" class="javax.swing.JRadioButton" binding="disableExtControlRadio">
                         <constraints>
-                          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font style="1"/>
@@ -1083,7 +1083,7 @@
                       </component>
                       <component id="606bf" class="javax.swing.JRadioButton" binding="ascomBridgeRadio">
                         <constraints>
-                          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font style="1"/>
@@ -1092,11 +1092,20 @@
                       </component>
                       <component id="b3799" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="7" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="8" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font style="2"/>
                           <text value="Il ponte si avvia solo alla connessione con la scheda."/>
+                        </properties>
+                      </component>
+                      <component id="fbc37" class="javax.swing.JCheckBox" binding="autoConnectBox">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <font style="1"/>
+                          <text value="Connetti automaticamente all'avvio"/>
                         </properties>
                       </component>
                     </children>
@@ -1118,7 +1127,7 @@
                       <contentType value="text/html"/>
                       <editable value="false"/>
                       <font size="14"/>
-                      <text value="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &lt;strong&gt;ThunderFocus&amp;#160;&lt;/strong&gt;&amp;#232; un software open-source per il &#10;      controllo di focheggiatori compatibili, sviluppato da &lt;strong&gt;Marco &#10;      Cipriani&lt;/strong&gt;. Il codice sorgente del progetto &amp;#232; reperibile su &lt;a href=&quot;https://github.com/marcocipriani01/ThunderFocus&quot;&gt;GitHub&lt;/a&gt; &#10;      ed &amp;#232; sottoposto alla licenza software &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;GNU &#10;      General Public License versione 3&lt;/a&gt;. Utilizzando questo software si &#10;      accettano tutte le condizioni della sua licenza.&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Altri progetti alla pagina &lt;a href=&quot;https://marcocipriani01.github.io/&quot;&gt;marcocipriani01.github.io&lt;/a&gt;!&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Librerie utilizzate:&#10;    &lt;/p&gt;&#10;    &lt;ul type=&quot;disc&quot;&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://openjdk.java.net/&quot;&gt;OpenJDK 14&lt;/a&gt; di Oracle, &lt;a href=&quot;https://openjdk.java.net/legal/gplv2+ce.html&quot;&gt;licenza &#10;        GPL v2 con eccezione linking&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://adoptopenjdk.net/index.html&quot;&gt;AdoptOpenJDK builds&lt;/a&gt; &#10;        con HotSpot VM, di AdoptOpenJDK, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/index.html&quot;&gt;INDIForJava&lt;/a&gt; &#10;        di Sergio Alonso e Richard van Nieuwenhoven, &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/license.html&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/java-native/jssc&quot;&gt;jssc&lt;/a&gt; di java-native &#10;        e scream3r, &lt;a href=&quot;https://github.com/java-native/jssc/blob/master/LICENSE.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/&quot;&gt;FlatLaf&lt;/a&gt; di &#10;        JFormDesigner, &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/google/gson&quot;&gt;Gson&lt;/a&gt; di Google, &lt;a href=&quot;https://github.com/google/gson/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://material.io/resources/icons/&quot;&gt;Material icons&lt;/a&gt; di &#10;        Google, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0.html&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/arduino/Arduino&quot;&gt;Arduino Core APIs&lt;/a&gt; di &#10;        Arduino, &lt;a href=&quot;https://github.com/arduino/Arduino/blob/master/license.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.airspayce.com/mikem/arduino/AccelStepper/&quot;&gt;AccelStepper&lt;/a&gt; &#10;        di Mike McCauley (con modifiche), &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;licenza &#10;        GPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/PaulStoffregen/Time&quot;&gt;Arduino Time Library&lt;/a&gt; &#10;        di Michael Margolis, &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html&quot;&gt;licenza &#10;        LGPL v2.1&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/KenWillmott/SolarPosition&quot;&gt;SolarPosition &#10;        library&lt;/a&gt; di Ken Willmott&#10;&#10;        &lt;ul type=&quot;disc&quot;&gt;&#10;          &lt;li&gt;&#10;            Basato su &lt;a href=&quot;http://www.instesre.org/ArduinoDocuments.htm&quot;&gt;Arduino &#10;            Uno and Solar Position Calculations&lt;/a&gt;, &amp;#169; David R. Brooks, &#10;            rilasciato sotto &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-nd/4.0/&quot;&gt;licenza &#10;            Creative Commons BY-NC-ND 4.0 International&lt;/a&gt;&#10;          &lt;/li&gt;&#10;          &lt;li&gt;&#10;            Utilizza equazioni prese da &lt;a href=&quot;https://www.willbell.com/math/mc1.HTM&quot;&gt;&lt;i&gt;Astronomical &#10;            Algorithms&lt;/i&gt; di Jean Meeus&lt;/a&gt;, pubblicato da Willmann-Bell, &#10;            Inc., Richmond, VA&#10;          &lt;/li&gt;&#10;        &lt;/ul&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.flaticon.com/free-icon/telescope_547425?term=telescope&amp;page=1&amp;position=9&amp;related_item_id=547425&quot;&gt;Telescope &#10;        icon&lt;/a&gt; di Freepik, &lt;a href=&quot;https://www.freepikcompany.com/legal#nav-flaticon&quot;&gt;licenza &#10;        Flaticon&lt;/a&gt;&#10;      &lt;/li&gt;&#10;    &lt;/ul&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
+                      <text value="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &lt;strong&gt;ThunderFocus&amp;#160;&lt;/strong&gt;&amp;#232; un software open-source per il &#10;      controllo di focheggiatori compatibili, sviluppato da &lt;strong&gt;Marco &#10;      Cipriani&lt;/strong&gt;. Il codice sorgente del progetto &amp;#232; reperibile su &lt;a href=&quot;https://github.com/marcocipriani01/ThunderFocus&quot;&gt;GitHub&lt;/a&gt; &#10;      ed &amp;#232; sottoposto alla licenza software &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;GNU &#10;      General Public License versione 3&lt;/a&gt;. Utilizzando questo software si &#10;      accettano tutte le condizioni della sua licenza.&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Altri progetti alla pagina &lt;a href=&quot;https://marcocipriani01.github.io/&quot;&gt;marcocipriani01.github.io&lt;/a&gt;!&#10;    &lt;/p&gt;&#10;    &lt;p&gt;&#10;      Librerie utilizzate:&#10;    &lt;/p&gt;&#10;    &lt;ul type=&quot;disc&quot;&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://openjdk.java.net/&quot;&gt;OpenJDK 14&lt;/a&gt; di Oracle, &lt;a href=&quot;https://openjdk.java.net/legal/gplv2+ce.html&quot;&gt;licenza &#10;        GPL v2 con eccezione linking&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://adoptopenjdk.net/index.html&quot;&gt;AdoptOpenJDK builds&lt;/a&gt; &#10;        con HotSpot VM, di AdoptOpenJDK, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/index.html&quot;&gt;INDIForJava&lt;/a&gt; &#10;        di Sergio Alonso e Richard van Nieuwenhoven, &lt;a href=&quot;http://indiforjava.sourceforge.net/stage/license.html&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.ascom-standards.org/&quot;&gt;ASCOM .NET libraries&lt;/a&gt;, &#10;        The ASCOM Initiative, &lt;a href=&quot;https://github.com/ASCOMInitiative/ASCOMPlatform/blob/master/LICENSE.txt&quot;&gt;ASCOM &#10;        Open Source License&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/java-native/jssc&quot;&gt;jssc&lt;/a&gt; di java-native &#10;        e scream3r, &lt;a href=&quot;https://github.com/java-native/jssc/blob/master/LICENSE.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/&quot;&gt;FlatLaf&lt;/a&gt; di &#10;        JFormDesigner, &lt;a href=&quot;https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/google/gson&quot;&gt;Gson&lt;/a&gt; di Google, &lt;a href=&quot;https://github.com/google/gson/blob/master/LICENSE&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://material.io/resources/icons/&quot;&gt;Material icons&lt;/a&gt; di &#10;        Google, &lt;a href=&quot;https://www.apache.org/licenses/LICENSE-2.0.html&quot;&gt;licenza &#10;        Apache 2.0&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/arduino/Arduino&quot;&gt;Arduino Core APIs&lt;/a&gt; di &#10;        Arduino, &lt;a href=&quot;https://github.com/arduino/Arduino/blob/master/license.txt&quot;&gt;licenza &#10;        LGPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.airspayce.com/mikem/arduino/AccelStepper/&quot;&gt;AccelStepper&lt;/a&gt; &#10;        di Mike McCauley (con modifiche), &lt;a href=&quot;https://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;licenza &#10;        GPL v3&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/PaulStoffregen/Time&quot;&gt;Arduino Time Library&lt;/a&gt; &#10;        di Michael Margolis, &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html&quot;&gt;licenza &#10;        LGPL v2.1&lt;/a&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://github.com/KenWillmott/SolarPosition&quot;&gt;SolarPosition &#10;        library&lt;/a&gt; di Ken Willmott&#10;&#10;        &lt;ul type=&quot;disc&quot;&gt;&#10;          &lt;li&gt;&#10;            Basato su &lt;a href=&quot;http://www.instesre.org/ArduinoDocuments.htm&quot;&gt;Arduino &#10;            Uno and Solar Position Calculations&lt;/a&gt;, &amp;#169; David R. Brooks, &#10;            rilasciato sotto &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-nd/4.0/&quot;&gt;licenza &#10;            Creative Commons BY-NC-ND 4.0 International&lt;/a&gt;&#10;          &lt;/li&gt;&#10;          &lt;li&gt;&#10;            Utilizza equazioni prese da &lt;a href=&quot;https://www.willbell.com/math/mc1.HTM&quot;&gt;&lt;i&gt;Astronomical &#10;            Algorithms&lt;/i&gt; di Jean Meeus&lt;/a&gt;, pubblicato da Willmann-Bell, &#10;            Inc., Richmond, VA&#10;          &lt;/li&gt;&#10;        &lt;/ul&gt;&#10;      &lt;/li&gt;&#10;      &lt;li&gt;&#10;        &lt;a href=&quot;https://www.flaticon.com/free-icon/telescope_547425?term=telescope&amp;page=1&amp;position=9&amp;related_item_id=547425&quot;&gt;Telescope &#10;        icon&lt;/a&gt; di Freepik, &lt;a href=&quot;https://www.freepikcompany.com/legal#nav-flaticon&quot;&gt;licenza &#10;        Flaticon&lt;/a&gt;&#10;      &lt;/li&gt;&#10;    &lt;/ul&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
                     </properties>
                   </component>
                 </children>

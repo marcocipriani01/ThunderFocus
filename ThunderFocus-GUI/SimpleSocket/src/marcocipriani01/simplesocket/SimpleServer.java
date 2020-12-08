@@ -50,8 +50,7 @@ public abstract class SimpleServer extends StringNetPort {
                 clients.put(socket, out);
                 startReading(socket, new BufferedReader(new InputStreamReader(socket.getInputStream())));
                 onNewClient(socket);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
     }

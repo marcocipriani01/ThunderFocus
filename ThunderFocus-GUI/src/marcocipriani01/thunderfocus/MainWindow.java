@@ -739,7 +739,7 @@ public class MainWindow extends JFrame implements
                 }
                 ascomStatusLabel.setText("Ponte attivo");
             } else {
-                Main.ascomFocuserBridge.close();
+                if (Main.isAscomRunning()) Main.ascomFocuserBridge.close();
                 ascomStatusLabel.setText("Ponte non attivo");
             }
         } catch (ConnectionException e) {
@@ -983,6 +983,7 @@ public class MainWindow extends JFrame implements
 
     @Override
     public void onCriticalError(Exception e) {
+        e.printStackTrace();
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainWindow.this,
                 "Errore inaspettato!", APP_NAME, JOptionPane.ERROR_MESSAGE));
     }

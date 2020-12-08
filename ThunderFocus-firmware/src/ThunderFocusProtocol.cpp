@@ -222,7 +222,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 			case 'T': {
 				unsigned long t = Serial.parseInt();
 				if (t != 0) {
-					setTeensyTime(t);
+					setSunKeeperTime(t);
 					Serial.print(F("LSetTime="));
 					Serial.println(t);
 				}

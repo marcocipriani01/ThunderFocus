@@ -316,7 +316,7 @@ public class MainWindow extends JFrame implements
         fokMaxTravelSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.settings.getFokMaxTravel(), 1, 2147483647, 1));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
-                Main.focuser.getBacklash(), 0, 200, 1));
+                Main.focuser.getBacklash(), 0, 1000, 1));
         powerBoxTable = new JPowerBoxTable();
         powerBoxAutoModeBox = new JComboBox<>();
         powerBoxLatSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
@@ -855,7 +855,7 @@ public class MainWindow extends JFrame implements
                 }
                 case BACKLASH -> fokBacklashSpinner.setValue(Main.focuser.getBacklash());
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
-                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
+                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaverOn());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
                 case POWERBOX_AUTO_MODE -> powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
                 case POWERBOX_AMBIENT_DATA -> {
@@ -926,7 +926,7 @@ public class MainWindow extends JFrame implements
                     }
                     fokSpeedSlider.setValue(Main.focuser.getSpeed());
                     fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
-                    fokPowerSaverBox.setSelected(Main.focuser.isPowerSaver());
+                    fokPowerSaverBox.setSelected(Main.focuser.isPowerSaverOn());
                     int currentPos = Main.focuser.getCurrentPos();
                     posSlider.removeChangeListener(MainWindow.this);
                     posSlider.setValue(currentPos);

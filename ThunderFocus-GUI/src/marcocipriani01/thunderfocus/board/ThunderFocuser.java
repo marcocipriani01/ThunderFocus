@@ -15,11 +15,11 @@ public class ThunderFocuser implements SerialMessageListener {
     private final ArrayList<Listener> listeners = new ArrayList<>();
     private String version = "<?>";
     private PowerBox powerBox = null;
-    private int timerCount = 0;
+    private volatile int timerCount = 0;
     private Listener exclusiveCaller = null;
     private ConnState connState = ConnState.DISCONNECTED;
     private FocuserState focuserState = FocuserState.NONE;
-    private boolean ready = false;
+    private volatile boolean ready = false;
     private int requestedPos = 0;
     private int requestedRelPos = 10;
     private int currentPos = 0;
@@ -45,14 +45,14 @@ public class ThunderFocuser implements SerialMessageListener {
         return ready;
     }
 
-    public void connect(String port) throws ConnectionException {
+    public synchronized void connect(String port) throws ConnectionException {
         updConnSate(ConnState.TIMEOUT);
         serialPort.connect(port);
         timerCount = 1;
         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
     }
 
-    public void disconnect() {
+    public synchronized void disconnect() {
         updConnSate(ConnState.TIMEOUT);
         updFocuserState(FocuserState.NONE);
         ready = false;
@@ -136,7 +136,7 @@ public class ThunderFocuser implements SerialMessageListener {
         return reverseDir;
     }
 
-    public boolean isPowerSaver() {
+    public boolean isPowerSaverOn() {
         return powerSaver;
     }
 
@@ -149,7 +149,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     @Override
-    public void onPortMessage(String msg) {
+    public synchronized void onPortMessage(String msg) {
         char c;
         String param;
         try {
@@ -498,7 +498,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
     private class SendSettingsRequestTask extends TimerTask {
         @Override
-        public void run() {
+        public synchronized void run() {
             if (!ready && serialPort.isConnected()) {
                 try {
                     System.err.println("Sending focuser settings request");

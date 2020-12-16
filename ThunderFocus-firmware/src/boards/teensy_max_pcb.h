@@ -56,11 +56,12 @@
 // ============================== DEVICE MANAGER CONFIG ==============================
 // ===================================================================================
 #if ENABLE_DEVMAN == true
-#define MANAGED_PINS_COUNT 4
+#define MANAGED_PINS_COUNT 5
 #define MANAGED_PINS {{0, true, 0, false},  \
 					{1, true, 0, false},    \
 					{2, true, 0, false},	\
-					{9, false, 0, false}}
+					{9, false, 0, false},	\
+					{10, false, 0, false}}
 #define AUTOMATIC_DEVMAN_TIMER 30000
 #define AUTOMATIC_DEVMAN_THRESHOLD 20
 
@@ -71,11 +72,7 @@
 #define SENSORS_DATAPOINTS 6
 
 // ---------- Time ----------
-#if defined(CORE_TEENSY)
 #define TIME_CONTROL true
-#else
-#define TIME_CONTROL false
-#endif
 
 // ---------- Polar finder illuminator ----------
 #define ENABLE_PFI false

@@ -515,6 +515,8 @@ public:
     /// \sa setPinsInverted
     void    setEnablePin(uint8_t enablePin = 0xff);
 
+    void    setEnablePin(uint8_t enablePin, boolean enableInvert);
+
     /// Sets the inversion for stepper driver pins
     /// \param[in] directionInvert True for inverted direction pin, false for non-inverted
     /// \param[in] stepInvert      True for inverted step pin, false for non-inverted
@@ -522,6 +524,8 @@ public:
     void    setPinsInverted(bool directionInvert = false, bool stepInvert = false, bool enableInvert = false);
 
     boolean isDirectionInverted();
+
+    void setDirectionInverted(boolean b);
 
     /// Sets the inversion for 2, 3 and 4 wire stepper pins
     /// \param[in] pin1Invert True for inverted pin1, false for non-inverted
@@ -639,6 +643,8 @@ private:
     /// Whether the _pins is inverted or not
     uint8_t        _pinInverted[4];
 
+    boolean        _invertDir;
+
     /// The current absolution position in steps.
     long           _currentPos;    // Steps
 
@@ -702,8 +708,8 @@ private:
     long _backlash;
 
 	long _currentBacklash;
-	long _targetBacklash;
 
+	long _targetBacklash;
 };
 
 /// @example Random.pde

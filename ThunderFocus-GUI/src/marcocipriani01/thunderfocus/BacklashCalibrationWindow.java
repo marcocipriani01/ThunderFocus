@@ -1,7 +1,7 @@
 package marcocipriani01.thunderfocus;
 
-import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.simplesocket.ConnectionException;
+import marcocipriani01.thunderfocus.board.ThunderFocuser;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +19,9 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     private JButton relMovButton;
     private JSpinner relMovSpinner;
     private JLabel loading;
-    private int count;
-    private boolean initialMoveDone = false;
+    private volatile int count = 0;
+    private volatile int phase = 0;
+    private boolean wasPowerSaveOn;
 
     public BacklashCalibrationWindow(Frame owner) {
         super(owner, Main.APP_NAME, true);
@@ -43,9 +44,9 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             dispose();
         });
         oneStepButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> setControlsEnabled(false));
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, 1);
-                setControlsEnabled(false);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -53,9 +54,9 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             }
         });
         relMovButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> setControlsEnabled(false));
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, (int) relMovSpinner.getValue());
-                setControlsEnabled(false);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -66,17 +67,29 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         Main.focuser.addListener(this);
         Main.focuser.clearRequestedPositions();
         try {
+            wasPowerSaveOn = Main.focuser.isPowerSaverOn();
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, 0);
             Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, 0);
-            Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, Main.settings.getFokMaxTravel() / 2);
+            int target = Main.settings.getFokMaxTravel() / 4;
+            if (target == Main.focuser.getCurrentPos()) {
+                phase = 1;
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
+            } else {
+                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, target);
+            }
         } catch (ConnectionException e) {
             connectionErr(e);
             dispose();
         } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
-        setBounds(450, 250, 420, 510);
+        setBounds(450, 250, 420, 520);
         setResizable(false);
         setVisible(true);
+    }
+
+    private void createUIComponents() {
+        relMovSpinner = new JSpinner(new SpinnerNumberModel(5, -500, 500, 1));
     }
 
     private void valueOutOfLimits(Exception e) {
@@ -93,6 +106,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public void dispose() {
         super.dispose();
         try {
+            Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
             Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
         } catch (ConnectionException e) {
             connectionErr(e);
@@ -104,7 +118,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         Main.focuser.removeListener(this);
     }
 
-    private void setControlsEnabled(boolean b) {
+    private synchronized void setControlsEnabled(final boolean b) {
         loading.setVisible(!b);
         counterLabel.setVisible(b);
         acceptButton.setEnabled(b);
@@ -114,20 +128,29 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     }
 
     @Override
-    public void onReachedPos() {
-        setControlsEnabled(true);
-        if (initialMoveDone) {
-            count += Main.focuser.getRequestedRelPos();
-            counterLabel.setText(String.valueOf(count));
-        } else {
-            try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
-                initialMoveDone = true;
-            } catch (ConnectionException e) {
-                connectionErr(e);
-                e.printStackTrace();
-            } catch (ThunderFocuser.InvalidParamException e) {
-                e.printStackTrace();
+    public synchronized void onReachedPos() {
+        switch (phase) {
+            case 0 -> {
+                try {
+                    Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
+                    phase = 1;
+                } catch (ConnectionException e) {
+                    connectionErr(e);
+                    e.printStackTrace();
+                } catch (ThunderFocuser.InvalidParamException e) {
+                    e.printStackTrace();
+                }
+            }
+            case 1 -> {
+                phase = 2;
+                SwingUtilities.invokeLater(() -> setControlsEnabled(true));
+            }
+            case 2 -> {
+                count += Main.focuser.getRequestedRelPos();
+                SwingUtilities.invokeLater(() -> {
+                    counterLabel.setText(String.valueOf(count));
+                    setControlsEnabled(true);
+                });
             }
         }
     }
@@ -150,9 +173,5 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     @Override
     public void updateConnSate(ThunderFocuser.ConnState connState) {
 
-    }
-
-    private void createUIComponents() {
-        relMovSpinner = new JSpinner(new SpinnerNumberModel(5, -500, 500, 1));
     }
 }

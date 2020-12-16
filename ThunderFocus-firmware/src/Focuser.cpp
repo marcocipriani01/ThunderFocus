@@ -21,11 +21,9 @@ void Focuser::begin(boolean initHoldControlEnabled,
                     long backlash,
 					boolean reverseDir) {
 #ifdef FOK1_EN
-	stepper.setEnablePin(FOK1_EN);
-	stepper.setPinsInverted(reverseDir, false, true);
-#else
-	stepper.setPinsInverted(reverseDir, false, false);
+	stepper.setEnablePin(FOK1_EN, true);
 #endif
+	stepper.setDirectionInverted(reverseDir);
 #ifdef FOK1_MODE0
 	pinMode(FOK1_MODE0, OUTPUT);
 	digitalWrite(FOK1_MODE0, HIGH);
@@ -131,11 +129,7 @@ uint8_t Focuser::getSpeed() {
 }
 
 void Focuser::setDirReverse(boolean b) {
-#ifdef DRIVER_EN
-	stepper.setPinsInverted(b, false, true);
-#else
-	stepper.setPinsInverted(b, false, false);
-#endif
+	stepper.setDirectionInverted(b);
 }
 
 boolean Focuser::getDirReverse() {

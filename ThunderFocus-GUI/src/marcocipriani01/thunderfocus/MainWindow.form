@@ -502,7 +502,7 @@
                           <enabled value="false"/>
                           <horizontalTextPosition value="0"/>
                           <icon value="marcocipriani01/thunderfocus/res/launch.png"/>
-                          <text value="Controlli voltanti"/>
+                          <text value="Controlli volanti"/>
                           <toolTipText value="Apre la finestra dei contrlli volanti."/>
                           <verticalTextPosition value="3"/>
                         </properties>

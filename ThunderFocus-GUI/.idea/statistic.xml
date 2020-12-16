@@ -4,8 +4,7 @@
     <option name="excludeDotArtifactDirectory" value="true" />
     <option name="excludedDirectories">
       <list>
-        <option value="$PROJECT_DIR$/I4J" />
-        <option value="$PROJECT_DIR$/SLF4J" />
+        <option value="$PROJECT_DIR$/INDIForJava" />
       </list>
     </option>
   </component>

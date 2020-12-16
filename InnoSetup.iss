@@ -1,8 +1,8 @@
 [Setup]
 AppId={{863670cf-a7a6-4314-9479-c99e1c6fce06}
 AppName=ThunderFocus
-AppVersion=2.2
-AppVerName=ThunderFocus v2.2
+AppVersion=2.3
+AppVerName=ThunderFocus v2.3
 AppPublisher=marcocipriani01
 AppPublisherURL=https://marcocipriani01.github.io/
 AppSupportURL=https://marcocipriani01.github.io/
@@ -21,10 +21,14 @@ OutputDir=Installers
 WizardImageFile="D:\ThunderFocus\WizardImage.bmp"
 SetupIconFile="D:\ThunderFocus\ThunderFocusASCOM\Resources\icon.ico"
 UninstallDisplayIcon="D:\ThunderFocus\ThunderFocusASCOM\Resources\icon.ico"
+ChangesEnvironment=yes
 
 [Languages]
 ;Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
+
+[Registry]
+Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "thunderfok"; ValueData: "{app}"; Flags: preservestringtype
 
 [Dirs]
 Name: "{app}"

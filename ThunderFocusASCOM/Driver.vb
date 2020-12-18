@@ -68,6 +68,7 @@ Public Class Focuser
     Private socket As Socket
     Private ipAddress As IPAddress
 
+
     Private Function readSocket() As String
         If Connected = True Then
             Try
@@ -106,7 +107,6 @@ Public Class Focuser
     ' Constructor - Must be public for COM registration!
     '
     Public Sub New()
-
         ReadProfile() ' Read device configuration from the ASCOM Profile store
         TL = New TraceLogger("", "ThunderFocus") With {
             .Enabled = traceState
@@ -117,6 +117,7 @@ Public Class Focuser
         utilities = New Util() ' Initialise util object
         astroUtilities = New AstroUtils 'Initialise new astro utilities object
 
+        Application.EnableVisualStyles()
         Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
         ipAddress = ipHostInfo.AddressList(0)
         socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
@@ -144,7 +145,7 @@ Public Class Focuser
             MessageBox.Show("Ponte in esecuzione, utilizzare il pannello di controllo per la configurazione.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As SetupDialogForm = New SetupDialogForm()
-                Dim result As System.Windows.Forms.DialogResult = F.ShowDialog()
+                Dim result As DialogResult = F.ShowDialog()
                 If result = DialogResult.OK Then
                     WriteProfile()
                 End If
@@ -165,27 +166,18 @@ Public Class Focuser
 
     Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements IFocuserV3.CommandBlind
         CheckConnected("CommandBlind")
-        ' TODO The optional CommandBlind method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandBlind must send the supplied command to the mount And return immediately without waiting for a response
         Throw New MethodNotImplementedException("CommandBlind")
     End Sub
 
     Public Function CommandBool(ByVal Command As String, Optional ByVal Raw As Boolean = False) As Boolean _
         Implements IFocuserV3.CommandBool
         CheckConnected("CommandBool")
-        ' TODO The optional CommandBool method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandBool must send the supplied command to the mount, wait for a response and parse this to return a True Or False value
-        ' Dim retString as String = CommandString(command, raw) ' Send the command And wait for the response
-        ' Dim retBool as Boolean = XXXXXXXXXXXXX ' Parse the returned string And create a boolean True / False value
-        ' Return retBool ' Return the boolean value to the client
         Throw New MethodNotImplementedException("CommandBool")
     End Function
 
     Public Function CommandString(ByVal Command As String, Optional ByVal Raw As Boolean = False) As String _
         Implements IFocuserV3.CommandString
         CheckConnected("CommandString")
-        ' TODO The optional CommandString method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandString must send the supplied command to the mount and wait for a response before returning this to the client
         Throw New MethodNotImplementedException("CommandString")
     End Function
 
@@ -303,11 +295,13 @@ Public Class Focuser
     End Property
 
     Public Sub Halt() Implements IFocuserV3.Halt
+        CheckConnected("Attemped halt while disconnected!")
         sendSocket("Halt")
     End Sub
 
     Public ReadOnly Property IsMoving() As Boolean Implements IFocuserV3.IsMoving
         Get
+            CheckConnected("Attemped get while disconnected!")
             sendSocket("IsMoving")
             Dim rcv As String = readSocket()
             If Not String.IsNullOrEmpty(rcv) Then
@@ -321,23 +315,23 @@ Public Class Focuser
     Public Property Link() As Boolean Implements IFocuserV3.Link
         Get
             TL.LogMessage("Link Get", Me.Connected.ToString())
-            Return Me.Connected
+            Return Connected
         End Get
         Set(value As Boolean)
             TL.LogMessage("Link Set", value.ToString())
-            Me.Connected = value
+            Connected = value
         End Set
     End Property
 
     Public ReadOnly Property MaxIncrement() As Integer Implements IFocuserV3.MaxIncrement
         Get
-            TL.LogMessage("MaxIncrement Get", focuserSteps.ToString())
-            Return focuserSteps
+            Return MaxStep()
         End Get
     End Property
 
     Public ReadOnly Property MaxStep() As Integer Implements IFocuserV3.MaxStep
         Get
+            CheckConnected("Attemped get while disconnected!")
             sendSocket("MaxStep")
             Dim rcv As String = readSocket()
             If Not String.IsNullOrEmpty(rcv) Then
@@ -349,6 +343,7 @@ Public Class Focuser
     End Property
 
     Public Sub Move(Position As Integer) Implements IFocuserV3.Move
+        CheckConnected("Attemped Move while disconnected!")
         TL.LogMessage("Move", Position.ToString())
         focuserPosition = Position ' Set the focuser position
         sendSocket("Move=" + Position.ToString())
@@ -356,6 +351,7 @@ Public Class Focuser
 
     Public ReadOnly Property Position() As Integer Implements IFocuserV3.Position
         Get
+            CheckConnected("Attemped get while disconnected!")
             sendSocket("Position")
             Dim rcv As String = readSocket()
             If Not String.IsNullOrEmpty(rcv) Then
@@ -368,7 +364,7 @@ Public Class Focuser
     Public ReadOnly Property StepSize() As Double Implements IFocuserV3.StepSize
         Get
             TL.LogMessage("StepSize Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("StepSize", False)
+            Throw New PropertyNotImplementedException("StepSize", False)
         End Get
     End Property
 
@@ -379,7 +375,7 @@ Public Class Focuser
         End Get
         Set(value As Boolean)
             TL.LogMessage("TempComp Set", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("TempComp", True)
+            Throw New PropertyNotImplementedException("TempComp", True)
         End Set
     End Property
 
@@ -393,7 +389,7 @@ Public Class Focuser
     Public ReadOnly Property Temperature() As Double Implements IFocuserV3.Temperature
         Get
             TL.LogMessage("Temperature Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("Temperature", False)
+            Throw New PropertyNotImplementedException("Temperature", False)
         End Get
     End Property
 
@@ -406,7 +402,6 @@ Public Class Focuser
 #Region "ASCOM Registration"
 
     Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
-
         Using P As New Profile() With {.DeviceType = "Focuser"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -414,21 +409,16 @@ Public Class Focuser
                 P.Unregister(driverID)
             End If
         End Using
-
     End Sub
 
     <ComRegisterFunction()>
-    Public Shared Sub RegisterASCOM(ByVal T As Type)
-
+    Public Shared Sub RegisterASCOM(T As Type)
         RegUnregASCOM(True)
-
     End Sub
 
     <ComUnregisterFunction()>
-    Public Shared Sub UnregisterASCOM(ByVal T As Type)
-
+    Public Shared Sub UnregisterASCOM(T As Type)
         RegUnregASCOM(False)
-
     End Sub
 
 #End Region
@@ -446,7 +436,7 @@ Public Class Focuser
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
-    Private Sub CheckConnected(ByVal message As String)
+    Private Sub CheckConnected(message As String)
         If Not IsConnected Then
             Throw New NotConnectedException(message)
         End If

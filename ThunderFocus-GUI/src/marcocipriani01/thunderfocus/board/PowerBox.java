@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static marcocipriani01.thunderfocus.Main.i18n;
+
 /**
  * Represents a powerbox.
  *
@@ -278,7 +280,7 @@ public class PowerBox {
     }
 
     public enum AutoModes {
-        NIGHT_ASTRONOMICAL("Crepuscolo astronomico"),
+        NIGHT_ASTRONOMICAL(i18n("night.astronomical")),
         NIGHT_CIVIL("Crepuscolo civile"),
         DAYTIME("Giorno"),
         DEW_POINT_DIFF1("Punto di rugiada Δ=1"),

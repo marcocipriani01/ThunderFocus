@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 
 import static marcocipriani01.thunderfocus.Main.APP_NAME;
+import static marcocipriani01.thunderfocus.Main.i18n;
 import static marcocipriani01.thunderfocus.Settings.ExternalControl.*;
 
 public class MainWindow extends JFrame implements
@@ -143,7 +144,7 @@ public class MainWindow extends JFrame implements
 
         String version = Main.getAppVersion();
         if (version == null) {
-            versionLabel.setText("Versione sconosciuta!");
+            versionLabel.setText(i18n("version.unknown"));
         } else {
             versionLabel.setText("v" + version + " ");
         }
@@ -186,15 +187,7 @@ public class MainWindow extends JFrame implements
             }
         });
         infoPane.addHyperlinkListener(e -> {
-            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                try {
-                    Main.openBrowser(e.getURL().toURI(), this);
-                } catch (URISyntaxException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(MainWindow.this,
-                            "Errore durante l'apertura del browser!", APP_NAME, JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) Main.openBrowser(e, this);
         });
 
         boolean autoConnect = Main.settings.getAutoConnect();
@@ -323,25 +316,25 @@ public class MainWindow extends JFrame implements
         powerBoxLongSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
 
         tempDataset = new DefaultValueDataset(-20D);
-        tempChartPanel = new ChartPanel(createTemperatureDialChart("Temperatura", tempDataset,
+        tempChartPanel = new ChartPanel(createTemperatureDialChart(i18n("temperature"), tempDataset,
                 new Color(255, 82, 82), new Color(41, 182, 246)));
         tempChartPanel.setPreferredSize(new Dimension(240, 220));
         humidityDataset = new DefaultValueDataset(0D);
-        humChartPanel = new ChartPanel(createHumidityDialChart("Umidità", humidityDataset,
+        humChartPanel = new ChartPanel(createHumidityDialChart(i18n("humidity"), humidityDataset,
                 new Color(38, 166, 154), new Color(255, 145, 0)));
         humChartPanel.setPreferredSize(new Dimension(240, 220));
         dewPointDataset = new DefaultValueDataset(-20D);
-        dewPointChartPanel = new ChartPanel(createTemperatureDialChart("P.to di rugiada",
+        dewPointChartPanel = new ChartPanel(createTemperatureDialChart(i18n("dew.point"),
                 dewPointDataset, new Color(68, 138, 255), new Color(244, 67, 54)));
         dewPointChartPanel.setPreferredSize(new Dimension(240, 220));
 
         TimeSeriesCollection tempGraphDataset = new TimeSeriesCollection();
-        tempSeries = new TimeSeries("Temperatura");
+        tempSeries = new TimeSeries(i18n("temperature"));
         tempGraphDataset.addSeries(tempSeries);
-        dewPointSeries = new TimeSeries("P.to di rugiada");
+        dewPointSeries = new TimeSeries(i18n("dew.point"));
         tempGraphDataset.addSeries(dewPointSeries);
         TimeSeriesCollection humGraphDataset = new TimeSeriesCollection();
-        humiditySeries = new TimeSeries("Umidità");
+        humiditySeries = new TimeSeries("humidity");
         humGraphDataset.addSeries(humiditySeries);
         XYPlot plot = new XYPlot();
         plot.setDataset(0, tempGraphDataset);
@@ -353,8 +346,8 @@ public class MainWindow extends JFrame implements
         XYSplineRenderer humRend = new XYSplineRenderer();
         humRend.setSeriesShapesVisible(0, false);
         plot.setRenderer(1, humRend);
-        plot.setRangeAxis(0, new NumberAxis("Temp. e p.to di rugiada (°C)"));
-        NumberAxis humAxis = new NumberAxis("Umidità (%)");
+        plot.setRangeAxis(0, new NumberAxis(i18n("temp.dew.point")));
+        NumberAxis humAxis = new NumberAxis(i18n("humidity.percentage"));
         humAxis.setRange(0.0, 100.0);
         plot.setRangeAxis(1, humAxis);
         plot.setDomainAxis(new DateAxis());
@@ -369,7 +362,7 @@ public class MainWindow extends JFrame implements
                     Main.getIP(localOrRemoteCombo.getSelectedIndex() == 0) + ":" + Main.settings.getIndiServerPort());
         } catch (Exception e) {
             e.printStackTrace();
-            driverNameBox.setText("Errore nel rilevamento dell'IP!");
+            driverNameBox.setText(i18n("ip.error"));
         }
     }
 
@@ -421,9 +414,9 @@ public class MainWindow extends JFrame implements
             setState(Frame.NORMAL);
             toFront();
             requestFocus();
-            String msg = "Uscire dall'applicazione?";
+            String msg = i18n("exit.app");
             if (Main.isAscomRunning() || Main.indiServerCreator.isRunning()) {
-                msg += "\nQuesta operazione terminerà il server\nINDI e il ponte ASCOM.";
+                msg += i18n("exit.app.warning");
             }
             if (JOptionPane.showConfirmDialog(this, msg,
                     APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
@@ -472,7 +465,7 @@ public class MainWindow extends JFrame implements
                     connectionErr(ex);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Nessuna porta disponibile o selezionata.",
+                JOptionPane.showMessageDialog(this, i18n("serial.port.not.selected"),
                         APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
 
@@ -535,10 +528,7 @@ public class MainWindow extends JFrame implements
                     new StringSelection(driverNameBox.getText()), null);
 
         } else if (source == fokBacklashCalButton) {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Procedere? Attenzione: il focheggiatore verrà mosso, assicurarsi che " +
-                            "questo non interrompa eventuali sessioni osservative. " +
-                            "Inoltre, è molto importante che i limiti del focheggiatore siano ben impostati.",
+            if (JOptionPane.showConfirmDialog(this, i18n("backlash.cal.warning"),
                     APP_NAME, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
                 new BacklashCalibrationWindow(this);
             }
@@ -592,7 +582,7 @@ public class MainWindow extends JFrame implements
                 Main.settings.save();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Impossibile salvare la configurazione!",
+                JOptionPane.showMessageDialog(this, i18n("error.saving"),
                         APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
 
@@ -662,12 +652,12 @@ public class MainWindow extends JFrame implements
 
     private void valueOutOfLimits(Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Valore fuori dai limiti o non valido.", APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.invalid"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     private void connectionErr(ConnectionException e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Errore di connessione!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.connection"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     private void updateSlidersLimit() {
@@ -717,10 +707,10 @@ public class MainWindow extends JFrame implements
     private void startOrStopINDI(boolean forceRestart) {
         if (Main.settings.getExternalControl() == INDI) {
             Main.indiServerCreator.start(Main.settings.getIndiServerPort(), forceRestart);
-            indiStatusLabel.setText("Server avviato");
+            indiStatusLabel.setText(i18n("server.active"));
         } else {
             Main.indiServerCreator.stop();
-            indiStatusLabel.setText("Server non attivo");
+            indiStatusLabel.setText(i18n("server.inactive"));
         }
     }
 
@@ -737,14 +727,14 @@ public class MainWindow extends JFrame implements
                     Main.ascomFocuserBridge = new ASCOMFocuserBridge(Main.settings.getAscomBridgePort());
                     Main.ascomFocuserBridge.connect();
                 }
-                ascomStatusLabel.setText("Ponte attivo");
+                ascomStatusLabel.setText(i18n("bridge.active"));
             } else {
                 if (Main.isAscomRunning()) Main.ascomFocuserBridge.close();
-                ascomStatusLabel.setText("Ponte non attivo");
+                ascomStatusLabel.setText(i18n("bridge.inactive"));
             }
         } catch (ConnectionException e) {
             onCriticalError(e);
-            ascomStatusLabel.setText("Errore!");
+            ascomStatusLabel.setText(i18n("error"));
         }
     }
 
@@ -903,7 +893,7 @@ public class MainWindow extends JFrame implements
                     timeout.setVisible(false);
                     err.setVisible(false);
                     if (Main.focuser.isPowerBox()) {
-                        tabPane.insertTab("Power box", POWERBOX_TAB, powerBoxTab, "", 1);
+                        tabPane.insertTab(i18n("powerbox.tab"), POWERBOX_TAB, powerBoxTab, "", 1);
                         PowerBox powerBox = Main.focuser.getPowerBox();
                         powerBoxTable.setPowerBox(powerBox);
                         boolean supportsAutoModes = powerBox.supportsAutoModes();
@@ -914,7 +904,7 @@ public class MainWindow extends JFrame implements
                             powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
                         }
                         if (powerBox.supportsAmbient()) {
-                            tabPane.insertTab("Sensori", AMBIENT_TAB, ambientTab, "", 2);
+                            tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", 2);
                             powerBoxLatSpinner.setValue(powerBox.getLatitude());
                             powerBoxLongSpinner.setValue(powerBox.getLongitude());
                             powerBoxConfigPanel.setVisible(true);
@@ -946,10 +936,10 @@ public class MainWindow extends JFrame implements
                     if (Main.isAscomRunning()) {
                         try {
                             Main.ascomFocuserBridge.close();
-                            ascomStatusLabel.setText("Ponte non attivo");
+                            ascomStatusLabel.setText(i18n("bridge.inactive"));
                         } catch (ConnectionException ex) {
                             onCriticalError(ex);
-                            ascomStatusLabel.setText("Errore!");
+                            ascomStatusLabel.setText(i18n("error"));
                         }
                     }
                     powerBoxConfigPanel.setVisible(false);
@@ -985,7 +975,7 @@ public class MainWindow extends JFrame implements
     public void onCriticalError(Exception e) {
         e.printStackTrace();
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainWindow.this,
-                "Errore inaspettato!", APP_NAME, JOptionPane.ERROR_MESSAGE));
+                i18n("error.unexpected"), APP_NAME, JOptionPane.ERROR_MESSAGE));
     }
 
     @Override
@@ -1041,6 +1031,6 @@ public class MainWindow extends JFrame implements
         ascomBridgeRadio.setSelected(value == ASCOM);
         disableExtControlRadio.setSelected(value == NONE);
         indiServerRadio.setSelected(value == INDI);
-        indiStatusLabel.setText(Main.indiServerCreator.isRunning() ? "Server avviato" : "Server non attivo");
+        indiStatusLabel.setText(Main.indiServerCreator.isRunning() ? i18n("server.active") : i18n("server.inactive"));
     }
 }

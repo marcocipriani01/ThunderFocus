@@ -7,6 +7,7 @@ import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import marcocipriani01.thunderfocus.indi.INDIServerCreator;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.io.IOException;
 import java.net.*;
@@ -16,18 +17,20 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 public class Main {
 
-    public static final String APP_NAME = "ThunderFocus";
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(
             Main.class.getResource("/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final ThunderFocuser focuser = new ThunderFocuser();
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
     public static final OperatingSystem OPERATING_SYSTEM = getOperatingSystem();
     public static final Settings settings = Settings.load();
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("marcocipriani01.thunderfocus.lang");
+    public static final String APP_NAME = i18n("app.name");
     public static ASCOMFocuserBridge ascomFocuserBridge;
     private static Path pidLock;
 
@@ -48,7 +51,7 @@ public class Main {
                 try {
                     Optional<ProcessHandle> processHandle = ProcessHandle.of(Long.parseLong(Files.readString(pidLock).replace("\n", "").trim()));
                     if (processHandle.isPresent() && processHandle.get().isAlive()) {
-                        JOptionPane.showMessageDialog(null, APP_NAME + " è già in esecuzione!",
+                        JOptionPane.showMessageDialog(null, APP_NAME + i18n("is.already.running"),
                                 APP_NAME, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -60,6 +63,10 @@ public class Main {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(MainWindow::new);
+    }
+
+    public static String i18n(String id) {
+        return resourceBundle.getString(id);
     }
 
     private static OperatingSystem getOperatingSystem() {
@@ -127,15 +134,15 @@ public class Main {
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(frame,
-                    "Errore durante l'apertura del browser!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                    i18n("browser.error"), APP_NAME, JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public static void openBrowser(URI uri, JFrame frame) {
+    public static void openBrowser(HyperlinkEvent uri, JFrame frame) {
         Desktop desktop;
         try {
             if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
-                desktop.browse(uri);
+                desktop.browse(uri.getURL().toURI());
             } else if (System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH).contains("nux")) {
                 Runtime.getRuntime().exec("xdg-open " + uri.toString());
             } else {
@@ -144,7 +151,7 @@ public class Main {
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(frame,
-                    "Errore durante l'apertura del browser!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+                    i18n("browser.error"), APP_NAME, JOptionPane.ERROR_MESSAGE);
         }
     }
 

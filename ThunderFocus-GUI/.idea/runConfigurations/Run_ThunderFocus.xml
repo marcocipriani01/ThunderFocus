@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run ThunderFocus" type="JarApplication" activateToolWindowBeforeRun="false" singleton="true">
     <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/ThunderFocus_jar/ThunderFocus.jar" />
+    <option name="VM_PARAMETERS" value="-Duser.language=en -Duser.country=US -Duser.variant=US" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="BuildArtifacts" enabled="true">

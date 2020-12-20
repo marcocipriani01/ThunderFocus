@@ -1,8 +1,8 @@
 <img width="100" src="Resources/ThunderFocus.png" style="margin-bottom: 8px" alt="ThunderFocus logo">
 
-# ThunderFocus by Marco Cipriani
+# ThunderFocus
 
-ThunderFocus is an open-source telescope focuser. It has its own contorl software written in Java and can be integrated into an [INDI](https://indilib.org/) server.
+ThunderFocus is an open-source telescope focuser developed by Marco Cipriani. It has its own contorl software written in Java, can be integrated into an [INDI](https://indilib.org/) server and has an ASCOM driver. The source code is available on [GitHub](https://github.com/marcocipriani01/ThunderFocus) and is issued under the [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html). By using this software, you accept all the terms of its license.
 
 ## Used libraries
 

@@ -15,8 +15,8 @@
         <properties>
           <enabled value="false"/>
           <font style="1"/>
-          <text value="Accetta"/>
-          <toolTipText value="Salva i dati della calibrazione."/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="accept"/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="accept.backlash.tooltip"/>
         </properties>
       </component>
       <component id="5723f" class="javax.swing.JButton" binding="cancelButton">
@@ -25,8 +25,8 @@
         </constraints>
         <properties>
           <focusable value="false"/>
-          <text value="Annulla"/>
-          <toolTipText value="Annulla calibrazione."/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="cancel"/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="cancel.backlash.tooltip"/>
         </properties>
       </component>
       <hspacer id="103cf">
@@ -53,8 +53,8 @@
               <font size="22"/>
               <horizontalTextPosition value="2"/>
               <icon value="marcocipriani01/thunderfocus/res/right.png"/>
-              <text value="Un passo"/>
-              <toolTipText value="Fai un passo solo."/>
+              <text resource-bundle="marcocipriani01/thunderfocus/lang" key="one.step"/>
+              <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="one.step.tooltip"/>
             </properties>
           </component>
           <component id="4b1c1" class="javax.swing.JSpinner" binding="relMovSpinner" custom-create="true">
@@ -64,7 +64,7 @@
             <properties>
               <enabled value="false"/>
               <font size="24"/>
-              <toolTipText value="Numero passi."/>
+              <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="backlash.spinner.tooltip"/>
             </properties>
           </component>
           <component id="2a6cd" class="javax.swing.JButton" binding="relMovButton">
@@ -76,7 +76,7 @@
               <font size="22"/>
               <horizontalTextPosition value="2"/>
               <icon value="marcocipriani01/thunderfocus/res/right.png"/>
-              <toolTipText value="Muovi."/>
+              <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="move.tooltip"/>
             </properties>
           </component>
         </children>
@@ -88,8 +88,7 @@
         <properties>
           <horizontalAlignment value="0"/>
           <icon value="marcocipriani01/thunderfocus/res/loading.gif"/>
-          <text value=""/>
-          <toolTipText value="Caricamento..."/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="loading"/>
         </properties>
       </component>
       <component id="f582e" class="javax.swing.JLabel">
@@ -97,7 +96,7 @@
           <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="&lt;html&gt;&#10;&lt;h2&gt;Calibrazione backlash&lt;/h2&gt;&#10;Il motore verrà inizialmente mosso tutto in una direzione. Per effettuare la calibrazione, muovere il focheggiatore di un passo alla volta (o fare spostamenti più grandi se ne si è sicuri) e salvare non appena si vede il focheggiatore muoversi. Evitare di superare il punto giusto, in quanto potrebbe alterare la precisione del sistema. Si consiglia di arrotondare sempre per difetto il risultato ed eventualmente aggiustarlo nel pannello di configurazione.&#10;&lt;/html&gt;"/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="backlash.guide"/>
         </properties>
       </component>
       <component id="95b87" class="javax.swing.JLabel" binding="counterLabel">
@@ -111,7 +110,7 @@
           <horizontalAlignment value="0"/>
           <horizontalTextPosition value="0"/>
           <text value="0"/>
-          <toolTipText value="Numero di passi di backlash."/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="backlash.count.tooltip"/>
           <visible value="false"/>
         </properties>
       </component>

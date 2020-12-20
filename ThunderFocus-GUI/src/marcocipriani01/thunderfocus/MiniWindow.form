@@ -17,8 +17,8 @@
         </constraints>
         <properties>
           <icon value="marcocipriani01/thunderfocus/res/go-neg.png"/>
-          <text value="In"/>
-          <toolTipText value="Movimento relativo all'indietro."/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="in1"/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="fok.in.tooltip"/>
         </properties>
       </component>
       <component id="757bb" class="javax.swing.JTextField" binding="field">
@@ -44,8 +44,8 @@
         <properties>
           <horizontalTextPosition value="2"/>
           <icon value="marcocipriani01/thunderfocus/res/go.png"/>
-          <text value="Out"/>
-          <toolTipText value="Movimento relativo in avanti."/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="out"/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="fok.out.tooltip"/>
         </properties>
       </component>
       <component id="2a1b3" class="javax.swing.JLabel">
@@ -54,7 +54,7 @@
         </constraints>
         <properties>
           <font size="14"/>
-          <text value="passi"/>
+          <text resource-bundle="marcocipriani01/thunderfocus/lang" key="steps"/>
         </properties>
       </component>
     </children>

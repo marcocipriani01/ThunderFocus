@@ -14,12 +14,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import static marcocipriani01.thunderfocus.Main.i18n;
+
 /**
  * Stores all the app's settings.
  *
  * @author marcocipriani01
- * @version 1.0
+ * @version 1.1
  */
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class Settings {
 
     /**
@@ -33,7 +36,7 @@ public class Settings {
 
     @SerializedName("Theme")
     @Expose
-    private int theme = 0;
+    private Theme theme = Theme.LIGHT;
     @SerializedName("Serial port")
     @Expose
     private String serialPort = "";
@@ -46,9 +49,9 @@ public class Settings {
     @SerializedName("ASCOM port")
     @Expose
     private int ascomBridgePort = 5001;
-    @SerializedName("Show IP for INDI server")
+    @SerializedName("INDI connection mode")
     @Expose
-    private boolean showRemoteIndi = false;
+    private INDIConnectionMode indiConnectionMode = INDIConnectionMode.LOCAL;
     @SerializedName("Focuser ticks count")
     @Expose
     private int fokTicksCount = 70;
@@ -132,13 +135,13 @@ public class Settings {
         listeners.remove(listener);
     }
 
-    public int getTheme() {
+    public Theme getTheme() {
         return theme;
     }
 
-    public void setTheme(int theme, SettingsListener caller) {
+    public void setTheme(Theme theme, SettingsListener caller) {
         this.theme = theme;
-        update(Value.THEME, caller, theme);
+        update(caller, theme);
     }
 
     public String getSerialPort() {
@@ -179,13 +182,13 @@ public class Settings {
         update(Value.ASCOM_PORT, caller, ascomBridgePort);
     }
 
-    public boolean getShowRemoteIndi() {
-        return showRemoteIndi;
+    public INDIConnectionMode getIndiConnectionMode() {
+        return indiConnectionMode;
     }
 
-    public void setShowRemoteIndi(boolean showRemoteIndi, SettingsListener caller) {
-        this.showRemoteIndi = showRemoteIndi;
-        update(Value.SHOW_REMOTE_INDI, caller, showRemoteIndi);
+    public void setIndiConnectionMode(INDIConnectionMode indiConnectionMode, SettingsListener caller) {
+        this.indiConnectionMode = indiConnectionMode;
+        update(caller, indiConnectionMode);
     }
 
     public PowerBox getPowerBox() {
@@ -228,36 +231,80 @@ public class Settings {
         update(Value.FOK_MAX_TRAVEL, caller, fokMaxTravel);
     }
 
-    void update(Value what, SettingsListener notMe, int value) {
+    private void update(Value what, SettingsListener notMe, int value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
         }
     }
 
-    void update(Value what, SettingsListener notMe, String value) {
+    private void update(SettingsListener notMe, Theme value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.updateSetting(value);
+        }
+    }
+
+    private void update(SettingsListener notMe, INDIConnectionMode value) {
+        for (SettingsListener l : listeners) {
+            if (l != notMe) l.updateSetting(value);
+        }
+    }
+
+    private void update(Value what, SettingsListener notMe, String value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
         }
     }
 
-    void update(Value what, SettingsListener notMe, boolean value) {
+    private void update(Value what, SettingsListener notMe, boolean value) {
         for (SettingsListener l : listeners) {
             if (l != notMe) l.updateSetting(what, value);
+        }
+    }
+
+    public enum Theme {
+        LIGHT(i18n("light")),
+        DARK(i18n("dark")),
+        SYSTEM(i18n("system.theme"));
+
+        private final String name;
+
+        Theme(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    public enum INDIConnectionMode {
+        LOCAL(i18n("local")),
+        REMOTE(i18n("remote"));
+
+        private final String name;
+
+        INDIConnectionMode(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
     public enum Value {
-        THEME, SERIAL_PORT, SHOW_REMOTE_INDI, INDI_PORT,
-        FOK_TICKS_COUNT, FOK_MAX_TRAVEL, AUTO_CONNECT, ASCOM_PORT
+        SERIAL_PORT, INDI_PORT, FOK_TICKS_COUNT, FOK_MAX_TRAVEL, AUTO_CONNECT, ASCOM_PORT
     }
 
     public enum Units {
-        TICKS("Tacche"),
-        uMETERS("Micrometri"),
-        MILLIMETERS("Millimetri"),
-        TENTH_OF_MILLIMETERS("Decimi di mm"),
-        CENTIMETERS("Centimetri"),
-        DEGREES("Gradi");
+        TICKS(i18n("ticks")),
+        uMETERS(i18n("micrometers")),
+        MILLIMETERS(i18n("millimeters")),
+        TENTHS_OF_MILLIMETERS("tenths.of.millimeter"),
+        CENTIMETERS(i18n("centimeters")),
+        DEGREES(i18n("degrees"));
 
         private final String name;
 
@@ -276,16 +323,20 @@ public class Settings {
     }
 
     public interface SettingsListener {
-        void updateSetting(Value what, int value);
+        default void updateSetting(Value what, int value) {}
 
-        void updateSetting(Value what, String value);
+        default void updateSetting(Value what, String value) {}
 
-        void updateSetting(Value what, boolean value);
+        default void updateSetting(Value what, boolean value) {}
 
-        void updateSetting(Units value);
+        default void updateSetting(Theme value) {}
 
-        void updateSetting(PowerBox value);
+        default void updateSetting(INDIConnectionMode value) {}
 
-        void updateSetting(ExternalControl value);
+        default void updateSetting(Units value) {}
+
+        default void updateSetting(PowerBox value) {}
+
+        default void updateSetting(ExternalControl value) {}
     }
 }

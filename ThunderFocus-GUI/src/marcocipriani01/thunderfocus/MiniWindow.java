@@ -9,8 +9,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import static marcocipriani01.thunderfocus.Main.APP_LOGO;
-import static marcocipriani01.thunderfocus.Main.APP_NAME;
+import static marcocipriani01.thunderfocus.Main.*;
 
 public abstract class MiniWindow extends JFrame implements KeyListener {
 
@@ -64,12 +63,12 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
 
     private void valueOutOfLimits(Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Valore fuori dai limiti o non valido.", APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.invalid"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     private void connectionErr(ConnectionException e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Errore di connessione!", APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.connection"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

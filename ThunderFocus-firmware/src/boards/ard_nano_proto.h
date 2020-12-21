@@ -65,10 +65,10 @@
 #define AUTOMATIC_DEVMAN_THRESHOLD 20
 
 // ---------- Ambient sensors ----------
-#define TEMP_HUM_SENSOR false
-#define DHT22_PIN 99
+#define TEMP_HUM_SENSOR true
+#define DHT22_PIN 14
 #define SENSORS_DELAY 10000
-#define SENSORS_DATAPOINTS 12
+#define SENSORS_DATAPOINTS 6
 
 // ---------- Time ----------
 #define TIME_CONTROL false

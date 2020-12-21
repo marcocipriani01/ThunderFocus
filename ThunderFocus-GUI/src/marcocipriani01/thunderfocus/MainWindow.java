@@ -29,7 +29,6 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 
 import static marcocipriani01.thunderfocus.Main.APP_NAME;
@@ -71,7 +70,7 @@ public class MainWindow extends JFrame implements
     private JLabel focuserStateLabel;
     private JLabel err;
     private JLabel ok;
-    private JComboBox<String> appThemeCombo;
+    private JComboBox<Settings.Theme> appThemeCombo;
     private JSpinner fokTicksCountSpinner;
     private JSpinner fokMaxTravelSpinner;
     private JComboBox<Settings.Units> fokUnitsCombo;
@@ -85,7 +84,7 @@ public class MainWindow extends JFrame implements
     private JButton saveConfigButton;
     private JSpinner indiPortSpinner;
     private JTextField driverNameBox;
-    private JComboBox<String> localOrRemoteCombo;
+    private JComboBox<Settings.INDIConnectionMode> localOrRemoteCombo;
     private JButton copyIndiDriverNameButton;
     private JLabel timeout;
     private JTextPane infoPane;
@@ -106,6 +105,7 @@ public class MainWindow extends JFrame implements
     private JTextField sunElevationField;
     private JLabel powerBoxAutoModeLabel;
     private JLabel sunElevationLabel;
+    @SuppressWarnings("unused")
     private ChartPanel timeSensorsChart;
     private JButton cleanGraphButton;
     private JLabel ascomStatusLabel;
@@ -170,10 +170,10 @@ public class MainWindow extends JFrame implements
         posSlider.addFocusListener(this);
         ticksPosSlider.addFocusListener(this);
         updateUnitsLabel();
-        localOrRemoteCombo.setSelectedIndex(Main.settings.getShowRemoteIndi() ? 1 : 0);
+        localOrRemoteCombo.setSelectedItem(Main.settings.getIndiConnectionMode());
         localOrRemoteCombo.addItemListener(e -> refreshDriverName());
         refreshDriverName();
-        appThemeCombo.setSelectedIndex(Main.settings.getTheme());
+        appThemeCombo.setSelectedItem(Main.settings.getTheme());
         Settings.ExternalControl externalControl = Main.settings.getExternalControl();
         ascomBridgeRadio.setSelected(externalControl == ASCOM);
         disableExtControlRadio.setSelected(externalControl == NONE);
@@ -298,6 +298,8 @@ public class MainWindow extends JFrame implements
     }
 
     private void createUIComponents() {
+        appThemeCombo = new JComboBox<>(Settings.Theme.values());
+        localOrRemoteCombo = new JComboBox<>(Settings.INDIConnectionMode.values());
         indiPortSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.settings.getIndiServerPort(), 1024, 99999, 1));
         ascomPortSpinner = new JSpinner(new SpinnerNumberModel(
@@ -406,7 +408,7 @@ public class MainWindow extends JFrame implements
                     }
                 });
                 tray.add(trayIcon);
-                trayIcon.displayMessage(APP_NAME, "Ponte ASCOM in background.", TrayIcon.MessageType.INFO);
+                trayIcon.displayMessage(APP_NAME, i18n("ascom.background"), TrayIcon.MessageType.INFO);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -534,7 +536,7 @@ public class MainWindow extends JFrame implements
             }
 
         } else if (source == saveConfigButton) {
-            Main.settings.setTheme(appThemeCombo.getSelectedIndex(), this);
+            Main.settings.setTheme((Settings.Theme) appThemeCombo.getSelectedItem(), this);
             if (indiServerRadio.isSelected()) {
                 Main.settings.setExternalControl(INDI, this);
             } else if (ascomBridgeRadio.isSelected()) {
@@ -543,7 +545,7 @@ public class MainWindow extends JFrame implements
                 Main.settings.setExternalControl(NONE, this);
             }
             Main.settings.setAutoConnect(autoConnectBox.isSelected(), this);
-            Main.settings.setShowRemoteIndi(localOrRemoteCombo.getSelectedIndex() == 1, this);
+            Main.settings.setIndiConnectionMode((Settings.INDIConnectionMode) localOrRemoteCombo.getSelectedItem(), this);
             int oldIndiPort = Main.settings.getIndiServerPort();
             Main.settings.setIndiServerPort((int) indiPortSpinner.getValue(), this);
             int oldAscomPort = Main.settings.getAscomBridgePort();
@@ -982,7 +984,6 @@ public class MainWindow extends JFrame implements
     public void updateSetting(Settings.Value what, int value) {
         SwingUtilities.invokeLater(() -> {
             switch (what) {
-                case THEME -> appThemeCombo.setSelectedIndex(value);
                 case INDI_PORT -> indiPortSpinner.setValue(value);
                 case FOK_TICKS_COUNT -> {
                     fokTicksCountSpinner.setValue(value);
@@ -997,6 +998,16 @@ public class MainWindow extends JFrame implements
     }
 
     @Override
+    public void updateSetting(Settings.Theme value) {
+        SwingUtilities.invokeLater(() -> appThemeCombo.setSelectedItem(value));
+    }
+
+    @Override
+    public void updateSetting(Settings.INDIConnectionMode value) {
+        SwingUtilities.invokeLater(() -> localOrRemoteCombo.setSelectedItem(value));
+    }
+
+    @Override
     public void updateSetting(Settings.Value what, String value) {
         if (what == Settings.Value.SERIAL_PORT) {
             SwingUtilities.invokeLater(() -> serialPortComboBox.setSelectedItem(value));
@@ -1005,12 +1016,7 @@ public class MainWindow extends JFrame implements
 
     @Override
     public void updateSetting(Settings.Value what, boolean value) {
-        SwingUtilities.invokeLater(() -> {
-            switch (what) {
-                case SHOW_REMOTE_INDI -> localOrRemoteCombo.setSelectedItem(value ? 1 : 0);
-                case AUTO_CONNECT -> autoConnectBox.setSelected(value);
-            }
-        });
+        if (what == Settings.Value.AUTO_CONNECT) SwingUtilities.invokeLater(() -> autoConnectBox.setSelected(value));
     }
 
     @Override
@@ -1019,11 +1025,6 @@ public class MainWindow extends JFrame implements
             fokUnitsCombo.setSelectedItem(value);
             updateUnitsLabel();
         });
-    }
-
-    @Override
-    public void updateSetting(PowerBox value) {
-
     }
 
     @Override

@@ -1,18 +1,23 @@
 package marcocipriani01.thunderfocus.board;
 
-import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.simplesocket.ConnectionException;
+import marcocipriani01.thunderfocus.Main;
 import marcocipriani01.thunderfocus.io.SerialMessageListener;
 import marcocipriani01.thunderfocus.io.SerialPortImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static marcocipriani01.thunderfocus.Main.i18n;
+
+@SuppressWarnings("unused")
 public class ThunderFocuser implements SerialMessageListener {
 
-    private SerialPortImpl serialPort = new SerialPortImpl();
     private final ArrayList<Listener> listeners = new ArrayList<>();
+    private SerialPortImpl serialPort = new SerialPortImpl();
     private String version = "<?>";
     private PowerBox powerBox = null;
     private volatile int timerCount = 0;
@@ -149,7 +154,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     @Override
-    public synchronized void onPortMessage(String msg) {
+    public final synchronized void onPortMessage(String msg) {
         char c;
         String param;
         try {
@@ -280,7 +285,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     @Override
-    public void onPortError(Exception e) {
+    public final void onPortError(Exception e) {
         updConnSate(ConnState.ERROR);
         e.printStackTrace();
     }
@@ -335,10 +340,10 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public enum ConnState {
-        DISCONNECTED("disconnesso"),
-        CONNECTED_READY("connesso"),
-        TIMEOUT("timeout"),
-        ERROR("errore");
+        DISCONNECTED(i18n("disconnected")),
+        CONNECTED_READY(i18n("connected")),
+        TIMEOUT(i18n("timeout")),
+        ERROR(i18n("error.lowercase"));
 
         private final String label;
 
@@ -352,10 +357,10 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public enum FocuserState {
-        MOVING("movimento"),
-        HOLD_MOTOR("fermo"),
-        POWER_SAVE("risparmio energetico"),
-        NONE("-");
+        MOVING(i18n("moving")),
+        HOLD_MOTOR(i18n("not.moving")),
+        POWER_SAVE(i18n("power.saving")),
+        NONE(i18n("none"));
 
         private final String label;
 
@@ -437,6 +442,7 @@ public class ThunderFocuser implements SerialMessageListener {
             this.paramsCount = 0;
         }
 
+        @SuppressWarnings("SameParameterValue")
         Commands(char id, int paramsCount, ParamValidator validator) {
             this.id = id;
             this.validator = validator;
@@ -470,7 +476,6 @@ public class ThunderFocuser implements SerialMessageListener {
 
         private interface ParamValidator {
             boolean validate(ThunderFocuser f, int[] params);
-
         }
 
         private interface OnDone {
@@ -487,7 +492,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
         void updateParam(Parameters p);
 
-        void onCriticalError(Exception e);
+        default void onCriticalError(Exception e) {}
     }
 
     public static class InvalidParamException extends Exception {

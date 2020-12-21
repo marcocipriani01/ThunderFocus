@@ -31,7 +31,7 @@
           <font size="14"/>
           <horizontalAlignment value="0"/>
           <text value="10"/>
-          <toolTipText value="Movimento relativo in passi."/>
+          <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="rel.move.tooltip"/>
         </properties>
       </component>
       <component id="fce9f" class="javax.swing.JButton" binding="right">

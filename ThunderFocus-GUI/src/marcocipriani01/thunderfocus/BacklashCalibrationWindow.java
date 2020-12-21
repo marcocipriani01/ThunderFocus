@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static marcocipriani01.thunderfocus.Main.APP_LOGO;
+import static marcocipriani01.thunderfocus.Main.i18n;
 
 public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser.Listener {
 
@@ -94,12 +95,12 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
 
     private void valueOutOfLimits(Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Valore fuori dai limiti o non valido.", Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.invalid"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     private void connectionErr(ConnectionException e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Errore di connessione!", Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, i18n("error.connection"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

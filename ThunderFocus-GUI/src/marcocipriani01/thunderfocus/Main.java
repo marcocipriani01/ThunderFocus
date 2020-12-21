@@ -23,13 +23,13 @@ import java.util.jar.Manifest;
 
 public class Main {
 
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("marcocipriani01.thunderfocus.lang");
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(
             Main.class.getResource("/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final ThunderFocuser focuser = new ThunderFocuser();
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
     public static final OperatingSystem OPERATING_SYSTEM = getOperatingSystem();
     public static final Settings settings = Settings.load();
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("marcocipriani01.thunderfocus.lang");
     public static final String APP_NAME = i18n("app.name");
     public static ASCOMFocuserBridge ascomFocuserBridge;
     private static Path pidLock;
@@ -37,9 +37,9 @@ public class Main {
     public static void main(String[] args) {
         try {
             switch (settings.getTheme()) {
-                case 0 -> FlatLightLaf.install();
-                case 1 -> FlatDarkLaf.install();
-                case 2 -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                case LIGHT -> FlatLightLaf.install();
+                case DARK -> FlatDarkLaf.install();
+                case SYSTEM -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,6 +6,8 @@ import marcocipriani01.thunderfocus.board.ThunderFocuser;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import static marcocipriani01.thunderfocus.Main.i18n;
+
 public class ASCOMFocuserBridge extends SimpleServer {
 
     public ASCOMFocuserBridge(int port) {
@@ -40,7 +42,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
                 case "DriverInfo" -> {
                     String gui = Main.getAppVersion();
                     if (gui == null) gui = "<?>";
-                    println(Main.APP_NAME + " v" + gui + ", scheda v" + Main.focuser.getVersion());
+                    println(Main.APP_NAME + " v" + gui + ", " + i18n("board") + " v" + Main.focuser.getVersion());
                 }
                 case "Version" -> {
                     String gui = Main.getAppVersion();

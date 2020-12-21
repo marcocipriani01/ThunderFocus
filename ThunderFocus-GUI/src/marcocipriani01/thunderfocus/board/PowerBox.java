@@ -15,6 +15,7 @@ import static marcocipriani01.thunderfocus.Main.i18n;
  * @version 2.0
  * @see ArduinoPin
  */
+@SuppressWarnings("unused")
 public class PowerBox {
 
     public static final double ABSOLUTE_ZERO = -273.0;
@@ -142,6 +143,7 @@ public class PowerBox {
         return supportsTime;
     }
 
+    @SuppressWarnings("SameParameterValue")
     void setSupportsTime(boolean supportsTime) {
         this.supportsTime = supportsTime;
     }
@@ -221,14 +223,6 @@ public class PowerBox {
         return null;
     }
 
-    /**
-     * @return an array containing all the pins of this list.
-     */
-    public ArduinoPin[] toArray() {
-        Object[] array = pins.toArray();
-        return Arrays.copyOf(array, array.length, ArduinoPin[].class);
-    }
-
     void remove(ArduinoPin pin) {
         for (int i = 0; i < pins.size(); i++) {
             if (pins.get(i).getNumber() == pin.getNumber()) {
@@ -281,27 +275,23 @@ public class PowerBox {
 
     public enum AutoModes {
         NIGHT_ASTRONOMICAL(i18n("night.astronomical")),
-        NIGHT_CIVIL("Crepuscolo civile"),
-        DAYTIME("Giorno"),
-        DEW_POINT_DIFF1("Punto di rugiada Δ=1"),
-        DEW_POINT_DIFF2("Punto di rugiada Δ=2"),
-        DEW_POINT_DIFF3("Punto di rugiada Δ=3"),
-        DEW_POINT_DIFF5("Punto di rugiada Δ=5"),
-        DEW_POINT_DIFF7("Punto di rugiada Δ=7"),
-        HUMIDITY_90("Umidità 90%"),
-        HUMIDITY_80("Umidità 80%"),
-        HUMIDITY_70("Umidità 70%"),
-        TEMP_FREEZE("Congelamento"),
-        UNAVAILABLE("Non disponibile");
+        NIGHT_CIVIL(i18n("night.civil")),
+        DAYTIME(i18n("day")),
+        DEW_POINT_DIFF1(i18n("dew.point.delta") + "1"),
+        DEW_POINT_DIFF2(i18n("dew.point.delta") + "2"),
+        DEW_POINT_DIFF3(i18n("dew.point.delta") + "3"),
+        DEW_POINT_DIFF5(i18n("dew.point.delta") + "5"),
+        DEW_POINT_DIFF7(i18n("dew.point.delta") + "7"),
+        HUMIDITY_90(i18n("humidity") + " >90%"),
+        HUMIDITY_80(i18n("humidity") + " >80%"),
+        HUMIDITY_70(i18n("humidity") + " >70%"),
+        TEMP_FREEZE(i18n("cold")),
+        UNAVAILABLE(i18n("not.available"));
 
         private final String label;
 
         AutoModes(String label) {
             this.label = label;
-        }
-
-        public static int count() {
-            return values().length;
         }
 
         @Override

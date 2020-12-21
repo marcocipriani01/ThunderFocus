@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 
+import static marcocipriani01.thunderfocus.Main.i18n;
+
 /**
  * JTable for viewing, editing and rendering {@link ArduinoPin} objects.
  *
@@ -16,7 +18,7 @@ import java.awt.*;
 public class JPowerBoxTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 45;
-    private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer(255, 0);
+    private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer();
     private PowerBox powerBox = null;
 
     /**
@@ -116,16 +118,16 @@ public class JPowerBoxTable extends JTable {
         public String getColumnName(int col) {
             switch (col) {
                 case 0 -> {
-                    return "Nome";
+                    return i18n("name");
                 }
                 case 1 -> {
-                    return "Numero";
+                    return i18n("number");
                 }
                 case 2 -> {
-                    return "Valore";
+                    return i18n("value");
                 }
                 case 3 -> {
-                    return "Auto";
+                    return i18n("auto");
                 }
             }
             return "";
@@ -228,18 +230,15 @@ public class JPowerBoxTable extends JTable {
 
         /**
          * Creates the slider.
-         *
-         * @param max   the maximum value.
-         * @param value an initial value.
          */
-        SliderEditorAndRenderer(int max, int value) {
+        SliderEditorAndRenderer() {
             super();
-            editorSlider = new JSlider(JSlider.HORIZONTAL, 0, max, value);
+            editorSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
             editorSlider.setMajorTickSpacing(15);
             editorSlider.setMinorTickSpacing(5);
             editorSlider.setPaintTicks(true);
             editorSlider.setSnapToTicks(true);
-            rendererSlider = new JSlider(JSlider.HORIZONTAL, 0, max, value);
+            rendererSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
         }
 
         @Override

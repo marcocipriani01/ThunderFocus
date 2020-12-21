@@ -24,7 +24,8 @@ import java.util.HashMap;
  * @author marcocipriani01
  * @version 4.0
  */
-public class INDIThunderFocuserDriver extends INDIFocuserDriver implements ThunderFocuser.Listener, Settings.SettingsListener {
+public class INDIThunderFocuserDriver extends INDIFocuserDriver
+        implements ThunderFocuser.Listener, Settings.SettingsListener {
 
     public static final String DRIVER_NAME = "ThunderFocus";
     public static final String CONNECTION_GROUP = "Connection";
@@ -79,7 +80,8 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
      */
     private INDINumberProperty pwmPinsProp;
     /**
-     * Map that bins all the INDI elements of {@link #digitalPinProps} and {@link #pwmPinsProp} to their correspondent pins.
+     * Map that bins all the INDI elements of {@link #digitalPinProps} and
+     * {@link #pwmPinsProp} to their correspondent pins.
      */
     private HashMap<INDIElement, ArduinoPin> pinsMap;
     private boolean focusRelDirection = false;
@@ -622,25 +624,5 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver implements Thund
             serialPortFieldElem.setValue(value);
             updateProperty(serialPortFieldProp);
         }
-    }
-
-    @Override
-    public void updateSetting(Settings.Value what, boolean value) {
-
-    }
-
-    @Override
-    public void updateSetting(Settings.Units value) {
-
-    }
-
-    @Override
-    public void updateSetting(PowerBox value) {
-
-    }
-
-    @Override
-    public void updateSetting(Settings.ExternalControl value) {
-
     }
 }

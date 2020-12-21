@@ -69,6 +69,7 @@ public class ArduinoPin {
         name = other.name;
         number = other.number;
         autoModeEn = other.autoModeEn;
+        isPwm = other.isPwm;
     }
 
     private static int constrain(int n) {

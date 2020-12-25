@@ -37,6 +37,36 @@ The user interface is platform-independent and works seamless across computers a
 
 I really appreciate help, feel free to fork, open issues, start pull requests...
 
+## Installing the software
+
+### Windows x64
+
+Get [the latest release](https://github.com/marcocipriani01/ThunderFocus/releases) and install it. You're done!
+
+### Debian, Ubuntu and Raspberry Pi OS
+
+**Skip the Java installation if you already have it installed!**
+
+Install the latest Java Development Kit available, version 14 or greater. On Ubuntu:
+
+- `sudo apt update`
+- `sudo apt install openjdk-14-jdk`
+
+Raspberry Pi OS or Astroberry:
+
+- Download the latest [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) JRE or JDK (recommended: version 14, HotSpot JVM)
+- Run `sudo mkdir /usr/java/`
+- Extract the archive: `sudo tar -zxf AdoptOpenJDK.tar -C /usr/java/` (change the filename accordingly to what you downloaded)
+- Run `echo 'export PATH=$PATH:/usr/java/' | sudo tee -a /etc/profile`
+
+### macOS, Windows 32-bit and other Linux distros
+
+Install Java version 14 or greater depending on your OS and then use the `.jar` ThunderFocus release. Someday I will add a macOS installer...
+
+## Using the control software
+
+Coming soon...
+
 ## The electronics
 
 I created several circuits for ThunderFocus, all sharing more or less the same functionalities:
@@ -61,20 +91,13 @@ Building the board is an easy job, just add the components you see in the schema
 | C3       |  0.1uF electrolytic capacitor |
 | C4       |  47uF electrolytic capacitor  |
 | C5       |  100uF electrolytic capacitor |
-| CN1      |  2.1x5.5mm barrel plug socket |
-| CN2      |  2.1x5.5mm barrel plug socket |
-| CN3      |  2.1x5.5mm barrel plug socket |
-| CN4      |  2.1x5.5mm barrel plug socket |
+| CNx      |  2.1x5.5mm barrel plug socket |
 | D1       |          1N4004 diode         |
 | D2       |          1N4004 diode         |
 | DRV1     |     DRV8825 stepper driver    |
 | F1       |        5x20 fuse holder       |
 | IC1      |    LM7805 linear regulator    |
 | J2       |   RJ11/RJ12 female connector  |
-| JP1      |          2x pinheader         |
-| JP2      |          5x pinheader         |
-| JP3      |          4x pinheader         |
-| JP4      |          2x pinheader         |
 | K1       |           12V relay           |
 | LED1     |          5mm red LED          |
 | Q2       |    IRF540 N-channel MOSFET    |

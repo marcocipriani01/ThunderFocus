@@ -4,5 +4,5 @@ Maintainer: marcocipriani01
 Depends:
 Suggests: openjdk-14-jre
 Priority: optional
-Version: 2.3
+Version: 2.4
 Description: ThunderFocus for Debian.

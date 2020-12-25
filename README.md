@@ -86,7 +86,6 @@ Building the board is an easy job, just add the components you see in the schema
 | R4       |         4.7K resistor         |
 | R5       |          10K resistor         |
 | U1       |       Arduino Nano board      |
-|||
 
 ## 3D-printed brackets
 

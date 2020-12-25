@@ -7,7 +7,8 @@
 #define SERIAL_TIMEOUT 100
 #define THUNDERFOCUS_SEND_DELAY 150
 
-#include "boards/ard_nano_proto.h"
+#include "boards/arduino_nano_pcb.h"
+//#include "boards/arduino_nano_prototype.h"
 //#include "boards/teensy_max_pcb.h"
 
 // Config checks

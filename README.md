@@ -39,11 +39,62 @@ I really appreciate help, feel free to fork, open issues, start pull requests...
 
 ## The electronics
 
-I will be soon provide more info about building it. For the moment, you'll find the Eagle CAD files in the `Circuits/` folder. Make sure to enable the local libraries in each project.
+I created several circuits for ThunderFocus, all sharing more or less the same functionalities:
 
-## The motor and the 3D-printed bracket
+1. The prototype I use on my own telescope (not in this repository).
+2. A Teensy 4 "overkill" board, with RTC and dual focuser support, not yet implemented in software. The PCB also includes a flip-flap circuit for [my other project](https://github.com/marcocipriani01/ArduinoFlatBox).
+3. The **recommended Arduino Nano PCB**, which supports:
+   - One focuser (bipolar motor)
+   - Hand controller
+   - Two PWM outputs and one digital for dew heaters and telescope mount power (with relay) respectively.
+   - I2C RTC clock predisposition, to be implemented in software
+   - Protection against over-current and reverse polarity
 
-I will be soon provide more info about them. For the moment, you'll find one 3D bracket in the `Motor brackets/SkyWatcher Dual-Speed Crayford` folder.
+If you want to replicate this project, please build the third PCB. You can use the included CAM job to generate the gerber files and order them using services like [JLCPCB](https://jlcpcb.com/). The board is designed to be cut (following a line on the silkscreen) if you don't want the output controller: in this way, you can order 5 identical PCBs (the minimum on JLCPCB) and choose which one to cut and which not to. Maybe give the remaining boards to your friends and avoid wastes!
+
+Building the board is an easy job, just add the components you see in the schematics. For reference, here's the list of what you need:
+
+| Number   |      Component                |
+|----------|:-----------------------------:|
+| C1       |  100uF electrolytic capacitor |
+| C2       | 0.33uF electrolytic capacitor |
+| C3       |  0.1uF electrolytic capacitor |
+| C4       |  47uF electrolytic capacitor  |
+| C5       |  100uF electrolytic capacitor |
+| CN1      |  2.1x5.5mm barrel plug socket |
+| CN2      |  2.1x5.5mm barrel plug socket |
+| CN3      |  2.1x5.5mm barrel plug socket |
+| CN4      |  2.1x5.5mm barrel plug socket |
+| D1       |          1N4004 diode         |
+| D2       |          1N4004 diode         |
+| DRV1     |     DRV8825 stepper driver    |
+| F1       |        5x20 fuse holder       |
+| IC1      |    LM7805 linear regulator    |
+| J2       |   RJ11/RJ12 female connector  |
+| JP1      |          2x pinheader         |
+| JP2      |          5x pinheader         |
+| JP3      |          4x pinheader         |
+| JP4      |          2x pinheader         |
+| K1       |           12V relay           |
+| LED1     |          5mm red LED          |
+| Q2       |    IRF540 N-channel MOSFET    |
+| Q3       |    IRF540 N-channel MOSFET    |
+| Q5       |      BC547 NPN transistor     |
+| R1       |        330 ohm resistor       |
+| R2       |          1K resistor          |
+| R3       |         4.7K resistor         |
+| R4       |         4.7K resistor         |
+| R5       |          10K resistor         |
+| U1       |       Arduino Nano board      |
+|||
+
+## 3D-printed brackets
+
+At the moment, the only bracket in the repository is for the Sky-Watcher 200 f/5 newtonian (2017 model, newer ones may be different) and uses a circular connector. I'm looking forward to add new 3D models with the right connector - the RJ11. Feel free to submit yours using pull requests!
+
+## The stepper motor
+
+The firmware is pretty much motor/driver-agnostic. Just make sure to select the right driver type in the configuration files (`DRIVER_POLOLU` if you're using the Arduino Nano PCB). On my newtonian OTA, which has a crayford focuser and only moves a DSLR, I'm using a small NEMA 11 stepper motor. My recommendation is to use a geared (1:4 ~ 1:14) stepper if you're attaching the motor directly to the focuser axis or a direct stepper if on the knob of a dual-speed focuser. Use properly sized timing belt and pulley or a shaft coupler to connect the motor to the focuser.
 
 ## Development
 
@@ -53,8 +104,8 @@ I will be soon provide more info about them. For the moment, you'll find one 3D 
 2. Install the Arduino or Teensy core in the PlatformIO boards manager
 3. Open the `ThunderFocus-firmware` folder inside VS Code
 4. Select the PlatformIO Project Environment (`nanoatmega328` or `teensy40`) from the status bar, or add a custom one in `platformio.ini`
-5. Open `src/config.h` and enable **one and only one** of the following lines:
-   - `#include "boards/ard_nano_proto.h"`
+5. Open `src/config.h` and enable **one and only one** of the following lines (according to the PCB you built):
+   - `#include "boards/arduino_nano_pcb.h"`
    - `#include "boards/teensy_max_pcb.h"`
 6. Open the configuration file you enabled and make the appropriate changes (comments in the file will guide you)
    - Select the pins according to your circuit

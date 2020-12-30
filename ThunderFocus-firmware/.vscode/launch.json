@@ -12,12 +12,12 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "d:/ThunderFocus/ThunderFocus-firmware/.pio/build/nanoatmega328/firmware.elf",
-            "projectEnvName": "nanoatmega328",
-            "toolchainBinDir": "C:/Users/marco/.platformio/packages/toolchain-atmelavr/bin",
+            "executable": "d:/ThunderFocus/ThunderFocus-firmware/.pio/build/teensy40/firmware.elf",
+            "projectEnvName": "teensy40",
+            "toolchainBinDir": "C:/Users/marco/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug (nanoatmega328)"
+                "task": "Pre-Debug (teensy40)"
             },
             "internalConsoleOptions": "openOnSessionStart"
         },
@@ -25,9 +25,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "d:/ThunderFocus/ThunderFocus-firmware/.pio/build/nanoatmega328/firmware.elf",
-            "projectEnvName": "nanoatmega328",
-            "toolchainBinDir": "C:/Users/marco/.platformio/packages/toolchain-atmelavr/bin",
+            "executable": "d:/ThunderFocus/ThunderFocus-firmware/.pio/build/teensy40/firmware.elf",
+            "projectEnvName": "teensy40",
+            "toolchainBinDir": "C:/Users/marco/.platformio/packages/toolchain-gccarmnoneeabi/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]

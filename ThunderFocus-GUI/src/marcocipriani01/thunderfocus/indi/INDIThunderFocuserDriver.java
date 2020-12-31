@@ -83,7 +83,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
      * Map that bins all the INDI elements of {@link #digitalPinProps} and
      * {@link #pwmPinsProp} to their correspondent pins.
      */
-    private HashMap<INDIElement, ArduinoPin> pinsMap;
+    private HashMap<INDIElement<?>, ArduinoPin> pinsMap;
     private boolean focusRelDirection = false;
 
     /**

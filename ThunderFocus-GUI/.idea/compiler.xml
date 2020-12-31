@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="14">
-      <module name="ThunderFocus" target="14" />
+    <bytecodeTargetLevel target="15">
+      <module name="ThunderFocus" target="15" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ThunderFocus" options="" />
+    </option>
   </component>
 </project>

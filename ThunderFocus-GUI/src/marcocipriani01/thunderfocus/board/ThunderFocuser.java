@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import static marcocipriani01.thunderfocus.Main.i18n;
 
-@SuppressWarnings("unused")
 public class ThunderFocuser implements SerialMessageListener {
 
     private final ArrayList<Listener> listeners = new ArrayList<>();

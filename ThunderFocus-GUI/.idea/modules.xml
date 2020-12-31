@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/INDIForJava/INDIForJava.iml" filepath="$PROJECT_DIR$/INDIForJava/INDIForJava.iml" />
       <module fileurl="file://$PROJECT_DIR$/SimpleSocket/SimpleSocket.iml" filepath="$PROJECT_DIR$/SimpleSocket/SimpleSocket.iml" />
       <module fileurl="file://$PROJECT_DIR$/ThunderFocus.iml" filepath="$PROJECT_DIR$/ThunderFocus.iml" />
     </modules>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="INDIForJava.server-2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/INDIForJava.server-2.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

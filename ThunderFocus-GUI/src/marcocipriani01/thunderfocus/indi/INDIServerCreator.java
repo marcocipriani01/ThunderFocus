@@ -22,10 +22,7 @@ public class INDIServerCreator extends INDIServerAccessImpl implements INDIServe
 
     public void start(int port, boolean forceRestart) {
         if (forceRestart) {
-            if (isRunning()) {
-                get().stopServer();
-            }
-            driverAndListener(super.createOrGet(null, port));
+            driverAndListener(restart(null, port));
         } else {
             createOrGet(null, port);
         }
@@ -40,17 +37,6 @@ public class INDIServerCreator extends INDIServerAccessImpl implements INDIServe
         }
     }
 
-    public boolean isRunning() {
-        INDIServerInterface server = get();
-        return server != null && server.isServerRunning();
-    }
-
-    public void stop() {
-        if (isRunning()) {
-            get().stopServer();
-        }
-    }
-
     @Override
     public boolean acceptClient(INDIConnection clientSocket) {
         return true;
@@ -58,16 +44,16 @@ public class INDIServerCreator extends INDIServerAccessImpl implements INDIServe
 
     @Override
     public void connectionWithClientBroken(INDIClientInterface client) {
-        System.out.println("Client " + client.getInetAddress() + "disconnected.");
+        System.out.println("Client " + client.getInetAddress() + " disconnected.");
     }
 
     @Override
     public void connectionWithClientEstablished(INDIClientInterface client) {
-        System.out.println("Client " + client.getInetAddress() + "connected.");
+        System.out.println("Client " + client.getInetAddress() + " connected.");
     }
 
     @Override
     public void driverDisconnected(INDIDeviceInterface device) {
-        System.out.println("Driver " + device.getDeviceIdentifier() + "disconnected.");
+        System.out.println("Driver " + device.getDeviceIdentifier() + " disconnected.");
     }
 }

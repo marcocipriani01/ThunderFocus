@@ -122,8 +122,8 @@ public class Main {
     }
 
     public static void openBrowser(String url, JFrame frame) {
-        Desktop desktop;
         try {
+            Desktop desktop;
             if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
                 desktop.browse(new URI(url));
             } else if (Main.OPERATING_SYSTEM == OperatingSystem.LINUX) {
@@ -139,20 +139,7 @@ public class Main {
     }
 
     public static void openBrowser(HyperlinkEvent uri, JFrame frame) {
-        Desktop desktop;
-        try {
-            if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
-                desktop.browse(uri.getURL().toURI());
-            } else if (System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH).contains("nux")) {
-                Runtime.getRuntime().exec("xdg-open " + uri.toString());
-            } else {
-                throw new UnsupportedOperationException("Browser support not found.");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(frame,
-                    i18n("browser.error"), APP_NAME, JOptionPane.ERROR_MESSAGE);
-        }
+        openBrowser(uri.getDescription().replace("\\", ""), frame);
     }
 
     public static String getAppVersion() {

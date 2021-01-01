@@ -12,7 +12,7 @@ ThunderFocus is an all-in-one focuser and power box (dew heater controller) desi
 
 The firmware can run on both Arduino and Teensy, with the only difference being the RTC support and the speed of the MCU. Thanks to the firmware configuration file, you can select only the features you need and remove the unnecessary: the control software will detect the available features and display only the options supported by the board, so you won't need to modify other files.
 
-The user interface is platform-independent and works seamless across computers and boards like Raspberry Pi, with the only requirement being Java 14 (bundled in the Windows installer): in this way, you get the same experience no matter what OS you run. Moreover, it uses [INDIForJava](http://indiforjava.sourceforge.net/stage/index.html) for INDI/KStars compatibility and a special ASCOM driver for Windows compatibility. As a bonus, it can also be controlled using the [IPARCOS Android app](https://marcocipriani01.github.io/projects/IPARCOS) when the INDI server is enabled!
+The user interface is platform-independent and works seamless across computers and boards like Raspberry Pi, with the only requirement being Java 15 (bundled in the Windows installer): in this way, you get the same experience no matter what OS you run. Moreover, it uses [INDIForJava](http://indiforjava.sourceforge.net/stage/index.html) for INDI/KStars compatibility and a special ASCOM driver for Windows compatibility. As a bonus, it can also be controlled using the [IPARCOS Android app](https://marcocipriani01.github.io/projects/IPARCOS) when the INDI server is enabled!
 
 ## Features
 
@@ -47,21 +47,21 @@ Get [the latest release](https://github.com/marcocipriani01/ThunderFocus/release
 
 **Skip the Java installation if you already have it installed!**
 
-Install the latest Java Development Kit available, version 14 or greater. On Ubuntu:
+Install the latest Java Development Kit available, version 15 or greater. On Ubuntu:
 
 - `sudo apt update`
-- `sudo apt install openjdk-14-jdk`
+- `sudo apt install openjdk-15-jdk`
 
 Raspberry Pi OS or Astroberry:
 
-- Download the latest [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) JRE or JDK (recommended: version 14, HotSpot JVM)
+- Download the latest [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) JRE or JDK (recommended: version 15, HotSpot JVM)
 - Run `sudo mkdir /usr/java/`
 - Extract the archive: `sudo tar -zxf AdoptOpenJDK.tar -C /usr/java/` (change the filename accordingly to what you downloaded)
 - Run `echo 'export PATH=$PATH:/usr/java/' | sudo tee -a /etc/profile`
 
 ### macOS, Windows 32-bit and other Linux distros
 
-Install Java version 14 or greater depending on your OS and then use the `.jar` ThunderFocus release. Someday I will add a macOS installer...
+Install Java version 15 or greater depending on your OS and then use the `.jar` ThunderFocus release. Someday I will add a macOS installer...
 
 ## Using the control software
 
@@ -137,7 +137,7 @@ The firmware is pretty much motor/driver-agnostic. Just make sure to select the 
 
 ### Building the control software `jar` files
 
-1. Install a [Java Development Kit](https://www.oracle.com/java/technologies/javase-downloads.html), version 14 or greater
+1. Install a [Java Development Kit](https://www.oracle.com/java/technologies/javase-downloads.html), version 15 or greater
 2. Install [IntelliJ IDEA community](https://www.jetbrains.com/idea/)
 3. Open `ThunderFocus-GUI` inside IntelliJ
 4. Just run the only configuration in the project, it will build the artifacts for you and place them in the right places
@@ -150,7 +150,7 @@ Requires the `jar` files. Make sure to follow the previous step.
 2. Open `ThunderFocusASCOM` inside Visual Studio
 3. Compile the _Release_ configuration (do not run it)
 4. Extract a copy of the [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) in the `JRE-bundle` folder
-    - Recommended: _OpenJDK 14_ with _HotSpot VM_, Windows x64
+    - Recommended: _OpenJDK 15_ with _HotSpot VM_, Windows x64
 5. Open `InnoSetup.iss` and make the necessary changes to the file:
     - Replace `D:\ThunderFocus\` with the path to the ThunderFocus repository in your computer
 6. Compile and run the Inno Setup file: it will create the Windows installer in the `Installers` folder
@@ -165,7 +165,7 @@ Requires the `jar` files and a Debian installation with `dpkg-deb`. Note: the De
 
 ## Used libraries
 
-- [OpenJDK 14](https://openjdk.java.net/) by Oracle, [GPL v2 license with linking exception](https://openjdk.java.net/legal/gplv2+ce.html)
+- [OpenJDK 15](https://openjdk.java.net/) by Oracle, [GPL v2 license with linking exception](https://openjdk.java.net/legal/gplv2+ce.html)
 - [AdoptOpenJDK builds](https://adoptopenjdk.net/index.html) with HotSpot VM, by AdoptOpenJDK, [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
 - [INDIForJava](http://indiforjava.sourceforge.net/stage/index.html) by Sergio Alonso and Richard van Nieuwenhoven, [LGPL v3 license](http://indiforjava.sourceforge.net/stage/license.html)
 - [ASCOM .NET libraries](https://www.ascom-standards.org/) by The ASCOM Initiative, [ASCOM Open Source License](https://github.com/ASCOMInitiative/ASCOMPlatform/blob/master/LICENSE.txt)

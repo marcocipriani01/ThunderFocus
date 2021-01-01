@@ -1,10 +1,12 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
 {
     "configurations": [
         {
-            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
-        },
-        {
-            "name": "Win32",
+            "name": "PlatformIO",
             "includePath": [
                 "d:/ThunderFocus/ThunderFocus-firmware/include",
                 "d:/ThunderFocus/ThunderFocus-firmware/src",
@@ -227,7 +229,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=50003",
+                "PLATFORMIO=50004",
                 "__IMXRT1062__",
                 "ARDUINO_TEENSY40",
                 "USB_SERIAL",
@@ -238,7 +240,6 @@
                 "LAYOUT_US_ENGLISH",
                 ""
             ],
-            "intelliSenseMode": "gcc-x64",
             "cppStandard": "c++14",
             "compilerPath": "C:/Users/marco/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc.exe",
             "compilerArgs": [

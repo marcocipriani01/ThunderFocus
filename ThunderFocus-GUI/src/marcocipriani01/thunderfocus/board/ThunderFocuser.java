@@ -24,14 +24,14 @@ public class ThunderFocuser implements SerialMessageListener {
     private ConnState connState = ConnState.DISCONNECTED;
     private FocuserState focuserState = FocuserState.NONE;
     private volatile boolean ready = false;
-    private int requestedPos = 0;
-    private int requestedRelPos = 10;
-    private int currentPos = 0;
-    private int currentPosTicks = 0;
-    private int speed = 80;
-    private int backlash = 0;
-    private boolean reverseDir = false;
-    private boolean powerSaver = false;
+    private volatile int requestedPos = 0;
+    private volatile int requestedRelPos = 10;
+    private volatile int currentPos = 0;
+    private volatile int currentPosTicks = 0;
+    private volatile int speed = 80;
+    private volatile int backlash = 0;
+    private volatile boolean reverseDir = false;
+    private volatile boolean powerSaver = false;
 
     public ThunderFocuser() {
         serialPort.addListener(this);
@@ -392,7 +392,7 @@ public class ThunderFocuser implements SerialMessageListener {
                     f.notifyListeners(caller, Parameters.REQUESTED_POS);
                 }),
         FOK1_STOP('S'),
-        FOK1_SET_POS('Z', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
+        FOK1_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
         FOK1_SET_ZERO('W'),
         FOK1_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
                 (f, caller, params) -> {
@@ -455,19 +455,18 @@ public class ThunderFocuser implements SerialMessageListener {
             this.onDone = onDone;
         }
 
-        @SuppressWarnings("StringConcatenationInLoop")
         private void run(ThunderFocuser f, Listener caller, int... params) throws ConnectionException, InvalidParamException {
-            String cmd = "$" + id;
+            StringBuilder cmd = new StringBuilder("$").append(id);
             if (params.length != paramsCount) {
-                throw new InvalidParamException("Missing/too much EasyFocuser parameters.");
+                throw new InvalidParamException("Missing/too much parameters.");
             }
             if (validator != null && !validator.validate(f, params)) {
-                throw new InvalidParamException("Invalid EasyFocuser parameters.");
+                throw new InvalidParamException("Invalid parameters.");
             }
             for (int p : params) {
-                cmd += p + "%";
+                cmd.append(p).append("%");
             }
-            f.serialPort.println(cmd);
+            f.serialPort.println(cmd.toString());
             if (onDone != null) {
                 onDone.onDone(f, caller, params);
             }

@@ -98,7 +98,7 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        indiServerCreator.stop();
+        //indiServerCreator.stop();
         if (focuser.isConnected()) {
             focuser.disconnect();
         }

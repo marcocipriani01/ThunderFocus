@@ -1,2 +1,2 @@
-This folder should contain a compiled and extracted OpenJDK 14 installation.
+This folder should contain a compiled and extracted OpenJDK 15 installation.
 If not, download one from https://adoptopenjdk.net/

@@ -980,8 +980,11 @@ public class MainWindow extends JFrame implements
     @Override
     public void onCriticalError(Exception e) {
         e.printStackTrace();
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainWindow.this,
-                i18n("error.unexpected"), APP_NAME, JOptionPane.ERROR_MESSAGE));
+        SwingUtilities.invokeLater(() -> {
+            String msg = i18n("error.unexpected");
+            if (e instanceof ConnectionException) msg += ((ConnectionException) e).getType().toString();
+            JOptionPane.showMessageDialog(MainWindow.this, msg, APP_NAME, JOptionPane.ERROR_MESSAGE);
+        });
     }
 
     @Override

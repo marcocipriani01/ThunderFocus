@@ -122,6 +122,7 @@ public class ConnectionException extends IOException {
      * @author marcocipriani01
      * @version 0.1
      */
+    @SuppressWarnings("unused")
     public enum Type {
         /**
          * Generic or unknown error.

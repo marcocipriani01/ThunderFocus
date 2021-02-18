@@ -8,10 +8,10 @@
     <orderEntry type="jdk" jdkName="15" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="SimpleSocket" exported="" />
-    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.6" level="project" />
-    <orderEntry type="library" exported="" name="com.formdev:flatlaf:0.43" level="project" />
-    <orderEntry type="library" exported="" name="org.jfree:jfreechart:1.5.1" level="project" />
-    <orderEntry type="library" exported="" name="io.github.java-native:jssc:2.9.2" level="project" />
-    <orderEntry type="library" exported="" name="INDIForJava.bundle-2.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="FlatLaf" level="project" />
+    <orderEntry type="library" exported="" name="JFreeChart" level="project" />
+    <orderEntry type="library" exported="" name="Gson" level="project" />
+    <orderEntry type="library" exported="" name="INDIForJava" level="project" />
+    <orderEntry type="library" exported="" name="jSSC" level="project" />
   </component>
 </module>

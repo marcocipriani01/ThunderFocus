@@ -34,7 +34,7 @@ public class Settings {
     private static String folder = null;
     private final ArrayList<SettingsListener> listeners = new ArrayList<>();
 
-    @SerializedName("Theme")
+    @SerializedName("AppTheme")
     @Expose
     private Theme theme = Theme.LIGHT;
     @SerializedName("Serial port")

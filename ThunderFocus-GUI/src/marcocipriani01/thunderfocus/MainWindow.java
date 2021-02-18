@@ -196,14 +196,11 @@ public class MainWindow extends JFrame implements
         String serialPort = Main.settings.getSerialPort();
         for (String p : SerialPortImpl.scanSerialPorts()) {
             serialPortComboBox.addItem(p);
-            if (p.equals(serialPort)) {
-                selectPort = true;
-            }
+            if (p.equals(serialPort)) selectPort = true;
         }
         if (selectPort) {
             serialPortComboBox.setSelectedItem(serialPort);
             if (autoConnect && (!Main.focuser.isConnected())) {
-                Main.settings.setSerialPort(serialPort, this);
                 try {
                     Main.focuser.connect(serialPort);
                 } catch (ConnectionException ex) {
@@ -465,6 +462,11 @@ public class MainWindow extends JFrame implements
                     Main.focuser.connect(port);
                 } catch (ConnectionException ex) {
                     connectionErr(ex);
+                }
+                try {
+                    Main.settings.save();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
             } else {
                 JOptionPane.showMessageDialog(this, i18n("serial.port.not.selected"),
@@ -907,14 +909,16 @@ public class MainWindow extends JFrame implements
                         }
                         if (powerBox.supportsAmbient()) {
                             tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", 2);
-                            powerBoxLatSpinner.setValue(powerBox.getLatitude());
-                            powerBoxLongSpinner.setValue(powerBox.getLongitude());
-                            powerBoxConfigPanel.setVisible(true);
                         }
                         boolean supportsTime = powerBox.supportsTime();
                         sunElevationLabel.setVisible(supportsTime);
                         sunElevationField.setVisible(supportsTime);
                         sunElevationField.setText("?");
+                        powerBoxConfigPanel.setVisible(supportsTime);
+                        if (supportsTime) {
+                            powerBoxLatSpinner.setValue(powerBox.getLatitude());
+                            powerBoxLongSpinner.setValue(powerBox.getLongitude());
+                        }
                     }
                     fokSpeedSlider.setValue(Main.focuser.getSpeed());
                     fokReverseDirBox.setSelected(Main.focuser.isReverseDir());

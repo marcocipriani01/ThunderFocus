@@ -11,21 +11,21 @@
 // ===================================================================================
 // ============================== FOCUSER CONFIGURATION ==============================
 // ===================================================================================
-#define FOK1_STEPPER DRIVER_ULN2003
+#define FOK1_STEPPER DRIVER_POLOLU
 
 #if FOK1_STEPPER == DRIVER_POLOLU
-#define FOK1_DIR 2
-#define FOK1_STEP 3
-//#define FOK1_EN 7
+#define FOK1_DIR 14
+#define FOK1_STEP 15
+#define FOK1_EN 19
 #define FOK1_uSTEPS 32
-//#define FOK1_MODE0 6
-//#define FOK1_MODE1 5
-#define FOK1_MODE2 4
-#define FOK1_DIR_INVERT true
+#define FOK1_MODE0 18
+#define FOK1_MODE1 17
+#define FOK1_MODE2 16
+#define FOK1_DIR_INVERT false
 #define FOK1_ACCEL 50 * FOK1_uSTEPS
 #define FOK1_PPS_MIN 2 * FOK1_uSTEPS
 #define FOK1_PPS_MAX 400 * FOK1_uSTEPS
-#define FOK1_HOLD_CONTROL false
+#define FOK1_HOLD_CONTROL true
 #define FOK1_POWER_TIMEOUT 30000
 #elif FOK1_STEPPER == DRIVER_ULN2003
 #define FOK1_IN1 21

@@ -1,8 +1,8 @@
 [Setup]
 AppId={{863670cf-a7a6-4314-9479-c99e1c6fce06}
 AppName=ThunderFocus
-AppVersion=2.5
-AppVerName=ThunderFocus v2.5
+AppVersion=2.5.1
+AppVerName=ThunderFocus v2.5.1
 AppPublisher=marcocipriani01
 AppPublisherURL=https://marcocipriani01.github.io/
 AppSupportURL=https://marcocipriani01.github.io/
@@ -24,11 +24,11 @@ UninstallDisplayIcon="D:\ThunderFocus\ThunderFocusASCOM\Resources\icon.ico"
 ChangesEnvironment=yes
 
 [Languages]
-;Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
 
 [Registry]
-Root: HKCU; Subkey: "Environment"; ValueType:string; ValueName: "thunderfok"; ValueData: "{app}"; Flags: preservestringtype
+Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "thunderfok"; ValueData: "{app}"; Flags: createvalueifdoesntexist preservestringtype
 
 [Dirs]
 Name: "{app}"
@@ -42,7 +42,8 @@ Source: "D:\ThunderFocus\ThunderFocusASCOM\bin\Release\ASCOM.ThunderFocus.Focuse
 
 [Icons]
 Name: "{group}\ThunderFocus"; Filename: "{app}\bin\javaw.exe"; IconFilename: "{app}\icon.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""
-Name: "{group}\{cm:UninstallProgram,ThunderFocus}"; Filename: "{uninstallexe}"
+Name: "{group}\ThunderFocus debug"; Filename: "{app}\bin\java.exe"; IconFilename: "{app}\debug.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""
+Name: "{group}\{cm:UninstallProgram,ThunderFocus}"; IconFilename: "{app}\uninstall.ico"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\ThunderFocus"; Filename: "{app}\bin\javaw.exe"; Tasks: desktopicon; IconFilename: "{app}\icon.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""
 
 [Run]
@@ -53,9 +54,9 @@ Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\F
 Filename: "{app}\bin\javaw.exe"; Parameters: "-jar ""{app}\ThunderFocus.jar"""; Description: "{cm:LaunchProgram,ThunderFocus}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit
-Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64
-Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64
+Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL1"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL2"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL3"
 
 [Code]
 const

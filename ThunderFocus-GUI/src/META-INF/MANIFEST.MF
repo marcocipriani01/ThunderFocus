@@ -3,4 +3,4 @@ Specification-Vendor: marcocipriani01
 Main-Class: marcocipriani01.thunderfocus.Main
 Name: marcocipriani01/thunder/focus
 Specification-Title: ThunderFocus
-Specification-Version: 2.5
+Specification-Version: 2.5.1

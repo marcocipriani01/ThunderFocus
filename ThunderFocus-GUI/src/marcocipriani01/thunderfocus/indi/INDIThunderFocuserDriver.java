@@ -15,6 +15,7 @@ import org.indilib.i4j.properties.INDIStandardElement;
 import org.indilib.i4j.properties.INDIStandardProperty;
 import org.indilib.i4j.protocol.api.INDIConnection;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -91,14 +92,14 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     public INDIThunderFocuserDriver(INDIConnection connection) {
         super(connection);
 
-        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label(INDIDriver.GROUP_CONNECTION).group(INDIDriver.GROUP_CONNECTION)
+        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label(INDIDriver.GROUP_MAIN_CONTROL).group(INDIDriver.GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         connectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.CONNECT)
                 .label("Connect").switchValue(Constants.SwitchStatus.OFF).create();
         disconnectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.DISCONNECT)
                 .label("Disconnect").switchValue(Constants.SwitchStatus.ON).create();
         addProperty(connectionProp);
-        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group(INDIDriver.GROUP_CONNECTION)
+        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group(INDIDriver.GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         serialPortFieldElem = new INDIElementBuilder<>(INDITextElement.class, serialPortFieldProp)
                 .name(INDIStandardElement.PORT).label("Port").textValue(Main.settings.getSerialPort()).create();
@@ -218,7 +219,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         if (portsListProp != null && getPropertiesAsList().contains(portsListProp)) {
             removeProperty(portsListProp);
         }
-        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group(INDIDriver.GROUP_CONNECTION)
+        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group(INDIDriver.GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         searchElem = new INDIElementBuilder<>(INDISwitchElement.class, portsListProp).name("REFRESH_PORTS").label("Refresh")
                 .switchValue(Constants.SwitchStatus.ON).create();
@@ -338,6 +339,11 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 if (element == serialPortFieldElem) {
                     Main.settings.setSerialPort(value, this);
                     element.setValue(value);
+                    try {
+                        Main.settings.save();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                     break;
                 }
             }
@@ -383,6 +389,11 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                         String serialPort = portsListElements.get(element);
                         Main.settings.setSerialPort(serialPort, this);
                         serialPortFieldElem.setValue(serialPort);
+                        try {
+                            Main.settings.save();
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
                     }
                 }
             }

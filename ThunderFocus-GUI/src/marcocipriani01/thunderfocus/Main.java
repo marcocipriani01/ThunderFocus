@@ -23,14 +23,14 @@ import java.util.jar.Manifest;
 
 public class Main {
 
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("marcocipriani01.thunderfocus.lang");
+    public static final ResourceBundle RES_BUNDLE = ResourceBundle.getBundle("marcocipriani01.thunderfocus.lang");
+    public static final String APP_NAME = i18n("app.name");
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(
             Main.class.getResource("/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final ThunderFocuser focuser = new ThunderFocuser();
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
     public static final OperatingSystem OPERATING_SYSTEM = getOperatingSystem();
     public static final Settings settings = Settings.load();
-    public static final String APP_NAME = i18n("app.name");
     public static ASCOMFocuserBridge ascomFocuserBridge;
     private static Path pidLock;
 
@@ -50,12 +50,23 @@ public class Main {
             if (pidLock.toFile().exists()) {
                 try {
                     Optional<ProcessHandle> processHandle = ProcessHandle.of(Long.parseLong(Files.readString(pidLock).replace("\n", "").trim()));
-                    if (processHandle.isPresent() && processHandle.get().isAlive()) {
-                        JOptionPane.showMessageDialog(null, APP_NAME + i18n("is.already.running"),
-                                APP_NAME, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (processHandle.isPresent()) {
+                        ProcessHandle presentHandle = processHandle.get();
+                        if (presentHandle.isAlive()) {
+                            Optional<String> command = presentHandle.info().command();
+                            if (command.isPresent() && command.get().contains("java") &&
+                                    (JOptionPane.showConfirmDialog(null, APP_NAME + i18n("is.already.running"),
+                                            APP_NAME, JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.CANCEL_OPTION)) {
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException ignored) {
+                                }
+                                return;
+                            }
+                        }
                     }
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             Files.write(pidLock, pid.getBytes());
@@ -66,7 +77,7 @@ public class Main {
     }
 
     public static String i18n(String id) {
-        return resourceBundle.getString(id);
+        return RES_BUNDLE.getString(id);
     }
 
     private static OperatingSystem getOperatingSystem() {

@@ -37,7 +37,7 @@ import static marcocipriani01.thunderfocus.Settings.ExternalControl.*;
 
 public class MainWindow extends JFrame implements
         ChangeListener, ActionListener, KeyListener, FocusListener,
-        ThunderFocuser.Listener, Settings.SettingsListener {
+        ThunderFocuser.Listener, Settings.SettingsListener, ItemListener {
 
     private static final ImageIcon POWERBOX_TAB =
             new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
@@ -80,7 +80,6 @@ public class MainWindow extends JFrame implements
     private JCheckBox fokPowerSaverBox;
     private JCheckBox fokReverseDirBox;
     private JPowerBoxTable powerBoxTable;
-    private JButton applyPowerBoxButton;
     private JButton saveConfigButton;
     private JSpinner indiPortSpinner;
     private JTextField driverNameBox;
@@ -160,9 +159,8 @@ public class MainWindow extends JFrame implements
                 stopButton, requestedPosField, aboutLabel, currentPosField, ticksPosSlider, posSlider,
                 relativeMovField, pinWindowButton);
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
-                setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton,
-                applyPowerBoxButton, copyIndiDriverNameButton, saveConfigButton,
-                powerBoxOnButton, powerBoxOffButton, cleanGraphButton);
+                setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, copyIndiDriverNameButton,
+                saveConfigButton, powerBoxOnButton, powerBoxOffButton, cleanGraphButton);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
         relativeMovField.addActionListener(this);
@@ -298,9 +296,9 @@ public class MainWindow extends JFrame implements
         appThemeCombo = new JComboBox<>(Settings.Theme.values());
         localOrRemoteCombo = new JComboBox<>(Settings.INDIConnectionMode.values());
         indiPortSpinner = new JSpinner(new SpinnerNumberModel(
-                Main.settings.getIndiServerPort(), 1024, 99999, 1));
+                Main.settings.getIndiServerPort(), 1024, 65535, 1));
         ascomPortSpinner = new JSpinner(new SpinnerNumberModel(
-                Main.settings.getAscomBridgePort(), 1024, 99999, 1));
+                Main.settings.getAscomBridgePort(), 1024, 65535, 1));
         fokTicksCountSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.settings.getFokTicksCount(), 10, 2147483647, 1));
         fokUnitsCombo = new JComboBox<>(Settings.Units.values());
@@ -309,8 +307,9 @@ public class MainWindow extends JFrame implements
                 Main.settings.getFokMaxTravel(), 1, 2147483647, 1));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
                 Main.focuser.getBacklash(), 0, 1000, 1));
-        powerBoxTable = new JPowerBoxTable();
+        powerBoxTable = new JPowerBoxTable(this);
         powerBoxAutoModeBox = new JComboBox<>();
+        powerBoxAutoModeBox.addItemListener(this);
         powerBoxLatSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
         powerBoxLongSpinner = new JSpinner(new SpinnerNumberModel(0.0, -180.0, 180.0, 0.001));
 
@@ -590,33 +589,6 @@ public class MainWindow extends JFrame implements
                         APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
 
-        } else if (source == applyPowerBoxButton) {
-            try {
-                PowerBox powerBox = powerBoxTable.getPowerBox();
-                Main.settings.setPowerBox(new PowerBox(powerBox), this);
-                try {
-                    Main.settings.save();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                PowerBox.AutoModes autoMode = (PowerBox.AutoModes) powerBoxAutoModeBox.getSelectedItem();
-                if (autoMode != null) {
-                    Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
-                }
-                for (ArduinoPin p : powerBox.asList()) {
-                    int number = p.getNumber();
-                    if (p.isAutoModeEn()) {
-                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, this, number, 1);
-                    } else {
-                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, number, p.getValuePwm());
-                    }
-                }
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
-                valueOutOfLimits(ex);
-            }
-
         } else if (source == powerBoxOnButton) {
             try {
                 for (ArduinoPin p : Main.focuser.getPowerBox().asList()) {
@@ -654,12 +626,12 @@ public class MainWindow extends JFrame implements
         }
     }
 
-    private void valueOutOfLimits(Exception e) {
+    public void valueOutOfLimits(Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, i18n("error.invalid"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
-    private void connectionErr(ConnectionException e) {
+    public void connectionErr(ConnectionException e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, i18n("error.connection"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
@@ -705,7 +677,6 @@ public class MainWindow extends JFrame implements
         powerBoxOnButton.setEnabled(pbEn);
         powerBoxOffButton.setEnabled(pbEn);
         powerBoxAutoModeBox.setEnabled(pbEn);
-        applyPowerBoxButton.setEnabled(pbEn);
     }
 
     private void startOrStopINDI(boolean forceRestart) {
@@ -851,7 +822,11 @@ public class MainWindow extends JFrame implements
                 case REVERSE_DIR -> fokReverseDirBox.setSelected(Main.focuser.isReverseDir());
                 case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(Main.focuser.isPowerSaverOn());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
-                case POWERBOX_AUTO_MODE -> powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
+                case POWERBOX_AUTO_MODE -> {
+                    powerBoxAutoModeBox.removeItemListener(this);
+                    powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
+                    powerBoxAutoModeBox.addItemListener(this);
+                }
                 case POWERBOX_AMBIENT_DATA -> {
                     PowerBox powerBox = Main.focuser.getPowerBox();
                     double temperature = powerBox.getTemperature();
@@ -904,8 +879,10 @@ public class MainWindow extends JFrame implements
                         powerBoxAutoModeLabel.setVisible(supportsAutoModes);
                         powerBoxAutoModeBox.setVisible(supportsAutoModes);
                         if (supportsAutoModes) {
+                            powerBoxAutoModeBox.removeItemListener(this);
                             powerBoxAutoModeBox.setModel(new DefaultComboBoxModel<>(powerBox.supportedAutoModesArray()));
                             powerBoxAutoModeBox.setSelectedItem(Main.focuser.getPowerBox().getAutoMode());
+                            powerBoxAutoModeBox.addItemListener(this);
                         }
                         if (powerBox.supportsAmbient()) {
                             tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", 2);
@@ -1040,5 +1017,19 @@ public class MainWindow extends JFrame implements
         disableExtControlRadio.setSelected(value == NONE);
         indiServerRadio.setSelected(value == INDI);
         indiStatusLabel.setText(Main.indiServerCreator.isRunning() ? i18n("server.active") : i18n("server.inactive"));
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        try {
+            PowerBox.AutoModes autoMode = (PowerBox.AutoModes) powerBoxAutoModeBox.getSelectedItem();
+            if (autoMode != null) {
+                Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
+            }
+        } catch (ConnectionException ex) {
+            connectionErr(ex);
+        } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            valueOutOfLimits(ex);
+        }
     }
 }

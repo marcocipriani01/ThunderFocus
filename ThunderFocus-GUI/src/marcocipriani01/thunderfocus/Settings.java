@@ -68,13 +68,6 @@ public class Settings {
     @Expose
     private boolean autoConnect = false;
 
-    /**
-     * Class constructor.
-     */
-    public Settings() {
-
-    }
-
     public static String getSettingsFolder() throws IOException {
         if (Settings.folder != null) return Settings.folder;
         String folder = System.getProperty("user.home");
@@ -109,8 +102,15 @@ public class Settings {
             return new Settings();
         }
         // Normalize invalid values
-        if (s.indiServerPort <= 1024) s.indiServerPort = 7625;
-        if (s.ascomBridgePort <= 1024) s.ascomBridgePort = 5001;
+        if (s.indiServerPort <= 1024 || s.indiServerPort >= 65535) s.indiServerPort = 7625;
+        if (s.ascomBridgePort <= 1024 || s.ascomBridgePort >= 65535) s.ascomBridgePort = 5001;
+        if (s.fokTicksCount < 10 || s.fokTicksCount >= 2147483647) s.fokTicksCount = 70;
+        if (s.fokMaxTravel < 1 || s.fokMaxTravel >= 2147483647) s.fokMaxTravel = 32767;
+        if (s.theme == null) s.theme = Theme.LIGHT;
+        if (s.externalControl == null) s.externalControl = ExternalControl.NONE;
+        if (s.indiConnectionMode == null) s.indiConnectionMode = INDIConnectionMode.LOCAL;
+        if (s.fokTicksUnit == null) s.fokTicksUnit = Units.TICKS;
+        if (s.powerBox == null) s.powerBox = new PowerBox();
         return s;
     }
 

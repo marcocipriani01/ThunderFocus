@@ -1,11 +1,14 @@
 package marcocipriani01.thunderfocus;
 
+import marcocipriani01.simplesocket.ConnectionException;
 import marcocipriani01.thunderfocus.board.ArduinoPin;
 import marcocipriani01.thunderfocus.board.PowerBox;
+import marcocipriani01.thunderfocus.board.ThunderFocuser;
 
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.io.IOException;
 
 import static marcocipriani01.thunderfocus.Main.i18n;
 
@@ -19,13 +22,15 @@ public class JPowerBoxTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 45;
     private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer();
+    private final MainWindow mainWindow;
     private PowerBox powerBox = null;
 
     /**
      * Class constructor. Initializes the JTable.
      */
-    public JPowerBoxTable() {
+    public JPowerBoxTable(MainWindow mainWindow) {
         super();
+        this.mainWindow = mainWindow;
         setModel(new PowerBoxTableModel());
         setRowSelectionAllowed(true);
         setCellSelectionEnabled(false);
@@ -199,9 +204,15 @@ public class JPowerBoxTable extends JTable {
             if (powerBox == null) throw new NullPointerException("Null pins list.");
             ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
-                case 0 -> pin.setName((String) aValue);
-
-                case 1 -> pin.setNumber((int) aValue);
+                case 0 -> {
+                    pin.setName((String) aValue);
+                    Main.settings.setPowerBox(new PowerBox(powerBox), mainWindow);
+                    try {
+                        Main.settings.save();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
 
                 case 2 -> {
                     if (pin.isPwm()) {
@@ -209,9 +220,26 @@ public class JPowerBoxTable extends JTable {
                     } else {
                         pin.setValue((boolean) aValue);
                     }
+                    try {
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
+                    } catch (ConnectionException ex) {
+                        mainWindow.connectionErr(ex);
+                    } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                        mainWindow.valueOutOfLimits(ex);
+                    }
                 }
 
-                case 3 -> pin.setAutoModeEn((boolean) aValue);
+                case 3 -> {
+                    boolean b = (boolean) aValue;
+                    pin.setAutoModeEn(b);
+                    try {
+                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
+                    } catch (ConnectionException ex) {
+                        mainWindow.connectionErr(ex);
+                    } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                        mainWindow.valueOutOfLimits(ex);
+                    }
+                }
             }
             fireTableCellUpdated(rowIndex, columnIndex);
         }

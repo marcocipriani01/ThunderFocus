@@ -514,13 +514,7 @@ public class MainWindow extends JFrame implements
             }
 
         } else if (source == setZeroButton) {
-            try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_ZERO, this);
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
-                ex.printStackTrace();
-            }
+            new PositionCalibrationWindow(this);
 
         } else if (source == miniWindowButton) {
             miniWindow.setVisible(true);

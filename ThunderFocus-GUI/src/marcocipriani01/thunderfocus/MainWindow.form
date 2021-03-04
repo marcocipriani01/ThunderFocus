@@ -341,8 +341,8 @@
                     </constraints>
                     <properties>
                       <enabled value="false"/>
-                      <text resource-bundle="marcocipriani01/thunderfocus/lang" key="fok.zero.btn"/>
-                      <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="fok.zero.tooltip"/>
+                      <text resource-bundle="marcocipriani01/thunderfocus/lang" key="set.current.pos.dialog"/>
+                      <toolTipText value=""/>
                     </properties>
                   </component>
                   <component id="796f9" class="javax.swing.JLabel">
@@ -1158,7 +1158,7 @@
             </constraints>
             <properties>
               <icon value="marcocipriani01/thunderfocus/res/pin.png"/>
-              <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="alway.on.top"/>
+              <toolTipText resource-bundle="marcocipriani01/thunderfocus/lang" key="always.on.top"/>
             </properties>
           </component>
           <hspacer id="4beb1">

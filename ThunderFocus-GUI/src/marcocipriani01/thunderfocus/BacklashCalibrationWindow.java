@@ -111,7 +111,6 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
         } catch (ConnectionException e) {
             connectionErr(e);
-            dispose();
         } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
@@ -137,7 +136,6 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
                     phase = 1;
                 } catch (ConnectionException e) {
                     connectionErr(e);
-                    e.printStackTrace();
                 } catch (ThunderFocuser.InvalidParamException e) {
                     e.printStackTrace();
                 }

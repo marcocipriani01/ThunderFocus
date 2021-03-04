@@ -9,8 +9,8 @@
 
 //#include "boards/nik_coli.h"
 //#include "boards/arduino_nano_pcb.h"
-//#include "boards/arduino_nano_prototype.h"
-#include "boards/teensy_max_pcb.h"
+#include "boards/arduino_nano_prototype.h"
+//#include "boards/teensy_max_pcb.h"
 
 // Config checks
 #if FOK1_STEPPER == DRIVER_POLOLU

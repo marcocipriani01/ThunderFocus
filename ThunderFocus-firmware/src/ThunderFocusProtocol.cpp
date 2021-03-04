@@ -137,7 +137,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 			}
 
 			case 'P': {
-				int n = Serial.parseInt();
+				long n = Serial.parseInt();
 				Serial.print(F("LSetPos="));
 				Serial.println(n);
 				focuser->setCurrentPos(n);

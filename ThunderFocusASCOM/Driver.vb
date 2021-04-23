@@ -28,8 +28,6 @@
 Imports System.Net
 Imports System.Net.Sockets
 Imports System.Threading
-Imports ASCOM.Astrometry
-Imports ASCOM.Astrometry.AstroUtils
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 
@@ -61,13 +59,10 @@ Public Class Focuser
     Friend Shared traceState As Boolean
 
     Private connectedState As Boolean
-    Private utilities As Util
-    Private astroUtilities As AstroUtils
     Private TL As TraceLogger
 
     Private socket As Socket
     Private ipAddress As IPAddress
-
 
     Private Function readSocket() As String
         If Connected = True Then
@@ -113,9 +108,7 @@ Public Class Focuser
         }
         TL.LogMessage("Focuser", "Starting initialisation")
 
-        connectedState = False ' Initialise connected to false
-        utilities = New Util() ' Initialise util object
-        astroUtilities = New AstroUtils 'Initialise new astro utilities object
+        connectedState = False
 
         Application.EnableVisualStyles()
         Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
@@ -273,10 +266,6 @@ Public Class Focuser
         TL.Enabled = False
         TL.Dispose()
         TL = Nothing
-        utilities.Dispose()
-        utilities = Nothing
-        astroUtilities.Dispose()
-        astroUtilities = Nothing
     End Sub
 
 #End Region

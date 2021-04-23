@@ -20,6 +20,7 @@ void Focuser::begin(boolean initHoldControlEnabled,
                     uint8_t initSpeed,
                     long backlash,
 					boolean reverseDir) {
+	stepper.setMinPulseWidth(0);
 #ifdef FOK1_EN
 	stepper.setEnablePin(FOK1_EN, true);
 #endif

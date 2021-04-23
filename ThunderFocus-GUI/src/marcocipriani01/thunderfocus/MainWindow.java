@@ -30,19 +30,21 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 import static marcocipriani01.thunderfocus.Main.APP_NAME;
 import static marcocipriani01.thunderfocus.Main.i18n;
 import static marcocipriani01.thunderfocus.Settings.ExternalControl.*;
 
+@SuppressWarnings("DuplicatedCode")
 public class MainWindow extends JFrame implements
         ChangeListener, ActionListener, KeyListener, FocusListener,
         ThunderFocuser.Listener, Settings.SettingsListener, ItemListener {
 
     private static final ImageIcon POWERBOX_TAB =
-            new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png"));
+            new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/powerboxtab.png")));
     private static final ImageIcon AMBIENT_TAB =
-            new ImageIcon(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/ambienttab.png"));
+            new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/marcocipriani01/thunderfocus/res/ambienttab.png")));
     private final MiniWindow miniWindow = new MiniWindow() {
         @Override
         protected void onHide() {
@@ -156,8 +158,7 @@ public class MainWindow extends JFrame implements
         });
         infoPane.setCaretPosition(0);
         setKeyListeners(parent, setRequestedPosButton, setZeroButton, fokInButton, fokOutButton, miniWindowButton,
-                stopButton, requestedPosField, aboutLabel, currentPosField, ticksPosSlider, posSlider,
-                relativeMovField, pinWindowButton);
+                stopButton, aboutLabel, pinWindowButton);
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, copyIndiDriverNameButton,
                 saveConfigButton, powerBoxOnButton, powerBoxOffButton, cleanGraphButton);
@@ -487,7 +488,7 @@ public class MainWindow extends JFrame implements
         } else if (source == fokOutButton || source == relativeMovField) {
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this,
-                        Integer.parseInt(relativeMovField.getText()));
+                        Integer.parseInt(relativeMovField.getText().trim()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -497,7 +498,7 @@ public class MainWindow extends JFrame implements
         } else if (source == fokInButton) {
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this,
-                        -Integer.parseInt(relativeMovField.getText()));
+                        -Integer.parseInt(relativeMovField.getText().trim()));
             } catch (NumberFormatException ignored) {
             } catch (ConnectionException | ThunderFocuser.InvalidParamException connectionException) {
                 connectionException.printStackTrace();
@@ -506,7 +507,7 @@ public class MainWindow extends JFrame implements
         } else if (source == setRequestedPosButton || source == requestedPosField) {
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this,
-                        Integer.parseInt(requestedPosField.getText()));
+                        Integer.parseInt(requestedPosField.getText().trim()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -644,9 +645,7 @@ public class MainWindow extends JFrame implements
     }
 
     private void enableComponents(boolean connected) {
-        if (!connected) {
-            miniWindow.dispose();
-        }
+        if (!connected) miniWindow.dispose();
         refreshButton.setEnabled(!connected);
         serialPortComboBox.setEnabled(!connected);
         posSlider.setEnabled(connected);

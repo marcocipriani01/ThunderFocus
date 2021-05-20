@@ -302,7 +302,7 @@ public class Settings {
         TICKS(i18n("ticks")),
         uMETERS(i18n("micrometers")),
         MILLIMETERS(i18n("millimeters")),
-        TENTHS_OF_MILLIMETERS("tenths.of.millimeter"),
+        TENTHS_OF_MILLIMETERS(i18n("tenths.of.millimeter")),
         CENTIMETERS(i18n("centimeters")),
         DEGREES(i18n("degrees"));
 

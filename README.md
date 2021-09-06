@@ -47,14 +47,14 @@ Get [the latest release](https://github.com/marcocipriani01/ThunderFocus/release
 
 **Skip the Java installation if you already have it installed!**
 
-Install the latest Java Development Kit available, version 15 or greater. On Ubuntu:
+Install the latest Java Development Kit available, version 16 or greater. On Ubuntu:
 
 - `sudo apt update`
-- `sudo apt install openjdk-15-jdk`
+- `sudo apt install openjdk-16-jdk`
 
 Raspberry Pi OS or Astroberry:
 
-- Download the latest [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) JRE or JDK (recommended: version 15, HotSpot JVM)
+- Download the latest [AdoptOpenJDK](https://adoptopenjdk.net/releases.html) JRE or JDK (recommended: version 16, HotSpot JVM)
 - Run `sudo mkdir /usr/java/`
 - Extract the archive: `sudo tar -zxf AdoptOpenJDK.tar -C /usr/java/` (change the filename accordingly to what you downloaded)
 - Run `echo 'export PATH=$PATH:/usr/java/' | sudo tee -a /etc/profile`
@@ -167,7 +167,7 @@ Requires the `jar` files and a Debian installation with `dpkg-deb`. Note: the De
 
 - [OpenJDK 15](https://openjdk.java.net/) by Oracle, [GPL v2 license with linking exception](https://openjdk.java.net/legal/gplv2+ce.html)
 - [AdoptOpenJDK builds](https://adoptopenjdk.net/index.html) with HotSpot VM, by AdoptOpenJDK, [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
-- [INDIForJava](http://indiforjava.sourceforge.net/stage/index.html) by Sergio Alonso and Richard van Nieuwenhoven, [LGPL v3 license](http://indiforjava.sourceforge.net/stage/license.html)
+- [INDIForJava](https://indiforjava.github.io/) by Marco Cipriani, Sergio Alonso and Richard van Nieuwenhoven, [LGPL v3 license](https://github.com/INDIForJava/INDIForJava-core/blob/main/LICENSE.txt)
 - [ASCOM .NET libraries](https://www.ascom-standards.org/) by The ASCOM Initiative, [ASCOM Open Source License](https://github.com/ASCOMInitiative/ASCOMPlatform/blob/master/LICENSE.txt)
 - [jssc](https://github.com/java-native/jssc) by java-native and scream3r, [LGPL v3 license](https://github.com/java-native/jssc/blob/master/LICENSE.txt)
 - [FlatLaf](https://github.com/JFormDesigner/FlatLaf/) by JFormDesigner, [Apache 2.0 license](https://github.com/JFormDesigner/FlatLaf/blob/master/LICENSE)

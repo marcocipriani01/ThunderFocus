@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SimpleSocket/SimpleSocket.iml" filepath="$PROJECT_DIR$/SimpleSocket/SimpleSocket.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ThunderFocus.iml" filepath="$PROJECT_DIR$/ThunderFocus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ThunderFocus.iml" filepath="$PROJECT_DIR$/.idea/modules/ThunderFocus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ThunderFocus.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ThunderFocus.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ThunderFocus.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ThunderFocus.test.iml" />
     </modules>
   </component>
 </project>

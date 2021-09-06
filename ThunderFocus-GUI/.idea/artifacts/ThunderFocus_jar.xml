@@ -1,16 +1,37 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="ThunderFocus:jar">
+  <artifact type="jar" build-on-make="true" name="ThunderFocus:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/ThunderFocus_jar</output-path>
     <root id="archive" name="ThunderFocus.jar">
-      <element id="module-output" name="ThunderFocus" />
-      <element id="module-output" name="SimpleSocket" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/gson-2.8.6.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jssc-2.9.2.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/native-lib-loader-2.3.3.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/slf4j-api-1.7.25.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/INDIForJava.bundle-2.0-SNAPSHOT.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/flatlaf-1.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jfreechart-1.5.2.jar" path-in-jar="/" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="ThunderFocus.main" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.formdev/flatlaf/1.5/d5ad617d7c328784145b05f7c8f030db2de5234e/flatlaf-1.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-core/2.0.5/b8f8d9e3b6a0b9a01e69c0159b64be3b025d6272/INDIForJava-core-2.0.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-driver/2.0.6/f98d13c26bb7fbe1d5d366dc818570fed049c35/INDIForJava-driver-2.0.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-focuser/2.0.5/b972b9bd3bee53bafaef4574c58b13e59d570e1c/INDIForJava-focuser-2.0.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-server/2.0.5/4628effa59e9242697dd241338435f75ca5dd166/INDIForJava-server-2.0.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.8/431fc3cbc0ff81abdbfde070062741089c3ba874/gson-2.8.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.activation/jakarta.activation/2.0.1/828b80e886a52bb09fe41ff410b10b342f533ce1/jakarta.activation-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.thoughtworks.xstream/xstream/1.4.18/12eb80b4c4b83b184b669866f510a0eae13f9475/xstream-1.4.18.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.java-native/jssc/2.9.2/1bc345fefc0c79fc340ac2434db75e120303c2b7/jssc-2.9.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.x-stream/mxparser/1.2.2/476fb3b3bb3716cad797cd054ce45f89445794e9/mxparser-1.2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/jakarta.websocket/jakarta.websocket-api/2.0.0/2db3b78991e6f269d712b9dd2433bb20ace295ec/jakarta.websocket-api-2.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/jakarta.xml.bind/jakarta.xml.bind-api/3.0.1/5257932df36ff3e4e6de50429dde946490a6a800/jakarta.xml.bind-api-3.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-framework/3.0.0-M1/94aebd2d824cc7963908a9fa029c748ae199d37d/grizzly-framework-3.0.0-M1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http-server/3.0.0-M1/927c9a19b60edacf8d36d17f9e6f837ddc34d8ad/grizzly-http-server-3.0.0-M1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http/3.0.0-M1/a7cbc62e35c4f36e8ed1f5c5c7456e67ad4c7fa5/grizzly-http-3.0.0-M1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.tyrus/tyrus-client/2.0.1/4321efe553904ac2cfb45128d7e65ddd1aab8faf/tyrus-client-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.tyrus/tyrus-container-grizzly-client/2.0.0/a2679ebbf776111cd596995a9bdbf874161c45a1/tyrus-container-grizzly-client-2.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.tyrus/tyrus-core/2.0.1/aac956bb1afb1ef2e6042bab5fc3f83a34fe1608/tyrus-core-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.tyrus/tyrus-server/2.0.0/e1ade4016537a06f6c423c9c3ac07833391a5290/tyrus-server-2.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.tyrus/tyrus-spi/2.0.1/d9051f35c442102454ee1ed5b8fc57928b399b5b/tyrus-spi-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss/jandex/2.4.0.Final/34684af29b18c2321504245034390572117ffa7b/jandex-2.4.0.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jfree/jfreechart/1.5.3/26c6d7143d8a905a54c7e2296cea6ce4c5ecb417/jfreechart-1.5.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scijava/native-lib-loader/2.3.3/6b90e132e846de6083ef57b6d246cb9f56ea2d10/native-lib-loader-2.3.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.32/cdcff33940d9f2de763bc41ea05a0be5941176c3/slf4j-api-1.7.32.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/xmlpull/xmlpull/1.1.3.1/2b8e230d2ab644e4ecaa94db7cdedbc40c805dfa/xmlpull-1.1.3.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -6,6 +6,7 @@
     <method v="2">
       <option name="BuildArtifacts" enabled="true">
         <artifact name="ThunderFocus-Debian:jar" />
+        <artifact name="ThunderFocus-Windows:jar" />
         <artifact name="ThunderFocus:jar" />
       </option>
     </method>

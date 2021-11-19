@@ -194,20 +194,15 @@ boolean setDevManAutoMode(DevManAutoModes autoMode) {
 	return false;
 }
 
-byte pwmMap(double in, double min, double max) {
-	if (max > min) {
-		if (in <= min) return 0;
-		if (in >= max) return 255;
-	} else {
-		if (in >= min) return 0;
-		if (in <= max) return 255;
-	}
-	return (in - min) * (255.0 - AUTOMATIC_DEVMAN_THRESHOLD) / (max - min) + AUTOMATIC_DEVMAN_THRESHOLD;
+int pwmMap(double in, double min, double max) {
+	if (in <= min) return 0;
+	if (in >= max) return 255;
+	return (int) ((in - min) * (255.0 - AUTOMATIC_DEVMAN_THRESHOLD) / (max - min) + AUTOMATIC_DEVMAN_THRESHOLD);
 }
 
-boolean forEachAutoPin(byte pwm, boolean digital) {
+boolean forEachAutoPin(int pwm, boolean digital) {
 	boolean hasChanged = false;
-	for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
+	for (int i = 0; i < MANAGED_PINS_COUNT; i++) {
 		if (pins[i].autoModeEn) {
 			if (pins[i].isPwm) {
 				if (pwm != pins[i].value) {
@@ -216,7 +211,7 @@ boolean forEachAutoPin(byte pwm, boolean digital) {
 					hasChanged = true;
 				}
 			} else {
-				byte nVal = digital ? 255 : 0;
+				int nVal = digital ? 255 : 0;
 				if (nVal != pins[i].value) {
 					pins[i].value = nVal;
 					digitalWrite(pins[i].number, digital);
@@ -238,7 +233,8 @@ double getCalculatedSunElev() {
 boolean dewPointDevManage(double triggerDiff) {
 	double dewPoint = getDewPoint(), temperature = getTemperature();
 	if ((dewPoint != TEMP_ABSOLUTE_ZERO) && (temperature != TEMP_ABSOLUTE_ZERO)) {
-		return forEachAutoPin(pwmMap(dewPoint, temperature - triggerDiff, temperature), (temperature - dewPoint) <= triggerDiff);
+		return forEachAutoPin(pwmMap(dewPoint, temperature - triggerDiff, temperature - (triggerDiff * AUTOMATIC_DEVMAN_OFFSET_FACTOR)),
+			(temperature - dewPoint - (triggerDiff * AUTOMATIC_DEVMAN_OFFSET_FACTOR)) <= triggerDiff);
 	}
 	return false;
 }

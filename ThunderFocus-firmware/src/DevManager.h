@@ -50,8 +50,8 @@ boolean setPinAutoMode(byte pin, boolean autoModeEn);
 DevManAutoModes getDevManAutoMode();
 boolean setDevManAutoMode(DevManAutoModes autoMode);
 
-byte pwmMap(double in, double min, double max);
-boolean forEachAutoPin(byte pwm, boolean digital);
+int pwmMap(double in, double min, double max);
+boolean forEachAutoPin(int pwm, boolean digital);
 
 #if TIME_CONTROL == true
 double getCalculatedSunElev();

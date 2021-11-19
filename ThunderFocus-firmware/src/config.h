@@ -7,10 +7,10 @@
 #define SERIAL_TIMEOUT 100
 #define THUNDERFOCUS_SEND_DELAY 150
 
-//#include "boards/nik_coli.h"
+//#include "boards/nik_coli_sun_fok.h"
 //#include "boards/arduino_nano_pcb.h"
-#include "boards/arduino_nano_prototype.h"
-//#include "boards/teensy_max_pcb.h"
+//#include "boards/arduino_nano_prototype.h"
+#include "boards/teensy_max_pcb.h"
 
 // Config checks
 #if FOK1_STEPPER == DRIVER_POLOLU

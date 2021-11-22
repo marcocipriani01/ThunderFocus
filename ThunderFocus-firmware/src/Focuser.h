@@ -3,8 +3,7 @@
 
 #include <Arduino.h>
 #include "config.h"
-// Stepper driver libraries
-#include <AccelStepper.h>
+#include "AccelStepper.h"
 
 enum FocuserState {
 	FOCUSER_MOVING = (int)'M',
@@ -21,6 +20,7 @@ public:
 			   long backlash,
 			   boolean reverseDir);
 	void begin();
+
 	void moveToTargetPos(long newPos);
 	void move(long newPos);
 	long getTargetPos();
@@ -38,6 +38,7 @@ public:
 	boolean getDirReverse();
 	void setBacklash(long backlash);
 	long getBacklash();
+	
 	void setHCSpeedInterval(unsigned int ppsMin, unsigned int ppsMax);
 	void setHCMaxStepsPerPush(long maxStepsPerPushNew);
 	void hCMove(unsigned int analogValue, boolean reverse);

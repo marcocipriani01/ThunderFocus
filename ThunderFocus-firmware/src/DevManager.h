@@ -23,14 +23,14 @@ enum DevManAutoModes {
 	HUMIDITY_80,
 	HUMIDITY_70,
 	TEMP_FREEZE,
-	UNAVAILABLE
+	NONE
 };
 
 struct Pin {
 	byte number;
 	boolean isPwm;
 	byte value;
-	boolean autoModeEn;
+	boolean autoMode;
 };
 
 extern Pin pins[];

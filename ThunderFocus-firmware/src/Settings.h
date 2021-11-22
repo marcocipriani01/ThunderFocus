@@ -9,21 +9,25 @@
 
 struct Settings {
 	uint8_t marker;
-	long fok1Pos;
-	uint8_t fok1Speed;
-	long fok1Backlash;
-	boolean fok1HoldControl;
-	boolean fok1Reverse;
+	long position;
+	uint8_t speed;
+	long backlash;
+	unsigned long powerTimeout;
+	boolean reverse;
+	long scaling;
+
 #if ENABLE_DEVMAN == true
-	Pin devManPins[MANAGED_PINS_COUNT];
-	DevManAutoModes devManAutoMode;
+	Pin powerPins[MANAGED_PINS_COUNT];
+	DevManAutoModes powerPinsMode;
 #endif
+
 #if TIME_CONTROL == true
 	double worldLat;
 	double worldLong;
 #endif
 };
 
+void resetSettings();
 void loadSettings();
 void saveSettings();
 

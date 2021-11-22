@@ -13,11 +13,12 @@
  */
 
 #include "main.h"
+#include "DevManager.h"
 
-Focuser focuser;
+AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
 
 // Hand controller
-#if FOK1_ENABLE_HC == true
+#if FOCUSER_ENABLE_HC == true
 HandController hc(&focuser);
 #endif
 
@@ -28,57 +29,60 @@ struct Settings settings;
 boolean needToSaveSettings = false;
 unsigned long lastTimeSettingsSave = 0;
 
+void resetSettings() {
+	settings.position = 0;
+	settings.speed = (FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2;
+	settings.backlash = 0;
+	settings.powerTimeout = 30000;
+	settings.reverse = false;
+	settings.scaling = FOCUSER_SCALING_DEFAULT;
+
+#if ENABLE_DEVMAN == true
+	Pin defaults[MANAGED_PINS_COUNT] = MANAGED_PINS;
+	for (uint8_t i = 0; i < getManagedPinsCount(); i++) {
+		settings.powerPins[i] = defaults[i];
+	}
+	settings.powerPinsMode = DevManAutoModes::NONE;
+#endif
+
+#if TIME_CONTROL == true
+	worldLat = 0.0;
+	worldLong = 0.0;
+#endif
+}
+
 void loadSettings() {
 	uint8_t* dst = (uint8_t*)&settings;
 	for (unsigned int i = 0; i < sizeof(Settings); i++) {
 		dst[i] = EEPROM.read(i);
 	}
-	if (settings.marker == EEPROM_VERSION) {
-		focuser.begin((boolean) settings.fok1HoldControl, settings.fok1Speed,
-			settings.fok1Backlash, settings.fok1Reverse);
-		if (settings.fok1Pos != 0) {
-			focuser.setCurrentPos(settings.fok1Pos);
-		}
-#if ENABLE_DEVMAN == true
-		for (uint8_t i = 0; i < getManagedPinsCount(); i++) {
-			Pin pin = settings.devManPins[i];
-			if (pin.autoModeEn) {
-				setPinAutoMode(pin.number, true);
-			} else {
-				updatePin(pin.number, pin.value);
-			}
-		}
-		setDevManAutoMode(settings.devManAutoMode);
-#endif
-#if TIME_CONTROL == true
-		if ((!isnan(settings.worldLat)) && (!isnan(settings.worldLong))) {
-			setWorldCoord(settings.worldLat, settings.worldLong);
-		}
-#endif
-	} else {
+	if (settings.marker != EEPROM_VERSION) {
 		settings.marker = EEPROM_VERSION;
-		focuser.begin();
 		saveSettings();
 	}
 }
 
 void saveSettings() {
 	settings.marker = EEPROM_VERSION;
-	settings.fok1Pos = focuser.getCurrentPos();
-	settings.fok1Speed = focuser.getSpeed();
-	settings.fok1HoldControl = focuser.isHoldControlEnabled();
-	settings.fok1Backlash = focuser.getBacklash();
-	settings.fok1Reverse = focuser.getDirReverse();
+	settings.position = stepper.getPosition();
+	settings.speed = stepper.getMaxSpeed();
+	settings.powerTimeout = stepper.getAutoPowerTimeout();
+	settings.backlash = stepper.getBacklash();
+	settings.reverse = stepper.isDirectionInverted();
+	settings.scaling = stepper.getStepsScaling();
+
 #if ENABLE_DEVMAN == true
 	for (uint8_t i = 0; i < getManagedPinsCount(); i++) {
-		settings.devManPins[i] = getManagedPin(i);
+		settings.powerPins[i] = getManagedPin(i);
 	}
-	settings.devManAutoMode = getDevManAutoMode();
+	settings.powerPinsMode = getDevManAutoMode();
 #endif
+
 #if TIME_CONTROL == true
 	settings.worldLat = getWorldLat();
 	settings.worldLong = getWorldLong();
 #endif
+
 	uint8_t* dst = (uint8_t*) &settings;
 	for (unsigned int i = 0; i < sizeof(Settings); ++i) {
 		EEPROM.update(i, dst[i]);
@@ -102,31 +106,57 @@ void setup() {
 #endif
 #endif
 
-#if ENABLE_DEVMAN == true
-	beginDevMan();
-#endif
-
 #if SETTINGS_SUPPORT == true
 	loadSettings();
-#else
-	focuser.begin();
 #endif
 
-#if FOK1_ENABLE_HC == true
+#ifdef FOCUSER_MODE0
+	pinMode(FOCUSER_MODE0, OUTPUT);
+	digitalWrite(FOCUSER_MODE0, HIGH);
+#endif
+#ifdef FOCUSER_MODE1
+	pinMode(FOCUSER_MODE1, OUTPUT);
+	digitalWrite(FOCUSER_MODE1, HIGH);
+#endif
+#ifdef FOCUSER_MODE2
+	pinMode(FOCUSER_MODE2, OUTPUT);
+	digitalWrite(FOCUSER_MODE2, HIGH);
+#endif
+	stepper.setPosition(settings.position);
+	stepper.setMaxSpeed(settings.speed);
+	stepper.setBacklash(settings.backlash);
+	stepper.setDirectionInverted(settings.reverse);
+	stepper.setStepsScaling(settings.scaling);
+#ifdef FOCUSER_EN
+	stepper.setEnablePin(FOCUSER_EN, false);
+	stepper.setAutoPowerTimeout(settings.powerTimeout);
+#endif
+#if FOCUSER_ENABLE_HC == true
 	hc.begin();
 #endif
 
-#if defined(__AVR_ATmega32U4__)
-	while (!Serial) {
-		;
+#if ENABLE_DEVMAN == true
+	for (uint8_t i = 0; i < getManagedPinsCount(); i++) {
+		Pin pin = settings.powerPins[i];
+		if (pin.autoMode)
+			setPinAutoMode(pin.number, true);
+		else
+			updatePin(pin.number, pin.value);
+	}
+	setDevManAutoMode(settings.powerPinsMode);
+	beginDevMan();
+#endif
+
+#if TIME_CONTROL == true
+	if ((!isnan(settings.worldLat)) && (!isnan(settings.worldLong))) {
+		setWorldCoord(settings.worldLat, settings.worldLong);
 	}
 #endif
 }
 
 void loop() {
-	if (thunderFocusManage(&focuser) == FocuserState::FOCUSER_ARRIVED) {
+	if (thunderFocusManage(&stepper) == FocuserState::ARRIVED)
 		flagSettings();
-	}
 
 #if ENABLE_HC == true
 	hc.manage();
@@ -151,7 +181,6 @@ inline void flagSettings() {
 }
 
 void serialEvent() {
-	if (thunderFocusSerialEvent(&focuser)) {
+	if (thunderFocusSerialEvent(&stepper))
 		flagSettings();
-	}
 }

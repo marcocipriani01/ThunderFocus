@@ -6,7 +6,6 @@
 
 #include "ThunderFocusProtocol.h"
 
-#include "Focuser.h"
 #if FOK1_ENABLE_HC == true
 #include "HandController.h"
 #endif

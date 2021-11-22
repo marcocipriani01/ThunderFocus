@@ -1,5 +1,3 @@
-#include "../definions.h"
-
 // ===================================================================================
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
@@ -11,46 +9,29 @@
 // ===================================================================================
 // ============================== FOCUSER CONFIGURATION ==============================
 // ===================================================================================
-#define FOK1_STEPPER DRIVER_POLOLU
+#define FOCUSER_DIR 2
+#define FOCUSER_STEP 3
+//#define FOCUSER_EN 7
+#define FOCUSER_SCALING_DEFAULT 4
+//#define FOCUSER_MODE0 6
+//#define FOCUSER_MODE1 5
+#define FOCUSER_MODE2 4
 
-#if FOK1_STEPPER == DRIVER_POLOLU
-#define FOK1_DIR 2
-#define FOK1_STEP 3
-//#define FOK1_EN 7
-#define FOK1_uSTEPS 32
-//#define FOK1_MODE0 6
-//#define FOK1_MODE1 5
-#define FOK1_MODE2 4
-#define FOK1_DIR_INVERT true
-#define FOK1_ACCEL 50 * FOK1_uSTEPS
-#define FOK1_PPS_MIN 2 * FOK1_uSTEPS
-#define FOK1_PPS_MAX 500 * FOK1_uSTEPS
-#define FOK1_HOLD_CONTROL false
-#define FOK1_POWER_TIMEOUT 60000
-#elif FOK1_STEPPER == DRIVER_ULN2003
-#define FOK1_IN1 5
-#define FOK1_IN2 4
-#define FOK1_IN3 3
-#define FOK1_IN4 2
-#define FOK1_ACCEL 80
-#define FOK1_PPS_MIN 40
-#define FOK1_PPS_MAX 100
-#define FOK1_HOLD_CONTROL true
-#define FOK1_POWER_TIMEOUT 2000
-#define FOK1_DIR_INVERT true
-#define FOK1_uSTEPS 1
-#endif
+#define FOCUSER_ACCEL 50
+#define FOCUSER_PPS_MIN 2
+#define FOCUSER_PPS_MAX 500
+#define FOCUSER_POWER_TIMEOUT 60000
 
 // ---------- Focuser 1 hand controller ----------
-#define FOK1_ENABLE_HC false
-#define FOK1_HC_KNOB A0
-#define FOK1_HC_LEFT 9
-#define FOK1_HC_RIGHT 10
-#define FOK1_HC_MIN_SPEED_DELAY 80
-#define FOK1_HC_MAX_SPEED_DELAY 20
-#define FOK1_HC_MAX_STEPS 60 * FOK1_uSTEPS
-#define FOK1_HC_PPS_MAX 500 * FOK1_uSTEPS
-#define FOK1_HC_PPS_MIN 2 * FOK1_uSTEPS
+#define FOCUSER_ENABLE_HC false
+#define FOCUSER_HC_KNOB A0
+#define FOCUSER_HC_LEFT 9
+#define FOCUSER_HC_RIGHT 10
+#define FOCUSER_HC_MIN_SPEED_DELAY 80
+#define FOCUSER_HC_MAX_SPEED_DELAY 20
+#define FOCUSER_HC_MAX_STEPS 60 * FOCUSER_uSTEPS
+#define FOCUSER_HC_PPS_MAX 500 * FOCUSER_uSTEPS
+#define FOCUSER_HC_PPS_MIN 2 * FOCUSER_uSTEPS
 
 // ===================================================================================
 // ============================== DEVICE MANAGER CONFIG ==============================
@@ -58,11 +39,12 @@
 #if ENABLE_DEVMAN == true
 #define MANAGED_PINS_COUNT 4
 #define MANAGED_PINS {{6, true, 0, false},	\
-					{9, true, 0, false},   \
+					{9, true, 0, false},    \
 					{10, true, 0, false}, 	\
 					{12, false, 0, false}}
 #define AUTOMATIC_DEVMAN_TIMER 30000
-#define AUTOMATIC_DEVMAN_THRESHOLD 20
+#define AUTOMATIC_DEVMAN_THRESHOLD 60.0
+#define AUTOMATIC_DEVMAN_OFFSET_FACTOR 0.4
 
 // ---------- Ambient sensors ----------
 #define TEMP_HUM_SENSOR true

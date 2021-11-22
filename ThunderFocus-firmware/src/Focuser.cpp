@@ -1,13 +1,7 @@
 #include "Focuser.h"
 
 Focuser::Focuser() :
-#if FOK1_STEPPER == DRIVER_POLOLU
-	stepper(AccelStepper::DRIVER, FOK1_STEP, FOK1_DIR)
-#elif FOK1_STEPPER == DRIVER_ULN2003
-	stepper(AccelStepper::FULL4WIRE, FOK1_IN1, FOK1_IN2, FOK1_IN3, FOK1_IN4)
-#else
-#error Unsupported focuser driver
-#endif
+stepper(FOK1_STEP, FOK1_DIR)
 {
 	stepper.setAcceleration(FOK1_ACCEL);
 	lastMovementTime = millis();

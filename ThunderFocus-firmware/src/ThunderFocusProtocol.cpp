@@ -1,6 +1,6 @@
 #include "ThunderFocusProtocol.h"
 
-FocuserState lastFok1State = FocuserState::FOCUSER_POWERSAVE;
+FocuserState lastFok1State = FocuserState::POWER_SAVE;
 unsigned long lastThunderFocusSerialSend = 0;
 #if TEMP_HUM_SENSOR == true
 unsigned long lastThunderFocusAmbientSend = 0;
@@ -9,18 +9,28 @@ unsigned long lastThunderFocusAmbientSend = 0;
 unsigned long lastThunderFocusSunPosSend = 0;
 #endif
 
-FocuserState thunderFocusManage(Focuser *focuser) {
-	FocuserState currentState = focuser->run();
-	if (currentState != lastFok1State) {
+FocuserState thunderFocusManage(AccelStepper *stepper) {
+	FocuserState currentState;
+	if (stepper->run())
+		currentState = FocuserState::MOVING;
+	else if (lastFocuserState == FocuserState::MOVING)
+		currentState = FocuserState::ARRIVED;
+	else if (stepper->isEnabled())
+		currentState = FocuserState::HOLD;
+	else
+		currentState = FocuserState::POWER_SAVE;
+	
+	if (currentState != lastFocuserState) {
 		Serial.println((char) currentState);
-		lastFok1State = currentState;
+		lastFocuserState = currentState;
 	}
 	unsigned long currentTime = millis();
-	if (currentTime - lastThunderFocusSerialSend >= THUNDERFOCUS_SEND_DELAY) {
+	if (currentTime - lastThunderFocusSend >= THUNDERFOCUS_SEND_DELAY) {
 		Serial.print("S");
-		Serial.println(focuser->getCurrentPos());
-		lastThunderFocusSerialSend = currentTime;
+		Serial.println(stepper->getPosition());
+		lastThunderFocusSend = currentTime;
 	}
+
 #if ENABLE_DEVMAN == true
 	if (devManage()) {
 		thunderFocusUpdPins();
@@ -47,7 +57,7 @@ FocuserState thunderFocusManage(Focuser *focuser) {
 	return currentState;
 }
 
-boolean thunderFocusSerialEvent(Focuser *focuser) {
+boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 	while (Serial.available()) {
 		if (Serial.read() == '$') {
 			Serial.println("LFoundCmd");
@@ -56,15 +66,15 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				Serial.print("C");
 				Serial.print(FIRMWARE_VERSION);
 				Serial.print(",");
-				Serial.print(focuser->getCurrentPos());
+				Serial.print(stepper->getPosition());
 				Serial.print(",");
-				Serial.print(focuser->getSpeed());
+				Serial.print(map(stepper->getMaxSpeed(), FOCUSER_PPS_MIN, FOCUSER_PPS_MAX, 0, 100));
 				Serial.print(",");
-				Serial.print(focuser->isHoldControlEnabled());
+				Serial.print(stepper->getAutoPowerTimeout() != 0);
 				Serial.print(",");
-				Serial.print(focuser->getBacklash());
+				Serial.print(stepper->getBacklash());
 				Serial.print(",");
-				Serial.print(focuser->getDirReverse());
+				Serial.print(stepper->isDirectionInverted());
 				Serial.print(",");
 				Serial.print(ENABLE_DEVMAN);
 #if ENABLE_DEVMAN == true
@@ -80,7 +90,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 					Serial.print("%");
 					Serial.print(pin.isPwm);
 					Serial.print("%");
-					Serial.print(pin.autoModeEn);
+					Serial.print(pin.autoMode);
 					Serial.print(")");
 				}
 				Serial.print(",");
@@ -118,7 +128,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				long n = Serial.parseInt();
 				Serial.print("LMove=");
 				Serial.println(n);
-				focuser->move(n);
+				stepper->move(n);
 				break;
 			}
 
@@ -126,13 +136,13 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				long n = Serial.parseInt();
 				Serial.print("LGoTo=");
 				Serial.println(n);
-				focuser->moveToTargetPos(n);
+				stepper->moveTo(n);
 				break;
 			}
 
 			case 'S': {
 				Serial.println(F("LStop"));
-				focuser->brake();
+				stepper->stop();
 				break;
 			}
 
@@ -140,13 +150,13 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				long n = Serial.parseInt();
 				Serial.print(F("LSetPos="));
 				Serial.println(n);
-				focuser->setCurrentPos(n);
+				stepper->setPosition(n);
 				return true;
 			}
 
 			case 'W': {
 				Serial.println(F("LSetZero"));
-				focuser->setCurrentPos(0);
+				stepper->setPosition(0);
 				return true;
 			}
 
@@ -154,7 +164,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				boolean b = (Serial.parseInt() > 0);
 				Serial.print(F("LHoldControl="));
 				Serial.println(b);
-				focuser->setHoldControlEnabled(b);
+				stepper->setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
 				return true;
 			}
 
@@ -162,7 +172,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				long n = Serial.parseInt();
 				Serial.print(F("LSpeed="));
 				Serial.println(n);
-				focuser->setSpeed(n);
+				stepper->setMaxSpeed(map(n, 0, 100, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
 				return true;
 			}
 
@@ -170,7 +180,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				long n = Serial.parseInt();
 				Serial.print(F("LBacklash="));
 				Serial.println(n);
-				focuser->setBacklash(n);
+				stepper->setBacklash(n);
 				return true;
 			}
 
@@ -178,7 +188,7 @@ boolean thunderFocusSerialEvent(Focuser *focuser) {
 				boolean b = (Serial.parseInt() > 0);
 				Serial.print(F("LDirReverse="));
 				Serial.println(b);
-				focuser->setDirReverse(b);
+				stepper->setDirectionInverted(b);
 				return true;
 			}
 
@@ -253,7 +263,7 @@ void thunderFocusUpdPins() {
 	Serial.print(",");
 	for (byte i = 0; i < getManagedPinsCount(); i++) {
 		Pin pin = getManagedPin(i);
-		if (pin.autoModeEn) {
+		if (pin.autoMode) {
 			Serial.print("(");
 			Serial.print(pin.number);
 			Serial.print("%");

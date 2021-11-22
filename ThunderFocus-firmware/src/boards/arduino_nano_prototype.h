@@ -12,7 +12,7 @@
 #define FOCUSER_DIR 2
 #define FOCUSER_STEP 3
 //#define FOCUSER_EN 7
-#define FOCUSER_SCALING_DEFAULT 4
+#define FOCUSER_STPES_SCALING 4
 //#define FOCUSER_MODE0 6
 //#define FOCUSER_MODE1 5
 #define FOCUSER_MODE2 4
@@ -61,7 +61,8 @@
 // ===================================================================================
 #if defined(__AVR__) || defined(CORE_TEENSY)
 #define SETTINGS_SUPPORT true
-#define EEPROM_MARKER 'A'
+#define EEPROM_MARKER 1
+#define EEPROM_PADDING 20
 #define SETTINGS_SAVE_DELAY 5000
 #else
 #define SETTINGS_SUPPORT false

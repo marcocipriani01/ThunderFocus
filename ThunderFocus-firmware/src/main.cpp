@@ -17,7 +17,6 @@
  */
 
 #include "main.h"
-#include "DevManager.h"
 
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
 
@@ -35,7 +34,6 @@ void resetSettings() {
 	settings.backlash = 0;
 	settings.powerTimeout = FOCUSER_POWER_TIMEOUT;
 	settings.reverse = false;
-	settings.scaling = FOCUSER_SCALING_DEFAULT;
 
 #if ENABLE_DEVMAN == true
 	Pin defaults[MANAGED_PINS_COUNT] = MANAGED_PINS;
@@ -55,13 +53,12 @@ void resetSettings() {
 
 void loadSettings() {
 	uint8_t* bytes = (uint8_t*)&settings;
-	for (int i = 0; i < sizeof(Settings); i++) {
+	for (unsigned int i = 0; i < sizeof(Settings); i++) {
 		bytes[i] = EEPROM.read(i);
 	}
 	if (settings.marker != EEPROM_MARKER)
 		resetSettings();
-	else
-		settings.speed = constrain(settings.speed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
+	settings.speed = constrain(settings.speed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
 }
 
 void saveSettings() {
@@ -71,7 +68,6 @@ void saveSettings() {
 	settings.powerTimeout = stepper.getAutoPowerTimeout();
 	settings.backlash = stepper.getBacklash();
 	settings.reverse = stepper.isDirectionInverted();
-	settings.scaling = stepper.getStepsScaling();
 
 #if ENABLE_DEVMAN == true
 	for (uint8_t i = 0; i < getManagedPinsCount(); i++) {
@@ -86,9 +82,10 @@ void saveSettings() {
 #endif
 
 	uint8_t* bytes = (uint8_t*) &settings;
-	for (int i = 0; i < sizeof(Settings); i++) {
+	for (unsigned int i = 0; i < sizeof(Settings); i++) {
 		EEPROM.update(i, bytes[i]);
 	}
+	thunderFocusLog(F("Settings saved."));
 }
 #endif
 
@@ -125,14 +122,16 @@ void setup() {
 	digitalWrite(FOCUSER_MODE2, HIGH);
 #endif
 	stepper.setAcceleration(FOCUSER_ACCEL);
+	stepper.setStepsScaling(FOCUSER_STPES_SCALING);
 	stepper.setPosition(settings.position);
 	stepper.setMaxSpeed(settings.speed);
 	stepper.setBacklash(settings.backlash);
 	stepper.setDirectionInverted(settings.reverse);
-	stepper.setStepsScaling(settings.scaling);
 #ifdef FOCUSER_EN
 	stepper.setEnablePin(FOCUSER_EN, false);
 	stepper.setAutoPowerTimeout(settings.powerTimeout);
+#else
+	stepper.setAutoPowerTimeout(0);
 #endif
 
 #if ENABLE_DEVMAN == true

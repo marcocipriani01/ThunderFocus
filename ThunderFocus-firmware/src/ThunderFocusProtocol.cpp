@@ -26,7 +26,7 @@ FocuserState thunderFocusManage(AccelStepper *stepper) {
 	}
 	unsigned long currentTime = millis();
 	if (currentTime - lastThunderFocusSend >= THUNDERFOCUS_SEND_DELAY) {
-		Serial.print("S");
+		Serial.print(F("S"));
 		Serial.println(stepper->getPosition());
 		lastThunderFocusSend = currentTime;
 	}
@@ -38,11 +38,11 @@ FocuserState thunderFocusManage(AccelStepper *stepper) {
 #if TEMP_HUM_SENSOR == true
 	ambientManage();
 	if (currentTime - lastThunderFocusAmbientSend >= AUTOMATIC_DEVMAN_TIMER) {
-		Serial.print("J");
+		Serial.print(F("J"));
 		Serial.print(getTemperature(), 1);
-		Serial.print(",");
+		Serial.print(F(","));
 		Serial.print(getHumidity(), 1);
-		Serial.print(",");
+		Serial.print(F(","));
 		Serial.println(getDewPoint(), 1);
 		lastThunderFocusAmbientSend = currentTime;
 	}
@@ -56,68 +56,76 @@ FocuserState thunderFocusManage(AccelStepper *stepper) {
 	return currentState;
 }
 
+int speedToPercentage(double speed){
+	return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN);
+}
+
+double percentageToSpeed(int percentage) {
+	return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN;
+}
+
 boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 	while (Serial.available()) {
 		if (Serial.read() == '$') {
-			Serial.println("LFoundCmd");
+			Serial.println(F("LFoundCmd"));
 			switch (Serial.read()) {
 			case 'C': {
-				Serial.print("C");
+				Serial.print(F("C"));
 				Serial.print(FIRMWARE_VERSION);
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(stepper->getPosition());
-				Serial.print(",");
-				Serial.print(map(stepper->getMaxSpeed(), FOCUSER_PPS_MIN, FOCUSER_PPS_MAX, 0, 100));
-				Serial.print(",");
+				Serial.print(F(","));
+				Serial.print(speedToPercentage(stepper->getMaxSpeed()));
+				Serial.print(F(","));
 				Serial.print(stepper->getAutoPowerTimeout() != 0);
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(stepper->getBacklash());
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(stepper->isDirectionInverted());
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(ENABLE_DEVMAN);
 #if ENABLE_DEVMAN == true
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(getDevManAutoMode());
-				Serial.print(",");
+				Serial.print(F(","));
 				for (byte i = 0; i < getManagedPinsCount(); i++) {
 					Pin pin = getManagedPin(i);
-					Serial.print("(");
+					Serial.print(F("("));
 					Serial.print(pin.number);
-					Serial.print("%");
+					Serial.print(F("%"));
 					Serial.print(pin.value);
-					Serial.print("%");
+					Serial.print(F("%"));
 					Serial.print(pin.isPwm);
-					Serial.print("%");
+					Serial.print(F("%"));
 					Serial.print(pin.autoMode);
-					Serial.print(")");
+					Serial.print(F(")"));
 				}
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(TEMP_HUM_SENSOR);
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(TIME_CONTROL);
 #if TIME_CONTROL == true
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(getWorldLat(), 3);
-				Serial.print(",");
+				Serial.print(F(","));
 				Serial.print(getWorldLong(), 3);
 #endif
 #endif
 				Serial.println();
 #if TIME_CONTROL == true
-				Serial.print("LStoredTime=");
+				Serial.print(F("LStoredTime="));
 				Serial.print(hour());
-				Serial.print(":");
+				Serial.print(F(":"));
 				Serial.print(minute());
-				Serial.print(":");
+				Serial.print(F(":"));
 				Serial.print(second());
-				Serial.print(" ");
+				Serial.print(F(" "));
 				Serial.print(day());
-				Serial.print("/");
+				Serial.print(F("/"));
 				Serial.print(month());
-				Serial.print("/");
+				Serial.print(F("/"));
 				Serial.print(year());
-				Serial.println(" UTC");
+				Serial.println(F(" UTC"));
 				thunderFocusUpdSunPos();
 #endif
 				break;
@@ -125,7 +133,7 @@ boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 
 			case 'R': {
 				long n = Serial.parseInt();
-				Serial.print("LMove=");
+				Serial.print(F("LMove="));
 				Serial.println(n);
 				stepper->move(n);
 				break;
@@ -133,7 +141,7 @@ boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 
 			case 'A': {
 				long n = Serial.parseInt();
-				Serial.print("LGoTo=");
+				Serial.print(F("LGoTo="));
 				Serial.println(n);
 				stepper->moveTo(n);
 				break;
@@ -171,7 +179,7 @@ boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 				long n = Serial.parseInt();
 				Serial.print(F("LSpeed="));
 				Serial.println(n);
-				stepper->setMaxSpeed(map(n, 0, 100, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
+				stepper->setMaxSpeed(percentageToSpeed(n));
 				return true;
 			}
 
@@ -241,7 +249,7 @@ boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 					setWorldCoord(((double) lat) / 1000.0, ((double) lng) / 1000.0);
 					Serial.print(F("LSetWorldCoord="));
 					Serial.print(lat);
-					Serial.print(",");
+					Serial.print(F(","));
 					Serial.println(lng);
 					thunderFocusUpdSunPos();
 					return true;
@@ -257,17 +265,17 @@ boolean thunderFocusSerialEvent(AccelStepper *stepper) {
 
 #if ENABLE_DEVMAN == true
 void thunderFocusUpdPins() {
-	Serial.print("Y");
+	Serial.print(F("Y"));
 	Serial.print(getDevManAutoMode());
-	Serial.print(",");
+	Serial.print(F(","));
 	for (byte i = 0; i < getManagedPinsCount(); i++) {
 		Pin pin = getManagedPin(i);
 		if (pin.autoMode) {
-			Serial.print("(");
+			Serial.print(F("("));
 			Serial.print(pin.number);
-			Serial.print("%");
+			Serial.print(F("%"));
 			Serial.print(pin.value);
-			Serial.print(")");
+			Serial.print(F(")"));
 		}
 	}
 	Serial.println();
@@ -275,8 +283,13 @@ void thunderFocusUpdPins() {
 #endif
 
 #if TIME_CONTROL == true
-inline void thunderFocusUpdSunPos() {
-	Serial.print("T");
+void thunderFocusUpdSunPos() {
+	Serial.print(F("T"));
 	Serial.println(getCalculatedSunElev(), 2);
 }
 #endif
+
+void thunderFocusLog(const String &msg) {
+	Serial.print(F("L"));
+	Serial.println(msg);
+}

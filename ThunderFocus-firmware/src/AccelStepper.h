@@ -82,6 +82,8 @@ class AccelStepper {
 #endif
 
    private:
+    long distanceToGo0();
+
     uint8_t _dirPin;
     uint8_t _stepPin;
 

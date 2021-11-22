@@ -34,15 +34,20 @@ extern unsigned long lastThunderFocusAmbientSend;
 extern unsigned long lastThunderFocusSunPosSend;
 #endif
 
+int speedToPercentage(double speed);
+double percentageToSpeed(int percentage);
+
 FocuserState thunderFocusManage(AccelStepper *stepper);
 boolean thunderFocusSerialEvent(AccelStepper *stepper);
+
+void thunderFocusLog(const String &msg);
 
 #if ENABLE_DEVMAN == true
 void thunderFocusUpdPins();
 #endif
 
 #if TIME_CONTROL == true
-inline void thunderFocusUpdSunPos();
+void thunderFocusUpdSunPos();
 #endif
 
 #endif

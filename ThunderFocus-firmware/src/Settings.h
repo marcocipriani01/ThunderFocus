@@ -8,13 +8,15 @@
 #endif
 
 struct Settings {
+#if EEPROM_PADDING > 0
+	byte padding[EEPROM_PADDING];
+#endif
 	uint8_t marker;
 	long position;
 	double speed;
 	long backlash;
 	unsigned long powerTimeout;
 	boolean reverse;
-	long scaling;
 
 #if ENABLE_DEVMAN == true
 	Pin powerPins[MANAGED_PINS_COUNT];

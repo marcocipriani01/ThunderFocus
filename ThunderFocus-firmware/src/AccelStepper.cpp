@@ -81,7 +81,7 @@ void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
     _enablePin = enPin;
     if (_enablePin != -1) {
         pinMode(_enablePin, OUTPUT);
-        if (distanceToGo() == 0) {
+        if (distanceToGo0() == 0) {
             _enabled = enabled;
             digitalWrite(_enablePin, !_enabled);
         }
@@ -89,7 +89,7 @@ void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
 }
 
 void AccelStepper::setEnabled(boolean enabled) {
-    if (distanceToGo() != 0) return;
+    if (distanceToGo0() != 0) return;
     _enabled = enabled;
     if (_enablePin != -1) digitalWrite(_enablePin, !_enabled);
 }
@@ -125,7 +125,11 @@ void AccelStepper::move(long relative) {
 #if ACCELSTEPPER_STEPS_SCALING == true
     relative *= _stepsScaling;
 #endif
-    moveTo(_currentPos + relative);
+    long absolute = _currentPos + relative;
+    if (_targetPos != absolute) {
+        _targetPos = absolute;
+        computeNewSpeed();
+    }
 }
 
 boolean AccelStepper::runSpeed() {
@@ -136,9 +140,9 @@ boolean AccelStepper::runSpeed() {
     unsigned long time = micros();
 #endif
 #if ACCELSTEPPER_BACKLASH_SUPPORT == true
-    if ((!_stepInterval) || (_direction == DIRECTION_NONE)) {
+    if ((_stepInterval == 0) || (_direction == DIRECTION_NONE)) {
 #else
-    if (!_stepInterval) {
+    if (_stepInterval == 0) {
 #endif
 #if ACCELSTEPPER_AUTO_POWER == true
         if (_enabled && (_autoPowerTimeout != 0) && (((unsigned long)(time - _lastStepTime)) >= (_autoPowerTimeout * 1000L))) {
@@ -149,12 +153,11 @@ boolean AccelStepper::runSpeed() {
         return false;
     }
 #if ACCELSTEPPER_AUTO_POWER == true
-    else if (!_enabled) {
+    if (!_enabled) {
         _enabled = true;
         if (_enablePin != -1) digitalWrite(_enablePin, false);
     }
-#endif
-#if ACCELSTEPPER_AUTO_POWER == false
+#else
     unsigned long time = micros();
 #endif
     if (((unsigned long)(time - _lastStepTime)) >= _stepInterval) {
@@ -180,6 +183,14 @@ boolean AccelStepper::runSpeed() {
         return true;
     }
     return false;
+}
+
+long AccelStepper::distanceToGo0() {
+#if ACCELSTEPPER_BACKLASH_SUPPORT == true
+    return _targetPos - _currentPos + _targetBacklash - _currentBacklash;
+#else
+    return _targetPos - _currentPos;
+#endif
 }
 
 long AccelStepper::distanceToGo() {
@@ -217,7 +228,7 @@ long AccelStepper::getPosition() {
 }
 
 void AccelStepper::setPosition(long position) {
-    if (distanceToGo() != 0) return;
+    if (distanceToGo0() != 0) return;
 #if ACCELSTEPPER_STEPS_SCALING == true
     position *= _stepsScaling;
 #endif
@@ -249,7 +260,7 @@ long AccelStepper::getBacklash() {
 #endif
 
 void AccelStepper::computeNewSpeed() {
-    long distanceTo = distanceToGo();
+    long distanceTo = distanceToGo0();
     long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration));
     if (distanceTo == 0 && stepsToStop <= 1) {
         _stepInterval = 0;
@@ -300,7 +311,7 @@ void AccelStepper::computeNewSpeed() {
 
 boolean AccelStepper::run() {
     if (runSpeed()) computeNewSpeed();
-    return (_speed != 0.0) || (distanceToGo() != 0);
+    return (_speed != 0.0) || (distanceToGo0() != 0);
 }
 
 void AccelStepper::setMaxSpeed(double speed) {
@@ -385,6 +396,10 @@ void AccelStepper::runToNewPosition(long position) {
 void AccelStepper::stop() {
     if (_speed != 0.0) {
         long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration)) + 1;  // Equation 16 (+integer rounding)
-        move((_speed > 0) ? stepsToStop : (-stepsToStop));
+        long absolute = _currentPos + ((_speed > 0) ? stepsToStop : (-stepsToStop));
+        if (_targetPos != absolute) {
+            _targetPos = absolute;
+            computeNewSpeed();
+        }
     }
 }

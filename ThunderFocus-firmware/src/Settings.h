@@ -10,7 +10,7 @@
 struct Settings {
 	uint8_t marker;
 	long position;
-	uint8_t speed;
+	double speed;
 	long backlash;
 	unsigned long powerTimeout;
 	boolean reverse;

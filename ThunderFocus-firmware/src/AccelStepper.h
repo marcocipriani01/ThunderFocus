@@ -2,11 +2,12 @@
 #define AccelStepper_h
 
 #include <Arduino.h>
-#define ACCELSTEPPER_PULSE_WIDTH_MICROS 1
+#define ACCELSTEPPER_PULSE_WIDTH_MICROS 0
 #define ACCELSTEPPER_BACKLASH_SUPPORT true
 #define ACCELSTEPPER_EN_PIN_SUPPORT true
 #define ACCELSTEPPER_AUTO_POWER true
 #define ACCELSTEPPER_STEPS_SCALING true
+#define ACCELSTEPPER_INVERT_DIR_SUPPORT true
 
 #if ACCELSTEPPER_AUTO_POWER == true && ACCELSTEPPER_EN_PIN_SUPPORT == false
 #error "Can't use auto-power without the enabled pin support."
@@ -26,11 +27,11 @@ class AccelStepper {
     boolean runSpeedToPosition();
     void runToNewPosition(long position);
 
-    float getMaxSpeed();
-    void setMaxSpeed(float speed);
-    void setAcceleration(float acceleration);
-    void setSpeed(float speed);
-    float getSpeed();
+    double getMaxSpeed();
+    void setMaxSpeed(double speed);
+    void setAcceleration(double acceleration);
+    void setSpeed(double speed);
+    double getSpeed();
 
     long distanceToGo();
     long getTarget();
@@ -42,8 +43,10 @@ class AccelStepper {
 	long getBacklash();
 #endif
 
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
     boolean isDirectionInverted();
-    void setDirectionInverted(boolean b);
+    void setDirectionInverted(boolean inverted);
+#endif
 
 #if ACCELSTEPPER_EN_PIN_SUPPORT == true
     void setEnablePin(uint8_t enPin, boolean enabled);
@@ -82,12 +85,14 @@ class AccelStepper {
     uint8_t _dirPin;
     uint8_t _stepPin;
 
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
     boolean _invertDir;
+#endif
 
     long _currentPos;
     long _targetPos;
-    float _speed;
-    float _maxSpeed;
+    double _speed;
+    double _maxSpeed;
 
 #if ACCELSTEPPER_BACKLASH_SUPPORT == true
     long _backlash;
@@ -107,13 +112,13 @@ class AccelStepper {
     long _stepsScaling;
 #endif
 
-    float _acceleration;
+    double _acceleration;
     unsigned long _stepInterval;
     unsigned long _lastStepTime;
     long _n;
-    float _c0;
-    float _cn;
-    float _cmin;
+    double _c0;
+    double _cn;
+    double _cmin;
 };
 
 #endif

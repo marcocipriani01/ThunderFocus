@@ -1,26 +1,25 @@
 /**
-   Focuser & powerbox by marcocipriani01
-
-** Version 4.2 ***
-   December 2020
-   Dropped MoonLite support
-
-** Version 4.0 ***
-   November 2020
-
- ** Version 3.0 ***
-   March 2020
+  * Focuser & powerbox by marcocipriani01
+  * 
+  * == Version 5.0 ==
+  *    November 2021
+  *    Removed hand controller support, lighter and faster code.
+  * 
+  * == Version 4.2 ==
+  *    December 2020
+  *    Dropped MoonLite support
+  * 
+  * == Version 4.0 ==
+  *    November 2020
+  * 
+  * == Version 3.0 ==
+  *    March 2020
  */
 
 #include "main.h"
 #include "DevManager.h"
 
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
-
-// Hand controller
-#if FOCUSER_ENABLE_HC == true
-HandController hc(&focuser);
-#endif
 
 #if SETTINGS_SUPPORT == true
 // Settings data for EEPROM storage
@@ -30,10 +29,11 @@ boolean needToSaveSettings = false;
 unsigned long lastTimeSettingsSave = 0;
 
 void resetSettings() {
+	settings.marker = EEPROM_MARKER;
 	settings.position = 0;
-	settings.speed = (FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2;
+	settings.speed = (FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2.0;
 	settings.backlash = 0;
-	settings.powerTimeout = 30000;
+	settings.powerTimeout = FOCUSER_POWER_TIMEOUT;
 	settings.reverse = false;
 	settings.scaling = FOCUSER_SCALING_DEFAULT;
 
@@ -49,21 +49,23 @@ void resetSettings() {
 	worldLat = 0.0;
 	worldLong = 0.0;
 #endif
+
+	saveSettings();
 }
 
 void loadSettings() {
-	uint8_t* dst = (uint8_t*)&settings;
-	for (unsigned int i = 0; i < sizeof(Settings); i++) {
-		dst[i] = EEPROM.read(i);
+	uint8_t* bytes = (uint8_t*)&settings;
+	for (int i = 0; i < sizeof(Settings); i++) {
+		bytes[i] = EEPROM.read(i);
 	}
-	if (settings.marker != EEPROM_VERSION) {
-		settings.marker = EEPROM_VERSION;
-		saveSettings();
-	}
+	if (settings.marker != EEPROM_MARKER)
+		resetSettings();
+	else
+		settings.speed = constrain(settings.speed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
 }
 
 void saveSettings() {
-	settings.marker = EEPROM_VERSION;
+	settings.marker = EEPROM_MARKER;
 	settings.position = stepper.getPosition();
 	settings.speed = stepper.getMaxSpeed();
 	settings.powerTimeout = stepper.getAutoPowerTimeout();
@@ -83,9 +85,9 @@ void saveSettings() {
 	settings.worldLong = getWorldLong();
 #endif
 
-	uint8_t* dst = (uint8_t*) &settings;
-	for (unsigned int i = 0; i < sizeof(Settings); ++i) {
-		EEPROM.update(i, dst[i]);
+	uint8_t* bytes = (uint8_t*) &settings;
+	for (int i = 0; i < sizeof(Settings); i++) {
+		EEPROM.update(i, bytes[i]);
 	}
 }
 #endif
@@ -122,6 +124,7 @@ void setup() {
 	pinMode(FOCUSER_MODE2, OUTPUT);
 	digitalWrite(FOCUSER_MODE2, HIGH);
 #endif
+	stepper.setAcceleration(FOCUSER_ACCEL);
 	stepper.setPosition(settings.position);
 	stepper.setMaxSpeed(settings.speed);
 	stepper.setBacklash(settings.backlash);
@@ -130,9 +133,6 @@ void setup() {
 #ifdef FOCUSER_EN
 	stepper.setEnablePin(FOCUSER_EN, false);
 	stepper.setAutoPowerTimeout(settings.powerTimeout);
-#endif
-#if FOCUSER_ENABLE_HC == true
-	hc.begin();
 #endif
 
 #if ENABLE_DEVMAN == true
@@ -155,32 +155,27 @@ void setup() {
 }
 
 void loop() {
-	if (thunderFocusManage(&stepper) == FocuserState::ARRIVED)
-		flagSettings();
-
-#if ENABLE_HC == true
-	hc.manage();
-#endif
-
 #if SETTINGS_SUPPORT == true
-	unsigned long currentTime = millis();
-	if (currentTime - lastTimeSettingsSave >= SETTINGS_SAVE_DELAY) {
+	if (thunderFocusManage(&stepper) == FocuserState::ARRIVED)
+		needToSaveSettings = true;
+	unsigned long t = millis();
+	if (t - lastTimeSettingsSave >= SETTINGS_SAVE_DELAY) {
 		if (needToSaveSettings) {
 			saveSettings();
 			needToSaveSettings = false;
 		}
-		lastTimeSettingsSave = currentTime;
+		lastTimeSettingsSave = t;
 	}
-#endif
-}
-
-inline void flagSettings() {
-#if SETTINGS_SUPPORT == true
-	needToSaveSettings = true;
+#else
+	thunderFocusManage(&stepper);
 #endif
 }
 
 void serialEvent() {
+#if SETTINGS_SUPPORT == true
 	if (thunderFocusSerialEvent(&stepper))
-		flagSettings();
+		needToSaveSettings = true;
+#else
+	thunderFocusSerialEvent(&stepper);
+#endif
 }

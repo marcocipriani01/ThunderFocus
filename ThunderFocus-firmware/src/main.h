@@ -2,9 +2,8 @@
 #define MAIN_H
 
 #include <Arduino.h>
-#include "config.h"
-
 #include "ThunderFocusProtocol.h"
+#include "config.h"
 
 #if FOK1_ENABLE_HC == true
 #include "HandController.h"
@@ -21,7 +20,4 @@
 #if SETTINGS_SUPPORT == true
 #include "Settings.h"
 #endif
-
-inline void flagSettings();
-
 #endif

@@ -16,22 +16,10 @@
 //#define FOCUSER_MODE0 6
 //#define FOCUSER_MODE1 5
 #define FOCUSER_MODE2 4
-
-#define FOCUSER_ACCEL 50
-#define FOCUSER_PPS_MIN 2
-#define FOCUSER_PPS_MAX 500
+#define FOCUSER_ACCEL 600.0
+#define FOCUSER_PPS_MIN 100.0
+#define FOCUSER_PPS_MAX 9000.0
 #define FOCUSER_POWER_TIMEOUT 60000
-
-// ---------- Focuser 1 hand controller ----------
-#define FOCUSER_ENABLE_HC false
-#define FOCUSER_HC_KNOB A0
-#define FOCUSER_HC_LEFT 9
-#define FOCUSER_HC_RIGHT 10
-#define FOCUSER_HC_MIN_SPEED_DELAY 80
-#define FOCUSER_HC_MAX_SPEED_DELAY 20
-#define FOCUSER_HC_MAX_STEPS 60 * FOCUSER_uSTEPS
-#define FOCUSER_HC_PPS_MAX 500 * FOCUSER_uSTEPS
-#define FOCUSER_HC_PPS_MIN 2 * FOCUSER_uSTEPS
 
 // ===================================================================================
 // ============================== DEVICE MANAGER CONFIG ==============================
@@ -73,7 +61,7 @@
 // ===================================================================================
 #if defined(__AVR__) || defined(CORE_TEENSY)
 #define SETTINGS_SUPPORT true
-#define EEPROM_VERSION 1
+#define EEPROM_MARKER 'A'
 #define SETTINGS_SAVE_DELAY 5000
 #else
 #define SETTINGS_SUPPORT false

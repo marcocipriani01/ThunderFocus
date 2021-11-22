@@ -46,7 +46,7 @@ boolean processAutoMode(boolean force);
 Pin getManagedPin(byte index);
 byte getManagedPinsCount();
 void updatePin(byte pin, byte value);
-boolean setPinAutoMode(byte pin, boolean autoModeEn);
+boolean setPinAutoMode(byte pin, boolean autoMode);
 DevManAutoModes getDevManAutoMode();
 boolean setDevManAutoMode(DevManAutoModes autoMode);
 

@@ -1,7 +1,7 @@
 #include "ThunderFocusProtocol.h"
 
-FocuserState lastFok1State = FocuserState::POWER_SAVE;
-unsigned long lastThunderFocusSerialSend = 0;
+FocuserState lastFocuserState = FocuserState::POWER_SAVE;
+unsigned long lastThunderFocusSend = 0;
 #if TEMP_HUM_SENSOR == true
 unsigned long lastThunderFocusAmbientSend = 0;
 #endif
@@ -19,7 +19,7 @@ FocuserState thunderFocusManage(AccelStepper *stepper) {
 		currentState = FocuserState::HOLD;
 	else
 		currentState = FocuserState::POWER_SAVE;
-	
+
 	if (currentState != lastFocuserState) {
 		Serial.println((char) currentState);
 		lastFocuserState = currentState;
@@ -32,9 +32,8 @@ FocuserState thunderFocusManage(AccelStepper *stepper) {
 	}
 
 #if ENABLE_DEVMAN == true
-	if (devManage()) {
+	if (devManage())
 		thunderFocusUpdPins();
-	}
 #endif
 #if TEMP_HUM_SENSOR == true
 	ambientManage();

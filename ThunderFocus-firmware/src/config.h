@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define FIRMWARE_VERSION "43"
+#define FIRMWARE_VERSION "50"
 
 #define SERIAL_SPEED 115200
 #define SERIAL_TIMEOUT 100

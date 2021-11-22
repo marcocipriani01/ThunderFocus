@@ -47,7 +47,7 @@ boolean devManage() {
 
 boolean processAutoMode(boolean force) {
 	boolean hasChanged = false;
-	if (devManAutoMode != DevManAutoModes::UNAVAILABLE) {
+	if (devManAutoMode != DevManAutoModes::NONE) {
 		unsigned long currentTime = millis();
 		if (force || ((currentTime - lastDevManTime) >= AUTOMATIC_DEVMAN_TIMER)) {
 #if TIME_CONTROL == true
@@ -113,7 +113,7 @@ boolean processAutoMode(boolean force) {
 			}
 #endif
 			default: {
-				devManAutoMode = DevManAutoModes::UNAVAILABLE;
+				devManAutoMode = DevManAutoModes::NONE;
 				break;
 			}
 			}
@@ -134,7 +134,7 @@ byte getManagedPinsCount() {
 void updatePin(byte pin, byte value) {
 	for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
 		if (pin == pins[i].number){
-			pins[i].autoModeEn = false;
+			pins[i].autoMode = false;
 			if (pins[i].isPwm) {
 				pins[i].value = value;
 				analogWrite(pins[i].number, value);
@@ -148,10 +148,10 @@ void updatePin(byte pin, byte value) {
 	}
 }
 
-boolean setPinAutoMode(byte pin, boolean autoModeEn) {
+boolean setPinAutoMode(byte pin, boolean autoMode) {
 	for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
 		if (pin == pins[i].number){
-			pins[i].autoModeEn = autoModeEn;
+			pins[i].autoMode = autoMode;
 			return processAutoMode(true);
 		}
 	}
@@ -187,7 +187,7 @@ boolean setDevManAutoMode(DevManAutoModes autoMode) {
 	}
 #endif
 	default: {
-		devManAutoMode = DevManAutoModes::UNAVAILABLE;
+		devManAutoMode = DevManAutoModes::NONE;
 		return true;
 	}
 	}
@@ -203,7 +203,7 @@ int pwmMap(double in, double min, double max) {
 boolean forEachAutoPin(int pwm, boolean digital) {
 	boolean hasChanged = false;
 	for (int i = 0; i < MANAGED_PINS_COUNT; i++) {
-		if (pins[i].autoModeEn) {
+		if (pins[i].autoMode) {
 			if (pins[i].isPwm) {
 				if (pwm != pins[i].value) {
 					pins[i].value = pwm;

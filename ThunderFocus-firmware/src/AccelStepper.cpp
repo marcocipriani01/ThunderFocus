@@ -19,7 +19,9 @@ AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
 #else
     _direction = DIRECTION_CW;
 #endif
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
     _invertDir = false;
+#endif
     _n = 0;
     _cn = 0.0;
     _cmin = 1.0;
@@ -35,6 +37,16 @@ AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
     _stepsScaling = 1;
 #endif
 }
+
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
+    boolean AccelStepper::isDirectionInverted() {
+        return _invertDir;
+    }
+
+    void AccelStepper::setDirectionInverted(boolean inverted) {
+        _invertDir = inverted;
+    }
+#endif
 
 #if ACCELSTEPPER_STEPS_SCALING == true
     void AccelStepper::setStepsScaling(long stepsScaling) {
@@ -147,7 +159,9 @@ boolean AccelStepper::runSpeed() {
 #endif
     if (((unsigned long)(time - _lastStepTime)) >= _stepInterval) {
         boolean dir = (_direction == DIRECTION_CCW);
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
         if (_invertDir) dir = !dir;
+#endif
 #if ACCELSTEPPER_BACKLASH_SUPPORT == true
         if ((_targetBacklash - _currentBacklash) == 0)
             _currentPos += (dir ? (-1) : 1);
@@ -289,7 +303,7 @@ boolean AccelStepper::run() {
     return (_speed != 0.0) || (distanceToGo() != 0);
 }
 
-void AccelStepper::setMaxSpeed(float speed) {
+void AccelStepper::setMaxSpeed(double speed) {
     if (speed < 0.0) speed = -speed;
 #if ACCELSTEPPER_STEPS_SCALING == true
     speed *= _stepsScaling;
@@ -304,7 +318,7 @@ void AccelStepper::setMaxSpeed(float speed) {
     }
 }
 
-float AccelStepper::getMaxSpeed() {
+double AccelStepper::getMaxSpeed() {
 #if ACCELSTEPPER_STEPS_SCALING == true
     return _maxSpeed / _stepsScaling;
 #else
@@ -312,7 +326,7 @@ float AccelStepper::getMaxSpeed() {
 #endif
 }
 
-void AccelStepper::setAcceleration(float acceleration) {
+void AccelStepper::setAcceleration(double acceleration) {
     if (acceleration == 0.0) return;
     if (acceleration < 0.0) acceleration = -acceleration;
 #if ACCELSTEPPER_STEPS_SCALING == true
@@ -326,7 +340,7 @@ void AccelStepper::setAcceleration(float acceleration) {
     }
 }
 
-void AccelStepper::setSpeed(float speed) {
+void AccelStepper::setSpeed(double speed) {
     if (speed == _speed) return;
 #if ACCELSTEPPER_STEPS_SCALING == true
     speed *= _stepsScaling;
@@ -341,7 +355,7 @@ void AccelStepper::setSpeed(float speed) {
     _speed = speed;
 }
 
-float AccelStepper::getSpeed() {
+double AccelStepper::getSpeed() {
 #if ACCELSTEPPER_STEPS_SCALING == true
     return _speed / _stepsScaling;
 #else

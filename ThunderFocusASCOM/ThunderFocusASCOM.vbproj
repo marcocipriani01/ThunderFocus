@@ -154,9 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ASCOM.png" />
-    <Content Include="ReadMe.htm">
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="Resources\icon.ico" />
     <None Include="Resources\ThunderFocus.png" />
   </ItemGroup>

@@ -135,7 +135,7 @@ Public Class Focuser
     Public Sub SetupDialog() Implements IFocuserV3.SetupDialog
         Application.EnableVisualStyles()
         If IsConnected Then
-            MessageBox.Show("Ponte in esecuzione, utilizzare il pannello di controllo per la configurazione.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("ASCOM bridge running, use the control panel to configure the focuser.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As SetupDialogForm = New SetupDialogForm()
                 Dim result As DialogResult = F.ShowDialog()

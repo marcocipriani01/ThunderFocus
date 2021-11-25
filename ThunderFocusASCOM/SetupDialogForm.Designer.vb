@@ -41,39 +41,41 @@ Partial Class SetupDialogForm
         '
         'OK_Button
         '
-        Me.OK_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.OK_Button.Location = New System.Drawing.Point(195, 221)
+        Me.OK_Button.Font = New System.Drawing.Font("Segoe UI Semibold", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.OK_Button.Location = New System.Drawing.Point(198, 228)
         Me.OK_Button.Name = "OK_Button"
         Me.OK_Button.Size = New System.Drawing.Size(82, 40)
         Me.OK_Button.TabIndex = 0
-        Me.OK_Button.Text = "Salva"
+        Me.OK_Button.Text = "Save"
         '
         'Cancel_Button
         '
         Me.Cancel_Button.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.Cancel_Button.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Cancel_Button.Location = New System.Drawing.Point(107, 221)
+        Me.Cancel_Button.Font = New System.Drawing.Font("Segoe UI Semibold", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Cancel_Button.Location = New System.Drawing.Point(110, 228)
         Me.Cancel_Button.Name = "Cancel_Button"
         Me.Cancel_Button.Size = New System.Drawing.Size(82, 40)
         Me.Cancel_Button.TabIndex = 1
-        Me.Cancel_Button.Text = "Annulla"
+        Me.Cancel_Button.Text = "Cancel"
         '
         'label2
         '
         Me.label2.AutoSize = True
-        Me.label2.Location = New System.Drawing.Point(9, 192)
+        Me.label2.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.label2.Location = New System.Drawing.Point(12, 195)
         Me.label2.Name = "label2"
-        Me.label2.Size = New System.Drawing.Size(70, 13)
+        Me.label2.Size = New System.Drawing.Size(70, 15)
         Me.label2.TabIndex = 7
-        Me.label2.Text = "Porta socket:"
+        Me.label2.Text = "Socket port:"
         '
         'SocketPortSpinner
         '
-        Me.SocketPortSpinner.Location = New System.Drawing.Point(85, 190)
+        Me.SocketPortSpinner.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.SocketPortSpinner.Location = New System.Drawing.Point(88, 193)
         Me.SocketPortSpinner.Maximum = New Decimal(New Integer() {99999, 0, 0, 0})
         Me.SocketPortSpinner.Minimum = New Decimal(New Integer() {1024, 0, 0, 0})
         Me.SocketPortSpinner.Name = "SocketPortSpinner"
-        Me.SocketPortSpinner.Size = New System.Drawing.Size(298, 20)
+        Me.SocketPortSpinner.Size = New System.Drawing.Size(295, 23)
         Me.SocketPortSpinner.TabIndex = 10
         Me.SocketPortSpinner.Value = New Decimal(New Integer() {1234, 0, 0, 0})
         '
@@ -90,12 +92,12 @@ Partial Class SetupDialogForm
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(102, 55)
+        Me.Label4.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.Location = New System.Drawing.Point(119, 55)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(214, 20)
+        Me.Label4.Size = New System.Drawing.Size(200, 21)
         Me.Label4.TabIndex = 13
-        Me.Label4.Text = "Un progetto di Marco Cipriani"
+        Me.Label4.Text = "A project by Marco Cipriani"
         '
         'PictureBox2
         '
@@ -124,32 +126,32 @@ Partial Class SetupDialogForm
         'StartThunderFocusGUIButton
         '
         Me.StartThunderFocusGUIButton.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.StartThunderFocusGUIButton.Location = New System.Drawing.Point(12, 100)
+        Me.StartThunderFocusGUIButton.Location = New System.Drawing.Point(12, 101)
         Me.StartThunderFocusGUIButton.Name = "StartThunderFocusGUIButton"
         Me.StartThunderFocusGUIButton.Size = New System.Drawing.Size(371, 41)
         Me.StartThunderFocusGUIButton.TabIndex = 14
-        Me.StartThunderFocusGUIButton.Text = "Avvia software di controllo"
+        Me.StartThunderFocusGUIButton.Text = "Start ThunderFocus"
         Me.StartThunderFocusGUIButton.UseVisualStyleBackColor = True
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(28, 144)
+        Me.Label1.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.Location = New System.Drawing.Point(28, 146)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(337, 32)
+        Me.Label1.Size = New System.Drawing.Size(339, 34)
         Me.Label1.TabIndex = 15
-        Me.Label1.Text = "Importante: il software di controllo di ThunderFocus" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "deve essere in esecuzione e" &
-    " la porta seriale connessa."
+        Me.Label1.Text = "Note: the ThunderFocus control panel must be open and" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "connected to the focuser f" &
+    "or the ASCOM driver to work."
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'DebugCheckBox
         '
         Me.DebugCheckBox.AutoSize = True
-        Me.DebugCheckBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DebugCheckBox.Location = New System.Drawing.Point(13, 270)
+        Me.DebugCheckBox.Font = New System.Drawing.Font("Segoe UI", 6.75!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.DebugCheckBox.Location = New System.Drawing.Point(12, 269)
         Me.DebugCheckBox.Name = "DebugCheckBox"
-        Me.DebugCheckBox.Size = New System.Drawing.Size(51, 16)
+        Me.DebugCheckBox.Size = New System.Drawing.Size(49, 16)
         Me.DebugCheckBox.TabIndex = 16
         Me.DebugCheckBox.Text = "Debug"
         Me.DebugCheckBox.UseVisualStyleBackColor = True

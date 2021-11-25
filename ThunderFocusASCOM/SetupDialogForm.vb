@@ -16,12 +16,8 @@ Public Class SetupDialogForm
     Private Sub ShowAscomWebPage(sender As Object, e As EventArgs) Handles PictureBox1.DoubleClick, PictureBox1.Click
         Try
             Process.Start("https://ascom-standards.org/")
-        Catch noBrowser As ComponentModel.Win32Exception
-            If noBrowser.ErrorCode = -2147467259 Then
-                MessageBox.Show(Me, noBrowser.Message, "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End If
         Catch other As Exception
-            MessageBox.Show(Me, other.Message, "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show(Me, "Could not open the browser.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -35,7 +31,7 @@ Public Class SetupDialogForm
             Dim dir As String = Environment.GetEnvironmentVariable("thunderfok")
             Process.Start(dir + "\bin\javaw.exe", """-jar"" """ + dir + "\ThunderFocus.jar""")
         Catch ex As Exception
-            MessageBox.Show(Me, "Errore di avvio!", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show(Me, "Could not start ThunderFocus!", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 End Class

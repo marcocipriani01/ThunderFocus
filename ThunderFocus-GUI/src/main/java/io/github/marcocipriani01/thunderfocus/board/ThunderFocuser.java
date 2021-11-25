@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
 
-@SuppressWarnings("unused")
 public class ThunderFocuser implements SerialMessageListener {
 
     private final ArrayList<Listener> listeners = new ArrayList<>();
@@ -26,7 +25,6 @@ public class ThunderFocuser implements SerialMessageListener {
     private FocuserState focuserState = FocuserState.NONE;
     private volatile boolean ready = false;
     private volatile int requestedPos = 0;
-    private volatile int requestedRelPos = 10;
     private volatile int currentPos = 0;
     private volatile int currentPosTicks = 0;
     private volatile int speed = 80;
@@ -119,17 +117,12 @@ public class ThunderFocuser implements SerialMessageListener {
         return requestedPos;
     }
 
-    public int getRequestedRelPos() {
-        return requestedRelPos;
-    }
-
     public void setExclusiveMode(Listener exclusiveCaller) {
         this.exclusiveCaller = exclusiveCaller;
     }
 
     public void clearRequestedPositions() {
         requestedPos = currentPos;
-        requestedRelPos = 0;
     }
 
     public int getCurrentPos() {
@@ -157,11 +150,11 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public int ticksToSteps(int ticks) {
-        return (int) ((((double) ticks) / ((double) Main.settings.getFokTicksCount())) * ((double) Main.settings.getFokMaxTravel()));
+        return (int) ((((double) ticks) / ((double) Main.settings.fokTicksCount)) * ((double) Main.settings.getFokMaxTravel()));
     }
 
     public int stepsToTicks(int steps) {
-        return (int) ((((double) steps) / ((double) Main.settings.getFokMaxTravel())) * ((double) Main.settings.getFokTicksCount()));
+        return (int) ((((double) steps) / ((double) Main.settings.getFokMaxTravel())) * ((double) Main.settings.fokTicksCount));
     }
 
     @Override
@@ -201,8 +194,11 @@ public class ThunderFocuser implements SerialMessageListener {
                 case 'H' -> // Hold
                         updFocuserState(FocuserState.HOLD_MOTOR);
 
-                case 'A' -> // Arrived
-                        nOnReachedPos();
+                case 'A' -> { // Arrived
+                    for (Listener l : listeners) {
+                        l.onReachedPos();
+                    }
+                }
 
                 case 'P' -> // Power save
                         updFocuserState(FocuserState.POWER_SAVE);
@@ -309,12 +305,6 @@ public class ThunderFocuser implements SerialMessageListener {
         e.printStackTrace();
     }
 
-    private void nOnReachedPos() {
-        for (Listener l : listeners) {
-            l.onReachedPos();
-        }
-    }
-
     private void notifyListeners(Listener notMe, Parameters p) {
         for (Listener l : listeners) {
             if (l != notMe) l.updateParam(p);
@@ -344,7 +334,6 @@ public class ThunderFocuser implements SerialMessageListener {
 
     public enum Parameters {
         REQUESTED_POS,
-        REQUESTED_REL_POS,
         CURRENT_POS,
         CURRENT_POS_TICKS,
         SPEED,
@@ -401,35 +390,32 @@ public class ThunderFocuser implements SerialMessageListener {
                 f.notifyListeners(caller, Parameters.POWERBOX_WORLD_COORD);
             }
         }),
-        FOK1_REL_MOVE('R', 1, null, (f, caller, params) -> {
-            f.requestedRelPos = params[0];
-            f.notifyListeners(caller, Parameters.REQUESTED_REL_POS);
-        }),
-        FOK1_ABS_MOVE('A', 1,
+        FOCUSER_REL_MOVE('R', 1, null),
+        FOCUSER_ABS_MOVE('A', 1,
                 (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel()),
                 (f, caller, params) -> {
                     f.requestedPos = params[0];
                     f.notifyListeners(caller, Parameters.REQUESTED_POS);
                 }),
-        FOK1_STOP('S'),
-        FOK1_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
-        FOK1_SET_ZERO('W'),
-        FOK1_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
+        FOCUSER_STOP('S'),
+        FOCUSER_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
+        FOCUSER_SET_ZERO('W'),
+        FOCUSER_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
                 (f, caller, params) -> {
                     f.speed = params[0];
                     f.notifyListeners(caller, Parameters.SPEED);
                 }),
-        FOK1_SET_BACKLASH('B', 1, (f, params) -> (params[0] >= 0),
+        FOCUSER_SET_BACKLASH('B', 1, (f, params) -> (params[0] >= 0),
                 (f, caller, params) -> {
                     f.backlash = params[0];
                     f.notifyListeners(caller, Parameters.BACKLASH);
                 }),
-        FOK1_REVERSE_DIR('D', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
+        FOCUSER_REVERSE_DIR('D', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
                 (f, caller, params) -> {
                     f.reverseDir = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.REVERSE_DIR);
                 }),
-        FOK1_POWER_SAVER('H', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
+        FOCUSER_POWER_SAVER('H', 1, (f, params) -> (params[0] == 0) || (params[0] == 1),
                 (f, caller, params) -> {
                     f.powerSaver = (params[0] == 1);
                     f.notifyListeners(caller, Parameters.ENABLE_POWER_SAVE);
@@ -493,6 +479,7 @@ public class ThunderFocuser implements SerialMessageListener {
         }
 
         private interface ParamValidator {
+            @SuppressWarnings("BooleanMethodIsAlwaysInverted")
             boolean validate(ThunderFocuser f, int[] params);
         }
 
@@ -502,13 +489,17 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public interface Listener {
-        void updateConnSate(ConnState connState);
+        default void updateConnSate(ConnState connState) {
+        }
 
-        void updateFocuserState(FocuserState focuserState);
+        default void updateFocuserState(FocuserState focuserState) {
+        }
 
-        void onReachedPos();
+        default void onReachedPos() {
+        }
 
-        void updateParam(Parameters p);
+        default void updateParam(Parameters p) {
+        }
 
         default void onCriticalError(Exception e) {
         }

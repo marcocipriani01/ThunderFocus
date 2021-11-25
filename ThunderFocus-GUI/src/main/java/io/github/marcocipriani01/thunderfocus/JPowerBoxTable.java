@@ -45,8 +45,10 @@ public class JPowerBoxTable extends JTable {
     }
 
     public void refresh() {
-        ((PowerBoxTableModel) getModel()).fireTableDataChanged();
-        setTableRowsHeight();
+        ((PowerBoxTableModel) dataModel).fireTableDataChanged();
+        for (int row = 0; row < getRowCount(); row++) {
+            setRowHeight(row, DEF_ROW_HEIGHT);
+        }
     }
 
     public void fixWidths() {
@@ -68,13 +70,6 @@ public class JPowerBoxTable extends JTable {
     public void setPowerBox(PowerBox powerBox) {
         this.powerBox = powerBox;
         ((PowerBoxTableModel) dataModel).fireTableStructureChanged();
-        setTableRowsHeight();
-    }
-
-    /**
-     * Sets the height of every row in the table to the desired one.
-     */
-    private void setTableRowsHeight() {
         for (int row = 0; row < getRowCount(); row++) {
             setRowHeight(row, DEF_ROW_HEIGHT);
         }

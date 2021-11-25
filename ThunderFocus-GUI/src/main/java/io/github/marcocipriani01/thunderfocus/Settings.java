@@ -13,6 +13,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
 
@@ -20,9 +21,8 @@ import static io.github.marcocipriani01.thunderfocus.Main.i18n;
  * Stores all the app's settings.
  *
  * @author marcocipriani01
- * @version 1.1
+ * @version 1.2
  */
-@SuppressWarnings({"SameParameterValue", "unused"})
 public class Settings {
 
     /**
@@ -33,40 +33,45 @@ public class Settings {
     private static Path filePath = null;
     private static String folder = null;
     private final ArrayList<SettingsListener> listeners = new ArrayList<>();
-
+    @SerializedName("Relative step size")
+    @Expose
+    public int relativeStepSize = 10;
+    @SerializedName("Focuser presets")
+    @Expose
+    public LinkedHashMap<Integer, String> presets = new LinkedHashMap<>();
     @SerializedName("AppTheme")
     @Expose
-    private Theme theme = Theme.LIGHT;
+    public Theme theme = Theme.LIGHT;
+    @SerializedName("Show IP in INDI driver")
+    @Expose
+    public boolean showIpIndiDriver = false;
+    @SerializedName("External control")
+    @Expose
+    public ExternalControl externalControl = ExternalControl.NONE;
+    @SerializedName("INDI port")
+    @Expose
+    public int indiServerPort = 7626;
+    @SerializedName("ASCOM port")
+    @Expose
+    public int ascomBridgePort = 5001;
+    @SerializedName("Focuser ticks count")
+    @Expose
+    public int fokTicksCount = 70;
+    @SerializedName("Focuser ticks unit")
+    @Expose
+    public Units fokTicksUnit = Units.TICKS;
+    @SerializedName("Auto connect")
+    @Expose
+    public boolean autoConnect = false;
     @SerializedName("Serial port")
     @Expose
     private String serialPort = "";
-    @SerializedName("External control")
-    @Expose
-    private ExternalControl externalControl = ExternalControl.NONE;
-    @SerializedName("INDI port")
-    @Expose
-    private int indiServerPort = 7626;
-    @SerializedName("ASCOM port")
-    @Expose
-    private int ascomBridgePort = 5001;
-    @SerializedName("INDI connection mode")
-    @Expose
-    private INDIConnectionMode indiConnectionMode = INDIConnectionMode.LOCAL;
-    @SerializedName("Focuser ticks count")
-    @Expose
-    private int fokTicksCount = 70;
-    @SerializedName("Focuser ticks unit")
-    @Expose
-    private Units fokTicksUnit = Units.TICKS;
     @SerializedName("Focuser max travel")
     @Expose
     private int fokMaxTravel = 32767;
     @SerializedName("Powerbox data")
     @Expose
     private PowerBox powerBox = new PowerBox();
-    @SerializedName("Auto connect")
-    @Expose
-    private boolean autoConnect = false;
 
     public static String getSettingsFolder() throws IOException {
         if (Settings.folder != null) return Settings.folder;
@@ -108,9 +113,9 @@ public class Settings {
         if (s.fokMaxTravel < 1 || s.fokMaxTravel >= 2147483647) s.fokMaxTravel = 32767;
         if (s.theme == null) s.theme = Theme.LIGHT;
         if (s.externalControl == null) s.externalControl = ExternalControl.NONE;
-        if (s.indiConnectionMode == null) s.indiConnectionMode = INDIConnectionMode.LOCAL;
         if (s.fokTicksUnit == null) s.fokTicksUnit = Units.TICKS;
         if (s.powerBox == null) s.powerBox = new PowerBox();
+        if (s.relativeStepSize <= 0) s.relativeStepSize = 10;
         return s;
     }
 
@@ -118,30 +123,8 @@ public class Settings {
         Files.write(getSettingsFilePath(), serializer.toJson(this).getBytes());
     }
 
-    public boolean getAutoConnect() {
-        return autoConnect;
-    }
-
-    public void setAutoConnect(boolean autoConnect, SettingsListener caller) {
-        this.autoConnect = autoConnect;
-        update(Value.AUTO_CONNECT, caller, this.autoConnect);
-    }
-
     public void addListener(SettingsListener listener) {
         listeners.add(listener);
-    }
-
-    public void removeListener(SettingsListener listener) {
-        listeners.remove(listener);
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
-
-    public void setTheme(Theme theme, SettingsListener caller) {
-        this.theme = theme;
-        update(caller, theme);
     }
 
     public String getSerialPort() {
@@ -150,45 +133,9 @@ public class Settings {
 
     public void setSerialPort(String serialPort, SettingsListener caller) {
         this.serialPort = serialPort;
-        update(Value.SERIAL_PORT, caller, serialPort);
-    }
-
-    public ExternalControl getExternalControl() {
-        return externalControl;
-    }
-
-    public void setExternalControl(ExternalControl externalControl, SettingsListener caller) {
-        this.externalControl = externalControl;
         for (SettingsListener l : listeners) {
-            if (l != caller) l.updateSetting(externalControl);
+            if (l != caller) l.updateSerialPort(serialPort);
         }
-    }
-
-    public int getIndiServerPort() {
-        return indiServerPort;
-    }
-
-    public void setIndiServerPort(int indiServerPort, SettingsListener caller) {
-        this.indiServerPort = indiServerPort;
-        update(Value.INDI_PORT, caller, indiServerPort);
-    }
-
-    public int getAscomBridgePort() {
-        return ascomBridgePort;
-    }
-
-    public void setAscomBridgePort(int ascomBridgePort, SettingsListener caller) {
-        this.ascomBridgePort = ascomBridgePort;
-        update(Value.ASCOM_PORT, caller, ascomBridgePort);
-    }
-
-    public INDIConnectionMode getIndiConnectionMode() {
-        return indiConnectionMode;
-    }
-
-    public void setIndiConnectionMode(INDIConnectionMode indiConnectionMode, SettingsListener caller) {
-        this.indiConnectionMode = indiConnectionMode;
-        update(caller, indiConnectionMode);
     }
 
     public PowerBox getPowerBox() {
@@ -199,62 +146,14 @@ public class Settings {
         this.powerBox = powerBox;
     }
 
-    public int getFokTicksCount() {
-        return fokTicksCount;
-    }
-
-    public void setFokTicksCount(int fokTicksCount, SettingsListener caller) {
-        this.fokTicksCount = fokTicksCount;
-        update(Value.FOK_TICKS_COUNT, caller, fokTicksCount);
-    }
-
-    public Units getFokTicksUnit() {
-        return fokTicksUnit;
-    }
-
-    public void setFokTicksUnit(Units fokTicksUnit, SettingsListener caller) {
-        this.fokTicksUnit = fokTicksUnit;
-        for (SettingsListener l : listeners) {
-            if (l != caller) l.updateSetting(fokTicksUnit);
-        }
-    }
-
     public int getFokMaxTravel() {
         return fokMaxTravel;
     }
 
     public void setFokMaxTravel(int fokMaxTravel, SettingsListener caller) {
         this.fokMaxTravel = fokMaxTravel;
-        update(Value.FOK_MAX_TRAVEL, caller, fokMaxTravel);
-    }
-
-    private void update(Value what, SettingsListener notMe, int value) {
         for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
-    private void update(SettingsListener notMe, Theme value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(value);
-        }
-    }
-
-    private void update(SettingsListener notMe, INDIConnectionMode value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(value);
-        }
-    }
-
-    private void update(Value what, SettingsListener notMe, String value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
-        }
-    }
-
-    private void update(Value what, SettingsListener notMe, boolean value) {
-        for (SettingsListener l : listeners) {
-            if (l != notMe) l.updateSetting(what, value);
+            if (l != caller) l.updateFocuserMaxTravel(fokMaxTravel);
         }
     }
 
@@ -273,26 +172,6 @@ public class Settings {
         public String toString() {
             return name;
         }
-    }
-
-    public enum INDIConnectionMode {
-        LOCAL(i18n("local")),
-        REMOTE(i18n("remote"));
-
-        private final String name;
-
-        INDIConnectionMode(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
-    public enum Value {
-        SERIAL_PORT, INDI_PORT, FOK_TICKS_COUNT, FOK_MAX_TRAVEL, AUTO_CONNECT, ASCOM_PORT
     }
 
     public enum Units {
@@ -320,25 +199,8 @@ public class Settings {
     }
 
     public interface SettingsListener {
-        default void updateSetting(Value what, int value) {
-        }
+        void updateFocuserMaxTravel(int value);
 
-        default void updateSetting(Value what, String value) {
-        }
-
-        default void updateSetting(Value what, boolean value) {
-        }
-
-        default void updateSetting(Theme value) {
-        }
-
-        default void updateSetting(INDIConnectionMode value) {
-        }
-
-        default void updateSetting(Units value) {
-        }
-
-        default void updateSetting(ExternalControl value) {
-        }
+        void updateSerialPort(String value);
     }
 }

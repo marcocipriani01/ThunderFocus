@@ -3,4 +3,4 @@ Specification-Vendor: marcocipriani01
 Main-Class: io.github.marcocipriani01.thunderfocus.Main
 Name: io/github/marcocipriani01/thunder/focus
 Specification-Title: ThunderFocus
-Specification-Version: 2.6.1
+Specification-Version: 2.6.2

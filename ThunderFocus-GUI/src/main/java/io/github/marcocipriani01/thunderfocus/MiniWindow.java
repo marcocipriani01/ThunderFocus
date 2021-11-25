@@ -4,6 +4,7 @@ import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
@@ -11,8 +12,9 @@ import java.awt.event.WindowEvent;
 
 import static io.github.marcocipriani01.thunderfocus.Main.*;
 
-public abstract class MiniWindow extends JFrame implements KeyListener {
+public class MiniWindow extends JFrame implements KeyListener {
 
+    private JFrame mainWindow = null;
     private JPanel parent;
     private JButton left;
     private JTextField field;
@@ -34,7 +36,7 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
 
         left.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, null, -Integer.parseInt(field.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, -Integer.parseInt(field.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -45,7 +47,7 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
         left.setFocusTraversalKeysEnabled(false);
         right.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, null, Integer.parseInt(field.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, Integer.parseInt(field.getText()));
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -112,8 +114,10 @@ public abstract class MiniWindow extends JFrame implements KeyListener {
     @Override
     public void dispose() {
         super.dispose();
-        onHide();
+        if (mainWindow != null) mainWindow.setState(Frame.NORMAL);
     }
 
-    protected abstract void onHide();
+    public void setMainWindow(JFrame mainWindow) {
+        this.mainWindow = mainWindow;
+    }
 }

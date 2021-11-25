@@ -31,7 +31,7 @@ public class PositionCalibrationWindow extends JDialog implements ActionListener
         stepsButton.addActionListener(this);
         unitsField.addActionListener(this);
         unitsButton.addActionListener(this);
-        unitsLabel.setText(Main.settings.getFokTicksUnit().toString().toLowerCase());
+        unitsLabel.setText(Main.settings.fokTicksUnit.toString().toLowerCase());
         pack();
         setLocation(450, 350);
         setResizable(false);
@@ -43,14 +43,14 @@ public class PositionCalibrationWindow extends JDialog implements ActionListener
         Object source = e.getSource();
         try {
             if (source == stepsButton || source == stepsField) {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_POS, null, Integer.parseInt(stepsField.getText()));
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_POS, null, Integer.parseInt(stepsField.getText()));
                 dispose();
             } else if (source == unitsButton || source == unitsField) {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_POS, null,
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_POS, null,
                         Main.focuser.ticksToSteps(Integer.parseInt(unitsField.getText())));
                 dispose();
             } else if (source == zeroButton) {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_ZERO, null);
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_ZERO, null);
                 dispose();
             }
         } catch (ConnectionException ex) {

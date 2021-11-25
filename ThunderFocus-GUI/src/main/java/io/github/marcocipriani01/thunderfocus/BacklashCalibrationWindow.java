@@ -20,9 +20,10 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     private JButton relMovButton;
     private JSpinner relMovSpinner;
     private JLabel loading;
-    private volatile int count = 0;
-    private volatile int phase = 0;
     private boolean wasPowerSaveOn;
+    private volatile int phase = 0;
+    private int count = 0;
+    private int lastMoveSteps = 0;
 
     public BacklashCalibrationWindow(Frame owner) {
         super(owner, Main.APP_NAME, true);
@@ -36,7 +37,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
 
         acceptButton.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, count);
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, count);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
@@ -45,9 +46,10 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             dispose();
         });
         oneStepButton.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> setControlsEnabled(false));
+            setControlsEnabled(false);
+            lastMoveSteps = 1;
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, 1);
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, 1);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -55,9 +57,10 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             }
         });
         relMovButton.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> setControlsEnabled(false));
+            setControlsEnabled(false);
+            lastMoveSteps = (int) relMovSpinner.getValue();
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_REL_MOVE, this, (int) relMovSpinner.getValue());
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
             } catch (ConnectionException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
@@ -69,14 +72,14 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         Main.focuser.clearRequestedPositions();
         try {
             wasPowerSaveOn = Main.focuser.isPowerSaverOn();
-            Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, 0);
-            Main.focuser.run(ThunderFocuser.Commands.FOK1_SET_BACKLASH, this, 0);
+            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, 0);
+            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, 0);
             int target = Main.settings.getFokMaxTravel() / 4;
             if (target == Main.focuser.getCurrentPos()) {
                 phase = 1;
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, 20);
             } else {
-                Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, target);
+                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, target);
             }
         } catch (ConnectionException e) {
             connectionErr(e);
@@ -107,8 +110,8 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public void dispose() {
         super.dispose();
         try {
-            Main.focuser.run(ThunderFocuser.Commands.FOK1_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
-            Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, this);
+            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
+            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
         } catch (ConnectionException e) {
             connectionErr(e);
         } catch (ThunderFocuser.InvalidParamException e) {
@@ -118,7 +121,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         Main.focuser.removeListener(this);
     }
 
-    private synchronized void setControlsEnabled(final boolean b) {
+    private void setControlsEnabled(final boolean b) {
         loading.setVisible(!b);
         counterLabel.setVisible(b);
         acceptButton.setEnabled(b);
@@ -132,7 +135,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         switch (phase) {
             case 0 -> {
                 try {
-                    Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, this, 20);
+                    Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, 20);
                     phase = 1;
                 } catch (ConnectionException e) {
                     connectionErr(e);
@@ -144,33 +147,11 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
                 phase = 2;
                 SwingUtilities.invokeLater(() -> setControlsEnabled(true));
             }
-            case 2 -> {
-                count += Main.focuser.getRequestedRelPos();
-                SwingUtilities.invokeLater(() -> {
-                    counterLabel.setText(String.valueOf(count));
-                    setControlsEnabled(true);
-                });
-            }
+            case 2 -> SwingUtilities.invokeLater(() -> {
+                count += lastMoveSteps;
+                counterLabel.setText(String.valueOf(count));
+                setControlsEnabled(true);
+            });
         }
-    }
-
-    @Override
-    public void updateParam(ThunderFocuser.Parameters p) {
-
-    }
-
-    @Override
-    public void onCriticalError(Exception e) {
-
-    }
-
-    @Override
-    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
-
-    }
-
-    @Override
-    public void updateConnSate(ThunderFocuser.ConnState connState) {
-
     }
 }

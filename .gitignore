@@ -2,6 +2,7 @@ JRE-bundle/bin/
 JRE-bundle/conf/
 JRE-bundle/legal/
 JRE-bundle/lib/
+JRE-bundle/include/
 JRE-bundle/release
 JRE-bundle/ThunderFocus.jar
 Installers/ThunderFocus_Win_64bit.exe

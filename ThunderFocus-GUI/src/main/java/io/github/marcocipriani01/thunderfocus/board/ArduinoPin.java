@@ -7,7 +7,7 @@ import org.indilib.i4j.Constants;
 import java.util.Objects;
 
 /**
- * Represents an Arduino pin, with an id (its number on the Arduino board), a name and a value.
+ * Represents an Arduino pin, with an id (the number on the Arduino board), a name and a value.
  *
  * @author marcocipriani01
  * @version 2.0
@@ -38,7 +38,7 @@ public class ArduinoPin {
     /**
      * Class constructor. Value = 0.
      *
-     * @param number the id of this pin (its number on the Arduino board).
+     * @param number the id of this pin (the number on the Arduino board).
      * @param name   a name for this pin.
      */
     public ArduinoPin(int number, String name) {
@@ -49,7 +49,7 @@ public class ArduinoPin {
     /**
      * Class constructor.
      *
-     * @param number the id of this pin (its number on the Arduino board).
+     * @param number the id of this pin (the number on the Arduino board).
      * @param name   a name for this pin.
      * @param value  an initial value. Integer, 0→255
      * @see #setValue(int)

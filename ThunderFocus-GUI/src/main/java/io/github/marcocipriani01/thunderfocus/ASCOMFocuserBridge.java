@@ -37,7 +37,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
                 case "Connected" -> println(from, Main.focuser.isConnected());
                 case "Position" -> println(from, Main.focuser.getCurrentPos());
                 case "IsMoving" -> println(from, Main.focuser.getFocuserState() == ThunderFocuser.FocuserState.MOVING);
-                case "Halt" -> Main.focuser.run(ThunderFocuser.Commands.FOK1_STOP, null);
+                case "Halt" -> Main.focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, null);
                 case "DriverInfo" -> {
                     String gui = Main.getAppVersion();
                     if (gui == null) gui = "<?>";
@@ -51,7 +51,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
                 case "Name" -> println(Main.APP_NAME);
                 case "Move" -> {
                     if (param == Integer.MIN_VALUE) return;
-                    Main.focuser.run(ThunderFocuser.Commands.FOK1_ABS_MOVE, null, param);
+                    Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, null, param);
                 }
                 case "MaxStep" -> println(Main.settings.getFokMaxTravel());
             }

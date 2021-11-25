@@ -44,7 +44,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            switch (settings.getTheme()) {
+            switch (settings.theme) {
                 case LIGHT -> FlatLightLaf.setup();
                 case DARK -> FlatDarkLaf.setup();
                 case SYSTEM -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -1,11 +1,12 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
+import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
 import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import jssc.SerialPortException;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -217,7 +218,7 @@ public class MainWindow extends JFrame implements
             if (autoConnect && (!focuser.isConnected())) {
                 try {
                     focuser.connect(serialPort);
-                } catch (ConnectionException ex) {
+                } catch (SerialPortException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -314,11 +315,11 @@ public class MainWindow extends JFrame implements
         ascomPortSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.ascomBridgePort, 1024, 65535, 1));
         fokTicksCountSpinner = new JSpinner(new SpinnerNumberModel(
-                settings.fokTicksCount, 10, 2147483647, 1));
+                settings.focuserTicksCount, 10, 2147483647, 1));
         fokUnitsCombo = new JComboBox<>(Settings.Units.values());
-        fokUnitsCombo.setSelectedItem(settings.fokTicksUnit);
+        fokUnitsCombo.setSelectedItem(settings.focuserTicksUnit);
         fokMaxTravelSpinner = new JSpinner(new SpinnerNumberModel(
-                settings.getFokMaxTravel(), 1, 2147483647, 1));
+                settings.getFocuserMaxTravel(), 1, 2147483647, 1));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
                 focuser.getBacklash(), 0, 1000, 1));
         powerBoxTable = new JPowerBoxTable(this);
@@ -460,13 +461,15 @@ public class MainWindow extends JFrame implements
             settings.relativeStepSize = stepSize;
             if (invert) stepSize *= -1;
             focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, stepSize);
-            settings.save();
-        } catch (ConnectionException ex) {
+        } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
         } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
             valueOutOfLimits(ex);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        }
+        try {
+            settings.save();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -491,7 +494,7 @@ public class MainWindow extends JFrame implements
                 settings.setSerialPort(port, this);
                 try {
                     focuser.connect(port);
-                } catch (ConnectionException ex) {
+                } catch (SerialPortException ex) {
                     connectionErr(ex);
                 }
                 try {
@@ -510,7 +513,7 @@ public class MainWindow extends JFrame implements
         } else if (source == stopButton) {
             try {
                 focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
@@ -526,7 +529,7 @@ public class MainWindow extends JFrame implements
             try {
                 focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this,
                         Integer.parseInt(requestedPosField.getText().trim()));
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
@@ -562,8 +565,8 @@ public class MainWindow extends JFrame implements
             int oldAscomPort = settings.ascomBridgePort;
             settings.ascomBridgePort = (int) ascomPortSpinner.getValue();
             if (focuser.isConnected() && focuser.isReady()) {
-                settings.fokTicksCount = (int) fokTicksCountSpinner.getValue();
-                settings.fokTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
+                settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
+                settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
                 updateUnitsLabel();
                 settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
                 posSlider.removeChangeListener(this);
@@ -581,7 +584,7 @@ public class MainWindow extends JFrame implements
                                 (int) (((double) powerBoxLatSpinner.getValue()) * 1000),
                                 (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
                     }
-                } catch (ConnectionException ex) {
+                } catch (IOException | SerialPortException ex) {
                     connectionErr(ex);
                 } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                     valueOutOfLimits(ex);
@@ -608,7 +611,7 @@ public class MainWindow extends JFrame implements
                     }
                 }
                 powerBoxTable.refresh();
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
@@ -623,7 +626,7 @@ public class MainWindow extends JFrame implements
                     }
                 }
                 powerBoxTable.refresh();
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
@@ -648,27 +651,32 @@ public class MainWindow extends JFrame implements
             }
 
         } else if (source == deletePresetButton) {
-            Integer[] positions = settings.presets.keySet().toArray(new Integer[0]);
-            int pos = positions[presetsTable.getSelectedRow()];
-            int index = IntStream.range(0, positions.length).filter(i -> positions[i] == pos).findFirst().orElse(-1);
-            settings.presets.remove(pos);
-            if (index != -1)
-                ((PresetsTableModel) presetsTable.getModel()).fireTableRowsDeleted(index, index);
-            try {
-                settings.save();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            int selectedRow = presetsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                Integer[] positions = settings.presets.keySet().toArray(new Integer[0]);
+                int pos = positions[selectedRow];
+                int index = IntStream.range(0, positions.length).filter(i -> positions[i] == pos).findFirst().orElse(-1);
+                settings.presets.remove(pos);
+                if (index != -1)
+                    ((PresetsTableModel) presetsTable.getModel()).fireTableRowsDeleted(index, index);
+                try {
+                    settings.save();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
 
         } else if (source == goToPresetButton) {
-            try {
-                Integer[] positions = settings.presets.keySet().toArray(new Integer[0]);
-                int pos = positions[presetsTable.getSelectedRow()];
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, pos);
-            } catch (ConnectionException ex) {
-                connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
-                valueOutOfLimits(ex);
+            int selectedRow = presetsTable.getSelectedRow();
+            if (selectedRow != -1) {
+                try {
+                    focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this,
+                            settings.presets.keySet().toArray(new Integer[0])[selectedRow]);
+                } catch (IOException | SerialPortException ex) {
+                    connectionErr(ex);
+                } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                    valueOutOfLimits(ex);
+                }
             }
         }
     }
@@ -678,18 +686,18 @@ public class MainWindow extends JFrame implements
         JOptionPane.showMessageDialog(this, i18n("error.invalid"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
-    public void connectionErr(ConnectionException e) {
+    public void connectionErr(Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, i18n("error.connection"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
     private void updateSlidersLimit() {
-        int fokMaxTravel = settings.getFokMaxTravel();
+        int fokMaxTravel = settings.getFocuserMaxTravel();
         posSlider.setMaximum(fokMaxTravel);
         posSlider.setMinorTickSpacing(fokMaxTravel / 70);
         posSlider.setLabelTable(null);
         posSlider.setMajorTickSpacing(fokMaxTravel / 4);
-        int fokTicksCount = settings.fokTicksCount;
+        int fokTicksCount = settings.focuserTicksCount;
         ticksPosSlider.setMaximum(fokTicksCount);
         ticksPosSlider.setMinorTickSpacing(fokTicksCount / 70);
         ticksPosSlider.setLabelTable(null);
@@ -764,7 +772,7 @@ public class MainWindow extends JFrame implements
                 if (Main.isAscomRunning()) Main.ascomFocuserBridge.close();
                 ascomStatusLabel.setText(i18n("bridge.inactive"));
             }
-        } catch (ConnectionException e) {
+        } catch (IOException e) {
             onCriticalError(e);
             ascomStatusLabel.setText(i18n("error"));
         }
@@ -784,7 +792,7 @@ public class MainWindow extends JFrame implements
                 focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE,
                         this, focuser.ticksToSteps(ticksPosSlider.getValue()));
             }
-        } catch (ConnectionException ex) {
+        } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
         } catch (ThunderFocuser.InvalidParamException ex) {
             ex.printStackTrace();
@@ -844,7 +852,7 @@ public class MainWindow extends JFrame implements
     }
 
     private void updateUnitsLabel() {
-        unitsLabel.setText(settings.fokTicksUnit.toString() + ":");
+        unitsLabel.setText(settings.focuserTicksUnit.toString() + ":");
     }
 
     @Override
@@ -961,6 +969,7 @@ public class MainWindow extends JFrame implements
                     currentPosField.setText(currentPosStr);
                     requestedPosField.setText(currentPosStr);
                     requestedPosField.setText(currentPosStr);
+                    fokBacklashSpinner.setValue(focuser.getBacklash());
                     enableComponents(true);
                     startOrStopASCOM(false);
                     tabPane.setSelectedIndex(0);
@@ -971,7 +980,7 @@ public class MainWindow extends JFrame implements
                         try {
                             Main.ascomFocuserBridge.close();
                             ascomStatusLabel.setText(i18n("bridge.inactive"));
-                        } catch (ConnectionException ex) {
+                        } catch (IOException ex) {
                             onCriticalError(ex);
                             ascomStatusLabel.setText(i18n("error"));
                         }
@@ -1008,11 +1017,8 @@ public class MainWindow extends JFrame implements
     @Override
     public void onCriticalError(Exception e) {
         e.printStackTrace();
-        SwingUtilities.invokeLater(() -> {
-            String msg = i18n("error.unexpected");
-            if (e instanceof ConnectionException) msg += ((ConnectionException) e).getType().toString();
-            JOptionPane.showMessageDialog(MainWindow.this, msg, APP_NAME, JOptionPane.ERROR_MESSAGE);
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                this, i18n("error.unexpected") + " " + e.getMessage(), APP_NAME, JOptionPane.ERROR_MESSAGE));
     }
 
     @Override
@@ -1035,7 +1041,7 @@ public class MainWindow extends JFrame implements
             if (autoMode != null) {
                 focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
             }
-        } catch (ConnectionException ex) {
+        } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
         } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
             valueOutOfLimits(ex);

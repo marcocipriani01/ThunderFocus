@@ -1,7 +1,7 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import jssc.SerialPortException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import static io.github.marcocipriani01.thunderfocus.Main.*;
 
@@ -37,7 +38,7 @@ public class MiniWindow extends JFrame implements KeyListener {
         left.addActionListener(e -> {
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, -Integer.parseInt(field.getText()));
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
@@ -48,7 +49,7 @@ public class MiniWindow extends JFrame implements KeyListener {
         right.addActionListener(e -> {
             try {
                 Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, Integer.parseInt(field.getText()));
-            } catch (ConnectionException ex) {
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
@@ -68,7 +69,7 @@ public class MiniWindow extends JFrame implements KeyListener {
         JOptionPane.showMessageDialog(this, i18n("error.invalid"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
-    private void connectionErr(ConnectionException e) {
+    private void connectionErr(Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, i18n("error.connection"), APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
@@ -86,17 +87,15 @@ public class MiniWindow extends JFrame implements KeyListener {
     @Override
     public void setVisible(boolean b) {
         super.setVisible(b);
-        if (b) {
-            SwingUtilities.invokeLater(() -> {
-                field.setText(String.valueOf(Math.abs(Main.focuser.getRequestedRelPos())));
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                requestFocus();
-            });
-        }
+        if (b) SwingUtilities.invokeLater(() -> {
+            field.setText(String.valueOf(settings.relativeStepSize));
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            requestFocus();
+        });
     }
 
     @Override

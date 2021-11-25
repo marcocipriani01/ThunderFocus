@@ -1,11 +1,11 @@
 package io.github.marcocipriani01.thunderfocus.indi;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.Settings;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import jssc.SerialPortException;
 import org.indilib.i4j.Constants;
 import org.indilib.i4j.driver.*;
 import org.indilib.i4j.driver.focuser.INDIFocuserDriver;
@@ -121,7 +121,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
 
         focuserMaxPositionP = newNumberProperty().name(INDIStandardProperty.FOCUS_MAX).label("Max position").group(INDIDriver.GROUP_OPTIONS).create();
         focuserMaxPositionE = focuserMaxPositionP.newElement().name(INDIStandardElement.FOCUS_MAX_VALUE).label("Max position").step(1d).numberFormat("%.0f")
-                .numberValue(settings.getFokMaxTravel()).minimum(0).maximum(2147483647).create();
+                .numberValue(settings.getFocuserMaxTravel()).minimum(0).maximum(2147483647).create();
 
         focusReverseP = newSwitchProperty().name(INDIStandardProperty.FOCUS_REVERSE_MOTION).label("Reverse directions").group(INDIDriver.GROUP_OPTIONS).create();
         focusReverseEnE = focusReverseP.newElement().name(INDIStandardElement.ENABLED).label("Enabled").switchValue(Constants.SwitchStatus.OFF).create();
@@ -159,7 +159,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     public void absolutePositionHasBeenChanged() {
         try {
             focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, getDesiredAbsPosition());
-        } catch (ConnectionException e) {
+        } catch (IOException | SerialPortException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
@@ -182,7 +182,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         try {
             focuser.run(ThunderFocuser.Commands.FOCUSER_SET_SPEED, this, getCurrentSpeed());
             desiredSpeedSet();
-        } catch (ConnectionException e) {
+        } catch (IOException | SerialPortException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
@@ -200,7 +200,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         try {
             focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
             stopped();
-        } catch (ConnectionException e) {
+        } catch (IOException | SerialPortException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
@@ -255,7 +255,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
-            } catch (ConnectionException e) {
+            } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -279,7 +279,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 }
                 focusRelPositionP.setState(Constants.PropertyStates.OK);
                 updateProperty(focusRelPositionP);
-            } catch (ConnectionException e) {
+            } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -316,7 +316,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 }
                 syncFocusPositionP.setState(Constants.PropertyStates.OK);
                 updateProperty(syncFocusPositionP);
-            } catch (ConnectionException e) {
+            } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -373,7 +373,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     }
                 }
                 updateProperty(connectionProp);
-            } catch (ConnectionException e) {
+            } catch (SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -413,7 +413,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
-            } catch (ConnectionException e) {
+            } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -449,7 +449,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 }
                 focusReverseP.setState(Constants.PropertyStates.OK);
                 updateProperty(focusReverseP);
-            } catch (ConnectionException e) {
+            } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
@@ -509,7 +509,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         } else {
             focusReverseDisE.setValue(Constants.SwitchStatus.ON);
         }
-        focuserMaxPositionE.setValue(settings.getFokMaxTravel());
+        focuserMaxPositionE.setValue(settings.getFocuserMaxTravel());
         connectElem.setValue(Constants.SwitchStatus.ON);
         disconnectElem.setValue(Constants.SwitchStatus.OFF);
         connectionProp.setState(Constants.PropertyStates.OK);

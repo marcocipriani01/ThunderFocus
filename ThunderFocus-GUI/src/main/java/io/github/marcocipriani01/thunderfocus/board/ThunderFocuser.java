@@ -1,10 +1,11 @@
 package io.github.marcocipriani01.thunderfocus.board;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.Main;
 import io.github.marcocipriani01.thunderfocus.io.SerialMessageListener;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import jssc.SerialPortException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,7 +49,7 @@ public class ThunderFocuser implements SerialMessageListener {
         return ready;
     }
 
-    public synchronized void connect(String port) throws ConnectionException {
+    public synchronized void connect(String port) throws SerialPortException {
         updConnSate(ConnState.TIMEOUT);
         serialPort.connect(port);
         timerCount = 1;
@@ -73,7 +74,7 @@ public class ThunderFocuser implements SerialMessageListener {
         ready = false;
         try {
             serialPort.disconnect();
-        } catch (ConnectionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             serialPort = new SerialPortImpl();
         }
@@ -100,7 +101,7 @@ public class ThunderFocuser implements SerialMessageListener {
         return focuserState;
     }
 
-    public void run(Commands cmd, Listener caller, int... params) throws ConnectionException, InvalidParamException {
+    public void run(Commands cmd, Listener caller, int... params) throws InvalidParamException, SerialPortException, IOException {
         if (serialPort.isConnected() && ready && ((exclusiveCaller == null) || (caller == exclusiveCaller)))
             cmd.run(this, caller, params);
     }
@@ -150,15 +151,15 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public int ticksToSteps(int ticks) {
-        return (int) ((((double) ticks) / ((double) Main.settings.fokTicksCount)) * ((double) Main.settings.getFokMaxTravel()));
+        return (int) ((((double) ticks) / ((double) Main.settings.focuserTicksCount)) * ((double) Main.settings.getFocuserMaxTravel()));
     }
 
     public int stepsToTicks(int steps) {
-        return (int) ((((double) steps) / ((double) Main.settings.getFokMaxTravel())) * ((double) Main.settings.fokTicksCount));
+        return (int) ((((double) steps) / ((double) Main.settings.getFocuserMaxTravel())) * ((double) Main.settings.focuserTicksCount));
     }
 
     @Override
-    public final synchronized void onPortMessage(String msg) {
+    public final synchronized void onSerialMessage(String msg) {
         char c;
         String param;
         try {
@@ -292,7 +293,7 @@ public class ThunderFocuser implements SerialMessageListener {
                     updConnSate(ConnState.CONNECTED_READY);
 
                 } catch (Exception e) {
-                    nOnCriticalError(new ConnectionException("Connection or protocol error!", e, ConnectionException.Type.PROTOCOL));
+                    nOnCriticalError(e);
                     disconnect();
                 }
             }
@@ -300,7 +301,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     @Override
-    public final void onPortError(Exception e) {
+    public final void onSerialError(Exception e) {
         updConnSate(ConnState.ERROR);
         e.printStackTrace();
     }
@@ -392,13 +393,13 @@ public class ThunderFocuser implements SerialMessageListener {
         }),
         FOCUSER_REL_MOVE('R', 1, null),
         FOCUSER_ABS_MOVE('A', 1,
-                (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel()),
+                (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFocuserMaxTravel()),
                 (f, caller, params) -> {
                     f.requestedPos = params[0];
                     f.notifyListeners(caller, Parameters.REQUESTED_POS);
                 }),
         FOCUSER_STOP('S'),
-        FOCUSER_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFokMaxTravel())),
+        FOCUSER_SET_POS('P', 1, (f, params) -> (params[0] >= 0) && (params[0] <= Main.settings.getFocuserMaxTravel())),
         FOCUSER_SET_ZERO('W'),
         FOCUSER_SET_SPEED('V', 1, (f, params) -> (params[0] >= 0) && (params[0] <= 100),
                 (f, caller, params) -> {
@@ -461,14 +462,13 @@ public class ThunderFocuser implements SerialMessageListener {
             this.onDone = onDone;
         }
 
-        private void run(ThunderFocuser f, Listener caller, int... params) throws ConnectionException, InvalidParamException {
+        private void run(ThunderFocuser f, Listener caller, int... params)
+                throws InvalidParamException, SerialPortException, IOException {
             StringBuilder cmd = new StringBuilder("$").append(id);
-            if (params.length != paramsCount) {
+            if (params.length != paramsCount)
                 throw new InvalidParamException("Missing/too much parameters.");
-            }
-            if (validator != null && !validator.validate(f, params)) {
+            if (validator != null && !validator.validate(f, params))
                 throw new InvalidParamException("Invalid parameters.");
-            }
             for (int p : params) {
                 cmd.append(p).append("%");
             }
@@ -526,7 +526,7 @@ public class ThunderFocuser implements SerialMessageListener {
                         nOnCriticalError(new IllegalStateException("Connection timeout, disconnecting."));
                     }
                 } catch (InvalidParamException ignored) {
-                } catch (ConnectionException e) {
+                } catch (IOException | SerialPortException e) {
                     disconnect();
                     nOnCriticalError(e);
                 }

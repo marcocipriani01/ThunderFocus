@@ -2,7 +2,7 @@ package io.github.marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import io.github.marcocipriani01.simplesocket.ConnectionException;
+import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
 import io.github.marcocipriani01.thunderfocus.indi.INDIServerCreator;
 
@@ -113,7 +113,7 @@ public class Main {
         if (isAscomRunning()) {
             try {
                 ascomFocuserBridge.close();
-            } catch (ConnectionException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

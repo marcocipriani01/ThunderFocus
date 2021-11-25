@@ -56,10 +56,10 @@ public class Settings {
     public int ascomBridgePort = 5001;
     @SerializedName("Focuser ticks count")
     @Expose
-    public int fokTicksCount = 70;
+    public int focuserTicksCount = 70;
     @SerializedName("Focuser ticks unit")
     @Expose
-    public Units fokTicksUnit = Units.TICKS;
+    public Units focuserTicksUnit = Units.TICKS;
     @SerializedName("Auto connect")
     @Expose
     public boolean autoConnect = false;
@@ -68,7 +68,7 @@ public class Settings {
     private String serialPort = "";
     @SerializedName("Focuser max travel")
     @Expose
-    private int fokMaxTravel = 32767;
+    private int focuserMaxTravel = 32767;
     @SerializedName("Powerbox data")
     @Expose
     private PowerBox powerBox = new PowerBox();
@@ -109,11 +109,11 @@ public class Settings {
         // Normalize invalid values
         if (s.indiServerPort <= 1024 || s.indiServerPort >= 65535) s.indiServerPort = 7625;
         if (s.ascomBridgePort <= 1024 || s.ascomBridgePort >= 65535) s.ascomBridgePort = 5001;
-        if (s.fokTicksCount < 10 || s.fokTicksCount >= 2147483647) s.fokTicksCount = 70;
-        if (s.fokMaxTravel < 1 || s.fokMaxTravel >= 2147483647) s.fokMaxTravel = 32767;
+        if (s.focuserTicksCount < 10 || s.focuserTicksCount >= 2147483647) s.focuserTicksCount = 70;
+        if (s.focuserMaxTravel < 1 || s.focuserMaxTravel >= 2147483647) s.focuserMaxTravel = 32767;
         if (s.theme == null) s.theme = Theme.LIGHT;
         if (s.externalControl == null) s.externalControl = ExternalControl.NONE;
-        if (s.fokTicksUnit == null) s.fokTicksUnit = Units.TICKS;
+        if (s.focuserTicksUnit == null) s.focuserTicksUnit = Units.TICKS;
         if (s.powerBox == null) s.powerBox = new PowerBox();
         if (s.relativeStepSize <= 0) s.relativeStepSize = 10;
         return s;
@@ -146,12 +146,12 @@ public class Settings {
         this.powerBox = powerBox;
     }
 
-    public int getFokMaxTravel() {
-        return fokMaxTravel;
+    public int getFocuserMaxTravel() {
+        return focuserMaxTravel;
     }
 
     public void setFokMaxTravel(int fokMaxTravel, SettingsListener caller) {
-        this.fokMaxTravel = fokMaxTravel;
+        this.focuserMaxTravel = fokMaxTravel;
         for (SettingsListener l : listeners) {
             if (l != caller) l.updateFocuserMaxTravel(fokMaxTravel);
         }

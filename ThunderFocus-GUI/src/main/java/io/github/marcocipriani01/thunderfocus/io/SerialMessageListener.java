@@ -14,12 +14,12 @@ public interface SerialMessageListener {
      *
      * @param msg the received message.
      */
-    void onPortMessage(final String msg);
+    void onSerialMessage(final String msg);
 
     /**
      * Called when an error occurred while communicating with the serial port.
      *
      * @param e the {@code Exception}.
      */
-    void onPortError(Exception e);
+    void onSerialError(Exception e);
 }

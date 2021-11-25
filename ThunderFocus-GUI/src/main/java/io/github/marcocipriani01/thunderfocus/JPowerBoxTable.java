@@ -1,9 +1,9 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import jssc.SerialPortException;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -212,7 +212,7 @@ public class JPowerBoxTable extends JTable {
                     }
                     try {
                         Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
-                    } catch (ConnectionException ex) {
+                    } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                         mainWindow.valueOutOfLimits(ex);
@@ -227,7 +227,7 @@ public class JPowerBoxTable extends JTable {
                         fireTableCellUpdated(rowIndex, 2);
                         try {
                             Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
-                        } catch (ConnectionException ex) {
+                        } catch (IOException | SerialPortException ex) {
                             mainWindow.connectionErr(ex);
                         } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                             mainWindow.valueOutOfLimits(ex);
@@ -246,7 +246,7 @@ public class JPowerBoxTable extends JTable {
                     pin.setAutoModeEn(b);
                     try {
                         Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
-                    } catch (ConnectionException ex) {
+                    } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                         mainWindow.valueOutOfLimits(ex);

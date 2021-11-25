@@ -1,14 +1,14 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.simplesocket.ConnectionException;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import jssc.SerialPortException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
-import static io.github.marcocipriani01.thunderfocus.Main.APP_LOGO;
-import static io.github.marcocipriani01.thunderfocus.Main.i18n;
+import static io.github.marcocipriani01.thunderfocus.Main.*;
 
 public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser.Listener {
 
@@ -28,7 +28,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public BacklashCalibrationWindow(Frame owner) {
         super(owner, Main.APP_NAME, true);
         setIconImage(APP_LOGO);
-        Main.focuser.setExclusiveMode(this);
+        focuser.setExclusiveMode(this);
         setContentPane(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         cancelButton.addActionListener(e -> dispose());
@@ -37,8 +37,8 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
 
         acceptButton.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, count);
-            } catch (ConnectionException ex) {
+                focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, count);
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException ex) {
                 ex.printStackTrace();
@@ -49,8 +49,8 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             setControlsEnabled(false);
             lastMoveSteps = 1;
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, 1);
-            } catch (ConnectionException ex) {
+                focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, 1);
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
@@ -60,28 +60,29 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             setControlsEnabled(false);
             lastMoveSteps = (int) relMovSpinner.getValue();
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
-            } catch (ConnectionException ex) {
+                focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
+            } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
             } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
 
-        Main.focuser.addListener(this);
-        Main.focuser.clearRequestedPositions();
+        focuser.addListener(this);
+        focuser.clearRequestedPositions();
         try {
-            wasPowerSaveOn = Main.focuser.isPowerSaverOn();
-            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, 0);
-            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, 0);
-            int target = Main.settings.getFokMaxTravel() / 4;
-            if (target == Main.focuser.getCurrentPos()) {
+            wasPowerSaveOn = focuser.isPowerSaverOn();
+            focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, 0);
+            focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, 0);
+            int maxTravel = settings.getFocuserMaxTravel();
+            int target = maxTravel / 2;
+            if (target == focuser.getCurrentPos()) {
                 phase = 1;
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, 20);
+                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, maxTravel / 4);
             } else {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, target);
+                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, target);
             }
-        } catch (ConnectionException e) {
+        } catch (IOException | SerialPortException e) {
             connectionErr(e);
             dispose();
         } catch (ThunderFocuser.InvalidParamException e) {
@@ -101,7 +102,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         JOptionPane.showMessageDialog(this, i18n("error.invalid"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
 
-    private void connectionErr(ConnectionException e) {
+    private void connectionErr(Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, i18n("error.connection"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
     }
@@ -110,15 +111,15 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public void dispose() {
         super.dispose();
         try {
-            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
-            Main.focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
-        } catch (ConnectionException e) {
+            focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
+            focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
+        } catch (IOException | SerialPortException e) {
             connectionErr(e);
         } catch (ThunderFocuser.InvalidParamException e) {
             e.printStackTrace();
         }
-        Main.focuser.setExclusiveMode(null);
-        Main.focuser.removeListener(this);
+        focuser.setExclusiveMode(null);
+        focuser.removeListener(this);
     }
 
     private void setControlsEnabled(final boolean b) {
@@ -135,9 +136,9 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         switch (phase) {
             case 0 -> {
                 try {
-                    Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, 20);
+                    focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, settings.getFocuserMaxTravel() / 4);
                     phase = 1;
-                } catch (ConnectionException e) {
+                } catch (IOException | SerialPortException e) {
                     connectionErr(e);
                 } catch (ThunderFocuser.InvalidParamException e) {
                     e.printStackTrace();

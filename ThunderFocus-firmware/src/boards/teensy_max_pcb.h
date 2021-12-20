@@ -56,10 +56,11 @@
 // ============================== DEVICE MANAGER CONFIG ==============================
 // ===================================================================================
 #if ENABLE_DEVMAN == true
-#define MANAGED_PINS_COUNT 5
+#define MANAGED_PINS_COUNT 6
 #define MANAGED_PINS {{0, true, 0, false},  \
 					{1, true, 0, false},    \
 					{2, false, 0, false},	\
+					{3, false, 0, false},	\
 					{9, false, 0, false},	\
 					{10, false, 0, false}}
 #define AUTOMATIC_DEVMAN_TIMER 30000

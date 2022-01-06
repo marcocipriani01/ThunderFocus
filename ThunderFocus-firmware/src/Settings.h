@@ -1,6 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "config.h"
 #include <Arduino.h>
 #include <EEPROM.h>
 #if ENABLE_DEVMAN == true

@@ -1,21 +1,3 @@
-/**
-  * Focuser & powerbox by marcocipriani01
-  * 
-  * == Version 5.0 ==
-  *    November 2021
-  *    Removed hand controller support, lighter and faster code.
-  * 
-  * == Version 4.2 ==
-  *    December 2020
-  *    Dropped MoonLite support
-  * 
-  * == Version 4.0 ==
-  *    November 2020
-  * 
-  * == Version 3.0 ==
-  *    March 2020
- */
-
 #include "main.h"
 
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
@@ -56,8 +38,16 @@ void loadSettings() {
 	for (unsigned int i = 0; i < sizeof(Settings); i++) {
 		bytes[i] = EEPROM.read(i);
 	}
-	if (settings.marker != EEPROM_MARKER)
+	if (settings.marker != EEPROM_MARKER) {
 		resetSettings();
+	} else {
+		if (settings.powerTimeout < 100)
+			settings.powerTimeout = FOCUSER_POWER_TIMEOUT;
+		if (settings.speed > FOCUSER_PPS_MAX)
+			settings.speed = FOCUSER_PPS_MAX;
+		else if (settings.speed < FOCUSER_PPS_MIN)
+			settings.speed = FOCUSER_PPS_MIN;
+	}
 	settings.speed = constrain(settings.speed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
 }
 

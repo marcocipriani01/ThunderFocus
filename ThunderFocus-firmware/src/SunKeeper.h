@@ -1,8 +1,8 @@
 #ifndef SUNKEEPER_H
 #define SUNKEEPER_H
 
-#include <Arduino.h>
 #include "config.h"
+#include <Arduino.h>
 #include <TimeLib.h>
 #include <SolarPosition.h>
 #define MIN_VALID_UNIX_TIME 1577836800

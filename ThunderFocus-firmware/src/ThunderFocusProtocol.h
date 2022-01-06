@@ -1,9 +1,9 @@
 #ifndef THUNDERFOCUS_H
 #define THUNDERFOCUS_H
 
+#include "config.h"
 #include <Arduino.h>
 #include "AccelStepper.h"
-#include "config.h"
 #if ENABLE_DEVMAN == true
 #include "DevManager.h"
 #endif
@@ -14,9 +14,6 @@
 #if TEMP_HUM_SENSOR == true
 #include "AmbientManager.h"
 #endif
-
-#define THUNDERFOCUS_SEND_DELAY 150
-#define THUNDERFOCUS_UUID "a537d6e0-c155-405a-9234-7a6ef62913a9"
 
 enum FocuserState {
 	MOVING = (int)'M',
@@ -49,5 +46,4 @@ void thunderFocusUpdPins();
 #if TIME_CONTROL == true
 void thunderFocusUpdSunPos();
 #endif
-
 #endif

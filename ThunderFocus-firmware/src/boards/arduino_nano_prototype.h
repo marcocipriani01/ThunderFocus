@@ -1,7 +1,7 @@
 // ===================================================================================
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
-#define STATUS_LED 7
+#define STATUS_LED 13
 #define STATUS_LED_MANAGED false
 #define STATUS_LED_BLINK_PERIOD 300
 #define ENABLE_DEVMAN true
@@ -11,14 +11,14 @@
 // ===================================================================================
 #define FOCUSER_DIR 2
 #define FOCUSER_STEP 3
-//#define FOCUSER_EN 7
+#define FOCUSER_EN 7
 #define FOCUSER_STPES_SCALING 4
 //#define FOCUSER_MODE0 6
 //#define FOCUSER_MODE1 5
 #define FOCUSER_MODE2 4
-#define FOCUSER_ACCEL 600.0
+#define FOCUSER_ACCEL 1000.0
 #define FOCUSER_PPS_MIN 100.0
-#define FOCUSER_PPS_MAX 9000.0
+#define FOCUSER_PPS_MAX 15000.0
 #define FOCUSER_POWER_TIMEOUT 60000
 
 // ===================================================================================
@@ -44,7 +44,7 @@
 #define TIME_CONTROL false
 
 // ---------- Polar finder illuminator ----------
-#define ENABLE_PFI true
+#define ENABLE_PFI false
 #if ENABLE_PFI == true
 #define PFI_KNOB A7
 #define PFI_LED 5
@@ -61,7 +61,7 @@
 // ===================================================================================
 #if defined(__AVR__) || defined(CORE_TEENSY)
 #define SETTINGS_SUPPORT true
-#define EEPROM_MARKER 1
+#define EEPROM_MARKER 'A'
 #define EEPROM_PADDING 20
 #define SETTINGS_SAVE_DELAY 5000
 #else

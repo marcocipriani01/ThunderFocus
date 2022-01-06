@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIServerCreator;
 
 import javax.swing.*;

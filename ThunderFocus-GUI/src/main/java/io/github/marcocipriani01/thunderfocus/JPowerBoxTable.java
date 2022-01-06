@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.IOException;
 
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
+import static io.github.marcocipriani01.thunderfocus.Main.settings;
 
 /**
  * JTable for viewing, editing and rendering {@link ArduinoPin} objects.
@@ -196,7 +197,7 @@ public class JPowerBoxTable extends JTable {
             switch (columnIndex) {
                 case 0 -> {
                     pin.setName((String) aValue);
-                    Main.settings.setPowerBox(new PowerBox(powerBox));
+                    PowerBox.clonePins(powerBox, settings.powerBoxPins);
                     try {
                         Main.settings.save();
                     } catch (IOException ex) {
@@ -233,7 +234,7 @@ public class JPowerBoxTable extends JTable {
                             mainWindow.valueOutOfLimits(ex);
                         }
                     }
-                    Main.settings.setPowerBox(new PowerBox(powerBox));
+                    PowerBox.clonePins(powerBox, settings.powerBoxPins);
                     try {
                         Main.settings.save();
                     } catch (IOException ex) {

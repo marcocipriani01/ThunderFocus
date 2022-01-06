@@ -4,6 +4,8 @@ import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.config.ExportableSettings;
+import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
 import jssc.SerialPortException;
@@ -26,19 +28,20 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static io.github.marcocipriani01.thunderfocus.Main.*;
-import static io.github.marcocipriani01.thunderfocus.Settings.ExternalControl.*;
 
 public class MainWindow extends JFrame implements
         ChangeListener, ActionListener, KeyListener, FocusListener,
@@ -109,9 +112,8 @@ public class MainWindow extends JFrame implements
     private JButton cleanGraphButton;
     private JLabel ascomStatusLabel;
     private JLabel versionLabel;
-    private JRadioButton indiServerRadio;
-    private JRadioButton ascomBridgeRadio;
-    private JRadioButton disableExtControlRadio;
+    private JCheckBox indiServerCheckBox;
+    private JCheckBox ascomBridgeCheckBox;
     private JSpinner ascomPortSpinner;
     private JScrollPane configScrollPane;
     private JCheckBox autoConnectBox;
@@ -119,12 +121,15 @@ public class MainWindow extends JFrame implements
     private JButton addPresetButton;
     private JButton deletePresetButton;
     private JButton goToPresetButton;
+    private JButton exportButton;
+    private JButton importButton;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
     private TimeSeries tempSeries;
     private TimeSeries dewPointSeries;
     private TimeSeries humiditySeries;
+    private final PresetsTableModel presetsTableModel;
 
     public MainWindow() {
         super(APP_NAME);
@@ -165,23 +170,19 @@ public class MainWindow extends JFrame implements
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, copyIndiDriverNameButton,
                 saveConfigButton, powerBoxOnButton, powerBoxOffButton, cleanGraphButton, addPresetButton,
-                deletePresetButton, goToPresetButton);
+                deletePresetButton, goToPresetButton, importButton, exportButton);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
         relativeMovField.setText(String.valueOf(settings.relativeStepSize));
         relativeMovField.addActionListener(this);
         updateSlidersLimit();
-        posSlider.addFocusListener(this);
-        ticksPosSlider.addFocusListener(this);
         updateUnitsLabel();
         localOrRemoteCombo.setSelectedItem(i18n(settings.showIpIndiDriver ? "remote" : "local"));
         localOrRemoteCombo.addItemListener(e -> refreshDriverName());
         refreshDriverName();
         appThemeCombo.setSelectedItem(settings.theme);
-        Settings.ExternalControl externalControl = settings.externalControl;
-        ascomBridgeRadio.setSelected(externalControl == ASCOM);
-        disableExtControlRadio.setSelected(externalControl == NONE);
-        indiServerRadio.setSelected(externalControl == INDI);
+        ascomBridgeCheckBox.setSelected(settings.ascomBridge);
+        indiServerCheckBox.setSelected(settings.indiServer);
 
         parent.addMouseListener(new MouseAdapter() {
             @Override
@@ -201,7 +202,8 @@ public class MainWindow extends JFrame implements
         presetsTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         DefaultTableCellRenderer presetTableRenderer = new DefaultTableCellRenderer();
         presetTableRenderer.setHorizontalAlignment(JLabel.LEFT);
-        presetsTable.setModel(new PresetsTableModel());
+        presetsTableModel = new PresetsTableModel();
+        presetsTable.setModel(presetsTableModel);
         presetsTable.getColumnModel().getColumn(0).setCellRenderer(presetTableRenderer);
         presetsTable.setRowHeight(30);
 
@@ -554,9 +556,8 @@ public class MainWindow extends JFrame implements
 
         } else if (source == saveConfigButton) {
             settings.theme = (Settings.Theme) appThemeCombo.getSelectedItem();
-            if (indiServerRadio.isSelected()) settings.externalControl = INDI;
-            else if (ascomBridgeRadio.isSelected()) settings.externalControl = ASCOM;
-            else settings.externalControl = NONE;
+            settings.indiServer = indiServerCheckBox.isSelected();
+            settings.ascomBridge = ascomBridgeCheckBox.isSelected();
             settings.autoConnect = autoConnectBox.isSelected();
             settings.showIpIndiDriver = Objects.requireNonNull(localOrRemoteCombo.getSelectedItem())
                     .toString().equals(i18n("remote"));
@@ -569,11 +570,7 @@ public class MainWindow extends JFrame implements
                 settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
                 updateUnitsLabel();
                 settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
-                posSlider.removeChangeListener(this);
-                ticksPosSlider.removeChangeListener(this);
                 updateSlidersLimit();
-                posSlider.addChangeListener(this);
-                ticksPosSlider.addChangeListener(this);
                 try {
                     focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
                     focuser.run(ThunderFocuser.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
@@ -591,9 +588,7 @@ public class MainWindow extends JFrame implements
                 }
             }
             startOrStopINDI(settings.indiServerPort != oldIndiPort);
-            if (focuser.isConnected()) {
-                startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
-            }
+            if (focuser.isConnected()) startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
             try {
                 settings.save();
             } catch (IOException ioException) {
@@ -678,6 +673,60 @@ public class MainWindow extends JFrame implements
                     valueOutOfLimits(ex);
                 }
             }
+
+        } else if (source == exportButton) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            chooser.setFileFilter(new FileNameExtensionFilter(
+                    "Settings files (*.thunder)", "thunder"));
+            if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    File file = chooser.getSelectedFile();
+                    if (!file.getName().endsWith(".thunder"))
+                        file = new File(file.getAbsolutePath() + ".thunder");
+                    new ExportableSettings(settings, focuser).save(file.toPath());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        } else if (source == importButton) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            chooser.setFileFilter(new FileNameExtensionFilter(
+                    "Settings files (*.thunder)", "thunder"));
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    int oldIndiPort = settings.indiServerPort;
+                    int oldAscomPort = settings.ascomBridgePort;
+                    ExportableSettings es = ExportableSettings.load(chooser.getSelectedFile().toPath());
+                    es.applyTo(settings, focuser);
+                    appThemeCombo.setSelectedItem(es.theme);
+                    relativeMovField.setText(String.valueOf(es.relativeStepSize));
+                    localOrRemoteCombo.setSelectedItem(i18n(es.showIpIndiDriver ? "remote" : "local"));
+                    ascomBridgeCheckBox.setSelected(es.ascomBridge);
+                    indiServerCheckBox.setSelected(es.indiServer);
+                    autoConnectBox.setSelected(es.autoConnect);
+                    indiPortSpinner.setValue(es.indiServerPort);
+                    ascomPortSpinner.setValue(es.ascomBridgePort);
+                    fokTicksCountSpinner.setValue(es.focuserTicksCount);
+                    fokUnitsCombo.setSelectedItem(es.focuserTicksUnit);
+                    fokBacklashSpinner.setValue(es.backlash);
+                    fokSpeedSlider.setValue(es.speed);
+                    fokReverseDirBox.setSelected(es.reverseDir);
+                    fokPowerSaverBox.setSelected(es.powerSaver);
+                    updateUnitsLabel();
+                    updateSlidersLimit();
+                    startOrStopINDI(settings.indiServerPort != oldIndiPort);
+                    startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
+                    presetsTableModel.fireTableDataChanged();
+                    powerBoxTable.refresh();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }
 
@@ -692,16 +741,20 @@ public class MainWindow extends JFrame implements
     }
 
     private void updateSlidersLimit() {
+        posSlider.removeChangeListener(this);
         int fokMaxTravel = settings.getFocuserMaxTravel();
         posSlider.setMaximum(fokMaxTravel);
         posSlider.setMinorTickSpacing(fokMaxTravel / 70);
         posSlider.setLabelTable(null);
         posSlider.setMajorTickSpacing(fokMaxTravel / 4);
+        posSlider.addChangeListener(this);
+        ticksPosSlider.removeChangeListener(this);
         int fokTicksCount = settings.focuserTicksCount;
         ticksPosSlider.setMaximum(fokTicksCount);
         ticksPosSlider.setMinorTickSpacing(fokTicksCount / 70);
         ticksPosSlider.setLabelTable(null);
         ticksPosSlider.setMajorTickSpacing(fokTicksCount / 7);
+        ticksPosSlider.addChangeListener(this);
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -738,6 +791,8 @@ public class MainWindow extends JFrame implements
         addPresetButton.setEnabled(connected);
         deletePresetButton.setEnabled(connected);
         goToPresetButton.setEnabled(connected);
+        importButton.setEnabled(connected);
+        exportButton.setEnabled(connected);
         boolean pbEn = connected && focuser.isPowerBox();
         powerBoxOnButton.setEnabled(pbEn);
         powerBoxOffButton.setEnabled(pbEn);
@@ -745,7 +800,7 @@ public class MainWindow extends JFrame implements
     }
 
     private void startOrStopINDI(boolean forceRestart) {
-        if (settings.externalControl == INDI) {
+        if (settings.indiServer) {
             Main.indiServerCreator.start(settings.indiServerPort, forceRestart);
             indiStatusLabel.setText(i18n("server.active"));
         } else {
@@ -756,7 +811,7 @@ public class MainWindow extends JFrame implements
 
     private void startOrStopASCOM(boolean forceRestart) {
         try {
-            if (settings.externalControl == ASCOM) {
+            if (settings.ascomBridge) {
                 if (Main.isAscomRunning()) {
                     if (forceRestart) {
                         Main.ascomFocuserBridge.close();
@@ -921,10 +976,10 @@ public class MainWindow extends JFrame implements
     }
 
     @Override
-    public void updateConnSate(ThunderFocuser.ConnState connState) {
+    public void updateConnectionState(ThunderFocuser.ConnectionState connectionState) {
         SwingUtilities.invokeLater(() -> {
-            connStatusLabel.setText(connState.getLabel());
-            switch (connState) {
+            connStatusLabel.setText(connectionState.getLabel());
+            switch (connectionState) {
                 case CONNECTED_READY: {
                     ok.setVisible(true);
                     timeout.setVisible(false);
@@ -1038,9 +1093,8 @@ public class MainWindow extends JFrame implements
     public void itemStateChanged(ItemEvent e) {
         try {
             PowerBox.AutoModes autoMode = (PowerBox.AutoModes) powerBoxAutoModeBox.getSelectedItem();
-            if (autoMode != null) {
+            if (autoMode != null)
                 focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
-            }
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
         } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {

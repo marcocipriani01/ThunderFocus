@@ -1,6 +1,6 @@
 package io.github.marcocipriani01.thunderfocus.indi;
 
-import io.github.marcocipriani01.thunderfocus.Settings;
+import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
@@ -552,8 +552,8 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     }
 
     @Override
-    public void updateConnSate(ThunderFocuser.ConnState connState) {
-        switch (connState) {
+    public void updateConnectionState(ThunderFocuser.ConnectionState connectionState) {
+        switch (connectionState) {
             case CONNECTED_READY -> onFocuserConnected();
             case DISCONNECTED -> {
                 if (digitalPinProps != null) {

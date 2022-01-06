@@ -1,8 +1,5 @@
 package io.github.marcocipriani01.thunderfocus.board;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,14 +12,11 @@ import static io.github.marcocipriani01.thunderfocus.Main.i18n;
  * @version 2.0
  * @see ArduinoPin
  */
-@SuppressWarnings("unused")
 public class PowerBox {
 
     public static final double ABSOLUTE_ZERO = -273.0;
     public static final double INVALID_HUMIDITY = -1.0;
 
-    @Expose
-    @SerializedName("List")
     private final ArrayList<ArduinoPin> pins = new ArrayList<>();
     private AutoModes autoMode = AutoModes.NIGHT_ASTRONOMICAL;
     private boolean supportsTime = false;
@@ -41,22 +35,24 @@ public class PowerBox {
 
     }
 
-    /**
-     * Copy constructor.
-     */
-    public PowerBox(PowerBox pb) {
-        for (ArduinoPin ap : pb.pins) {
-            pins.add(new ArduinoPin(ap));
+    public static void clonePins(PowerBox from, ArrayList<ArduinoPin> to) {
+        to.clear();
+        for (ArduinoPin ap : from.pins) {
+            to.add(new ArduinoPin(ap));
         }
-        this.autoMode = pb.autoMode;
-        this.supportsTime = pb.supportsTime;
-        this.supportsAmbient = pb.supportsAmbient;
-        this.temperature = pb.temperature;
-        this.humidity = pb.humidity;
-        this.dewPoint = pb.dewPoint;
-        this.latitude = pb.latitude;
-        this.longitude = pb.longitude;
-        this.sunElev = pb.sunElev;
+    }
+
+    public static ArduinoPin getPin(ArrayList<ArduinoPin> pins, int pin) {
+        for (ArduinoPin ap : pins) {
+            if (ap.getNumber() == pin) {
+                return ap;
+            }
+        }
+        return null;
+    }
+
+    public void setOnWhenAppOpen(ArduinoPin pin, boolean onWhenAppOpen) {
+        getPin(pin.getNumber()).setOnWhenAppOpen(onWhenAppOpen);
     }
 
     public double getSunElev() {
@@ -197,39 +193,8 @@ public class PowerBox {
         return false;
     }
 
-    /**
-     * @param pin a pin to look for.
-     * @return {@code true} if this list contains the given pin.
-     */
-    public boolean contains(ArduinoPin pin) {
-        if (pin == null) {
-            throw new NullPointerException("Null pin!");
-        }
-        int param = pin.getNumber();
-        for (ArduinoPin ap : pins) {
-            if (ap.getNumber() == param) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public ArduinoPin getPin(int pin) {
-        for (ArduinoPin ap : pins) {
-            if (ap.getNumber() == pin) {
-                return ap;
-            }
-        }
-        return null;
-    }
-
-    void remove(ArduinoPin pin) {
-        for (int i = 0; i < pins.size(); i++) {
-            if (pins.get(i).getNumber() == pin.getNumber()) {
-                pins.remove(i);
-                return;
-            }
-        }
+        return getPin(pins, pin);
     }
 
     /**
@@ -267,6 +232,23 @@ public class PowerBox {
             list.add(AutoModes.TEMP_FREEZE);
         }
         return list;
+    }
+
+    /**
+     * @param pin a pin to look for.
+     * @return {@code true} if this list contains the given pin.
+     */
+    public boolean contains(ArduinoPin pin) {
+        if (pin == null) {
+            throw new NullPointerException("Null pin!");
+        }
+        int param = pin.getNumber();
+        for (ArduinoPin ap : pins) {
+            if (ap.getNumber() == param) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean supportsAutoModes() {

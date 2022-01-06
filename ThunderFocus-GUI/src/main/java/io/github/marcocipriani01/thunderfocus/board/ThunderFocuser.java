@@ -22,7 +22,6 @@ public class ThunderFocuser implements SerialMessageListener {
     private PowerBox powerBox = null;
     private volatile int timerCount = 0;
     private Listener exclusiveCaller = null;
-    private ConnState connState = ConnState.DISCONNECTED;
     private FocuserState focuserState = FocuserState.NONE;
     private volatile boolean ready = false;
     private volatile int requestedPos = 0;
@@ -50,7 +49,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public synchronized void connect(String port) throws SerialPortException {
-        updConnSate(ConnState.TIMEOUT);
+        updConnSate(ConnectionState.TIMEOUT);
         serialPort.connect(port);
         timerCount = 1;
         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new SendSettingsRequestTask(), 500);
@@ -69,7 +68,7 @@ public class ThunderFocuser implements SerialMessageListener {
                 e.printStackTrace();
             }
         }
-        updConnSate(ConnState.TIMEOUT);
+        updConnSate(ConnectionState.TIMEOUT);
         updFocuserState(FocuserState.NONE);
         ready = false;
         try {
@@ -78,7 +77,7 @@ public class ThunderFocuser implements SerialMessageListener {
             e.printStackTrace();
             serialPort = new SerialPortImpl();
         }
-        updConnSate(ConnState.DISCONNECTED);
+        updConnSate(ConnectionState.DISCONNECTED);
         if (powerBox != null) {
             powerBox.clear();
         }
@@ -91,10 +90,6 @@ public class ThunderFocuser implements SerialMessageListener {
 
     public void removeListener(Listener l) {
         listeners.remove(l);
-    }
-
-    public ConnState getConnState() {
-        return connState;
     }
 
     public FocuserState getFocuserState() {
@@ -264,11 +259,10 @@ public class ThunderFocuser implements SerialMessageListener {
                         powerBox.setAutoMode(Integer.parseInt(l[7]));
                         Pattern pattern = Pattern.compile("\\((.*?)\\)");
                         Matcher m = pattern.matcher(l[8]);
-                        PowerBox digitalPins = Main.settings.getPowerBox();
                         while (m.find()) {
                             String[] rcvPin = m.group(1).split("%");
                             int number = Integer.parseInt(rcvPin[0]), value = Integer.parseInt(rcvPin[1]);
-                            ArduinoPin stored = digitalPins.getPin(number);
+                            ArduinoPin stored = PowerBox.getPin(Main.settings.powerBoxPins, number);
                             if (stored == null) {
                                 this.powerBox.add(new ArduinoPin(number, i18n("output.pin.default.name") + " " + number,
                                         value, rcvPin[2].equals("1"), rcvPin[3].equals("1"), false));
@@ -290,7 +284,7 @@ public class ThunderFocuser implements SerialMessageListener {
                         }
                     }
                     ready = true;
-                    updConnSate(ConnState.CONNECTED_READY);
+                    updConnSate(ConnectionState.CONNECTED_READY);
 
                 } catch (Exception e) {
                     nOnCriticalError(e);
@@ -302,7 +296,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
     @Override
     public final void onSerialError(Exception e) {
-        updConnSate(ConnState.ERROR);
+        updConnSate(ConnectionState.ERROR);
         e.printStackTrace();
     }
 
@@ -319,10 +313,9 @@ public class ThunderFocuser implements SerialMessageListener {
         }
     }
 
-    private void updConnSate(ConnState connState) {
-        this.connState = connState;
+    private void updConnSate(ConnectionState connectionState) {
         for (Listener l : listeners) {
-            l.updateConnSate(connState);
+            l.updateConnectionState(connectionState);
         }
     }
 
@@ -348,7 +341,7 @@ public class ThunderFocuser implements SerialMessageListener {
         POWERBOX_SUN_ELEV
     }
 
-    public enum ConnState {
+    public enum ConnectionState {
         DISCONNECTED(i18n("disconnected")),
         CONNECTED_READY(i18n("connected")),
         TIMEOUT(i18n("timeout")),
@@ -356,7 +349,7 @@ public class ThunderFocuser implements SerialMessageListener {
 
         private final String label;
 
-        ConnState(String label) {
+        ConnectionState(String label) {
             this.label = label;
         }
 
@@ -489,7 +482,7 @@ public class ThunderFocuser implements SerialMessageListener {
     }
 
     public interface Listener {
-        default void updateConnSate(ConnState connState) {
+        default void updateConnectionState(ConnectionState connectionState) {
         }
 
         default void updateFocuserState(FocuserState focuserState) {

@@ -739,7 +739,7 @@
                 </properties>
                 <border type="none"/>
                 <children>
-                  <grid id="1003b" layout-manager="GridLayoutManager" row-count="20" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="1003b" layout-manager="GridLayoutManager" row-count="19" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="16" left="16" bottom="16" right="16"/>
                     <constraints/>
                     <properties/>
@@ -766,7 +766,7 @@
                       </component>
                       <component id="5f620" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="12" style="1"/>
@@ -775,7 +775,7 @@
                       </component>
                       <component id="6338e" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="limits.label"/>
@@ -783,7 +783,7 @@
                       </component>
                       <component id="d17d" class="javax.swing.JSpinner" binding="fokTicksCountSpinner" custom-create="true">
                         <constraints>
-                          <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -792,7 +792,7 @@
                       </component>
                       <component id="2b952" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="12" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="18" style="1"/>
@@ -801,7 +801,7 @@
                       </component>
                       <component id="c27b8" class="javax.swing.JComboBox" binding="fokUnitsCombo" custom-create="true">
                         <constraints>
-                          <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -810,7 +810,7 @@
                       </component>
                       <component id="18172" class="javax.swing.JSpinner" binding="fokMaxTravelSpinner" custom-create="true">
                         <constraints>
-                          <grid row="12" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -819,7 +819,7 @@
                       </component>
                       <component id="9c431" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="backlash"/>
@@ -827,7 +827,7 @@
                       </component>
                       <component id="f89b8" class="javax.swing.JSpinner" binding="fokBacklashSpinner" custom-create="true">
                         <constraints>
-                          <grid row="13" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -836,7 +836,7 @@
                       </component>
                       <component id="cb39c" class="javax.swing.JButton" binding="fokBacklashCalButton">
                         <constraints>
-                          <grid row="14" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="13" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -846,7 +846,7 @@
                       </component>
                       <component id="2be38" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="speed"/>
@@ -855,7 +855,7 @@
                       </component>
                       <component id="dade7" class="javax.swing.JSlider" binding="fokSpeedSlider">
                         <constraints>
-                          <grid row="15" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="14" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -873,7 +873,7 @@
                       </component>
                       <component id="7619e" class="javax.swing.JCheckBox" binding="fokReverseDirBox">
                         <constraints>
-                          <grid row="16" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="15" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -883,7 +883,7 @@
                       </component>
                       <component id="c9212" class="javax.swing.JCheckBox" binding="fokPowerSaverBox">
                         <constraints>
-                          <grid row="17" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                          <grid row="16" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <enabled value="false"/>
@@ -918,7 +918,7 @@
                       </component>
                       <component id="a8078" class="javax.swing.JSeparator">
                         <constraints>
-                          <grid row="10" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="9" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                       </component>
@@ -932,7 +932,7 @@
                       </component>
                       <component id="3a278" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="11" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="steps"/>
@@ -940,23 +940,10 @@
                       </component>
                       <component id="34a26" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="13" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="steps"/>
-                        </properties>
-                      </component>
-                      <component id="792db" class="javax.swing.JButton" binding="saveConfigButton">
-                        <constraints>
-                          <grid row="19" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
-                            <preferred-size width="-1" height="42"/>
-                            <maximum-size width="-1" height="42"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <icon value="io/github/marcocipriani01/thunderfocus/res/save.png"/>
-                          <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save"/>
-                          <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save.tooltip"/>
                         </properties>
                       </component>
                       <grid id="d53fe" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -1005,7 +992,7 @@
                       <grid id="7ea7e" binding="powerBoxConfigPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="4" right="0"/>
                         <constraints>
-                          <grid row="18" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <grid row="17" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <visible value="false"/>
@@ -1102,7 +1089,7 @@
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="port"/>
                         </properties>
                       </component>
-                      <component id="2f782" class="javax.swing.JRadioButton" binding="indiServerRadio">
+                      <component id="2da19" class="javax.swing.JCheckBox" binding="indiServerCheckBox">
                         <constraints>
                           <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -1111,16 +1098,7 @@
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="indi.server"/>
                         </properties>
                       </component>
-                      <component id="20501" class="javax.swing.JRadioButton" binding="disableExtControlRadio">
-                        <constraints>
-                          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <font style="1"/>
-                          <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="external.control.disable"/>
-                        </properties>
-                      </component>
-                      <component id="606bf" class="javax.swing.JRadioButton" binding="ascomBridgeRadio">
+                      <component id="490ac" class="javax.swing.JCheckBox" binding="ascomBridgeCheckBox">
                         <constraints>
                           <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -1147,6 +1125,54 @@
                           <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="auto.connect"/>
                         </properties>
                       </component>
+                      <grid id="3e23c" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints>
+                          <grid row="18" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="792db" class="javax.swing.JButton" binding="saveConfigButton">
+                            <constraints>
+                              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                                <preferred-size width="-1" height="42"/>
+                                <maximum-size width="-1" height="42"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <icon value="io/github/marcocipriani01/thunderfocus/res/save.png"/>
+                              <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save"/>
+                              <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save.tooltip"/>
+                            </properties>
+                          </component>
+                          <hspacer id="66477">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                          </hspacer>
+                          <component id="cb8c0" class="javax.swing.JButton" binding="exportButton" default-binding="true">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <enabled value="false"/>
+                              <icon value="io/github/marcocipriani01/thunderfocus/res/export.png"/>
+                              <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="export"/>
+                            </properties>
+                          </component>
+                          <component id="e3312" class="javax.swing.JButton" binding="importButton" default-binding="true">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <enabled value="false"/>
+                              <icon value="io/github/marcocipriani01/thunderfocus/res/import.png"/>
+                              <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="import"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
                     </children>
                   </grid>
                 </children>

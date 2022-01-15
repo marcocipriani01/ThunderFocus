@@ -1,6 +1,10 @@
 #include "main.h"
 
+#if FOCUSER_DRIVER == 0
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
+#else
+AccelStepper stepper(FOCUSER_IN1, FOCUSER_IN2, FOCUSER_IN3, FOCUSER_IN4);
+#endif
 
 #if SETTINGS_SUPPORT == true
 // Settings data for EEPROM storage
@@ -112,7 +116,9 @@ void setup() {
 	digitalWrite(FOCUSER_MODE2, HIGH);
 #endif
 	stepper.setAcceleration(FOCUSER_ACCEL);
+#ifdef FOCUSER_STPES_SCALING
 	stepper.setStepsScaling(FOCUSER_STPES_SCALING);
+#endif
 	stepper.setPosition(settings.position);
 	stepper.setMaxSpeed(settings.speed);
 	stepper.setBacklash(settings.backlash);

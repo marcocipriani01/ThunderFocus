@@ -4,18 +4,24 @@
 #include <Arduino.h>
 #define ACCELSTEPPER_PULSE_WIDTH_MICROS 0
 #define ACCELSTEPPER_BACKLASH_SUPPORT true
-#define ACCELSTEPPER_EN_PIN_SUPPORT true
+#define ACCELSTEPPER_ENABLE_SUPPORT true
 #define ACCELSTEPPER_AUTO_POWER true
 #define ACCELSTEPPER_STEPS_SCALING true
 #define ACCELSTEPPER_INVERT_DIR_SUPPORT true
+#define ACCELSTEPPER_28BYJ_48_STEPPER true
+#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING true
 
-#if ACCELSTEPPER_AUTO_POWER == true && ACCELSTEPPER_EN_PIN_SUPPORT == false
+#if ACCELSTEPPER_AUTO_POWER == true && ACCELSTEPPER_ENABLE_SUPPORT == false
 #error "Can't use auto-power without the enabled pin support."
 #endif
 
 class AccelStepper {
    public:
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+    AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4);
+#else
     AccelStepper(uint8_t stepPin, uint8_t dirPin);
+#endif
 
     void stop();
     void move(long relative);
@@ -48,8 +54,10 @@ class AccelStepper {
     void setDirectionInverted(boolean inverted);
 #endif
 
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
     void setEnablePin(uint8_t enPin, boolean enabled);
+#endif
     void setEnabled(boolean enabled);
     boolean isEnabled();
 #if ACCELSTEPPER_AUTO_POWER == true
@@ -84,8 +92,19 @@ class AccelStepper {
    private:
     long distanceToGo0();
 
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+    void setOutputPins(uint8_t mask);
+#endif
+
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+    uint8_t _in1;
+    uint8_t _in2;
+    uint8_t _in3;
+    uint8_t _in4;
+#else
     uint8_t _dirPin;
     uint8_t _stepPin;
+#endif
 
 #if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
     boolean _invertDir;
@@ -102,8 +121,10 @@ class AccelStepper {
 	long _targetBacklash;
 #endif
 
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
     uint8_t _enablePin;
+#endif
     boolean _enabled;
 #if ACCELSTEPPER_AUTO_POWER == true
     unsigned long _autoPowerTimeout;

@@ -1,5 +1,6 @@
 #ifndef SUNKEEPER_H
 #define SUNKEEPER_H
+#if defined(CORE_TEENSY)
 
 #include "config.h"
 #include <Arduino.h>
@@ -18,4 +19,5 @@ double getSolarElevation();
 void setSunKeeperTime(unsigned long currentTime);
 time_t getSunKeeperTime();
 
+#endif
 #endif

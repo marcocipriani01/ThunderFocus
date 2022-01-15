@@ -1,6 +1,48 @@
 #include "AccelStepper.h"
 
 #pragma region Constructor
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+AccelStepper::AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4) {
+    _currentPos = 0;
+    _targetPos = 0;
+    _speed = 0.0;
+    _maxSpeed = 1.0;
+    _acceleration = 1.0;
+    _stepInterval = 0;
+    _lastStepTime = 0;
+    _in1 = in1;
+    pinMode(_in1, OUTPUT);
+    _in2 = in2;
+    pinMode(_in2, OUTPUT);
+    _in3 = in3;
+    pinMode(_in3, OUTPUT);
+    _in4 = in4;
+    pinMode(_in4, OUTPUT);
+#if ACCELSTEPPER_BACKLASH_SUPPORT == true
+    _direction = DIRECTION_NONE;
+    _currentBacklash = 0;
+    _targetBacklash = 0;
+#else
+    _direction = DIRECTION_CW;
+#endif
+#if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
+    _invertDir = false;
+#endif
+    _n = 0;
+    _cn = 0.0;
+    _cmin = 1.0;
+    _c0 = 0.676 * sqrt(2.0) * 1000000.0;
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
+    _enabled = true;
+#if ACCELSTEPPER_AUTO_POWER == true
+    _autoPowerTimeout = 0;
+#endif
+#endif
+#if ACCELSTEPPER_STEPS_SCALING == true
+    _stepsScaling = 1;
+#endif
+}
+#else
 AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
     _currentPos = 0;
     _targetPos = 0;
@@ -27,7 +69,7 @@ AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
     _cn = 0.0;
     _cmin = 1.0;
     _c0 = 0.676 * sqrt(2.0) * 1000000.0;
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
     _enablePin = -1;
     _enabled = true;
 #if ACCELSTEPPER_AUTO_POWER == true
@@ -38,6 +80,7 @@ AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
     _stepsScaling = 1;
 #endif
 }
+#endif
 #pragma endregion Constructor
 
 #pragma region Movement
@@ -53,9 +96,11 @@ void AccelStepper::stop() {
 }
 
 void AccelStepper::move(long relative) {
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
 #if ACCELSTEPPER_AUTO_POWER == true
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
+#endif
     _enabled = true;
 #else
     if (!_enabled) return;
@@ -72,9 +117,11 @@ void AccelStepper::move(long relative) {
 }
 
 void AccelStepper::moveTo(long absolute) {
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
 #if ACCELSTEPPER_AUTO_POWER == true
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
+#endif
     _enabled = true;
 #else
     if (!_enabled) return;
@@ -97,7 +144,7 @@ boolean AccelStepper::run() {
 }
 
 boolean AccelStepper::runSpeed() {
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
 #if ACCELSTEPPER_AUTO_POWER == true
     unsigned long time = micros();
 #else
@@ -112,7 +159,14 @@ boolean AccelStepper::runSpeed() {
 #if ACCELSTEPPER_AUTO_POWER == true
         if (_enabled && (_autoPowerTimeout != 0) && (((unsigned long)(time - _lastStepTime)) >= (_autoPowerTimeout * 1000L))) {
             _enabled = false;
-            if (_enablePin != -1) digitalWrite(_enablePin, true);
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+            digitalWrite(_in1, LOW);
+            digitalWrite(_in2, LOW);
+            digitalWrite(_in3, LOW);
+            digitalWrite(_in4, LOW);
+#else
+            if (_enablePin != -1) digitalWrite(_enablePin, HIGH);
+#endif
         }
 #endif
         return false;
@@ -120,7 +174,9 @@ boolean AccelStepper::runSpeed() {
 #if ACCELSTEPPER_AUTO_POWER == true
     if (!_enabled) {
         _enabled = true;
-        if (_enablePin != -1) digitalWrite(_enablePin, false);
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+        if (_enablePin != -1) digitalWrite(_enablePin, LOW);
+#endif
     }
 #else
     unsigned long time = micros();
@@ -138,12 +194,58 @@ boolean AccelStepper::runSpeed() {
 #if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
         if (_invertDir) dir = !dir;
 #endif
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
         digitalWrite(_dirPin, dir);
         digitalWrite(_stepPin, HIGH);
 #if ACCELSTEPPER_MIN_PULSE_WIDTH > 0
         delayMicroseconds(ACCELSTEPPER_MIN_PULSE_WIDTH);
 #endif
         digitalWrite(_stepPin, LOW);
+#else
+#if ACCELSTEPPER_28BYJ_48_HALF_STEPPING == true
+        switch ((_currentPos + _currentBacklash) & 0x7) {
+        case 0: // 1000
+            setOutputPins(0b0001);
+            break;
+        case 1: // 1010
+            setOutputPins(0b0101);
+            break;
+        case 2: // 0010
+            setOutputPins(0b0100);
+            break;
+        case 3: // 0110
+            setOutputPins(0b0110);
+            break;
+        case 4: // 0100
+            setOutputPins(0b0010);
+            break;
+        case 5: //0101
+            setOutputPins(0b1010);
+            break;
+        case 6: // 0001
+            setOutputPins(0b1000);
+            break;
+        case 7: //1001
+            setOutputPins(0b1001);
+            break;
+        }
+#else
+        switch ((_currentPos + _currentBacklash) & 0x3) {
+        case 0: // 1010
+            setOutputPins(0b0101);
+            break;
+        case 1: // 0110
+            setOutputPins(0b0110);
+            break;
+        case 2: //0101
+            setOutputPins(0b1010);
+            break;
+        case 3: //1001
+            setOutputPins(0b1001);
+            break;
+        }
+#endif
+#endif
         _lastStepTime = time;
         return true;
     }
@@ -315,7 +417,8 @@ long AccelStepper::getBacklash() {
 #pragma endregion Direction
 
 #pragma region Power
-#if ACCELSTEPPER_EN_PIN_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_28BYJ_48_STEPPER == false
 void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
     _enablePin = enPin;
     if (_enablePin != -1) {
@@ -326,10 +429,20 @@ void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
         }
     }
 }
+#endif
 
 void AccelStepper::setEnabled(boolean enabled) {
     if ((distanceToGo0() != 0) && (_enabled != enabled)) {
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+        if (!enabled) {
+            digitalWrite(_in1, LOW);
+            digitalWrite(_in2, LOW);
+            digitalWrite(_in3, LOW);
+            digitalWrite(_in4, LOW);
+        }
+#else
         if (_enablePin != -1) digitalWrite(_enablePin, _enabled);
+#endif
         _enabled = enabled;
     }
 }
@@ -436,4 +549,13 @@ long AccelStepper::distanceToGo0() {
     return _targetPos - _currentPos;
 #endif
 }
+
+#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+void AccelStepper::setOutputPins(uint8_t mask) {
+    digitalWrite(_in1, (mask & 0b0001) != 0);
+    digitalWrite(_in2, (mask & 0b0010) != 0);
+    digitalWrite(_in3, (mask & 0b0100) != 0);
+    digitalWrite(_in4, (mask & 0b1000) != 0);
+}
+#endif
 #pragma endregion PrivateMethods

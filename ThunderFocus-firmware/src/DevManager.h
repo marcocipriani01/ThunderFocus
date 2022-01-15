@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include "config.h"
+
+#if ENABLE_DEVMAN == true
 #if TEMP_HUM_SENSOR == true
 #include "AmbientManager.h"
 #endif
@@ -61,4 +63,5 @@ boolean dewPointDevManage(double triggerDiff);
 boolean humidityDevManage(double triggerHum);
 #endif
 
+#endif
 #endif

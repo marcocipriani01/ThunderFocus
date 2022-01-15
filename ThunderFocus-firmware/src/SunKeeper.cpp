@@ -1,3 +1,4 @@
+#if defined(CORE_TEENSY)
 #include "SunKeeper.h"
 
 double sunKeepLat = 0.0;
@@ -40,3 +41,4 @@ time_t getSunKeeperTime() {
     return now();
 #endif
 }
+#endif

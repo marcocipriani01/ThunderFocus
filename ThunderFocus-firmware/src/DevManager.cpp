@@ -1,4 +1,5 @@
 #include "DevManager.h"
+#if ENABLE_DEVMAN == true
 
 Pin pins[] = MANAGED_PINS;
 DevManAutoModes devManAutoMode = DevManAutoModes::NIGHT_ASTRONOMICAL;
@@ -246,4 +247,5 @@ boolean humidityDevManage(double triggerHum) {
 	}
 	return false;
 }
+#endif
 #endif

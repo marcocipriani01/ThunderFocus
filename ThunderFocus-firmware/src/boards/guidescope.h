@@ -1,17 +1,17 @@
 // ===================================================================================
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
-#define STATUS_LED 13
+//#define STATUS_LED 13
 #define STATUS_LED_MANAGED false
 #define STATUS_LED_BLINK_PERIOD 300
-#define ENABLE_DEVMAN true
+#define ENABLE_DEVMAN false
 
 // ===================================================================================
 // ============================== FOCUSER CONFIGURATION ==============================
 // ===================================================================================
 // 0 = DRV8825, A4988, etc.
 // 1 = ULN2003
-#define FOCUSER_DRIVER 0
+#define FOCUSER_DRIVER 1
 
 #if FOCUSER_DRIVER == 0
 #define FOCUSER_DIR 2
@@ -26,14 +26,14 @@
 #define FOCUSER_PPS_MAX 15000.0
 #define FOCUSER_POWER_TIMEOUT 60000
 #else
-#define FOCUSER_IN1 0
-#define FOCUSER_IN2 0
-#define FOCUSER_IN3 0
-#define FOCUSER_IN4 0
-#define FOCUSER_ACCEL 1000.0
+#define FOCUSER_IN1 2
+#define FOCUSER_IN2 4
+#define FOCUSER_IN3 3
+#define FOCUSER_IN4 5
+#define FOCUSER_ACCEL 500.0
 #define FOCUSER_PPS_MIN 100.0
-#define FOCUSER_PPS_MAX 15000.0
-#define FOCUSER_POWER_TIMEOUT 60000
+#define FOCUSER_PPS_MAX 1000.0
+#define FOCUSER_POWER_TIMEOUT 30000
 #endif
 
 // ===================================================================================

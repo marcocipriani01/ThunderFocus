@@ -3,6 +3,9 @@
 
 #include "config.h"
 #include <Arduino.h>
+
+#if TEMP_HUM_SENSOR == true
+#include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <math.h>
 
@@ -24,4 +27,5 @@ double getHumidity();
 double getTemperature();
 double getDewPoint();
 
+#endif
 #endif

@@ -19,8 +19,8 @@
 #define FOK1_EN 19
 #define FOK1_uSTEPS 32
 #define FOK1_MODE0 18
-#define FOK1_MODE1 17
-#define FOK1_MODE2 16
+//#define FOK1_MODE1 17
+//#define FOK1_MODE2 16
 #define FOK1_DIR_INVERT false
 #define FOK1_ACCEL 50 * FOK1_uSTEPS
 #define FOK1_PPS_MIN 2 * FOK1_uSTEPS
@@ -71,6 +71,8 @@
 #define TEMP_HUM_SENSOR true
 #define SENSORS_DELAY 10000
 #define SENSORS_DATAPOINTS 6
+#define I2C_SDA_PIN 17
+#define I2C_SCL_PIN 16
 
 // ---------- Time ----------
 #define TIME_CONTROL true

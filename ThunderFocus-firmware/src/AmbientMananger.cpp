@@ -10,6 +10,12 @@ int sensIntegrationCount = 0;
 double dewPoint = TEMP_ABSOLUTE_ZERO;
 
 void ambientInit() {
+#ifdef I2C_SDA_PIN
+	Wire.setSDA(I2C_SDA_PIN);
+#endif
+#ifdef I2C_SCL_PIN
+	Wire.setSCL(I2C_SCL_PIN);
+#endif
 	if (!bme.begin(0x76)) {
 		while (true) {
 			Serial.println("BME280 not found.");

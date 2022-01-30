@@ -62,7 +62,6 @@
 
 // ---------- Ambient sensors ----------
 #define TEMP_HUM_SENSOR false
-#define DHT22_PIN 0
 #define SENSORS_DELAY 10000
 #define SENSORS_DATAPOINTS 6
 

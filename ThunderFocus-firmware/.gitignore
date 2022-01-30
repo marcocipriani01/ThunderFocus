@@ -2,4 +2,3 @@
 .clang_complete
 .gcc-flags.json
 .vscode
-src/boards/nik_coli.h

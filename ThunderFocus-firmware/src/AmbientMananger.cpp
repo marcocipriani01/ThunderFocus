@@ -1,6 +1,6 @@
 #include "AmbientManager.h"
 
-DHT dhtSensor(DHT22_PIN, DHT22);
+Adafruit_BME280 bme;
 unsigned long lastSensorsCheck = 0;
 double temperature = TEMP_ABSOLUTE_ZERO;
 double integrationTemperature = 0.0;
@@ -10,14 +10,19 @@ int sensIntegrationCount = 0;
 double dewPoint = TEMP_ABSOLUTE_ZERO;
 
 void ambientInit() {
-	dhtSensor.begin();
+	if (!bme.begin(0x76)) {
+		while (true) {
+			Serial.println("BME280 not found.");
+			delay(1000);
+		}
+	}
 }
 
 void ambientManage() {
     unsigned long currentTime = millis();
 	if (currentTime - lastSensorsCheck >= SENSORS_DELAY) {
-		float lHum = dhtSensor.readHumidity();
-		float lTemp = dhtSensor.readTemperature();
+		float lHum = bme.readHumidity();
+		float lTemp = bme.readTemperature();
 		if ((!isnan(lHum)) && (!isnan(lTemp))) {
 			integrationHumidity += lHum;
 			integrationTemperature += lTemp;

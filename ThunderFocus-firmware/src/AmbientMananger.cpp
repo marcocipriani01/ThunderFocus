@@ -1,8 +1,7 @@
 #include "AmbientManager.h"
 #if TEMP_HUM_SENSOR == true
 
-DHT dhtSensor(DHT22_PIN 0
-, DHT22);
+DHT dhtSensor(DHT22_PIN 0, DHT22);
 unsigned long lastSensorsCheck = 0;
 double temperature = TEMP_ABSOLUTE_ZERO;
 double integrationTemperature = 0.0;

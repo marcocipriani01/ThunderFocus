@@ -6,13 +6,13 @@
 
 #if TEMP_HUM_SENSOR == true
 #include <Adafruit_Sensor.h>
-#include <DHT.h>
+#include <Adafruit_BME280.h>
 #include <math.h>
 
 #define TEMP_ABSOLUTE_ZERO -273
 #define HUMIDITY_INVALID -1
 
-extern DHT dhtSensor;
+extern Adafruit_BME280 bme;
 extern unsigned long lastSensorsCheck;
 extern double temperature;
 extern double integrationTemperature;

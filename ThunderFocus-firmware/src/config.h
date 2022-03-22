@@ -7,7 +7,7 @@
 #define THUNDERFOCUS_SEND_DELAY 150
 #define THUNDERFOCUS_UUID "a537d6e0-c155-405a-9234-7a6ef62913a9"
 
-//#include "boards/arduino_nano_prototype.h"
-#include "boards/guidescope.h"
+#include "boards/arduino_nano_prototype.h"
+//#include "boards/guidescope.h"
 
 #endif

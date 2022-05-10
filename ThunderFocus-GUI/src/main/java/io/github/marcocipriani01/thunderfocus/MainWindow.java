@@ -1,5 +1,8 @@
 package io.github.marcocipriani01.thunderfocus;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
@@ -52,6 +55,7 @@ public class MainWindow extends JFrame implements
     private static final ImageIcon AMBIENT_TAB =
             new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ambient_tab.png")));
     private final MiniWindow miniWindow = new MiniWindow();
+    private final PresetsTableModel presetsTableModel;
     private JPanel parent;
     private JComboBox<String> serialPortComboBox;
     private JButton refreshButton;
@@ -123,13 +127,13 @@ public class MainWindow extends JFrame implements
     private JButton goToPresetButton;
     private JButton exportButton;
     private JButton importButton;
+    private JLabel appNameLabel;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
     private TimeSeries tempSeries;
     private TimeSeries dewPointSeries;
     private TimeSeries humiditySeries;
-    private final PresetsTableModel presetsTableModel;
 
     public MainWindow() {
         super(APP_NAME);
@@ -596,6 +600,19 @@ public class MainWindow extends JFrame implements
                 JOptionPane.showMessageDialog(this, i18n("error.saving"),
                         APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
+            try {
+                switch (settings.theme) {
+                    case LIGHT -> FlatLightLaf.setup();
+                    case DARK -> FlatDarkLaf.setup();
+                    default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
+                            "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
+                }
+                SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
+            aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
 
         } else if (source == powerBoxOnButton) {
             try {

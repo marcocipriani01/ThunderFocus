@@ -2,6 +2,7 @@ package io.github.marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
@@ -15,10 +16,7 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -48,8 +46,19 @@ public class Main {
             switch (settings.theme) {
                 case LIGHT -> FlatLightLaf.setup();
                 case DARK -> FlatDarkLaf.setup();
-                case SYSTEM -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
+                        "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
             }
+            UIManager.put("TabbedPane.showTabSeparators", true);
+            UIManager.put("Button.arc", 12);
+            UIManager.put("Component.arc", 12);
+            UIManager.put("ProgressBar.arc", 12);
+            UIManager.put("TextComponent.arc", 12);
+            UIManager.put("ScrollBar.trackArc", 999);
+            UIManager.put("ScrollBar.thumbArc", 999);
+            UIManager.put("ScrollBar.trackInsets", new Insets(2, 4, 2, 4));
+            UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
+            UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -147,7 +156,7 @@ public class Main {
             if (Desktop.isDesktopSupported() && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.BROWSE)) {
                 desktop.browse(new URI(url));
             } else if (Main.OPERATING_SYSTEM == OperatingSystem.LINUX) {
-                Runtime.getRuntime().exec("xdg-open " + url);
+                Runtime.getRuntime().exec(new String[]{"xdg-open ", url});
             } else {
                 throw new UnsupportedOperationException("Browser support not found.");
             }

@@ -9,8 +9,8 @@
     <orderEntry type="module" module-name="ThunderFocus.main" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-server:2.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-focuser:2.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:1.6.5" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.9" level="project" />
+    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:2.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.9.0" level="project" />
     <orderEntry type="library" name="Gradle: io.github.java-native:jssc:2.9.4" level="project" />
     <orderEntry type="library" name="Gradle: org.jfree:jfreechart:1.5.3" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-driver:2.1.1" level="project" />

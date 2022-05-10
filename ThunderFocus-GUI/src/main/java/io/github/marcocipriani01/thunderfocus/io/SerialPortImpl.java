@@ -20,7 +20,7 @@ public class SerialPortImpl implements SerialPortEventListener {
     /**
      * List of all the listeners.
      */
-    protected ArrayList<SerialMessageListener> listeners = new ArrayList<>();
+    protected final ArrayList<SerialMessageListener> listeners = new ArrayList<>();
     /**
      * An instance of the {@link SerialPort} class.
      */

@@ -22,8 +22,8 @@ java {
 dependencies {
     implementation("com.github.INDIForJava:INDIForJava-server:2.1.1")
     implementation("com.github.INDIForJava:INDIForJava-focuser:2.1.1")
-    implementation("com.formdev:flatlaf:1.6.5")
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.formdev:flatlaf:2.2")
+    implementation("com.google.code.gson:gson:2.9.0")
     implementation("io.github.java-native:jssc:2.9.4")
     implementation("org.jfree:jfreechart:1.5.3")
 }

@@ -7,12 +7,12 @@
       </element>
       <element id="module-output" name="ThunderFocus.main" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.formdev/flatlaf/1.6.3/8562fbf99d4f3b086a75a51357cc144dcbd588a2/flatlaf-1.6.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.formdev/flatlaf/2.2/ed87941b335d36f14eed6d68a779cde6ccab79c5/flatlaf-2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-core/2.1.1/d2e670a9ace86b5cd32b129cd01c80fdd4b122d1/INDIForJava-core-2.1.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-driver/2.1.1/d960fdcdb9e593407f05d374b7daf143532f475a/INDIForJava-driver-2.1.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-focuser/2.1.1/b8af35518642d271f646e7385b3892474093e70a/INDIForJava-focuser-2.1.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.INDIForJava/INDIForJava-server/2.1.1/6d391068f5d6ebbb19e343d16102c47a85b3e63f/INDIForJava-server-2.1.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.9/8a432c1d6825781e21a02db2e2c33c5fde2833b9/gson-2.8.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.9.0/8a1167e089096758b49f9b34066ef98b2f4b37aa/gson-2.9.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.sun.activation/jakarta.activation/2.0.1/828b80e886a52bb09fe41ff410b10b342f533ce1/jakarta.activation-2.0.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.thoughtworks.xstream/xstream/1.4.18/12eb80b4c4b83b184b669866f510a0eae13f9475/xstream-1.4.18.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.java-native/jssc/2.9.4/40d6018506d706a4a6a6ec5ed1e52c566f4e0687/jssc-2.9.4.jar" path-in-jar="/" />

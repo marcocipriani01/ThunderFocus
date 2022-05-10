@@ -67,15 +67,15 @@ public class Settings {
     @SerializedName("Auto connect")
     @Expose
     public boolean autoConnect = false;
+    @Expose
+    @SerializedName("Powerbox pins")
+    public ArrayList<ArduinoPin> powerBoxPins = new ArrayList<>();
     @SerializedName("Serial port")
     @Expose
     protected String serialPort = "";
     @SerializedName("Focuser max travel")
     @Expose
     protected int focuserMaxTravel = 32767;
-    @Expose
-    @SerializedName("Powerbox pins")
-    public ArrayList<ArduinoPin> powerBoxPins = new ArrayList<>();
 
     public static String getSettingsFolder() throws IOException {
         if (Settings.folder != null) return Settings.folder;
@@ -163,12 +163,39 @@ public class Settings {
     public enum Theme {
         LIGHT(i18n("light")),
         DARK(i18n("dark")),
-        SYSTEM(i18n("system.theme"));
+        Arc_Dark("Arc Dark", "Arc Dark.json"),
+        Atom_One_Dark("Atom One Dark", "Atom One Dark.json"),
+        Atom_One_Light("Atom One Light", "Atom One Light.json"),
+        Dracula("Dracula", "Dracula.json"),
+        GitHub_Dark("GitHub Dark", "GitHub Dark.json"),
+        GitHub("GitHub", "GitHub.json"),
+        Light_Owl("Light Owl", "Light Owl.json"),
+        Material_Darker("Material Darker", "Material Darker.json"),
+        Material_Deep_Ocean("Material Deep Ocean", "Material Deep Ocean.json"),
+        Material_Lighter("Material Lighter", "Material Lighter.json"),
+        Material_Oceanic("Material Oceanic", "Material Oceanic.json"),
+        Material_Palenight("Material Palenight", "Material Palenight.json"),
+        Monokai_Pro("Monokai Pro", "Monokai Pro.json"),
+        Moonlight("Moonlight", "Moonlight.json"),
+        Night_Owl("Night Owl", "Night Owl.json"),
+        Solarized_Dark("Solarized Dark", "Solarized Dark.json"),
+        Solarized_Light("Solarized Light", "Solarized Light.json");
 
         private final String name;
+        private final String fileName;
 
         Theme(String name) {
             this.name = name;
+            this.fileName = null;
+        }
+
+        Theme(String name, String fileName) {
+            this.name = name;
+            this.fileName = fileName;
+        }
+
+        public String getFileName() {
+            return fileName;
         }
 
         @Override

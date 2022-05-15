@@ -12,15 +12,15 @@ DisableDirPage=yes
 DefaultGroupName=ThunderFocus
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
-LicenseFile=D:\ThunderFocus\INSTALLATION_NOTICE.txt
+LicenseFile=.\INSTALLATION_NOTICE.txt
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 OutputBaseFilename=ThunderFocus_Win_64bit
 OutputDir=Installers
-WizardImageFile="D:\ThunderFocus\WizardImage.bmp"
-SetupIconFile="D:\ThunderFocus\ThunderFocusASCOM\Resources\icon.ico"
-UninstallDisplayIcon="D:\ThunderFocus\ThunderFocusASCOM\Resources\icon.ico"
+WizardImageFile=".\WizardImage.bmp"
+SetupIconFile=".\ThunderFocusASCOM\Resources\icon.ico"
+UninstallDisplayIcon=".\ThunderFocusASCOM\Resources\icon.ico"
 ChangesEnvironment=yes
 
 [Languages]
@@ -37,8 +37,8 @@ Name: "{app}"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\ThunderFocus\JRE-bundle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\ThunderFocus\ThunderFocusASCOM\bin\Release\ASCOM.ThunderFocus.Focuser.dll"; DestDir: "{commoncf}\ASCOM\Focuser\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\JRE-bundle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\ThunderFocusASCOM\bin\Release\ASCOM.ThunderFocus.Focuser.dll"; DestDir: "{commoncf}\ASCOM\Focuser\"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\ThunderFocus"; Filename: "{app}\bin\javaw.exe"; IconFilename: "{app}\icon.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""

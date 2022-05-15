@@ -1,49 +1,66 @@
 #ifndef THUNDERFOCUS_H
 #define THUNDERFOCUS_H
 
-#include "config.h"
 #include <Arduino.h>
-#include "AccelStepper.h"
-#if ENABLE_DEVMAN == true
-#include "DevManager.h"
-#endif
-#if TIME_CONTROL == true
-#include <TimeLib.h>
-#include "SunKeeper.h"
-#endif
-#if TEMP_HUM_SENSOR == true
-#include "AmbientManager.h"
+
+#include "config.h"
+#include "version.h"
+
+#if FOCUSER_DRIVER != DISABLED
+#include "focuser/Focuser.h"
+#include "focuser/AccelStepper.h"
 #endif
 
-enum FocuserState {
-	MOVING = (int)'M',
-	HOLD = (int)'H',
-	ARRIVED = (int)'A',
-	POWER_SAVE = (int)'P'
-};
+#if ENABLE_DEVMAN == true
+#include "devman/DevManager.h"
+#if RTC_SUPPORT != DISABLED
+#include <TimeLib.h>
+#include "devman/SunUtil.h"
+#endif
+#if TEMP_HUM_SENSOR != DISABLED
+#include "devman/AmbientManager.h"
+#endif
+#endif
+
+#define SERIAL_SPEED 115200
+#define SERIAL_TIMEOUT 100
+#define THUNDERFOCUS_SEND_DELAY 150
+#define THUNDERFOCUS_UUID "a537d6e0-c155-405a-9234-7a6ef62913a9"
+
+namespace ThunderFocus {
+
+#if FOCUSER_DRIVER != DISABLED
+enum FocuserState { MOVING = (int)'M', HOLD = (int)'H', ARRIVED = (int)'A', POWER_SAVE = (int)'P' };
 
 extern FocuserState lastFocuserState;
-extern unsigned long lastThunderFocusSend;
-#if TEMP_HUM_SENSOR == true
-extern unsigned long lastThunderFocusAmbientSend;
-#endif
-#if TIME_CONTROL == true
-extern unsigned long lastThunderFocusSunPosSend;
+extern unsigned long focuserSyncTime;
 #endif
 
-int speedToPercentage(double speed);
-double percentageToSpeed(int percentage);
+#if TEMP_HUM_SENSOR != DISABLED
+extern unsigned long sensorsSyncTime;
+#endif
+#if RTC_SUPPORT != DISABLED
+extern unsigned long sunSyncTime;
+#endif
 
-FocuserState thunderFocusManage(AccelStepper *stepper);
-boolean thunderFocusSerialEvent(AccelStepper *stepper);
-
-void thunderFocusLog(const String &msg);
+void setup();
+#if FOCUSER_DRIVER == DISABLED
+void run();
+#else
+FocuserState run();
+#endif
+boolean serialEvent();
+void log(const String &msg);
 
 #if ENABLE_DEVMAN == true
-void thunderFocusUpdPins();
+void updatePins();
+#if RTC_SUPPORT != DISABLED
+void updateSunPosition();
+#endif
 #endif
 
-#if TIME_CONTROL == true
-void thunderFocusUpdSunPos();
-#endif
+inline int speedToPercentage(double speed);
+inline double percentageToSpeed(int percentage);
+}  // namespace ThunderFocus
+
 #endif

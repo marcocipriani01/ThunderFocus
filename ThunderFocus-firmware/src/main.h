@@ -1,6 +1,11 @@
 /**
   * Focuser & powerbox by marcocipriani01
   * 
+  * == Version 6.0 ==
+  *    May 2022
+  *    Complete refactoring
+  *    Flat panel feature
+  * 
   * == Version 5.1 ==
   *    January 2022
   *    Fixes and improvements
@@ -22,20 +27,27 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "config.h"
 #include <Arduino.h>
+
+#include "config.h"
 #include "ThunderFocusProtocol.h"
-#include "AccelStepper.h"
-#if ENABLE_DEVMAN == true
-#include "DevManager.h"
-#endif
-#if TIME_CONTROL == true
-#if defined(CORE_TEENSY) == false
-#error Time control enabled but Teensy not found
-#endif
-#include "SunKeeper.h"
-#endif
+
 #if SETTINGS_SUPPORT == true
-#include "Settings.h"
+#include "settings/Settings.h"
+#endif
+
+#if FOCUSER_DRIVER != DISABLED
+#include "focuser/AccelStepper.h"
+#endif
+
+#if ENABLE_DEVMAN == true
+#include "devman/DevManager.h"
+#if RTC_SUPPORT != DISABLED
+#include "devman/SunUtil.h"
+#endif
+#endif
+
+#if FLAT_PANEL == true
+#include "flat/FlatPanel.h"
 #endif
 #endif

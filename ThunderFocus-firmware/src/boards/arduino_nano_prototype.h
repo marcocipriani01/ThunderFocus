@@ -1,23 +1,18 @@
+#include "../definitions.h"
 // ===================================================================================
 // ============================== GENERAL CONFIGURATION ==============================
 // ===================================================================================
 #define STATUS_LED 13
-#define STATUS_LED_MANAGED false
 #define STATUS_LED_BLINK_PERIOD 300
-#define ENABLE_DEVMAN true
 
 // ===================================================================================
 // ============================== FOCUSER CONFIGURATION ==============================
 // ===================================================================================
-// 0 = DRV8825, A4988, etc.
-// 1 = ULN2003
-#define FOCUSER_DRIVER 0
-
-#if FOCUSER_DRIVER == 0
+#define FOCUSER_DRIVER BIPOLAR
 #define FOCUSER_DIR 2
 #define FOCUSER_STEP 3
 #define FOCUSER_EN 7
-#define FOCUSER_STPES_SCALING 4
+#define FOCUSER_STEPS_SCALING 4
 //#define FOCUSER_MODE0 6
 //#define FOCUSER_MODE1 5
 #define FOCUSER_MODE2 4
@@ -25,37 +20,24 @@
 #define FOCUSER_PPS_MIN 100.0
 #define FOCUSER_PPS_MAX 15000.0
 #define FOCUSER_POWER_TIMEOUT 60000
-#else
-#define FOCUSER_IN1 0
-#define FOCUSER_IN2 0
-#define FOCUSER_IN3 0
-#define FOCUSER_IN4 0
-#define FOCUSER_ACCEL 1000.0
-#define FOCUSER_PPS_MIN 100.0
-#define FOCUSER_PPS_MAX 15000.0
-#define FOCUSER_POWER_TIMEOUT 60000
-#endif
 
 // ===================================================================================
 // ============================== DEVICE MANAGER CONFIG ==============================
 // ===================================================================================
+#define ENABLE_DEVMAN true
 #if ENABLE_DEVMAN == true
 #define MANAGED_PINS_COUNT 4
-#define MANAGED_PINS {{6, true, 0, false},	\
-					{9, true, 0, false},    \
-					{10, true, 0, false}, 	\
-					{12, false, 0, false}}
-#define AUTOMATIC_DEVMAN_TIMER 30000
-#define AUTOMATIC_DEVMAN_THRESHOLD 60.0
-#define AUTOMATIC_DEVMAN_OFFSET_FACTOR 0.4
+#define MANAGED_PINS {{6, 0, true, false, false},   \
+                    {9, 0, true, false, false},     \
+                    {10, 0, true, false, false},    \
+                    {12, 0, false, false, false}}
+#define STATUS_LED_MANAGED true
 
 // ---------- Ambient sensors ----------
-#define TEMP_HUM_SENSOR true
-#define SENSORS_DELAY 10000
-#define SENSORS_DATAPOINTS 6
+#define TEMP_HUM_SENSOR BME280
 
 // ---------- Time ----------
-#define TIME_CONTROL false
+#define RTC_SUPPORT SERIAL_TIME
 
 // ---------- Polar finder illuminator ----------
 #define ENABLE_PFI false
@@ -64,20 +46,19 @@
 #define PFI_LED 5
 #define PFI_THRESHOLD 20
 #endif
-#else
-#define ENABLE_PFI false
-#define TEMP_HUM_SENSOR false
-#define TIME_CONTROL false
 #endif
 
 // ===================================================================================
-// ============================== EEPROM CONFIGURATION ===============================
+// ================================ FLAT PANEL CONFIG ================================
 // ===================================================================================
-#if defined(__AVR__) || defined(CORE_TEENSY)
-#define SETTINGS_SUPPORT true
-#define EEPROM_MARKER 'A'
-#define EEPROM_PADDING 20
-#define SETTINGS_SAVE_DELAY 5000
-#else
-#define SETTINGS_SUPPORT false
+#define FLAT_PANEL true
+#if FLAT_PANEL == true
+#define EL_PANEL_PIN 3
+#define EL_PANEL_LOG_SCALE true
+#define EL_PANEL_ON_BOOT false
+#define SERVO_MOTOR SERVO_RDS3225
+#if defined(SERVO_MOTOR) && SERVO_MOTOR != DISABLED
+#define SERVO_PIN 5
+#endif
+
 #endif

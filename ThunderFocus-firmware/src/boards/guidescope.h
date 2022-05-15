@@ -17,7 +17,7 @@
 #define FOCUSER_DIR 2
 #define FOCUSER_STEP 3
 #define FOCUSER_EN 7
-#define FOCUSER_STPES_SCALING 4
+#define FOCUSER_STEPS_SCALING 4
 //#define FOCUSER_MODE0 6
 //#define FOCUSER_MODE1 5
 #define FOCUSER_MODE2 4
@@ -42,9 +42,9 @@
 #if ENABLE_DEVMAN == true
 #define MANAGED_PINS_COUNT 4
 #define MANAGED_PINS {{6, true, 0, false},	\
-					{9, true, 0, false},    \
-					{10, true, 0, false}, 	\
-					{12, false, 0, false}}
+                    {9, true, 0, false},    \
+                    {10, true, 0, false}, 	\
+                    {12, false, 0, false}}
 #define AUTOMATIC_DEVMAN_TIMER 30000
 #define AUTOMATIC_DEVMAN_THRESHOLD 60.0
 #define AUTOMATIC_DEVMAN_OFFSET_FACTOR 0.4
@@ -55,7 +55,7 @@
 #define SENSORS_DATAPOINTS 6
 
 // ---------- Time ----------
-#define TIME_CONTROL false
+#define RTC_SUPPORT false
 
 // ---------- Polar finder illuminator ----------
 #define ENABLE_PFI false
@@ -67,7 +67,7 @@
 #else
 #define ENABLE_PFI false
 #define TEMP_HUM_SENSOR false
-#define TIME_CONTROL false
+#define RTC_SUPPORT false
 #endif
 
 // ===================================================================================

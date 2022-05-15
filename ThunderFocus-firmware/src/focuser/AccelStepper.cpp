@@ -32,7 +32,7 @@ AccelStepper::AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4) {
     _cn = 0.0;
     _cmin = 1.0;
     _c0 = 0.676 * sqrt(2.0) * 1000000.0;
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
     _enabled = true;
 #if ACCELSTEPPER_AUTO_POWER == true
     _autoPowerTimeout = 0;
@@ -69,7 +69,7 @@ AccelStepper::AccelStepper(uint8_t stepPin, uint8_t dirPin) {
     _cn = 0.0;
     _cmin = 1.0;
     _c0 = 0.676 * sqrt(2.0) * 1000000.0;
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
     _enablePin = -1;
     _enabled = true;
 #if ACCELSTEPPER_AUTO_POWER == true
@@ -96,7 +96,7 @@ void AccelStepper::stop() {
 }
 
 void AccelStepper::move(long relative) {
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_AUTO_POWER == true
 #if ACCELSTEPPER_28BYJ_48_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
@@ -117,7 +117,7 @@ void AccelStepper::move(long relative) {
 }
 
 void AccelStepper::moveTo(long absolute) {
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_AUTO_POWER == true
 #if ACCELSTEPPER_28BYJ_48_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
@@ -144,7 +144,7 @@ boolean AccelStepper::run() {
 }
 
 boolean AccelStepper::runSpeed() {
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_AUTO_POWER == true
     unsigned long time = micros();
 #else
@@ -417,7 +417,7 @@ long AccelStepper::getBacklash() {
 #pragma endregion Direction
 
 #pragma region Power
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_28BYJ_48_STEPPER == false
 void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
     _enablePin = enPin;

@@ -1,17 +1,37 @@
-#ifndef AccelStepper_h
-#define AccelStepper_h
+#ifndef ACCELSTEPPER_h
+#define ACCELSTEPPER_h
 
 #include <Arduino.h>
-#define ACCELSTEPPER_PULSE_WIDTH_MICROS 0
-#define ACCELSTEPPER_BACKLASH_SUPPORT true
-#define ACCELSTEPPER_ENABLE_SUPPORT true
-#define ACCELSTEPPER_AUTO_POWER true
-#define ACCELSTEPPER_STEPS_SCALING true
-#define ACCELSTEPPER_INVERT_DIR_SUPPORT true
-#define ACCELSTEPPER_28BYJ_48_STEPPER false
-#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING true
+#include "../config.h"
 
-#if ACCELSTEPPER_AUTO_POWER == true && ACCELSTEPPER_ENABLE_SUPPORT == false
+#if F_CPU >= 20000000
+#define ACCELSTEPPER_PULSE_WIDTH_MICROS 1
+#else
+#define ACCELSTEPPER_PULSE_WIDTH_MICROS 0
+#endif
+#define ACCELSTEPPER_BACKLASH_SUPPORT true
+#ifdef FOCUSER_EN
+#define ACCELSTEPPER_ENABLE_PIN_FEATURE true
+#define ACCELSTEPPER_AUTO_POWER true
+#else
+#define ACCELSTEPPER_ENABLE_PIN_FEATURE false
+#define ACCELSTEPPER_AUTO_POWER false
+#endif
+#if defined(FOCUSER_STEPS_SCALING) && (FOCUSER_STEPS_SCALING > 1)
+#define ACCELSTEPPER_STEPS_SCALING true
+#endif
+#define ACCELSTEPPER_INVERT_DIR_SUPPORT true
+#if FOCUSER_DRIVER == BIPOLAR
+#define ACCELSTEPPER_28BYJ_48_STEPPER false
+#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING false
+#elif FOCUSER_DRIVER == UNIPOLAR
+#define ACCELSTEPPER_28BYJ_48_STEPPER true
+#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING true
+#else
+#error "FOCUSER_DRIVER must be either BIPOLAR or UNIPOLAR"
+#endif
+
+#if ACCELSTEPPER_AUTO_POWER == true && ACCELSTEPPER_ENABLE_PIN_FEATURE == false
 #error "Can't use auto-power without the enabled pin support."
 #endif
 
@@ -54,7 +74,7 @@ class AccelStepper {
     void setDirectionInverted(boolean inverted);
 #endif
 
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_28BYJ_48_STEPPER == false
     void setEnablePin(uint8_t enPin, boolean enabled);
 #endif
@@ -121,7 +141,7 @@ class AccelStepper {
 	long _targetBacklash;
 #endif
 
-#if ACCELSTEPPER_ENABLE_SUPPORT == true
+#if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_28BYJ_48_STEPPER == false
     uint8_t _enablePin;
 #endif

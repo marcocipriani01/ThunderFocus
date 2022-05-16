@@ -1,15 +1,14 @@
 #include "Focuser.h"
 #if FOCUSER_DRIVER != DISABLED
 
-using namespace Focuser;
-
+namespace Focuser {
 #if FOCUSER_DRIVER == BIPOLAR
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
 #elif FOCUSER_DRIVER == UNIPOLAR
 AccelStepper stepper(FOCUSER_IN1, FOCUSER_IN2, FOCUSER_IN3, FOCUSER_IN4);
 #endif
 
-void Focuser::begin() {
+void begin() {
 #ifdef FOCUSER_MODE0
     pinMode(FOCUSER_MODE0, OUTPUT);
     digitalWrite(FOCUSER_MODE0, HIGH);
@@ -38,4 +37,14 @@ void Focuser::begin() {
 #endif
 }
 
+void updateSettings() {
+    Settings::settings.focuserPosition = stepper.getPosition();
+    Settings::settings.focuserSpeed = stepper.getMaxSpeed();
+    Settings::settings.focuserPowerSave = (stepper.getAutoPowerTimeout() > 0L);
+    Settings::settings.focuserBacklash = stepper.getBacklash();
+    Settings::settings.focuserReverse = stepper.isDirectionInverted();
+    Settings::requestSave = true;
+}
+
+}  // namespace Focuser
 #endif

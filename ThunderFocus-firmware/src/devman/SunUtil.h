@@ -23,8 +23,8 @@ extern unsigned long lastUpdateTime;
 
 void begin();
 double getSunElevation();
-void setTime(unsigned long currentTime);
-time_t getTime();
+void setRTCTime(unsigned long currentTime);
+time_t getRTCTime();
 }  // namespace SunUtil
 
 #endif

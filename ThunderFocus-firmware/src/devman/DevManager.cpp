@@ -1,16 +1,14 @@
 #include "DevManager.h"
 #if ENABLE_DEVMAN == true
 
-using namespace DevManager;
-
+namespace DevManager {
 Pin pins[] = MANAGED_PINS;
+#if DEVMAN_HAS_AUTO_MODES
 AutoMode autoMode = AutoMode::NONE;
 unsigned long lastUpdateTime = 0L;
-#if RTC_SUPPORT != DISABLED
-double sunElevation = 0;
 #endif
 
-void DevManager::begin() {
+void begin() {
 #if RTC_SUPPORT != DISABLED
     SunUtil::begin();
 #endif
@@ -28,15 +26,63 @@ void DevManager::begin() {
 #endif
 }
 
-boolean DevManager::run() {
+boolean run() {
 #if ENABLE_PFI == true
     int val = analogRead(PFI_KNOB);
     analogWrite(PFI_LED, (val > PFI_THRESHOLD) ? map(val, PFI_THRESHOLD, 1023, 0, 255) : 0);
 #endif
+#if DEVMAN_HAS_AUTO_MODES
     return processAutoMode(false);
+#else
+    return false;
+#endif
 }
 
-boolean DevManager::processAutoMode(boolean force) {
+void updateSettings() {
+    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+        Settings::settings.devManPins[i] = getPin(i);
+    }
+#if DEVMAN_HAS_AUTO_MODES
+    Settings::settings.devManAutoMode = autoMode;
+#else
+    Settings::settings.devManAutoMode = AutoMode::NONE;
+#endif
+    Settings::requestSave = true;
+}
+
+Pin getPin(uint8_t index) { return pins[index]; }
+
+void updatePin(uint8_t pin, uint8_t value) {
+    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+        if (pin == pins[i].number) {
+            if (pins[i].value == value) return;
+            pins[i].autoModeEn = false;
+            if (pins[i].isPwm) {
+                pins[i].value = value;
+                switch (value) {
+                    case 0:
+                        digitalWrite(pin, LOW);
+                        break;
+                    case 255:
+                        digitalWrite(pin, HIGH);
+                        break;
+                    default:
+                        analogWrite(pin, value);
+                        break;
+                }
+            } else {
+                boolean bVal = (value > 100);
+                pins[i].value = bVal ? 255 : 0;
+                digitalWrite(pins[i].number, bVal);
+            }
+            updateSettings();
+            return;
+        }
+    }
+}
+
+#if DEVMAN_HAS_AUTO_MODES
+boolean processAutoMode(boolean force) {
     boolean hasChanged = false;
     if (autoMode != AutoMode::NONE) {
         unsigned long t = millis();
@@ -115,38 +161,7 @@ boolean DevManager::processAutoMode(boolean force) {
     return hasChanged;
 }
 
-Pin DevManager::getPin(uint8_t index) { return pins[index]; }
-
-void DevManager::updatePin(uint8_t pin, uint8_t value) {
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
-        if (pin == pins[i].number) {
-            if (pins[i].value == value) return;
-            pins[i].autoModeEn = false;
-            if (pins[i].isPwm) {
-                pins[i].value = value;
-                switch (value) {
-                    case 0:
-                        digitalWrite(pin, LOW);
-                        break;
-                    case 255:
-                        digitalWrite(pin, HIGH);
-                        break;
-                    default:
-                        analogWrite(pin, value);
-                        break;
-                }
-            } else {
-                boolean bVal = (value > 100);
-                pins[i].value = bVal ? 255 : 0;
-                digitalWrite(pins[i].number, bVal);
-            }
-            updateSettings();
-            return;
-        }
-    }
-}
-
-boolean DevManager::setPinAutoModeEn(uint8_t pin, boolean enabled) {
+boolean setPinAutoModeEn(uint8_t pin, boolean enabled) {
     for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
             pins[i].autoModeEn = enabled;
@@ -156,9 +171,9 @@ boolean DevManager::setPinAutoModeEn(uint8_t pin, boolean enabled) {
     return false;
 }
 
-AutoMode DevManager::getAutoMode() { return autoMode; }
+AutoMode getAutoMode() { return autoMode; }
 
-boolean DevManager::setAutoMode(AutoMode am) {
+boolean setAutoMode(AutoMode am) {
     switch (am) {
 #if RTC_SUPPORT != DISABLED
         case AutoMode::NIGHT_ASTRONOMICAL:
@@ -181,36 +196,16 @@ boolean DevManager::setAutoMode(AutoMode am) {
             autoMode = am;
             return updateAutoMode();
         }
+#endif
         default: {
             autoMode = AutoMode::NONE;
             return updateAutoMode();
         }
-#endif
     }
     return false;
 }
 
-boolean DevManager::updateAutoMode() {
-    Settings::settings.devManAutoMode = DevManager::autoMode;
-    Settings::requestSave = true;
-    return processAutoMode(true);
-}
-
-void DevManager::updateSettings() {
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
-        Settings::settings.devManPins[i] = DevManager::getPin(i);
-    }
-    Settings::settings.devManAutoMode = DevManager::autoMode;
-    Settings::requestSave = true;
-}
-
-int DevManager::pwmMap(double in, double min, double max) {
-    if (in <= min) return 0;
-    if (in >= max) return 255;
-    return (int)((in - min) * (255.0 - DEVMAN_PWM_THRESHOLD) / (max - min) + DEVMAN_PWM_THRESHOLD);
-}
-
-boolean DevManager::forEachAutoPin(int pwm, boolean digital) {
+boolean forEachAutoPin(int pwm, boolean digital) {
     boolean hasChanged = false;
     for (int i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pins[i].autoModeEn) {
@@ -243,8 +238,21 @@ boolean DevManager::forEachAutoPin(int pwm, boolean digital) {
     return hasChanged;
 }
 
+boolean updateAutoMode() {
+    Settings::settings.devManAutoMode = autoMode;
+    Settings::requestSave = true;
+    return processAutoMode(true);
+}
+
+int pwmMap(double in, double min, double max) {
+    if (in <= min) return 0;
+    if (in >= max) return 255;
+    return (int)((in - min) * (255.0 - DEVMAN_PWM_THRESHOLD) / (max - min) + DEVMAN_PWM_THRESHOLD);
+}
+#endif
+
 #if TEMP_HUM_SENSOR != DISABLED
-boolean DevManager::processDewPoint(double triggerDiff) {
+boolean processDewPoint(double triggerDiff) {
     double dewPoint = AmbientManger::getDewPoint(), temperature = AmbientManger::getTemperature();
     if ((temperature != TEMP_ABSOLUTE_ZERO) && (dewPoint != TEMP_ABSOLUTE_ZERO))
         return forEachAutoPin(pwmMap(dewPoint, temperature - triggerDiff, temperature - (triggerDiff * DEVMAN_OFFSET_FACTOR)),
@@ -252,10 +260,11 @@ boolean DevManager::processDewPoint(double triggerDiff) {
     return false;
 }
 
-boolean DevManager::processHumidity(double triggerHum) {
+boolean processHumidity(double triggerHum) {
     double humidity = AmbientManger::getHumidity();
     if (humidity != HUMIDITY_INVALID) return forEachAutoPin(pwmMap(humidity, triggerHum - 5.0, triggerHum + 5.0), humidity >= triggerHum);
     return false;
 }
 #endif
+}  // namespace DevManager
 #endif

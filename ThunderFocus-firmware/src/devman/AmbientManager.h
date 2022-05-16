@@ -2,7 +2,6 @@
 #define AMBIENT_H
 
 #include <Arduino.h>
-
 #include "../config.h"
 
 #if TEMP_HUM_SENSOR != DISABLED
@@ -21,13 +20,13 @@
 #define SENSORS_DATAPOINTS 6
 #define HUMIDITY_INVALID -1
 
+namespace AmbientManger {
 #if TEMP_HUM_SENSOR == BME280
 extern Adafruit_BME280 bme;
 #elif TEMP_HUM_SENSOR == HTU21D
 extern Adafruit_HTU21DF htu;
 #endif
 
-namespace AmbientManger {
 extern unsigned long lastSensorsCheck;
 extern double temperature;
 extern double temperatureSum;

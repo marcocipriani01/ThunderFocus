@@ -2,10 +2,9 @@
 #define FOCUSER_H
 
 #include <Arduino.h>
-
 #include "../config.h"
-#if FOCUSER_DRIVER != DISABLED
 
+#if FOCUSER_DRIVER != DISABLED
 #if SETTINGS_SUPPORT == true
 #include "../settings/Settings.h"
 #endif
@@ -15,6 +14,7 @@ namespace Focuser {
 extern AccelStepper stepper;
 
 void begin();
+void updateSettings();
 }
 
 #endif

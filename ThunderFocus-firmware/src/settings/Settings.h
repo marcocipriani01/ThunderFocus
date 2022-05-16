@@ -5,10 +5,6 @@
 
 #include "../config.h"
 #if SETTINGS_SUPPORT == true
-#if FOCUSER_DRIVER != DISABLED
-#include "focuser/Focuser.h"
-#include "focuser/AccelStepper.h"
-#endif
 #include <EEPROM.h>
 #if ENABLE_DEVMAN == true
 #include "../devman/DevManagerDefinitions.h"

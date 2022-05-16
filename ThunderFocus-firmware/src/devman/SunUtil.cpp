@@ -1,27 +1,27 @@
 #include "SunUtil.h"
-
 #if RTC_SUPPORT != DISABLED
-using namespace SunUtil;
+
+namespace SunUtil {
 
 double sunElevation = 0.0;
 unsigned long lastUpdateTime = 0L;
 
-void SunUtil::begin() {
-    setSyncProvider(getTime);
-    sunElevation = (calculateSolarPosition(SunUtil::getTime(), Settings::settings.latitude * DEG_TO_RAD, Settings::settings.longitude * DEG_TO_RAD).elevation) * RAD_TO_DEG;
+void begin() {
+    setSyncProvider(getRTCTime);
+    sunElevation = (calculateSolarPosition(getRTCTime(), Settings::settings.latitude * DEG_TO_RAD, Settings::settings.longitude * DEG_TO_RAD).elevation) * RAD_TO_DEG;
     lastUpdateTime = millis();
 }
 
-double SunUtil::getSunElevation() {
+double getSunElevation() {
     unsigned long t = millis();
     if ((t - lastUpdateTime) >= SUN_ELEVATION_UPDATE_TIME) {
-        sunElevation = (calculateSolarPosition(SunUtil::getTime(), Settings::settings.latitude * DEG_TO_RAD, Settings::settings.longitude * DEG_TO_RAD).elevation) * RAD_TO_DEG;
+        sunElevation = (calculateSolarPosition(getRTCTime(), Settings::settings.latitude * DEG_TO_RAD, Settings::settings.longitude * DEG_TO_RAD).elevation) * RAD_TO_DEG;
         lastUpdateTime = t;
     }
     return sunElevation;
 }
 
-void SunUtil::setTime(unsigned long currentTime) {
+void setRTCTime(unsigned long currentTime) {
     if (currentTime > MIN_VALID_UNIX_TIME) {
         setTime(currentTime);
 #if RTC_SUPPORT == TEENSY_RTC
@@ -30,11 +30,12 @@ void SunUtil::setTime(unsigned long currentTime) {
     }
 }
 
-time_t SunUtil::getTime() {
+time_t getRTCTime() {
 #if RTC_SUPPORT == TEENSY_RTC
     return Teensy3Clock.get();
 #else
     return now();
 #endif
+}
 }
 #endif

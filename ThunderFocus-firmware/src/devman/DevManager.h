@@ -2,10 +2,12 @@
 #define DEVMAN_H
 
 #include <Arduino.h>
+
 #include "../config.h"
 
 #if ENABLE_DEVMAN == true
 #include "DevManagerDefinitions.h"
+#include "settings/Settings.h"
 #if TEMP_HUM_SENSOR != DISABLED
 #include "AmbientManager.h"
 #endif
@@ -19,25 +21,26 @@
 
 namespace DevManager {
 extern Pin pins[];
-#if (RTC_SUPPORT != DISABLED) || (TEMP_HUM_SENSOR != DISABLED)
+#if DEVMAN_HAS_AUTO_MODES
 extern AutoMode autoMode;
-#endif
 extern unsigned long lastUpdateTime;
+#endif
 
 void begin();
 boolean run();
-boolean processAutoMode(boolean force);
+void updateSettings();
 Pin getPin(uint8_t index);
 void updatePin(uint8_t pin, uint8_t value);
-boolean setPinAutoModeEn(uint8_t pin, boolean enabled);
-AutoMode getAutoMode();
-boolean setAutoMode(AutoMode am);
-boolean updateAutoMode();
-void updateSettings();
 
+#if DEVMAN_HAS_AUTO_MODES
+AutoMode getAutoMode();
+boolean updateAutoMode();
+boolean setAutoMode(AutoMode am);
+boolean processAutoMode(boolean force);
 int pwmMap(double in, double min, double max);
 boolean forEachAutoPin(int pwm, boolean digital);
-
+boolean setPinAutoModeEn(uint8_t pin, boolean enabled);
+#endif
 #if TEMP_HUM_SENSOR != DISABLED
 boolean processDewPoint(double triggerDiff);
 boolean processHumidity(double triggerHum);

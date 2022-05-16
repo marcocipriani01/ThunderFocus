@@ -1,7 +1,7 @@
 #include "FlatPanel.h"
 #if FLAT_PANEL == true
 
-using namespace FlatPanel;
+namespace FlatPanel {
 
 #ifdef SERVO_PIN
 int targetVal = 0;
@@ -16,7 +16,7 @@ uint16_t targetBrightness;
 uint16_t currentBrightness;
 unsigned long lastBrightnessAdj;
 
-void FlatPanel::begin() {
+void begin() {
     servo.attach(SERVO_PIN);
     if (Settings::settings.coverStatus == OPEN) {
         servo.write(Settings::settings.openVal);
@@ -37,7 +37,7 @@ void FlatPanel::begin() {
 }
 
 #ifdef SERVO_PIN
-void FlatPanel::setShutter(int val) {
+void setShutter(int val) {
     if (val == OPEN && coverStatus != OPEN) {
         motorDirection = OPENING;
         targetVal = Settings::settings.openVal;
@@ -51,7 +51,7 @@ void FlatPanel::setShutter(int val) {
 }
 #endif
 
-void FlatPanel::setLight(boolean val) {
+void setLight(boolean val) {
     lightStatus = val;
     if (val) {
 #ifdef SERVO_PIN
@@ -64,7 +64,7 @@ void FlatPanel::setLight(boolean val) {
     }
 }
 
-void FlatPanel::setBrightness(int val) {
+void setBrightness(int val) {
 #if EL_PANEL_LOG_SCALE == true
     brightness = constrain((int)(255.0 * log10(val + 1.0) / log10(256.0)), 0, 255);
 #else
@@ -77,7 +77,7 @@ void FlatPanel::setBrightness(int val) {
 #endif
 }
 
-void FlatPanel::run() {
+void run() {
     unsigned long t = millis();
     if ((t - lastBrightnessAdj) >= EL_PANEL_FADE_DELAY) {
         if (currentBrightness < targetBrightness) {
@@ -118,5 +118,6 @@ void FlatPanel::run() {
     }
 #endif
 }
+}  // namespace FlatPanel
 
 #endif

@@ -1,7 +1,6 @@
 #include "ThunderFocusProtocol.h"
 
-using namespace ThunderFocus;
-
+namespace ThunderFocus {
 #if FOCUSER_DRIVER != DISABLED
 FocuserState lastFocuserState = FocuserState::POWER_SAVE;
 unsigned long focuserSyncTime = 0;
@@ -13,7 +12,7 @@ unsigned long sensorsSyncTime = 0;
 unsigned long sunSyncTime = 0;
 #endif
 
-void ThunderFocus::setup() {
+void setup() {
     Serial.begin(SERIAL_SPEED);
     Serial.setTimeout(SERIAL_TIMEOUT);
 #if SETTINGS_SUPPORT == true
@@ -26,28 +25,36 @@ void ThunderFocus::setup() {
     DevManager::begin();
     for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
         DevManager::Pin pin = Settings::settings.devManPins[i];
+#if DEVMAN_HAS_AUTO_MODES
         if (pin.autoModeEn)
             DevManager::setPinAutoModeEn(pin.number, true);
         else
             DevManager::updatePin(pin.number, pin.value);
+#else
+        DevManager::updatePin(pin.number, pin.value);
+#endif
     }
+#if DEVMAN_HAS_AUTO_MODES
     DevManager::setAutoMode(Settings::settings.devManAutoMode);
+#endif
 #endif
 }
 
 #if FOCUSER_DRIVER == DISABLED
-void ThunderFocus::run() {
+void run() {
 #else
-FocuserState ThunderFocus::run() {
+FocuserState run() {
     FocuserState currentState;
-    if (Focuser::stepper.run())
+    if (Focuser::stepper.run()) {
         currentState = FocuserState::MOVING;
-    else if (lastFocuserState == FocuserState::MOVING)
+    } else if (lastFocuserState == FocuserState::MOVING) {
         currentState = FocuserState::ARRIVED;
-    else if (Focuser::stepper.isEnabled())
+        Focuser::updateSettings();
+    } else if (Focuser::stepper.isEnabled()) {
         currentState = FocuserState::HOLD;
-    else
+    } else {
         currentState = FocuserState::POWER_SAVE;
+    }
 
     if (currentState != lastFocuserState) {
         Serial.println((char)currentState);
@@ -88,10 +95,12 @@ FocuserState ThunderFocus::run() {
 #endif
 }
 
-boolean ThunderFocus::serialEvent() {
+boolean serialEvent() {
     while (Serial.available()) {
         if (Serial.read() == '$') {
-            delay(1);
+#if defined(CMD_RECEIVE_WAIT) && (CMD_RECEIVE_WAIT > 0)
+            delay(CMD_RECEIVE_WAIT);
+#endif
             switch (Serial.read()) {
                 case 'C': {
                     Serial.print(F("C"));
@@ -110,7 +119,15 @@ boolean ThunderFocus::serialEvent() {
 #if ENABLE_DEVMAN == true
                     Serial.print(F("D["));
                     Serial.print(F(","));
+                    Serial.print(TEMP_HUM_SENSOR);
+                    Serial.print(F(","));
+                    Serial.print(RTC_SUPPORT);
+                    Serial.print(F(","));
+#if DEVMAN_HAS_AUTO_MODES
                     Serial.print(DevManager::getAutoMode());
+#else
+                    Serial.print(DevManager::AutoMode::NONE);
+#endif
                     Serial.print(F(","));
                     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
                         DevManager::Pin pin = DevManager::getPin(i);
@@ -124,16 +141,15 @@ boolean ThunderFocus::serialEvent() {
                         Serial.print(pin.autoModeEn);
                         Serial.print(F(")"));
                     }
-                    Serial.print(F(","));
-                    Serial.print(TEMP_HUM_SENSOR);
-                    Serial.print(F(","));
-                    Serial.print(RTC_SUPPORT);
 #if RTC_SUPPORT != DISABLED
                     Serial.print(F(","));
                     Serial.print(Settings::settings.latitude, 3);
                     Serial.print(F(","));
                     Serial.print(Settings::settings.latitude, 3);
 #endif
+#endif
+#if FLAT_PANEL == true
+//TODO: flat panel
 #endif
                     Serial.println();
 #if RTC_SUPPORT != DISABLED
@@ -235,6 +251,7 @@ boolean ThunderFocus::serialEvent() {
                     return true;
                 }
 
+#if DEVMAN_HAS_AUTO_MODES
                 case 'K': {
                     DevManager::AutoMode mode = (DevManager::AutoMode)Serial.parseInt();
                     Serial.print(F("LSetAutoMode="));
@@ -259,7 +276,7 @@ boolean ThunderFocus::serialEvent() {
                 case 'T': {
                     unsigned long time = Serial.parseInt();
                     if (time != 0) {
-                        SunUtil::setTime(time);
+                        SunUtil::setRTCTime(time);
                         Serial.print(F("LSetTime="));
                         Serial.println(time);
                     }
@@ -278,6 +295,7 @@ boolean ThunderFocus::serialEvent() {
                     break;
                 }
 #endif
+#endif
             }
         }
     }
@@ -285,9 +303,13 @@ boolean ThunderFocus::serialEvent() {
 }
 
 #if ENABLE_DEVMAN == true
-void ThunderFocus::updatePins() {
+void updatePins() {
     Serial.print(F("Y"));
+#if DEVMAN_HAS_AUTO_MODES
     Serial.print(DevManager::getAutoMode());
+#else
+    Serial.print(DevManager::AutoMode::NONE);
+#endif
     Serial.print(F(","));
     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         DevManager::Pin pin = DevManager::getPin(i);
@@ -304,17 +326,18 @@ void ThunderFocus::updatePins() {
 #endif
 
 #if RTC_SUPPORT != DISABLED
-void ThunderFocus::updateSunPosition() {
+void updateSunPosition() {
     Serial.print(F("T"));
     Serial.println(SunUtil::getSunElevation(), 2);
 }
 #endif
 
-void ThunderFocus::log(const String &msg) {
+void log(const String &msg) {
     Serial.print(F("L"));
     Serial.println(msg);
 }
 
-inline int ThunderFocus::speedToPercentage(double speed) { return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN); }
+inline int speedToPercentage(double speed) { return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN); }
 
-inline double ThunderFocus::percentageToSpeed(int percentage) { return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN; }
+inline double percentageToSpeed(int percentage) { return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN; }
+}

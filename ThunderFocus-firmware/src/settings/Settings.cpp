@@ -1,13 +1,12 @@
 #include "Settings.h"
 #if SETTINGS_SUPPORT == true
 
-using namespace Settings;
-
+namespace Settings {
 Struct settings;
 boolean requestSave = false;
 unsigned long lastSaveTime = 0L;
 
-void Settings::reset() {
+void reset() {
     settings.marker = EEPROM_MARKER;
     settings.focuserPosition = 0L;
     settings.focuserSpeed = (FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2.0;
@@ -28,29 +27,23 @@ void Settings::reset() {
 #endif
 }
 
-void Settings::load() {
+void load() {
     uint8_t* bytes = (uint8_t*)&settings;
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
         bytes[i] = EEPROM.read(i);
     }
     if (settings.marker != EEPROM_MARKER) reset();
     settings.focuserSpeed = constrain(settings.focuserSpeed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
-    if (settings.focuserBacklash < 0)
-        settings.focuserBacklash = 0;
+    if (settings.focuserBacklash < 0) settings.focuserBacklash = 0;
 }
 
-void Settings::save() {
-    settings.marker = EEPROM_MARKER;
-    settings.focuserPosition = Focuser::stepper.getPosition();
-    settings.focuserSpeed = Focuser::stepper.getMaxSpeed();
-    settings.focuserPowerSave = (Focuser::stepper.getAutoPowerTimeout() > 0L);
-    settings.focuserBacklash = Focuser::stepper.getBacklash();
-    settings.focuserReverse = Focuser::stepper.isDirectionInverted();
-
+void save() {
     uint8_t* bytes = (uint8_t*)&settings;
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
         EEPROM.update(i, bytes[i]);
     }
     requestSave = false;
 }
+}  // namespace Settings
+
 #endif

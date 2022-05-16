@@ -72,6 +72,11 @@
 #ifndef RTC_SUPPORT
 #define RTC_SUPPORT DISABLED
 #endif
+#if (RTC_SUPPORT != DISABLED) || (TEMP_HUM_SENSOR != DISABLED)
+#define DEVMAN_HAS_AUTO_MODES true
+#else
+#define DEVMAN_HAS_AUTO_MODES false
+#endif
 #if RTC_SUPPORT == TEENSY_RTC
 #ifndef CORE_TEENSY
 #error "TEENSY_RTC can't be used without a Teensy board!"

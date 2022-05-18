@@ -109,7 +109,7 @@ boolean serialEvent() {
                     Serial.print(FIRMWARE_VERSION);
                     Serial.print(F(";"));
 #if FOCUSER_DRIVER != DISABLED
-                    Serial.print(F("[F"));
+                    Serial.print(F("F["));
                     Serial.print(Focuser::stepper.getPosition());
                     Serial.print(F(","));
                     Serial.print(speedToPercentage(Focuser::stepper.getMaxSpeed()));
@@ -401,8 +401,11 @@ void updatePins() {
 
 #if RTC_SUPPORT != DISABLED
 void updateSunPosition() {
-    Serial.print(F("T"));
-    Serial.println(SunUtil::getSunElevation(), 2);
+    double sunElev = SunUtil::getSunElevation();
+    if (!isnan(sunElev)) {
+        Serial.print(F("T"));
+        Serial.println(sunElev, 2);
+    }
 }
 #endif
 

@@ -11,6 +11,7 @@
 #endif
 #include <SolarPosition.h>
 #include <TimeLib.h>
+#include <math.h>
 
 #include "../settings/Settings.h"
 
@@ -20,6 +21,7 @@
 namespace SunUtil {
 extern double sunElevation;
 extern unsigned long lastUpdateTime;
+extern boolean timeReliable;
 
 void begin();
 double getSunElevation();

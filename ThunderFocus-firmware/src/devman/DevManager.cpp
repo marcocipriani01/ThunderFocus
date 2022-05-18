@@ -95,17 +95,20 @@ boolean processAutoMode(boolean force) {
 #if RTC_SUPPORT != DISABLED
                 case AutoMode::NIGHT_ASTRONOMICAL: {
                     double sunElevation = SunUtil::getSunElevation();
-                    hasChanged = forEachAutoPin(pwmMap(sunElevation, -15.0, -21.0), sunElevation <= -18.0);
+                    if (!isnan(sunElevation))
+                        hasChanged = forEachAutoPin(pwmMap(sunElevation, -15.0, -21.0), sunElevation <= -18.0);
                     break;
                 }
                 case AutoMode::NIGHT_CIVIL: {
                     double sunElevation = SunUtil::getSunElevation();
-                    hasChanged = forEachAutoPin(pwmMap(sunElevation, -3.0, -9.0), sunElevation <= -6.0);
+                    if (!isnan(sunElevation))
+                        hasChanged = forEachAutoPin(pwmMap(sunElevation, -3.0, -9.0), sunElevation <= -6.0);
                     break;
                 }
                 case AutoMode::DAYTIME: {
                     double sunElevation = SunUtil::getSunElevation();
-                    hasChanged = forEachAutoPin(pwmMap(sunElevation, 0.0, 3.0), sunElevation > 0.0);
+                    if (!isnan(sunElevation))
+                        hasChanged = forEachAutoPin(pwmMap(sunElevation, 0.0, 3.0), sunElevation > 0.0);
                     break;
                 }
 #endif

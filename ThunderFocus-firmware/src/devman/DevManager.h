@@ -12,6 +12,7 @@
 #include "AmbientManager.h"
 #endif
 #if RTC_SUPPORT != DISABLED
+#include <math.h>
 #include "SunUtil.h"
 #endif
 

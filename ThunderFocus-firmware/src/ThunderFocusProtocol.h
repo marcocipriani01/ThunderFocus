@@ -15,6 +15,7 @@
 #include "devman/DevManager.h"
 #if RTC_SUPPORT != DISABLED
 #include <TimeLib.h>
+#include <math.h>
 #include "devman/SunUtil.h"
 #endif
 #if TEMP_HUM_SENSOR != DISABLED

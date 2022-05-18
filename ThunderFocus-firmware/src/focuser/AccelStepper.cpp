@@ -1,4 +1,5 @@
 #include "AccelStepper.h"
+#if FOCUSER_DRIVER != DISABLED
 
 #pragma region Constructor
 #if ACCELSTEPPER_28BYJ_48_STEPPER == true
@@ -559,3 +560,4 @@ void AccelStepper::setOutputPins(uint8_t mask) {
 }
 #endif
 #pragma endregion PrivateMethods
+#endif

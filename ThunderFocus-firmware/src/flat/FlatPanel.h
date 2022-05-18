@@ -8,7 +8,7 @@
 #include "FlatPanelEnums.h"
 #ifdef SERVO_PIN
 #if SETTINGS_SUPPORT == false
-#error "SETTINGS_SUPPORT must be true to use the flat panel feature."
+#error "SETTINGS_SUPPORT must be true to use the flat panel servo feature."
 #endif
 #include "../settings/Settings.h"
 #include "ServoHack.h"

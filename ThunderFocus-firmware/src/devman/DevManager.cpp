@@ -52,12 +52,16 @@ void updateSettings() {
 
 Pin getPin(uint8_t index) { return pins[index]; }
 
-void updatePin(uint8_t pin, uint8_t value) {
+void updatePin(uint8_t pin, boolean enablePwm, uint8_t value) {
     for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
             if (pins[i].value == value) return;
             pins[i].autoModeEn = false;
-            if (pins[i].isPwm) {
+            if (pins[i].isPwm)
+                pins[i].enablePwm = enablePwm;
+            else
+                pins[i].enablePwm = false;
+            if (pins[i].enablePwm) {
                 pins[i].value = value;
                 switch (value) {
                     case 0:
@@ -209,7 +213,7 @@ boolean forEachAutoPin(int pwm, boolean digital) {
     boolean hasChanged = false;
     for (int i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pins[i].autoModeEn) {
-            if (pins[i].isPwm) {
+            if (pins[i].isPwm && pins[i].enablePwm) {
                 if (pwm != pins[i].value) {
                     pins[i].value = pwm;
                     switch (pwm) {

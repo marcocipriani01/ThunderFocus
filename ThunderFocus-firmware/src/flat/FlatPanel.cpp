@@ -19,12 +19,12 @@ unsigned long lastBrightnessAdj;
 void begin() {
     servo.attach(SERVO_PIN);
     if (Settings::settings.coverStatus == OPEN) {
-        servo.write(Settings::settings.openVal);
-        currentVal = Settings::settings.openVal;
+        servo.write(Settings::settings.openServoVal);
+        currentVal = Settings::settings.openServoVal;
         coverStatus = OPEN;
     } else {
-        servo.write(Settings::settings.closedVal);
-        currentVal = Settings::settings.closedVal;
+        servo.write(Settings::settings.closedServoVal);
+        currentVal = Settings::settings.closedServoVal;
     }
 #if EL_PANEL_ON_BOOT == true
     analogWrite(EL_PANEL_PIN, 255);
@@ -40,13 +40,13 @@ void begin() {
 void setShutter(int val) {
     if (val == OPEN && coverStatus != OPEN) {
         motorDirection = OPENING;
-        targetVal = Settings::settings.openVal;
+        targetVal = Settings::settings.openServoVal;
         targetBrightness = 0;
         currentBrightness = 0;
         analogWrite(EL_PANEL_PIN, 0);
     } else if (val == CLOSED && coverStatus != CLOSED) {
         motorDirection = CLOSING;
-        targetVal = Settings::settings.closedVal;
+        targetVal = Settings::settings.closedServoVal;
     }
 }
 #endif

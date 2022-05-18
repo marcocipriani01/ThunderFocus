@@ -29,9 +29,9 @@ void setup() {
         if (pin.autoModeEn)
             DevManager::setPinAutoModeEn(pin.number, true);
         else
-            DevManager::updatePin(pin.number, pin.value);
+            DevManager::updatePin(pin.number, pin.enablePwm, pin.value);
 #else
-        DevManager::updatePin(pin.number, pin.value);
+        DevManager::updatePin(pin.number, pin.enablePwm, pin.value);
 #endif
     }
 #if DEVMAN_HAS_AUTO_MODES
@@ -44,6 +44,9 @@ void setup() {
 void run() {
 #else
 FocuserState run() {
+#endif
+    unsigned long t = millis();
+#if FOCUSER_DRIVER != DISABLED
     FocuserState currentState;
     if (Focuser::stepper.run()) {
         currentState = FocuserState::MOVING;
@@ -60,7 +63,6 @@ FocuserState run() {
         Serial.println((char)currentState);
         lastFocuserState = currentState;
     }
-    unsigned long t = millis();
     if ((t - focuserSyncTime) >= THUNDERFOCUS_SEND_DELAY) {
         Serial.print(F("S"));
         Serial.println(Focuser::stepper.getPosition());
@@ -105,6 +107,8 @@ boolean serialEvent() {
                 case 'C': {
                     Serial.print(F("C"));
                     Serial.print(FIRMWARE_VERSION);
+                    Serial.print(F(";"));
+#if FOCUSER_DRIVER != DISABLED
                     Serial.print(F("[F"));
                     Serial.print(Focuser::stepper.getPosition());
                     Serial.print(F(","));
@@ -116,6 +120,10 @@ boolean serialEvent() {
                     Serial.print(F(","));
                     Serial.print(Focuser::stepper.isDirectionInverted());
                     Serial.print(F("]"));
+#if (ENABLED_DEVMAN == true) || (FLAT_PANEL == true)
+                    Serial.print(F(";"));
+#endif
+#endif
 #if ENABLE_DEVMAN == true
                     Serial.print(F("D["));
                     Serial.print(F(","));
@@ -123,6 +131,12 @@ boolean serialEvent() {
                     Serial.print(F(","));
                     Serial.print(RTC_SUPPORT);
                     Serial.print(F(","));
+#if RTC_SUPPORT != DISABLED
+                    Serial.print(Settings::settings.latitude, 3);
+                    Serial.print(F(","));
+                    Serial.print(Settings::settings.latitude, 3);
+                    Serial.print(F(","));
+#endif
 #if DEVMAN_HAS_AUTO_MODES
                     Serial.print(DevManager::getAutoMode());
 #else
@@ -137,19 +151,38 @@ boolean serialEvent() {
                         Serial.print(pin.value);
                         Serial.print(F("%"));
                         Serial.print(pin.isPwm);
+                        if (pin.isPwm) {
+                            Serial.print(F("%"));
+                            Serial.print(pin.enablePwm);
+                        }
                         Serial.print(F("%"));
                         Serial.print(pin.autoModeEn);
                         Serial.print(F(")"));
                     }
-#if RTC_SUPPORT != DISABLED
-                    Serial.print(F(","));
-                    Serial.print(Settings::settings.latitude, 3);
-                    Serial.print(F(","));
-                    Serial.print(Settings::settings.latitude, 3);
+                    Serial.print(F("]"));
+#if FLAT_PANEL == true
+                    Serial.print(F(";"));
 #endif
 #endif
 #if FLAT_PANEL == true
-//TODO: flat panel
+                    Serial.print(F("P["));
+                    Serial.print(FlatPanel::lightStatus);
+                    Serial.print(F("%"));
+                    Serial.print(FlatPanel::brightness);
+                    Serial.print(F("%"));
+#ifdef SERVO_PIN
+                    Serial.print(F("1%"));
+                    Serial.print(map(Settings::settings.openServoVal, OPEN_SERVO_170deg, OPEN_SERVO_290deg, 0, 100));
+                    Serial.print(F("%"));
+                    Serial.print(map(Settings::settings.closedServoVal, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg, 0, 100));
+                    Serial.print(F("%"));
+                    Serial.print(map(Settings::settings.servoDelay, SERVO_DELAY_MAX, SERVO_DELAY_MIN, 0, 10));
+                    Serial.print(F("%"));
+                    Serial.print(FlatPanel::coverStatus);
+                    Serial.print(F("]"));
+#else
+                    Serial.print(F("0]"));
+#endif
 #endif
                     Serial.println();
 #if RTC_SUPPORT != DISABLED
@@ -171,6 +204,7 @@ boolean serialEvent() {
                     break;
                 }
 
+#if FOCUSER_DRIVER != DISABLED
                 case 'R': {
                     long n = Serial.parseInt();
                     Serial.print(F("LMove="));
@@ -208,7 +242,7 @@ boolean serialEvent() {
                 }
 
                 case 'H': {
-                    boolean b = (Serial.parseInt() > 0);
+                    boolean b = Serial.parseInt();
                     Serial.print(F("LHoldControl="));
                     Serial.println(b);
                     Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
@@ -232,22 +266,24 @@ boolean serialEvent() {
                 }
 
                 case 'D': {
-                    boolean b = (Serial.parseInt() > 0);
+                    boolean b = Serial.parseInt();
                     Serial.print(F("LDirReverse="));
                     Serial.println(b);
                     Focuser::stepper.setDirectionInverted(b);
                     return true;
                 }
+#endif
 
 #if ENABLE_DEVMAN == true
                 case 'X': {
                     byte pin = Serial.parseInt();
                     byte value = Serial.parseInt();
+                    boolean enablePwm = Serial.parseInt();
                     Serial.print(F("LSetPin="));
                     Serial.print(pin);
                     Serial.print(F("@"));
                     Serial.println(value);
-                    DevManager::updatePin(pin, value);
+                    DevManager::updatePin(pin, enablePwm, value);
                     return true;
                 }
 
@@ -262,7 +298,7 @@ boolean serialEvent() {
 
                 case 'Y': {
                     byte pin = Serial.parseInt();
-                    boolean autoModeEnabled = (Serial.parseInt() == 1);
+                    boolean autoModeEnabled = Serial.parseInt();
                     Serial.print(F("LSetPinAuto="));
                     Serial.print(pin);
                     Serial.print(F("@"));
@@ -275,14 +311,14 @@ boolean serialEvent() {
 #if RTC_SUPPORT != DISABLED
                 case 'T': {
                     unsigned long time = Serial.parseInt();
+                    long lat = Serial.parseInt();
+                    long lng = Serial.parseInt();
                     if (time != 0) {
                         SunUtil::setRTCTime(time);
                         Serial.print(F("LSetTime="));
                         Serial.println(time);
                     }
-                    long lat = Serial.parseInt();
-                    long lng = Serial.parseInt();
-                    if (lat != 0 && lng != 0) {
+                    if ((lat != 0) && (lng != 0)) {
                         Settings::settings.latitude = ((double)lat) / 1000.0;
                         Settings::settings.longitude = ((double)lng) / 1000.0;
                         Serial.print(F("LSetWorldCoord="));
@@ -293,6 +329,44 @@ boolean serialEvent() {
                         return true;
                     }
                     break;
+                }
+#endif
+#endif
+
+#if FLAT_PANEL == true
+                case 'Z': {
+                    byte value = Serial.parseInt();
+                    Serial.print(F("LSetBrightness="));
+                    Serial.println(value);
+                    FlatPanel::setBrightness(value);
+                    break;
+                }
+
+                case 'L': {
+                    boolean value = Serial.parseInt();
+                    Serial.print(F("LSetLight="));
+                    Serial.println(value);
+                    FlatPanel::setLight(value);
+                    break;
+                }
+
+#ifdef SERVO_PIN
+                case 'Q': {
+                    byte value = Serial.parseInt();
+                    Serial.print(F("LSetCover="));
+                    Serial.println(value);
+                    if (value == 0)
+                        FlatPanel::setShutter(FlatPanel::CLOSED);
+                    else if (value == 1)
+                        FlatPanel::setShutter(FlatPanel::OPEN);
+                    break;
+                }
+
+                case 'F': {
+                    Settings::settings.openServoVal = map(constrain(Serial.parseInt(), 0, 100), 0, 100, OPEN_SERVO_170deg, OPEN_SERVO_290deg);
+                    Settings::settings.closedServoVal = map(constrain(Serial.parseInt(), 0, 100), 0, 100, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg);
+                    Settings::settings.servoDelay = map(constrain(Serial.parseInt(), 0, 10), 0, 10, SERVO_DELAY_MAX, SERVO_DELAY_MIN);
+                    return true;
                 }
 #endif
 #endif
@@ -332,12 +406,7 @@ void updateSunPosition() {
 }
 #endif
 
-void log(const String &msg) {
-    Serial.print(F("L"));
-    Serial.println(msg);
-}
-
 inline int speedToPercentage(double speed) { return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN); }
 
 inline double percentageToSpeed(int percentage) { return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN; }
-}
+}  // namespace ThunderFocus

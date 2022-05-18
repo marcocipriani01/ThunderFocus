@@ -16,7 +16,11 @@ void setup() {
 
 void loop() {
 #if SETTINGS_SUPPORT == true
+#if FOCUSER_DRIVER == DISABLED
+    ThunderFocus::run();
+#else
     if (ThunderFocus::run() == ThunderFocus::FocuserState::ARRIVED) Settings::requestSave = true;
+#endif
     if (Settings::requestSave) {
         unsigned long t = millis();
         if (t - Settings::lastSaveTime >= SETTINGS_SAVE_INTERVAL) {

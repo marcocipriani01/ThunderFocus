@@ -11,6 +11,7 @@
 #endif
 #if (FLAT_PANEL == true) && defined(SERVO_PIN)
 #include "../flat/FlatPanelEnums.h"
+#include "../flat/ServoModels.h"
 #endif
 
 #define SETTINGS_SAVE_INTERVAL 15000
@@ -40,8 +41,8 @@ struct Struct {
 
 #if (FLAT_PANEL == true) && defined(SERVO_PIN)
     uint16_t servoDelay;
-    uint16_t openVal;
-    uint16_t closedVal;
+    uint16_t openServoVal;
+    uint16_t closedServoVal;
     FlatPanel::CoverStatus coverStatus;
 #endif
 };

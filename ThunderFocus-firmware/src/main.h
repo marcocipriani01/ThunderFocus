@@ -35,19 +35,4 @@
 #if SETTINGS_SUPPORT == true
 #include "settings/Settings.h"
 #endif
-
-#if FOCUSER_DRIVER != DISABLED
-#include "focuser/AccelStepper.h"
-#endif
-
-#if ENABLE_DEVMAN == true
-#include "devman/DevManager.h"
-#if RTC_SUPPORT != DISABLED
-#include "devman/SunUtil.h"
-#endif
-#endif
-
-#if FLAT_PANEL == true
-#include "flat/FlatPanel.h"
-#endif
 #endif

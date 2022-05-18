@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "../config.h"
 
+#if FOCUSER_DRIVER != DISABLED
 #if F_CPU >= 20000000
 #define ACCELSTEPPER_PULSE_WIDTH_MICROS 1
 #else
@@ -164,4 +165,5 @@ class AccelStepper {
     double _cmin;
 };
 
+#endif
 #endif

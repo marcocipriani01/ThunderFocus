@@ -22,6 +22,10 @@
 #endif
 #endif
 
+#if FLAT_PANEL == true
+#include "flat/FlatPanel.h"
+#endif
+
 #define CMD_RECEIVE_WAIT 1
 #define SERIAL_TIMEOUT 100
 #define SERIAL_SPEED 115200
@@ -51,7 +55,6 @@ void run();
 FocuserState run();
 #endif
 boolean serialEvent();
-void log(const String &msg);
 
 #if ENABLE_DEVMAN == true
 void updatePins();

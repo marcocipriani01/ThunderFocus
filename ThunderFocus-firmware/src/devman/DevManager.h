@@ -30,7 +30,7 @@ void begin();
 boolean run();
 void updateSettings();
 Pin getPin(uint8_t index);
-void updatePin(uint8_t pin, uint8_t value);
+void updatePin(uint8_t pin, boolean enablePwm, uint8_t value);
 
 #if DEVMAN_HAS_AUTO_MODES
 AutoMode getAutoMode();

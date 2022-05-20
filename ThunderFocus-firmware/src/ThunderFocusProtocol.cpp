@@ -23,7 +23,7 @@ void setup() {
 #endif
 #if ENABLE_DEVMAN == true
     DevManager::begin();
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         DevManager::Pin pin = Settings::settings.devManPins[i];
 #if DEVMAN_HAS_AUTO_MODES
         if (pin.autoModeEn)

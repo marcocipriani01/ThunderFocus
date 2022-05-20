@@ -18,7 +18,7 @@ void reset() {
 
 #if ENABLE_DEVMAN == true
     DevManager::Pin defaults[MANAGED_PINS_COUNT] = MANAGED_PINS;
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         settings.devManPins[i] = defaults[i];
     }
     settings.devManAutoMode = DevManager::AutoMode::NONE;

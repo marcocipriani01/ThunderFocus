@@ -39,7 +39,7 @@ boolean run() {
 }
 
 void updateSettings() {
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         Settings::settings.devManPins[i] = getPin(i);
     }
 #if DEVMAN_HAS_AUTO_MODES
@@ -53,7 +53,7 @@ void updateSettings() {
 Pin getPin(uint8_t index) { return pins[index]; }
 
 void updatePin(uint8_t pin, boolean enablePwm, uint8_t value) {
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
             if (pins[i].value == value) return;
             pins[i].autoModeEn = false;
@@ -169,7 +169,7 @@ boolean processAutoMode(boolean force) {
 }
 
 boolean setPinAutoModeEn(uint8_t pin, boolean enabled) {
-    for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
             pins[i].autoModeEn = enabled;
             return processAutoMode(true);

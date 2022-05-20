@@ -31,7 +31,6 @@
 #define SERIAL_TIMEOUT 100
 #define SERIAL_SPEED 115200
 #define THUNDERFOCUS_SEND_DELAY 150
-#define THUNDERFOCUS_UUID "a537d6e0-c155-405a-9234-7a6ef62913a9"
 
 namespace ThunderFocus {
 

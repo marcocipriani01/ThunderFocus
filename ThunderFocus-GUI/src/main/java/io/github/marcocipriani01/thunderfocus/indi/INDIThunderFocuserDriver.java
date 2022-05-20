@@ -1,9 +1,10 @@
 package io.github.marcocipriani01.thunderfocus.indi;
 
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
 import jssc.SerialPortException;
 import org.indilib.i4j.Constants;
@@ -18,7 +19,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
-import static io.github.marcocipriani01.thunderfocus.Main.focuser;
+import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.settings;
 
 /**
@@ -28,7 +29,7 @@ import static io.github.marcocipriani01.thunderfocus.Main.settings;
  * @version 4.0
  */
 public class INDIThunderFocuserDriver extends INDIFocuserDriver
-        implements ThunderFocuser.Listener, Settings.SettingsListener {
+        implements Board.Listener, Settings.SettingsListener {
 
     public static final String DRIVER_NAME = "ThunderFocus";
     public static final String MANAGE_PINS_GROUP = "Manage Pins";
@@ -127,8 +128,8 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         focusReverseEnE = focusReverseP.newElement().name(INDIStandardElement.ENABLED).label("Enabled").switchValue(Constants.SwitchStatus.OFF).create();
         focusReverseDisE = focusReverseP.newElement().name(INDIStandardElement.DISABLED).label("Disabled").switchValue(Constants.SwitchStatus.ON).create();
 
-        focuser.addListener(this);
-        if (focuser.isReady()) {
+        board.addListener(this);
+        if (board.isReady()) {
             onFocuserConnected();
         }
     }
@@ -136,7 +137,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     @Override
     public void isBeingDestroyed() {
         System.out.println("Destroying ThunderFocus INDI driver...");
-        focuser.removeListener(this);
+        board.removeListener(this);
         super.isBeingDestroyed();
     }
 
@@ -152,20 +153,20 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
 
     @Override
     public int getInitialAbsPos() {
-        return focuser.getCurrentPos();
+        return board.getCurrentPos();
     }
 
     @Override
     public void absolutePositionHasBeenChanged() {
         try {
-            focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, getDesiredAbsPosition());
+            board.run(Board.Commands.FOCUSER_ABS_MOVE, this, getDesiredAbsPosition());
         } catch (IOException | SerialPortException e) {
             e.printStackTrace();
             connectionProp.setState(Constants.PropertyStates.ALERT);
             updateProperty(connectionProp);
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
-        } catch (ThunderFocuser.InvalidParamException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             absFocusPositionP.setState(Constants.PropertyStates.ALERT);
             updateProperty(absFocusPositionP);
@@ -180,7 +181,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     @Override
     public void speedHasBeenChanged() {
         try {
-            focuser.run(ThunderFocuser.Commands.FOCUSER_SET_SPEED, this, getCurrentSpeed());
+            board.run(Board.Commands.FOCUSER_SET_SPEED, this, getCurrentSpeed());
             desiredSpeedSet();
         } catch (IOException | SerialPortException e) {
             e.printStackTrace();
@@ -188,7 +189,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
             updateProperty(connectionProp);
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
-        } catch (ThunderFocuser.InvalidParamException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             focusSpeedP.setState(Constants.PropertyStates.ALERT);
             updateProperty(focusSpeedP);
@@ -198,7 +199,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     @Override
     public void stopHasBeenRequested() {
         try {
-            focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
+            board.run(Board.Commands.FOCUSER_STOP, this);
             stopped();
         } catch (IOException | SerialPortException e) {
             e.printStackTrace();
@@ -206,7 +207,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
             updateProperty(connectionProp);
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
-        } catch (ThunderFocuser.InvalidParamException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             stopFocusingP.setState(Constants.PropertyStates.ALERT);
             updateProperty(stopFocusingP);
@@ -251,7 +252,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     ArduinoPin pin = pinsMap.get(element);
                     pin.setValue(eAV.getValue().intValue());
                     element.setValue((double) pin.getValuePwm());
-                    focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
+                    board.run(Board.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
@@ -261,7 +262,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 updateProperty(connectionProp);
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
-            } catch (ThunderFocuser.InvalidParamException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
@@ -273,7 +274,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     Double value = eAV.getValue();
                     if (element == focusRelPositionE) {
                         element.setValue(value);
-                        focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
+                        board.run(Board.Commands.FOCUSER_REL_MOVE, this, (focusRelDirection ? (-1) : 1) * value.intValue());
                         break;
                     }
                 }
@@ -285,7 +286,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 updateProperty(connectionProp);
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
-            } catch (ThunderFocuser.InvalidParamException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 focusRelPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusRelPositionP);
@@ -310,7 +311,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     Double value = eAV.getValue();
                     if (element == syncFocusPositionE) {
                         element.setValue(value);
-                        focuser.run(ThunderFocuser.Commands.FOCUSER_SET_POS, this, value.intValue());
+                        board.run(Board.Commands.FOCUSER_SET_POS, this, value.intValue());
                         break;
                     }
                 }
@@ -322,7 +323,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 updateProperty(connectionProp);
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
-            } catch (ThunderFocuser.InvalidParamException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 syncFocusPositionP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(syncFocusPositionP);
@@ -365,9 +366,9 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     if (value == Constants.SwitchStatus.ON) {
                         connectionProp.setState(Constants.PropertyStates.BUSY);
                         if (element == connectElem) {
-                            focuser.connect(settings.getSerialPort());
+                            board.connect(settings.getSerialPort());
                         } else if (element == disconnectElem) {
-                            focuser.disconnect();
+                            board.disconnect();
                         }
                         break;
                     }
@@ -409,7 +410,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     Constants.SwitchStatus val = eAV.getValue();
                     pin.setValue(val);
                     element.setValue(val);
-                    focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
+                    board.run(Board.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePwm());
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
@@ -419,7 +420,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 updateProperty(connectionProp);
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
-            } catch (ThunderFocuser.InvalidParamException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
@@ -443,7 +444,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                     Constants.SwitchStatus value = eAV.getValue();
                     element.setValue(value);
                     if (value == Constants.SwitchStatus.ON) {
-                        focuser.run(ThunderFocuser.Commands.FOCUSER_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
+                        board.run(Board.Commands.FOCUSER_REVERSE_DIR, this, (element == focusReverseEnE) ? 1 : 0);
                         break;
                     }
                 }
@@ -455,7 +456,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
                 updateProperty(connectionProp);
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
-            } catch (ThunderFocuser.InvalidParamException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 focusReverseP.setState(Constants.PropertyStates.ALERT);
                 updateProperty(focusReverseP);
@@ -470,15 +471,15 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
 
     @Override
     protected int getInitialSpeed() {
-        return focuser.getSpeed();
+        return board.getSpeed();
     }
 
     private void onFocuserConnected() {
         pinsMap = new HashMap<>();
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
-        if (focuser.isPowerBox()) {
-            PowerBox powerBox = focuser.getPowerBox();
+        if (board.isPowerBox()) {
+            PowerBox powerBox = board.getPowerBox();
             if (powerBox.countDigitalPins() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
@@ -504,7 +505,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         initializeStandardProperties();
         showSpeedProperty();
         showStopFocusingProperty();
-        if (focuser.isReverseDir()) {
+        if (board.isReverseDir()) {
             focusReverseEnE.setValue(Constants.SwitchStatus.ON);
         } else {
             focusReverseDisE.setValue(Constants.SwitchStatus.ON);
@@ -519,7 +520,7 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
         addProperty(focuserMaxPositionP);
         addProperty(focusReverseP);
         updateProperty(connectionProp);
-        positionChanged(focuser.getCurrentPos());
+        positionChanged(board.getCurrentPos());
     }
 
     @Override
@@ -528,16 +529,16 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     }
 
     @Override
-    public void updateParam(ThunderFocuser.Parameters p) {
+    public void updateParam(Board.Parameters p) {
         switch (p) {
-            case CURRENT_POS -> positionChanged(focuser.getCurrentPos());
-            case SPEED -> speedChanged(focuser.getSpeed());
+            case CURRENT_POS -> positionChanged(board.getCurrentPos());
+            case SPEED -> speedChanged(board.getSpeed());
             case REQUESTED_POS -> {
-                absFocusPositionE.setValue(focuser.getRequestedPos());
+                absFocusPositionE.setValue(board.getRequestedPos());
                 updateProperty(absFocusPositionP);
             }
             case REVERSE_DIR -> {
-                boolean reverseDir = focuser.isReverseDir();
+                boolean reverseDir = board.isReverseDir();
                 focusReverseEnE.setValue(reverseDir ? Constants.SwitchStatus.ON : Constants.SwitchStatus.OFF);
                 focusReverseDisE.setValue(reverseDir ? Constants.SwitchStatus.OFF : Constants.SwitchStatus.ON);
             }
@@ -545,14 +546,14 @@ public class INDIThunderFocuserDriver extends INDIFocuserDriver
     }
 
     @Override
-    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
-        if (focuserState == ThunderFocuser.FocuserState.NONE) {
+    public void updateFocuserState(Focuser.FocuserState focuserState) {
+        if (focuserState == Focuser.FocuserState.NONE) {
             connectionProp.setState(Constants.PropertyStates.IDLE);
         }
     }
 
     @Override
-    public void updateConnectionState(ThunderFocuser.ConnectionState connectionState) {
+    public void updateConnectionState(Board.ConnectionState connectionState) {
         switch (connectionState) {
             case CONNECTED_READY -> onFocuserConnected();
             case DISCONNECTED -> {

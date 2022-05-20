@@ -48,13 +48,13 @@ extern unsigned long sensorsSyncTime;
 extern unsigned long sunSyncTime;
 #endif
 
-void setup();
-#if FOCUSER_DRIVER == DISABLED
-void run();
-#else
-FocuserState run();
+#if FLAT_PANEL != false
+extern unsigned long flatPanelSyncTime;
 #endif
-boolean serialEvent();
+
+void setup();
+void run();
+void serialEvent();
 
 #if ENABLE_DEVMAN == true
 void updatePins();

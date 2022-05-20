@@ -4,7 +4,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIServerCreator;
 
@@ -28,7 +28,7 @@ public class Main {
     public static final OperatingSystem OPERATING_SYSTEM;
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(
             Main.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
-    public static final ThunderFocuser focuser;
+    public static final Board board;
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
     public static ASCOMFocuserBridge ascomFocuserBridge;
     private static Path pidLock;
@@ -38,7 +38,7 @@ public class Main {
         APP_NAME = i18n("app.name");
         OPERATING_SYSTEM = getOperatingSystem();
         settings = Settings.load();
-        focuser = new ThunderFocuser();
+        board = new Board();
     }
 
     public static void main(String[] args) {
@@ -128,8 +128,8 @@ public class Main {
             }
         }
         //indiServerCreator.stop();
-        if (focuser.isConnected()) {
-            focuser.disconnect();
+        if (board.isConnected()) {
+            board.disconnect();
         }
         System.exit(code);
     }

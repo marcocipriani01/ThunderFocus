@@ -1,6 +1,7 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
 import jssc.SerialPortException;
 
 import javax.swing.*;
@@ -44,20 +45,20 @@ public class PositionCalibrationWindow extends JDialog implements ActionListener
         Object source = e.getSource();
         try {
             if (source == stepsButton || source == stepsField) {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_POS, null, Integer.parseInt(stepsField.getText()));
+                Main.board.run(Board.Commands.FOCUSER_SET_POS, null, Integer.parseInt(stepsField.getText()));
                 dispose();
             } else if (source == unitsButton || source == unitsField) {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_POS, null,
-                        Main.focuser.ticksToSteps(Integer.parseInt(unitsField.getText())));
+                Main.board.run(Board.Commands.FOCUSER_SET_POS, null,
+                        Focuser.ticksToSteps(Integer.parseInt(unitsField.getText())));
                 dispose();
             } else if (source == zeroButton) {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_SET_ZERO, null);
+                Main.board.run(Board.Commands.FOCUSER_SET_ZERO, null);
                 dispose();
             }
         } catch (IOException | SerialPortException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, i18n("error.connection"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
-        } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+        } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, i18n("error.invalid"), Main.APP_NAME, JOptionPane.ERROR_MESSAGE);
         }

@@ -4,14 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import jssc.SerialPortException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static io.github.marcocipriani01.thunderfocus.Main.focuser;
+import static io.github.marcocipriani01.thunderfocus.Main.board;
 
 /**
  * @author marcocipriani01
@@ -41,7 +41,7 @@ public class ExportableSettings extends Settings {
     @SerializedName("Longitude")
     private double longitude;
 
-    public ExportableSettings(Settings s, ThunderFocuser f) {
+    public ExportableSettings(Settings s, Board f) {
         if (!f.isConnected() || !f.isReady())
             throw new IllegalStateException("Focuser not connected!");
         this.backlash = f.getBacklash();
@@ -91,7 +91,7 @@ public class ExportableSettings extends Settings {
         super.save(path);
     }
 
-    public void applyTo(Settings s, ThunderFocuser f) throws ThunderFocuser.InvalidParamException, SerialPortException, IOException {
+    public void applyTo(Settings s, Board f) throws IllegalArgumentException, SerialPortException, IOException {
         if (!f.isConnected() || !f.isReady())
             throw new IllegalStateException("Focuser not connected!");
         s.relativeStepSize = this.relativeStepSize;
@@ -108,27 +108,27 @@ public class ExportableSettings extends Settings {
         s.autoConnect = this.autoConnect;
         s.powerBoxPins = this.powerBoxPins;
         s.save();
-        focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
-        focuser.run(ThunderFocuser.Commands.FOCUSER_SET_SPEED, null, this.speed);
-        focuser.run(ThunderFocuser.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
-        focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
-        if (focuser.isPowerBox()) {
-            PowerBox powerBox = focuser.getPowerBox();
+        board.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
+        board.run(Board.Commands.FOCUSER_SET_SPEED, null, this.speed);
+        board.run(Board.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
+        board.run(Board.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
+        if (board.isPowerBox()) {
+            PowerBox powerBox = board.getPowerBox();
             for (ArduinoPin p : this.powerBoxPins) {
                 if (powerBox.contains(p)) {
                     if (p.isOnWhenAppOpen()) {
-                        focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
+                        board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
                         powerBox.setOnWhenAppOpen(p, true);
-                        focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, null, p.getNumber(), 255);
+                        board.run(Board.Commands.POWER_BOX_SET, null, p.getNumber(), 255);
                     } else {
                         powerBox.setOnWhenAppOpen(p, false);
                     }
                 }
             }
             if (powerBox.supportsAutoModes())
-                focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
+                board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
             if (powerBox.supportsAmbient())
-                focuser.run(ThunderFocuser.Commands.SET_TIME_LAT_LONG, null, 0,
+                board.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
                         (int) ((this.latitude) * 1000), (int) ((this.longitude) * 1000));
         }
     }

@@ -5,8 +5,9 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import io.github.marcocipriani01.thunderfocus.config.ExportableSettings;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
@@ -48,7 +49,7 @@ import static io.github.marcocipriani01.thunderfocus.Main.*;
 
 public class MainWindow extends JFrame implements
         ChangeListener, ActionListener, KeyListener, FocusListener,
-        ThunderFocuser.Listener, Settings.SettingsListener, ItemListener {
+        Board.Listener, Settings.SettingsListener, ItemListener {
 
     private static final ImageIcon POWERBOX_TAB =
             new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/io/github/marcocipriani01/thunderfocus/res/power_box_tab.png")));
@@ -221,16 +222,16 @@ public class MainWindow extends JFrame implements
         }
         if (selectPort) {
             serialPortComboBox.setSelectedItem(serialPort);
-            if (autoConnect && (!focuser.isConnected())) {
+            if (autoConnect && (!board.isConnected())) {
                 try {
-                    focuser.connect(serialPort);
+                    board.connect(serialPort);
                 } catch (SerialPortException ex) {
                     ex.printStackTrace();
                 }
             }
         }
 
-        focuser.addListener(this);
+        board.addListener(this);
         settings.addListener(this);
         startOrStopINDI(false);
 
@@ -327,7 +328,7 @@ public class MainWindow extends JFrame implements
         fokMaxTravelSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.getFocuserMaxTravel(), 1, 2147483647, 1));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
-                focuser.getBacklash(), 0, 1000, 1));
+                board.getBacklash(), 0, 1000, 1));
         powerBoxTable = new JPowerBoxTable(this);
         powerBoxAutoModeBox = new JComboBox<>();
         powerBoxAutoModeBox.addItemListener(this);
@@ -439,7 +440,7 @@ public class MainWindow extends JFrame implements
             }
             if (JOptionPane.showConfirmDialog(this, msg,
                     APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                focuser.removeListener(this);
+                board.removeListener(this);
                 dispose();
                 Main.exit(0);
             }
@@ -466,10 +467,10 @@ public class MainWindow extends JFrame implements
             relativeMovField.setText(String.valueOf(stepSize));
             settings.relativeStepSize = stepSize;
             if (invert) stepSize *= -1;
-            focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, stepSize);
+            board.run(Board.Commands.FOCUSER_REL_MOVE, this, stepSize);
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
-        } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+        } catch (IllegalArgumentException | NumberFormatException ex) {
             valueOutOfLimits(ex);
         }
         try {
@@ -492,14 +493,14 @@ public class MainWindow extends JFrame implements
             serialPortComboBox.showPopup();
 
         } else if (source == connectButton) {
-            if (focuser.isConnected()) {
-                focuser.disconnect();
+            if (board.isConnected()) {
+                board.disconnect();
                 tabPane.setSelectedIndex(0);
             } else if (serialPortComboBox.getSelectedItem() != null) {
                 String port = (String) serialPortComboBox.getSelectedItem();
                 settings.setSerialPort(port, this);
                 try {
-                    focuser.connect(port);
+                    board.connect(port);
                 } catch (SerialPortException ex) {
                     connectionErr(ex);
                 }
@@ -518,10 +519,10 @@ public class MainWindow extends JFrame implements
 
         } else if (source == stopButton) {
             try {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
+                board.run(Board.Commands.FOCUSER_STOP, this);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
+            } catch (IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
 
@@ -533,11 +534,11 @@ public class MainWindow extends JFrame implements
 
         } else if (source == setRequestedPosButton || source == requestedPosField) {
             try {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this,
+                board.run(Board.Commands.FOCUSER_ABS_MOVE, this,
                         Integer.parseInt(requestedPosField.getText().trim()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (IllegalArgumentException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
 
@@ -569,30 +570,30 @@ public class MainWindow extends JFrame implements
             settings.indiServerPort = (int) indiPortSpinner.getValue();
             int oldAscomPort = settings.ascomBridgePort;
             settings.ascomBridgePort = (int) ascomPortSpinner.getValue();
-            if (focuser.isConnected() && focuser.isReady()) {
+            if (board.isConnected() && board.isReady()) {
                 settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
                 settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
                 updateUnitsLabel();
                 settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
                 updateSlidersLimit();
                 try {
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
-                    if (focuser.isPowerBox() && focuser.getPowerBox().supportsAmbient()) {
-                        focuser.run(ThunderFocuser.Commands.SET_TIME_LAT_LONG, this, 0,
+                    board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
+                    board.run(Board.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
+                    board.run(Board.Commands.FOCUSER_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
+                    board.run(Board.Commands.FOCUSER_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
+                    if (board.isPowerBox() && board.getPowerBox().supportsAmbient()) {
+                        board.run(Board.Commands.SET_TIME_LAT_LONG, this, 0,
                                 (int) (((double) powerBoxLatSpinner.getValue()) * 1000),
                                 (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
                     }
                 } catch (IOException | SerialPortException ex) {
                     connectionErr(ex);
-                } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                } catch (IllegalArgumentException | NumberFormatException ex) {
                     valueOutOfLimits(ex);
                 }
             }
             startOrStopINDI(settings.indiServerPort != oldIndiPort);
-            if (focuser.isConnected()) startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
+            if (board.isConnected()) startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
             try {
                 settings.save();
             } catch (IOException ioException) {
@@ -616,31 +617,31 @@ public class MainWindow extends JFrame implements
 
         } else if (source == powerBoxOnButton) {
             try {
-                for (ArduinoPin p : focuser.getPowerBox().asList()) {
+                for (ArduinoPin p : board.getPowerBox().asList()) {
                     if (!p.isAutoModeEn()) {
                         p.setValue(255);
-                        focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
                     }
                 }
                 powerBoxTable.refresh();
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
+            } catch (IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
 
         } else if (source == powerBoxOffButton) {
             try {
-                for (ArduinoPin p : focuser.getPowerBox().asList()) {
+                for (ArduinoPin p : board.getPowerBox().asList()) {
                     if (!p.isAutoModeEn()) {
                         p.setValue(0);
-                        focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
                     }
                 }
                 powerBoxTable.refresh();
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
+            } catch (IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
 
@@ -650,7 +651,7 @@ public class MainWindow extends JFrame implements
             humiditySeries.clear();
 
         } else if (source == addPresetButton) {
-            int pos = focuser.getCurrentPos();
+            int pos = board.getCurrentPos();
             settings.presets.put(pos, i18n("description"));
             Integer[] positions = settings.presets.keySet().toArray(new Integer[0]);
             int index = IntStream.range(0, positions.length).filter(i -> positions[i] == pos).findFirst().orElse(-1);
@@ -682,11 +683,11 @@ public class MainWindow extends JFrame implements
             int selectedRow = presetsTable.getSelectedRow();
             if (selectedRow != -1) {
                 try {
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this,
+                    board.run(Board.Commands.FOCUSER_ABS_MOVE, this,
                             settings.presets.keySet().toArray(new Integer[0])[selectedRow]);
                 } catch (IOException | SerialPortException ex) {
                     connectionErr(ex);
-                } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                } catch (IllegalArgumentException | NumberFormatException ex) {
                     valueOutOfLimits(ex);
                 }
             }
@@ -701,7 +702,7 @@ public class MainWindow extends JFrame implements
                     File file = chooser.getSelectedFile();
                     if (!file.getName().endsWith(".thunder"))
                         file = new File(file.getAbsolutePath() + ".thunder");
-                    new ExportableSettings(settings, focuser).save(file.toPath());
+                    new ExportableSettings(settings, board).save(file.toPath());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
@@ -718,7 +719,7 @@ public class MainWindow extends JFrame implements
                     int oldIndiPort = settings.indiServerPort;
                     int oldAscomPort = settings.ascomBridgePort;
                     ExportableSettings es = ExportableSettings.load(chooser.getSelectedFile().toPath());
-                    es.applyTo(settings, focuser);
+                    es.applyTo(settings, board);
                     appThemeCombo.setSelectedItem(es.theme);
                     relativeMovField.setText(String.valueOf(es.relativeStepSize));
                     localOrRemoteCombo.setSelectedItem(i18n(es.showIpIndiDriver ? "remote" : "local"));
@@ -810,7 +811,7 @@ public class MainWindow extends JFrame implements
         goToPresetButton.setEnabled(connected);
         importButton.setEnabled(connected);
         exportButton.setEnabled(connected);
-        boolean pbEn = connected && focuser.isPowerBox();
+        boolean pbEn = connected && board.isPowerBox();
         powerBoxOnButton.setEnabled(pbEn);
         powerBoxOffButton.setEnabled(pbEn);
         powerBoxAutoModeBox.setEnabled(pbEn);
@@ -859,14 +860,14 @@ public class MainWindow extends JFrame implements
         }
         try {
             if (source == posSlider) {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, posSlider.getValue());
+                board.run(Board.Commands.FOCUSER_ABS_MOVE, this, posSlider.getValue());
             } else if (source == ticksPosSlider) {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE,
-                        this, focuser.ticksToSteps(ticksPosSlider.getValue()));
+                board.run(Board.Commands.FOCUSER_ABS_MOVE,
+                        this, Focuser.ticksToSteps(ticksPosSlider.getValue()));
             }
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
-        } catch (ThunderFocuser.InvalidParamException ex) {
+        } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
         }
     }
@@ -883,7 +884,7 @@ public class MainWindow extends JFrame implements
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (focuser.isConnected() && focuser.isReady()) {
+        if (board.isConnected() && board.isReady()) {
             int keyCode = e.getKeyCode();
             if (keyCode == KeyEvent.VK_RIGHT) {
                 fokOutButton.doClick();
@@ -913,13 +914,13 @@ public class MainWindow extends JFrame implements
 
     private void updatePosSlider() {
         posSlider.removeChangeListener(MainWindow.this);
-        posSlider.setValue(focuser.getCurrentPos());
+        posSlider.setValue(board.getCurrentPos());
         posSlider.addChangeListener(MainWindow.this);
     }
 
     private void updateTicksPosSlider() {
         ticksPosSlider.removeChangeListener(MainWindow.this);
-        ticksPosSlider.setValue(focuser.getCurrentPosTicks());
+        ticksPosSlider.setValue(board.getCurrentPosTicks());
         ticksPosSlider.addChangeListener(MainWindow.this);
     }
 
@@ -928,12 +929,12 @@ public class MainWindow extends JFrame implements
     }
 
     @Override
-    public void updateParam(ThunderFocuser.Parameters p) {
+    public void updateParam(Board.Parameters p) {
         SwingUtilities.invokeLater(() -> {
             switch (p) {
-                case REQUESTED_POS -> requestedPosField.setText(String.valueOf(focuser.getRequestedPos()));
+                case REQUESTED_POS -> requestedPosField.setText(String.valueOf(board.getRequestedPos()));
                 case CURRENT_POS -> {
-                    currentPosField.setText(String.valueOf(focuser.getCurrentPos()));
+                    currentPosField.setText(String.valueOf(board.getCurrentPos()));
                     if (!posSlider.hasFocus()) {
                         updatePosSlider();
                     }
@@ -945,20 +946,20 @@ public class MainWindow extends JFrame implements
                 }
                 case SPEED -> {
                     if (!fokSpeedSlider.hasFocus()) {
-                        fokSpeedSlider.setValue(focuser.getSpeed());
+                        fokSpeedSlider.setValue(board.getSpeed());
                     }
                 }
-                case BACKLASH -> fokBacklashSpinner.setValue(focuser.getBacklash());
-                case REVERSE_DIR -> fokReverseDirBox.setSelected(focuser.isReverseDir());
-                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(focuser.isPowerSaverOn());
+                case BACKLASH -> fokBacklashSpinner.setValue(board.getBacklash());
+                case REVERSE_DIR -> fokReverseDirBox.setSelected(board.isReverseDir());
+                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(board.isPowerSaverOn());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
                 case POWERBOX_AUTO_MODE -> {
                     powerBoxAutoModeBox.removeItemListener(this);
-                    powerBoxAutoModeBox.setSelectedItem(focuser.getPowerBox().getAutoMode());
+                    powerBoxAutoModeBox.setSelectedItem(board.getPowerBox().getAutoMode());
                     powerBoxAutoModeBox.addItemListener(this);
                 }
                 case POWERBOX_AMBIENT_DATA -> {
-                    PowerBox powerBox = focuser.getPowerBox();
+                    PowerBox powerBox = board.getPowerBox();
                     double temperature = powerBox.getTemperature();
                     Second instant = new Second(new Date());
                     if (temperature == PowerBox.ABSOLUTE_ZERO) {
@@ -982,18 +983,18 @@ public class MainWindow extends JFrame implements
                         dewPointSeries.add(instant, dewPoint);
                     }
                 }
-                case POWERBOX_SUN_ELEV -> sunElevationField.setText(focuser.getPowerBox().getSunElev() + "°");
+                case POWERBOX_SUN_ELEV -> sunElevationField.setText(board.getPowerBox().getSunElev() + "°");
             }
         });
     }
 
     @Override
-    public void updateFocuserState(ThunderFocuser.FocuserState focuserState) {
+    public void updateFocuserState(Focuser.FocuserState focuserState) {
         SwingUtilities.invokeLater(() -> focuserStateLabel.setText(focuserState.getLabel()));
     }
 
     @Override
-    public void updateConnectionState(ThunderFocuser.ConnectionState connectionState) {
+    public void updateConnectionState(Board.ConnectionState connectionState) {
         SwingUtilities.invokeLater(() -> {
             connStatusLabel.setText(connectionState.getLabel());
             switch (connectionState) {
@@ -1001,9 +1002,9 @@ public class MainWindow extends JFrame implements
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
-                    if (focuser.isPowerBox()) {
+                    if (board.isPowerBox()) {
                         tabPane.insertTab(i18n("powerbox.tab"), POWERBOX_TAB, powerBoxTab, "", 2);
-                        PowerBox powerBox = focuser.getPowerBox();
+                        PowerBox powerBox = board.getPowerBox();
                         powerBoxTable.setPowerBox(powerBox);
                         boolean supportsAutoModes = powerBox.supportsAutoModes();
                         powerBoxAutoModeLabel.setVisible(supportsAutoModes);
@@ -1011,7 +1012,7 @@ public class MainWindow extends JFrame implements
                         if (supportsAutoModes) {
                             powerBoxAutoModeBox.removeItemListener(this);
                             powerBoxAutoModeBox.setModel(new DefaultComboBoxModel<>(powerBox.supportedAutoModesArray()));
-                            powerBoxAutoModeBox.setSelectedItem(focuser.getPowerBox().getAutoMode());
+                            powerBoxAutoModeBox.setSelectedItem(board.getPowerBox().getAutoMode());
                             powerBoxAutoModeBox.addItemListener(this);
                         }
                         if (powerBox.supportsAmbient()) {
@@ -1027,21 +1028,21 @@ public class MainWindow extends JFrame implements
                             powerBoxLongSpinner.setValue(powerBox.getLongitude());
                         }
                     }
-                    fokSpeedSlider.setValue(focuser.getSpeed());
-                    fokReverseDirBox.setSelected(focuser.isReverseDir());
-                    fokPowerSaverBox.setSelected(focuser.isPowerSaverOn());
-                    int currentPos = focuser.getCurrentPos();
+                    fokSpeedSlider.setValue(board.getSpeed());
+                    fokReverseDirBox.setSelected(board.isReverseDir());
+                    fokPowerSaverBox.setSelected(board.isPowerSaverOn());
+                    int currentPos = board.getCurrentPos();
                     posSlider.removeChangeListener(MainWindow.this);
                     posSlider.setValue(currentPos);
                     posSlider.addChangeListener(MainWindow.this);
                     ticksPosSlider.removeChangeListener(MainWindow.this);
-                    ticksPosSlider.setValue(focuser.stepsToTicks(currentPos));
+                    ticksPosSlider.setValue(Focuser.stepsToTicks(currentPos));
                     ticksPosSlider.addChangeListener(MainWindow.this);
                     String currentPosStr = String.valueOf(currentPos);
                     currentPosField.setText(currentPosStr);
                     requestedPosField.setText(currentPosStr);
                     requestedPosField.setText(currentPosStr);
-                    fokBacklashSpinner.setValue(focuser.getBacklash());
+                    fokBacklashSpinner.setValue(board.getBacklash());
                     enableComponents(true);
                     startOrStopASCOM(false);
                     tabPane.setSelectedIndex(0);
@@ -1111,10 +1112,10 @@ public class MainWindow extends JFrame implements
         try {
             PowerBox.AutoModes autoMode = (PowerBox.AutoModes) powerBoxAutoModeBox.getSelectedItem();
             if (autoMode != null)
-                focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
+                board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
-        } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+        } catch (IllegalArgumentException | NumberFormatException ex) {
             valueOutOfLimits(ex);
         }
     }

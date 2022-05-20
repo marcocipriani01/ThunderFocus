@@ -1,7 +1,8 @@
 package io.github.marcocipriani01.thunderfocus.ascom;
 
 import io.github.marcocipriani01.thunderfocus.Main;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 
 import java.net.InetAddress;
 import java.net.Socket;
@@ -28,26 +29,26 @@ public class ASCOMFocuserBridge extends SimpleServer {
             }
             switch (cmd) {
                 case "ThunderFocusPing" -> {
-                    if (Main.focuser.isConnected()) {
+                    if (Main.board.isConnected()) {
                         println("ThunderFocusPingOK");
                     } else {
                         println("ThunderFocusNotConnected");
                     }
                 }
 
-                case "Connected" -> println(from, String.valueOf(Main.focuser.isConnected()));
+                case "Connected" -> println(from, String.valueOf(Main.board.isConnected()));
 
-                case "Position" -> println(from, String.valueOf(Main.focuser.getCurrentPos()));
+                case "Position" -> println(from, String.valueOf(Main.board.getCurrentPos()));
 
                 case "IsMoving" -> println(from,
-                        String.valueOf(Main.focuser.getFocuserState() == ThunderFocuser.FocuserState.MOVING));
+                        String.valueOf(Main.board.getFocuserState() == Focuser.FocuserState.MOVING));
 
-                case "Halt" -> Main.focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, null);
+                case "Halt" -> Main.board.run(Board.Commands.FOCUSER_STOP, null);
 
                 case "DriverInfo" -> {
                     String gui = Main.getAppVersion();
                     if (gui == null) gui = "<?>";
-                    println(Main.APP_NAME + " v" + gui + ", " + i18n("board") + " v" + Main.focuser.getVersion());
+                    println(Main.APP_NAME + " v" + gui + ", " + i18n("board") + " v" + Main.board.getVersion());
                 }
 
                 case "Version" -> {
@@ -60,7 +61,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
 
                 case "Move" -> {
                     if (param == Integer.MIN_VALUE) return;
-                    Main.focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, null, param);
+                    Main.board.run(Board.Commands.FOCUSER_ABS_MOVE, null, param);
                 }
 
                 case "MaxStep" -> println(String.valueOf(Main.settings.getFocuserMaxTravel()));

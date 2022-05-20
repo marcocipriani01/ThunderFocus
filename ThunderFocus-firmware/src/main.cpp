@@ -15,28 +15,18 @@ void setup() {
 }
 
 void loop() {
-#if SETTINGS_SUPPORT == true
-#if FOCUSER_DRIVER == DISABLED
     ThunderFocus::run();
-#else
-    if (ThunderFocus::run() == ThunderFocus::FocuserState::ARRIVED) Settings::requestSave = true;
-#endif
+#if SETTINGS_SUPPORT == true
     if (Settings::requestSave) {
         unsigned long t = millis();
-        if (t - Settings::lastSaveTime >= SETTINGS_SAVE_INTERVAL) {
+        if ((t - Settings::lastSaveTime) >= SETTINGS_SAVE_INTERVAL) {
             Settings::save();
             Settings::lastSaveTime = t;
         }
     }
-#else
-    ThunderFocus::run();
 #endif
 }
 
 void serialEvent() {
-#if SETTINGS_SUPPORT == true
-    if (ThunderFocus::serialEvent()) Settings::requestSave = true;
-#else
     ThunderFocus::serialEvent();
-#endif
 }

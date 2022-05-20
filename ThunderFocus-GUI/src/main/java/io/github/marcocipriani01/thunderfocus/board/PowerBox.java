@@ -17,22 +17,30 @@ public class PowerBox {
     public static final double ABSOLUTE_ZERO = -273.0;
     public static final double INVALID_HUMIDITY = -1.0;
 
+    private final boolean rtcFeature;
+    private final boolean ambientFeature;
+
     private final ArrayList<ArduinoPin> pins = new ArrayList<>();
-    private AutoModes autoMode = AutoModes.NIGHT_ASTRONOMICAL;
-    private boolean supportsTime = false;
-    private boolean supportsAmbient = false;
-    private double temperature = ABSOLUTE_ZERO;
-    private double humidity = INVALID_HUMIDITY;
-    private double dewPoint = ABSOLUTE_ZERO;
-    private double latitude = 0.0;
-    private double longitude = 0.0;
+    private AutoModes autoMode;
+    double temperature = ABSOLUTE_ZERO;
+    double humidity = INVALID_HUMIDITY;
+    double dewPoint = ABSOLUTE_ZERO;
+    private double latitude;
+    private double longitude;
     private double sunElev = Double.MIN_VALUE;
 
-    /**
-     * Class constructor. Initializes an empty list.
-     */
-    public PowerBox() {
+    public PowerBox(boolean ambientFeature, AutoModes autoMode) {
+        this.rtcFeature = false;
+        this.ambientFeature = ambientFeature;
+        this.autoMode = autoMode;
+    }
 
+    public PowerBox(boolean ambientFeature, double latitude, double longitude, AutoModes autoMode) {
+        this.rtcFeature = true;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.ambientFeature = ambientFeature;
+        this.autoMode = autoMode;
     }
 
     public static void clonePins(PowerBox from, ArrayList<ArduinoPin> to) {
@@ -83,24 +91,12 @@ public class PowerBox {
         return temperature;
     }
 
-    void setTemperature(double temperature) {
-        this.temperature = temperature;
-    }
-
     public double getHumidity() {
         return humidity;
     }
 
-    void setHumidity(double humidity) {
-        this.humidity = humidity;
-    }
-
     public double getDewPoint() {
         return dewPoint;
-    }
-
-    void setDewPoint(double dewPoint) {
-        this.dewPoint = dewPoint;
     }
 
     public ArrayList<ArduinoPin> asList() {
@@ -136,20 +132,11 @@ public class PowerBox {
     }
 
     public boolean supportsTime() {
-        return supportsTime;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    void setSupportsTime(boolean supportsTime) {
-        this.supportsTime = supportsTime;
+        return rtcFeature;
     }
 
     public boolean supportsAmbient() {
-        return supportsAmbient;
-    }
-
-    void setSupportsAmbient(boolean supportsAmbient) {
-        this.supportsAmbient = supportsAmbient;
+        return ambientFeature;
     }
 
     public int size() {
@@ -174,10 +161,6 @@ public class PowerBox {
 
     public ArduinoPin getIndex(int index) {
         return pins.get(index);
-    }
-
-    void clear() {
-        pins.clear();
     }
 
     /**
@@ -215,12 +198,12 @@ public class PowerBox {
 
     public ArrayList<AutoModes> supportedAutoModes() {
         ArrayList<AutoModes> list = new ArrayList<>();
-        if (supportsTime) {
+        if (rtcFeature) {
             list.add(AutoModes.NIGHT_ASTRONOMICAL);
             list.add(AutoModes.NIGHT_CIVIL);
             list.add(AutoModes.DAYTIME);
         }
-        if (supportsAmbient) {
+        if (ambientFeature) {
             list.add(AutoModes.DEW_POINT_DIFF1);
             list.add(AutoModes.DEW_POINT_DIFF2);
             list.add(AutoModes.DEW_POINT_DIFF3);
@@ -252,7 +235,7 @@ public class PowerBox {
     }
 
     public boolean supportsAutoModes() {
-        return supportsAmbient || supportsTime;
+        return ambientFeature || rtcFeature;
     }
 
     public enum AutoModes {

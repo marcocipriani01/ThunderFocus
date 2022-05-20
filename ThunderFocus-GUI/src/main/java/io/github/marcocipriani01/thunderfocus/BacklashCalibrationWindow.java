@@ -1,6 +1,6 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import jssc.SerialPortException;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static io.github.marcocipriani01.thunderfocus.Main.*;
 
-public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser.Listener {
+public class BacklashCalibrationWindow extends JDialog implements Board.Listener {
 
     private JButton acceptButton;
     private JButton cancelButton;
@@ -28,7 +28,7 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public BacklashCalibrationWindow(Frame owner) {
         super(owner, Main.APP_NAME, true);
         setIconImage(APP_LOGO);
-        focuser.setExclusiveMode(this);
+        board.setExclusiveMode(this);
         setContentPane(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         cancelButton.addActionListener(e -> dispose());
@@ -37,10 +37,10 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
 
         acceptButton.addActionListener(e -> {
             try {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, count);
+                board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, count);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException ex) {
+            } catch (IllegalArgumentException ex) {
                 ex.printStackTrace();
             }
             dispose();
@@ -49,10 +49,10 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             setControlsEnabled(false);
             lastMoveSteps = 1;
             try {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, 1);
+                board.run(Board.Commands.FOCUSER_REL_MOVE, this, 1);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (IllegalArgumentException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -60,32 +60,32 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
             setControlsEnabled(false);
             lastMoveSteps = (int) relMovSpinner.getValue();
             try {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
+                board.run(Board.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (IllegalArgumentException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
 
-        focuser.addListener(this);
-        focuser.clearRequestedPositions();
+        board.addListener(this);
+        board.clearRequestedPositions();
         try {
-            wasPowerSaveOn = focuser.isPowerSaverOn();
-            focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, 0);
-            focuser.run(ThunderFocuser.Commands.FOCUSER_SET_BACKLASH, this, 0);
+            wasPowerSaveOn = board.isPowerSaverOn();
+            board.run(Board.Commands.FOCUSER_POWER_SAVER, this, 0);
+            board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, 0);
             int maxTravel = settings.getFocuserMaxTravel();
             int target = maxTravel / 2;
-            if (target == focuser.getCurrentPos()) {
+            if (target == board.getCurrentPos()) {
                 phase = 1;
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, maxTravel / 4);
+                board.run(Board.Commands.FOCUSER_ABS_MOVE, this, maxTravel / 4);
             } else {
-                focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, target);
+                board.run(Board.Commands.FOCUSER_ABS_MOVE, this, target);
             }
         } catch (IOException | SerialPortException e) {
             connectionErr(e);
             dispose();
-        } catch (ThunderFocuser.InvalidParamException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
         setBounds(450, 250, 420, 520);
@@ -111,15 +111,15 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
     public void dispose() {
         super.dispose();
         try {
-            focuser.run(ThunderFocuser.Commands.FOCUSER_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
-            focuser.run(ThunderFocuser.Commands.FOCUSER_STOP, this);
+            board.run(Board.Commands.FOCUSER_POWER_SAVER, this, wasPowerSaveOn ? 1 : 0);
+            board.run(Board.Commands.FOCUSER_STOP, this);
         } catch (IOException | SerialPortException e) {
             connectionErr(e);
-        } catch (ThunderFocuser.InvalidParamException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        focuser.setExclusiveMode(null);
-        focuser.removeListener(this);
+        board.setExclusiveMode(null);
+        board.removeListener(this);
     }
 
     private void setControlsEnabled(final boolean b) {
@@ -136,11 +136,11 @@ public class BacklashCalibrationWindow extends JDialog implements ThunderFocuser
         switch (phase) {
             case 0 -> {
                 try {
-                    focuser.run(ThunderFocuser.Commands.FOCUSER_ABS_MOVE, this, settings.getFocuserMaxTravel() / 4);
+                    board.run(Board.Commands.FOCUSER_ABS_MOVE, this, settings.getFocuserMaxTravel() / 4);
                     phase = 1;
                 } catch (IOException | SerialPortException e) {
                     connectionErr(e);
-                } catch (ThunderFocuser.InvalidParamException e) {
+                } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
             }

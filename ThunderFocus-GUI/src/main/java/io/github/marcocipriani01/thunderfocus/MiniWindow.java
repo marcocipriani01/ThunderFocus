@@ -1,6 +1,6 @@
 package io.github.marcocipriani01.thunderfocus;
 
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import jssc.SerialPortException;
 
 import javax.swing.*;
@@ -37,10 +37,10 @@ public class MiniWindow extends JFrame implements KeyListener {
 
         left.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, -Integer.parseInt(field.getText()));
+                Main.board.run(Board.Commands.FOCUSER_REL_MOVE, null, -Integer.parseInt(field.getText()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (IllegalArgumentException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -48,10 +48,10 @@ public class MiniWindow extends JFrame implements KeyListener {
         left.setFocusTraversalKeysEnabled(false);
         right.addActionListener(e -> {
             try {
-                Main.focuser.run(ThunderFocuser.Commands.FOCUSER_REL_MOVE, null, Integer.parseInt(field.getText()));
+                Main.board.run(Board.Commands.FOCUSER_REL_MOVE, null, Integer.parseInt(field.getText()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+            } catch (IllegalArgumentException | NumberFormatException ex) {
                 valueOutOfLimits(ex);
             }
         });

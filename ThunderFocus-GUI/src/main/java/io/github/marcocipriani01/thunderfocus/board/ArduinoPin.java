@@ -12,7 +12,6 @@ import java.util.Objects;
  * @author marcocipriani01
  * @version 2.0
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class ArduinoPin {
 
     @Expose
@@ -23,27 +22,33 @@ public class ArduinoPin {
     private String name = "Pin 0";
     private int value = 0;
     private boolean isPwm = false;
+    private boolean enablePwm = false;
     private boolean autoModeEn = false;
     @SerializedName("ON when app is open")
     @Expose
     private boolean onWhenAppOpen = false;
-
     /**
      * Class constructor. For Gson only!
      */
+    @SuppressWarnings("unused")
     public ArduinoPin() {
 
     }
-
     /**
-     * Class constructor. Value = 0.
+     * Class constructor.
      *
      * @param number the id of this pin (the number on the Arduino board).
      * @param name   a name for this pin.
+     * @param value  an initial value. Integer, 0→255
+     * @see #setValue(int)
      */
-    public ArduinoPin(int number, String name) {
+    public ArduinoPin(int number, String name, int value, boolean autoModeEn, boolean onWhenAppOpen) {
         this.number = number;
         this.name = name;
+        this.value = constrain(value);
+        this.isPwm = this.enablePwm = false;
+        this.autoModeEn = autoModeEn;
+        this.onWhenAppOpen = onWhenAppOpen;
     }
 
     /**
@@ -54,11 +59,12 @@ public class ArduinoPin {
      * @param value  an initial value. Integer, 0→255
      * @see #setValue(int)
      */
-    public ArduinoPin(int number, String name, int value, boolean isPwm, boolean autoModeEn, boolean onWhenAppOpen) {
+    public ArduinoPin(int number, String name, int value, boolean enablePwm, boolean autoModeEn, boolean onWhenAppOpen) {
         this.number = number;
         this.name = name;
         this.value = constrain(value);
-        this.isPwm = isPwm;
+        this.isPwm = true;
+        this.enablePwm = enablePwm;
         this.autoModeEn = autoModeEn;
         this.onWhenAppOpen = onWhenAppOpen;
     }
@@ -74,11 +80,22 @@ public class ArduinoPin {
         number = other.number;
         autoModeEn = other.autoModeEn;
         isPwm = other.isPwm;
+        enablePwm = other.enablePwm;
         onWhenAppOpen = other.onWhenAppOpen;
     }
 
     private static int constrain(int n) {
         return (n >= 255 ? 255 : (Math.max(n, 0)));
+    }
+
+    public boolean isPwmEnabled() {
+        return enablePwm;
+    }
+
+    public void setEnablePwm(boolean enablePwm) {
+        if (!isPwm)
+            throw new IllegalStateException("This pin is not a PWM pin!");
+        this.enablePwm = enablePwm;
     }
 
     public boolean isOnWhenAppOpen() {
@@ -91,10 +108,6 @@ public class ArduinoPin {
 
     public boolean isPwm() {
         return isPwm;
-    }
-
-    public void setPwm(boolean pwm) {
-        isPwm = pwm;
     }
 
     public boolean isAutoModeEn() {
@@ -132,7 +145,7 @@ public class ArduinoPin {
      * @param value a new value for this pin, 0→255.
      */
     public void setValue(int value) {
-        this.value = isPwm ? constrain(value) : (value > 100 ? 255 : 0);
+        this.value = enablePwm ? constrain(value) : (value > 100 ? 255 : 0);
     }
 
     public void setValue(boolean value) {
@@ -151,13 +164,6 @@ public class ArduinoPin {
     }
 
     /**
-     * @param number a new pin id.
-     */
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    /**
      * @return the name of this pin.
      */
     public String getName() {
@@ -173,6 +179,6 @@ public class ArduinoPin {
 
     @Override
     public String toString() {
-        return "Pin " + number + " is \"" + name + "\", value: " + (isPwm ? value : (value > 100 ? "HIGH" : "LOW"));
+        return "Pin " + number + " is \"" + name + "\", value: " + (enablePwm ? value : (value > 100 ? "HIGH" : "LOW"));
     }
 }

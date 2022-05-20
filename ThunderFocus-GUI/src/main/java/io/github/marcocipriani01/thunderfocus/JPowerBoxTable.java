@@ -2,7 +2,7 @@ package io.github.marcocipriani01.thunderfocus;
 
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
 import io.github.marcocipriani01.thunderfocus.board.PowerBox;
-import io.github.marcocipriani01.thunderfocus.board.ThunderFocuser;
+import io.github.marcocipriani01.thunderfocus.board.Board;
 import jssc.SerialPortException;
 
 import javax.swing.*;
@@ -212,10 +212,10 @@ public class JPowerBoxTable extends JTable {
                         pin.setValue((boolean) aValue);
                     }
                     try {
-                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
+                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
-                    } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                    } catch (IllegalArgumentException | NumberFormatException ex) {
                         mainWindow.valueOutOfLimits(ex);
                     }
                 }
@@ -227,10 +227,10 @@ public class JPowerBoxTable extends JTable {
                         pin.setValue(true);
                         fireTableCellUpdated(rowIndex, 2);
                         try {
-                            Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
+                            Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
                         } catch (IOException | SerialPortException ex) {
                             mainWindow.connectionErr(ex);
-                        } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                        } catch (IllegalArgumentException | NumberFormatException ex) {
                             mainWindow.valueOutOfLimits(ex);
                         }
                     }
@@ -246,10 +246,10 @@ public class JPowerBoxTable extends JTable {
                     boolean b = (boolean) aValue;
                     pin.setAutoModeEn(b);
                     try {
-                        Main.focuser.run(ThunderFocuser.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
+                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
-                    } catch (ThunderFocuser.InvalidParamException | NumberFormatException ex) {
+                    } catch (IllegalArgumentException | NumberFormatException ex) {
                         mainWindow.valueOutOfLimits(ex);
                     }
                 }

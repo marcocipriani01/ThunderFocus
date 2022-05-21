@@ -7,6 +7,7 @@ boolean requestSave = false;
 unsigned long lastSaveTime = 0L;
 
 void reset() {
+    Serial.println(F("LSettings reset!"));
     settings.marker = EEPROM_MARKER;
 #if FOCUSER_DRIVER != DISABLED
     settings.focuserPosition = 0L;
@@ -27,25 +28,52 @@ void reset() {
     settings.longitude = 0.0;
 #endif
 #endif
-#if (FLAT_PANEL == true) && defined(SERVO_PIN)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
     settings.servoDelay = SERVO_DELAY_DEFAULT;
     settings.openServoVal = OPEN_SERVO_DEFAULT;
     settings.closedServoVal = CLOSED_SERVO_DEFAULT;
     settings.coverStatus = FlatPanel::CLOSED;
 #endif
+    requestSave = true;
 }
 
 void load() {
+#if DEBUG_EN
+    Serial.print(F("LEEPROM size = "));
+    Serial.println(EEPROM.length());
+    Serial.print(F("LStruct size = "));
+    Serial.println(sizeof(Struct));
+#endif
+    if (sizeof(Struct) >= EEPROM.length()) {
+        Serial.println(F("LEEPROM size is too small, aborting."));
+        while (true)
+            ;
+    }
+#if DEBUG_EN
+    Serial.println(F("LLoading settings..."));
+#endif
     uint8_t* bytes = (uint8_t*)&settings;
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
         bytes[i] = EEPROM.read(i);
+#if DEBUG_EN
+        Serial.print(F("LByte "));
+        Serial.print(i);
+        Serial.print(F(" = "));
+        Serial.println(bytes[i]);
+#endif
+#if defined(EEPROM_IO_DELAY) && (EEPROM_IO_DELAY > 0)
+        delay(EEPROM_IO_DELAY);
+#endif
     }
+#if DEBUG_EN
+    Serial.println(F("LRead complete"));
+#endif
     if (settings.marker != EEPROM_MARKER) reset();
 #if FOCUSER_DRIVER != DISABLED
     settings.focuserSpeed = constrain(settings.focuserSpeed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
     if (settings.focuserBacklash < 0) settings.focuserBacklash = 0;
 #endif
-#if (FLAT_PANEL == true) && defined(SERVO_PIN)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
         settings.servoDelay = constrain(settings.servoDelay, SERVO_DELAY_MIN, SERVO_DELAY_MAX);
         settings.closedServoVal = constrain(settings.closedServoVal, CLOSED_SERVO_15deg, CLOSED_SERVO_m15deg);
         settings.openServoVal = constrain(settings.openServoVal, OPEN_SERVO_290deg, OPEN_SERVO_170deg);
@@ -58,6 +86,9 @@ void save() {
     uint8_t* bytes = (uint8_t*)&settings;
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
         EEPROM.update(i, bytes[i]);
+#if defined(EEPROM_IO_DELAY) && (EEPROM_IO_DELAY > 0)
+        delay(EEPROM_IO_DELAY);
+#endif
     }
     requestSave = false;
 }

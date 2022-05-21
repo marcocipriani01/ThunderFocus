@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#if defined(FLAT_PANEL) && (FLAT_PANEL == true) && defined(SERVO_MOTOR) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && defined(SERVO_MOTOR)
 #if SERVO_MOTOR == SERVO_RDS3225
 // Raw servo value for +15°
 #define CLOSED_SERVO_15deg 2400

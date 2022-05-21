@@ -3,15 +3,13 @@
 void setup() {
 #ifdef STATUS_LED
     pinMode(STATUS_LED, OUTPUT);
-#if STATUS_LED_MANAGED == true
     digitalWrite(STATUS_LED, HIGH);
-    delay(400);
-    digitalWrite(STATUS_LED, LOW);
-#else
-    digitalWrite(STATUS_LED, HIGH);
-#endif
 #endif
     ThunderFocus::setup();
+#if STATUS_LED_MANAGED == true
+    delay(400);
+    digitalWrite(STATUS_LED, LOW);
+#endif
 }
 
 void loop() {

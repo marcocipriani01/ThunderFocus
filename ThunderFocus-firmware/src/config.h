@@ -1,16 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "boards/arduino_nano_prototype.h"
+#define DEBUG_EN true
+
+#include "boards/thunderfocus_v2.h"
+//#include "boards/arduino_nano_prototype.h"
 //#include "boards/guidescope.h"
 
-
-// ===================================================================================
-// =============================== GENERAL VALIDATION ================================
-// ===================================================================================
-#if defined(STATUS_LED) && (!defined(STATUS_LED_BLINK_PERIOD))
-#error "STATUS_LED_BLINK_PERIOD must be defined if STATUS_LED is defined"
-#endif
 
 // ===================================================================================
 // ============================== FOCUSER VALIDATION =================================
@@ -95,7 +91,10 @@
 // ===================================================================================
 // ============================== FLAT PANEL VALIDATION ==============================
 // ===================================================================================
-#if defined(FLAT_PANEL) && (FLAT_PANEL == true)
+#ifndef FLAT_PANEL
+#define FLAT_PANEL false
+#endif
+#if FLAT_PANEL == true
 #ifndef EL_PANEL_PIN
 #error "EL_PANEL_PIN must be defined"
 #endif
@@ -109,7 +108,7 @@
 #define SERVO_MOTOR DISABLED
 #endif
 #if (SERVO_MOTOR != DISABLED) && (!defined(SERVO_PIN))
-#error "SERVO_MOTOR and SERVO_PIN must be defined if FLAT_PANEL is true"
+#error "SERVO_PIN must be defined if SERVO_MOTOR is defined"
 #endif
 #endif
 
@@ -122,6 +121,13 @@
 //#define EEPROM_PADDING 20
 #else
 #define SETTINGS_SUPPORT false
+#endif
+
+// ===================================================================================
+// =============================== GENERAL VALIDATION ================================
+// ===================================================================================
+#if (FOCUSER_DRIVER == DISABLED) && (ENABLE_DEVMAN == false) && (FLAT_PANEL == false)
+#error "At least one of FOCUSER_DRIVER, ENABLE_DEVMAN, or FLAT_PANEL must be defined"
 #endif
 
 #endif

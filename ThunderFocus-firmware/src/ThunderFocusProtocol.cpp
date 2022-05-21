@@ -18,8 +18,14 @@ unsigned long flatPanelSyncTime = 0L;
 void setup() {
     Serial.begin(SERIAL_SPEED);
     Serial.setTimeout(SERIAL_TIMEOUT);
+#if DEBUG_EN
+    Serial.println(F("LBoot"));
+#endif
 #if SETTINGS_SUPPORT == true
     Settings::load();
+#if DEBUG_EN
+    Serial.println(F("LSettingsLoad"));
+#endif
 #endif
 #if FOCUSER_DRIVER != DISABLED
     Focuser::begin();
@@ -40,6 +46,12 @@ void setup() {
 #if DEVMAN_HAS_AUTO_MODES
     DevManager::setAutoMode(Settings::settings.devManAutoMode);
 #endif
+#endif
+#if FLAT_PANEL == true
+    FlatPanel::begin();
+#endif
+#if DEBUG_EN
+    Serial.println(F("LSetupDone"));
 #endif
 }
 
@@ -172,7 +184,7 @@ void serialEvent() {
                 Serial.print(F("%"));
                 Serial.print(FlatPanel::brightness);
                 Serial.print(F("%"));
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
                 Serial.print(F("1%"));
                 Serial.print(map(Settings::settings.openServoVal, OPEN_SERVO_170deg, OPEN_SERVO_290deg, 0, 100));
                 Serial.print(F("%"));
@@ -187,7 +199,7 @@ void serialEvent() {
 #endif
 #endif
                 Serial.println();
-#if RTC_SUPPORT != DISABLED
+#if (RTC_SUPPORT != DISABLED) && DEBUG_EN
                 Serial.print(F("LStoredTime="));
                 Serial.print(hour());
                 Serial.print(F(":"));
@@ -209,7 +221,9 @@ void serialEvent() {
 #if FOCUSER_DRIVER != DISABLED
             case 'R': {
                 long n = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LMove="));
+#endif
                 Serial.println(n);
                 Focuser::stepper.move(n);
                 break;
@@ -217,29 +231,37 @@ void serialEvent() {
 
             case 'A': {
                 long n = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LGoTo="));
                 Serial.println(n);
+#endif
                 Focuser::stepper.moveTo(n);
                 break;
             }
 
             case 'S': {
+#if DEBUG_EN
                 Serial.println(F("LStop"));
+#endif
                 Focuser::stepper.stop();
                 break;
             }
 
             case 'P': {
                 long n = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetPos="));
                 Serial.println(n);
+#endif
                 Focuser::stepper.setPosition(n);
                 Settings::requestSave = true;
                 break;
             }
 
             case 'W': {
+#if DEBUG_EN
                 Serial.println(F("LSetZero"));
+#endif
                 Focuser::stepper.setPosition(0);
                 Settings::requestSave = true;
                 break;
@@ -247,8 +269,10 @@ void serialEvent() {
 
             case 'H': {
                 boolean b = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LHoldControl="));
                 Serial.println(b);
+#endif
                 Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
                 Settings::requestSave = true;
                 break;
@@ -256,8 +280,10 @@ void serialEvent() {
 
             case 'V': {
                 long n = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSpeed="));
                 Serial.println(n);
+#endif
                 Focuser::stepper.setMaxSpeed(percentageToSpeed(n));
                 Settings::requestSave = true;
                 break;
@@ -265,8 +291,10 @@ void serialEvent() {
 
             case 'B': {
                 long n = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LBacklash="));
                 Serial.println(n);
+#endif
                 Focuser::stepper.setBacklash(n);
                 Settings::requestSave = true;
                 break;
@@ -274,8 +302,10 @@ void serialEvent() {
 
             case 'D': {
                 boolean b = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LDirReverse="));
                 Serial.println(b);
+#endif
                 Focuser::stepper.setDirectionInverted(b);
                 Settings::requestSave = true;
                 break;
@@ -287,10 +317,12 @@ void serialEvent() {
                 byte pin = Serial.parseInt();
                 byte value = Serial.parseInt();
                 boolean enablePwm = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetPin="));
                 Serial.print(pin);
                 Serial.print(F("@"));
                 Serial.println(value);
+#endif
                 DevManager::updatePin(pin, enablePwm, value);
                 Settings::requestSave = true;
                 break;
@@ -299,8 +331,10 @@ void serialEvent() {
 #if DEVMAN_HAS_AUTO_MODES
             case 'K': {
                 DevManager::AutoMode mode = (DevManager::AutoMode)Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetAutoMode="));
                 Serial.println((int)mode);
+#endif
                 if (DevManager::setAutoMode(mode)) updatePins();
                 Settings::requestSave = true;
                 break;
@@ -309,10 +343,12 @@ void serialEvent() {
             case 'Y': {
                 byte pin = Serial.parseInt();
                 boolean autoModeEnabled = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetPinAuto="));
                 Serial.print(pin);
                 Serial.print(F("@"));
                 Serial.println(autoModeEnabled);
+#endif
                 if (DevManager::setPinAutoModeEn(pin, autoModeEnabled)) updatePins();
                 Settings::requestSave = true;
                 break;
@@ -326,16 +362,20 @@ void serialEvent() {
                 long lng = Serial.parseInt();
                 if (time != 0) {
                     SunUtil::setRTCTime(time);
+#if DEBUG_EN
                     Serial.print(F("LSetTime="));
                     Serial.println(time);
+#endif
                 }
                 if ((lat != 0) && (lng != 0)) {
                     Settings::settings.latitude = ((double)lat) / 1000.0;
                     Settings::settings.longitude = ((double)lng) / 1000.0;
+#if DEBUG_EN
                     Serial.print(F("LSetWorldCoord="));
                     Serial.print(lat);
                     Serial.print(F(","));
                     Serial.println(lng);
+#endif
                     updateSunPosition();
                     Settings::requestSave = true;
                 }
@@ -347,25 +387,31 @@ void serialEvent() {
 #if FLAT_PANEL == true
             case 'Z': {
                 byte value = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetBrightness="));
                 Serial.println(value);
+#endif
                 FlatPanel::setBrightness(value);
                 break;
             }
 
             case 'L': {
                 boolean value = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetLight="));
                 Serial.println(value);
+#endif
                 FlatPanel::setLight(value);
                 break;
             }
 
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
             case 'Q': {
                 byte value = Serial.parseInt();
+#if DEBUG_EN
                 Serial.print(F("LSetCover="));
                 Serial.println(value);
+#endif
                 if (value == 0)
                     FlatPanel::setShutter(FlatPanel::CLOSED);
                 else if (value == 1)
@@ -419,7 +465,9 @@ void updateSunPosition() {
 }
 #endif
 
+#if FOCUSER_DRIVER != DISABLED
 inline int speedToPercentage(double speed) { return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN); }
 
 inline double percentageToSpeed(int percentage) { return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN; }
+#endif
 }  // namespace ThunderFocus

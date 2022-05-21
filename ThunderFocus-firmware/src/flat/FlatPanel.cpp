@@ -3,7 +3,7 @@
 
 namespace FlatPanel {
 
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
 int targetVal = 0;
 int currentVal = 0;
 ServoHack servo;
@@ -36,7 +36,7 @@ void begin() {
 #endif
 }
 
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
 void setShutter(int val) {
     if (val == OPEN && coverStatus != OPEN) {
         motorDirection = OPENING;
@@ -54,7 +54,7 @@ void setShutter(int val) {
 void setLight(boolean val) {
     lightStatus = val;
     if (val) {
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
         if (coverStatus == CLOSED) targetBrightness = brightness;
 #else
         targetBrightness = brightness;
@@ -70,7 +70,7 @@ void setBrightness(int val) {
 #else
     brightness = val;
 #endif
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
     if (lightStatus && (coverStatus == CLOSED)) targetBrightness = brightness;
 #else
     if (lightStatus == ON) targetBrightness = brightness;
@@ -89,7 +89,7 @@ void run() {
         }
         lastBrightnessAdj = t;
     }
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
     if ((motorDirection != NONE) && ((t - lastMoveTime) >= Settings::settings.servoDelay)) {
         if ((currentVal > targetVal) && (motorDirection == OPENING)) {
             coverStatus = NEITHER_OPEN_NOR_CLOSED;

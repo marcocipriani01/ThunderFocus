@@ -33,12 +33,14 @@
 #define THUNDERFOCUS_SEND_DELAY 150
 
 namespace ThunderFocus {
-
 #if FOCUSER_DRIVER != DISABLED
 enum FocuserState { MOVING = (int)'M', HOLD = (int)'H', ARRIVED = (int)'A', POWER_SAVE = (int)'P' };
 
 extern FocuserState lastFocuserState;
 extern unsigned long focuserSyncTime;
+
+inline int speedToPercentage(double speed);
+inline double percentageToSpeed(int percentage);
 #endif
 
 #if TEMP_HUM_SENSOR != DISABLED
@@ -62,9 +64,6 @@ void updatePins();
 void updateSunPosition();
 #endif
 #endif
-
-inline int speedToPercentage(double speed);
-inline double percentageToSpeed(int percentage);
 }  // namespace ThunderFocus
 
 #endif

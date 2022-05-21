@@ -6,7 +6,7 @@
 
 #if FLAT_PANEL == true
 #include "FlatPanelEnums.h"
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
 #if SETTINGS_SUPPORT == false
 #error "SETTINGS_SUPPORT must be true to use the flat panel servo feature."
 #endif
@@ -22,7 +22,7 @@
 #define EL_PANEL_FADE_DELAY 8
 
 namespace FlatPanel {
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
 extern ServoHack servo;
 extern int targetVal;
 extern int currentVal;
@@ -41,7 +41,7 @@ void begin();
 void run();
 void setLight(boolean val);
 void setBrightness(int val);
-#ifdef SERVO_PIN
+#if SERVO_MOTOR != DISABLED
 void setShutter(int val);
 #endif
 };  // namespace FlatPanel

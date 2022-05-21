@@ -9,7 +9,7 @@
 #if ENABLE_DEVMAN == true
 #include "../devman/DevManagerDefinitions.h"
 #endif
-#if (FLAT_PANEL == true) && defined(SERVO_PIN)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
 #include "../flat/FlatPanelEnums.h"
 #include "../flat/ServoModels.h"
 #endif
@@ -39,7 +39,7 @@ struct Struct {
 #endif
 #endif
 
-#if (FLAT_PANEL == true) && defined(SERVO_PIN)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
     uint16_t servoDelay;
     uint16_t openServoVal;
     uint16_t closedServoVal;

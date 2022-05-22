@@ -1,6 +1,7 @@
 package io.github.marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
@@ -44,7 +45,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             switch (settings.theme) {
-                case LIGHT -> FlatLightLaf.setup();
+                case LIGHT -> FlatIntelliJLaf.setup();
                 case DARK -> FlatDarkLaf.setup();
                 default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
                         "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
@@ -128,9 +129,7 @@ public class Main {
             }
         }
         //indiServerCreator.stop();
-        if (board.isConnected()) {
-            board.disconnect();
-        }
+        if (board.isConnected()) board.disconnect();
         System.exit(code);
     }
 

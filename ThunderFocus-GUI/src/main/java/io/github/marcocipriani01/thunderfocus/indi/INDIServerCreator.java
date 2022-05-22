@@ -31,7 +31,7 @@ public class INDIServerCreator extends INDIServerAccessImpl implements INDIServe
     private void driverAndListener(INDIServerInterface server) {
         server.addEventHandler(this);
         try {
-            server.loadJavaDriver(INDIThunderFocuserDriver.class);
+            server.loadJavaDriver(INDIThunderFocusDriver.class);
         } catch (INDIException e) {
             e.printStackTrace();
         }

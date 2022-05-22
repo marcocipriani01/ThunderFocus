@@ -24,7 +24,7 @@ void setup() {
 #if SETTINGS_SUPPORT == true
     Settings::load();
 #if DEBUG_EN
-    Serial.println(F(">SettingsLoad"));
+    Serial.println(F(">Settings loading"));
 #endif
 #endif
 #if FOCUSER_DRIVER != DISABLED
@@ -34,13 +34,14 @@ void setup() {
     DevManager::begin();
     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         DevManager::Pin pin = Settings::settings.devManPins[i];
+        DevManager::setPinPwmEn(pin.number, pin.enablePwm);
 #if DEVMAN_HAS_AUTO_MODES
         if (pin.autoModeEn)
             DevManager::setPinAutoModeEn(pin.number, true);
         else
-            DevManager::updatePin(pin.number, pin.enablePwm, pin.value);
+            DevManager::updatePin(pin.number, pin.value);
 #else
-        DevManager::updatePin(pin.number, pin.enablePwm, pin.value);
+        DevManager::updatePin(pin.number, pin.value);
 #endif
     }
 #if DEVMAN_HAS_AUTO_MODES
@@ -51,7 +52,7 @@ void setup() {
     FlatPanel::begin();
 #endif
 #if DEBUG_EN
-    Serial.println(F(">SetupDone"));
+    Serial.println(F(">Setup done"));
 #endif
 }
 
@@ -85,7 +86,7 @@ void run() {
     if (DevManager::run()) updatePins();
 #if TEMP_HUM_SENSOR != DISABLED
     AmbientManger::run();
-    if ((t - sensorsSyncTime) >= SENSORS_UPDATE_INTERVAL) {
+    if ((t - sensorsSyncTime) >= SENSORS_SYNC_INTERVAL) {
         Serial.print(F("J"));
         Serial.print(AmbientManger::getTemperature(), 1);
         Serial.print(F(","));
@@ -141,14 +142,14 @@ void serialEvent() {
 #endif
 #if ENABLE_DEVMAN == true
                 Serial.print(F("D["));
-                Serial.print(TEMP_HUM_SENSOR);
+                Serial.print(TEMP_HUM_SENSOR != DISABLED);
                 Serial.print(F(","));
-                Serial.print(RTC_SUPPORT);
+                Serial.print(RTC_SUPPORT != DISABLED);
                 Serial.print(F(","));
 #if RTC_SUPPORT != DISABLED
                 Serial.print(Settings::settings.latitude, 3);
                 Serial.print(F(","));
-                Serial.print(Settings::settings.latitude, 3);
+                Serial.print(Settings::settings.longitude, 3);
                 Serial.print(F(","));
 #endif
 #if DEVMAN_HAS_AUTO_MODES
@@ -181,17 +182,17 @@ void serialEvent() {
 #if FLAT_PANEL == true
                 Serial.print(F("P["));
                 Serial.print(FlatPanel::lightStatus);
-                Serial.print(F("%"));
+                Serial.print(F(","));
                 Serial.print(FlatPanel::brightness);
-                Serial.print(F("%"));
+                Serial.print(F(","));
 #if SERVO_MOTOR != DISABLED
-                Serial.print(F("1%"));
-                Serial.print(map(Settings::settings.openServoVal, OPEN_SERVO_170deg, OPEN_SERVO_290deg, 0, 100));
-                Serial.print(F("%"));
-                Serial.print(map(Settings::settings.closedServoVal, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg, 0, 100));
-                Serial.print(F("%"));
+                Serial.print(F("1,"));
+                Serial.print(map(Settings::settings.openServoVal, OPEN_SERVO_170deg, OPEN_SERVO_290deg, 170, 290));
+                Serial.print(F(","));
+                Serial.print(map(Settings::settings.closedServoVal, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg, -15, 15));
+                Serial.print(F(","));
                 Serial.print(map(Settings::settings.servoDelay, SERVO_DELAY_MAX, SERVO_DELAY_MIN, 0, 10));
-                Serial.print(F("%"));
+                Serial.print(F(","));
                 Serial.print(FlatPanel::coverStatus);
                 Serial.print(F("]"));
 #else
@@ -199,20 +200,7 @@ void serialEvent() {
 #endif
 #endif
                 Serial.println();
-#if (RTC_SUPPORT != DISABLED) && DEBUG_EN
-                Serial.print(F(">StoredTime="));
-                Serial.print(hour());
-                Serial.print(F(":"));
-                Serial.print(minute());
-                Serial.print(F(":"));
-                Serial.print(second());
-                Serial.print(F(" "));
-                Serial.print(day());
-                Serial.print(F("/"));
-                Serial.print(month());
-                Serial.print(F("/"));
-                Serial.print(year());
-                Serial.println(F(" UTC"));
+#if RTC_SUPPORT != DISABLED
                 updateSunPosition();
 #endif
                 break;
@@ -316,16 +304,28 @@ void serialEvent() {
             case 'X': {
                 byte pin = Serial.parseInt();
                 byte value = Serial.parseInt();
-                boolean enablePwm = Serial.parseInt();
 #if DEBUG_EN
                 Serial.print(F(">SetPin="));
                 Serial.print(pin);
-                Serial.print(F("@"));
+                Serial.print(F("->"));
                 Serial.println(value);
 #endif
-                DevManager::updatePin(pin, enablePwm, value);
+                DevManager::updatePin(pin, value);
                 Settings::requestSave = true;
                 break;
+            }
+
+            case 'J': {
+                byte pin = Serial.parseInt();
+                boolean en = Serial.parseInt();
+#if DEBUG_EN
+                Serial.print(F(">SetPinPwmEn="));
+                Serial.print(pin);
+                Serial.print(F("->"));
+                Serial.println(en);
+#endif
+                if (DevManager::setPinPwmEn(pin, en)) updatePins();
+                Settings::requestSave = true;
             }
 
 #if DEVMAN_HAS_AUTO_MODES
@@ -346,7 +346,7 @@ void serialEvent() {
 #if DEBUG_EN
                 Serial.print(F(">SetPinAuto="));
                 Serial.print(pin);
-                Serial.print(F("@"));
+                Serial.print(F("->"));
                 Serial.println(autoModeEnabled);
 #endif
                 if (DevManager::setPinAutoModeEn(pin, autoModeEnabled)) updatePins();
@@ -363,8 +363,19 @@ void serialEvent() {
                 if (time != 0) {
                     SunUtil::setRTCTime(time);
 #if DEBUG_EN
-                    Serial.print(F(">SetTime="));
-                    Serial.println(time);
+                    Serial.print(F(">RTC time: "));
+                    Serial.print(hour());
+                    Serial.print(F(":"));
+                    Serial.print(minute());
+                    Serial.print(F(":"));
+                    Serial.print(second());
+                    Serial.print(F(" "));
+                    Serial.print(day());
+                    Serial.print(F("/"));
+                    Serial.print(month());
+                    Serial.print(F("/"));
+                    Serial.print(year());
+                    Serial.println(F(" UTC"));
 #endif
                 }
                 if ((lat != 0) && (lng != 0)) {
@@ -376,9 +387,9 @@ void serialEvent() {
                     Serial.print(F(","));
                     Serial.println(lng);
 #endif
-                    updateSunPosition();
                     Settings::requestSave = true;
                 }
+                updateSunPosition();
                 break;
             }
 #endif
@@ -420,9 +431,17 @@ void serialEvent() {
             }
 
             case 'F': {
-                Settings::settings.openServoVal = map(constrain(Serial.parseInt(), 0, 100), 0, 100, OPEN_SERVO_170deg, OPEN_SERVO_290deg);
-                Settings::settings.closedServoVal = map(constrain(Serial.parseInt(), 0, 100), 0, 100, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg);
+                Settings::settings.openServoVal = map(constrain(Serial.parseInt(), 170, 290), 170, 290, OPEN_SERVO_170deg, OPEN_SERVO_290deg);
+                Settings::settings.closedServoVal = map(constrain(Serial.parseInt(), -15, 15), -15, 15, CLOSED_SERVO_m15deg, CLOSED_SERVO_15deg);
                 Settings::settings.servoDelay = map(constrain(Serial.parseInt(), 0, 10), 0, 10, SERVO_DELAY_MAX, SERVO_DELAY_MIN);
+#if DEBUG_EN
+                Serial.print(F(">SetServoConfig="));
+                Serial.print(Settings::settings.openServoVal);
+                Serial.print(F(", "));
+                Serial.print(Settings::settings.closedServoVal);
+                Serial.print(F(", "));
+                Serial.println(Settings::settings.servoDelay);
+#endif
                 Settings::requestSave = true;
                 break;
             }
@@ -443,13 +462,11 @@ void updatePins() {
     Serial.print(F(","));
     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         DevManager::Pin pin = DevManager::getPin(i);
-        if (pin.autoModeEn) {
-            Serial.print(F("("));
-            Serial.print(pin.number);
-            Serial.print(F("%"));
-            Serial.print(pin.value);
-            Serial.print(F(")"));
-        }
+        Serial.print(F("("));
+        Serial.print(pin.number);
+        Serial.print(F("%"));
+        Serial.print(pin.value);
+        Serial.print(F(")"));
     }
     Serial.println();
 }

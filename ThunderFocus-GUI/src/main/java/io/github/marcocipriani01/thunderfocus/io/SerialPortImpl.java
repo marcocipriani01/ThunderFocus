@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * @version 1.3
  * @see <a href="https://github.com/scream3r/java-simple-serial-connector">jSSC on GitHub</a>
  */
+@SuppressWarnings("unused")
 public class SerialPortImpl implements SerialPortEventListener {
 
     /**
@@ -24,7 +25,7 @@ public class SerialPortImpl implements SerialPortEventListener {
     /**
      * An instance of the {@link SerialPort} class.
      */
-    protected SerialPort serialPort;
+    protected SerialPort serialPort = null;
     private String buf = "";
 
     /**
@@ -99,9 +100,14 @@ public class SerialPortImpl implements SerialPortEventListener {
      *
      * @see #connect
      */
-    public void disconnect() throws IOException, SerialPortException {
-        if (!serialPort.closePort())
-            throw new IOException("Could not disconnect!");
+    public void disconnect() throws IOException {
+        try {
+            serialPort.closePort();
+            serialPort = null;
+        } catch (SerialPortException e) {
+            serialPort = null;
+            throw new IOException("Could not disconnect!", e);
+        }
     }
 
     /**

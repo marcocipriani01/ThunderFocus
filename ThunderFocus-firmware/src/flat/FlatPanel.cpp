@@ -7,14 +7,14 @@ namespace FlatPanel {
 int targetVal = 0;
 int currentVal = 0;
 ServoHack servo;
-CoverStatus coverStatus;
-MotorDirection motorDirection;
+CoverStatus coverStatus = CLOSED;
+MotorDirection motorDirection = NONE;
 #endif
-boolean lightStatus;
-uint16_t brightness;
-uint16_t targetBrightness;
-uint16_t currentBrightness;
-unsigned long lastBrightnessAdj;
+boolean lightStatus = 0;
+uint16_t brightness = 0;
+uint16_t targetBrightness = 0;
+uint16_t currentBrightness = 0;
+unsigned long lastBrightnessAdj = 0L;
 
 void begin() {
     servo.attach(SERVO_PIN);

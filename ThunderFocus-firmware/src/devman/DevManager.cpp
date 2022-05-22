@@ -52,22 +52,20 @@ void updateSettings() {
 
 Pin getPin(uint8_t index) { return pins[index]; }
 
-void updatePin(uint8_t pin, boolean enablePwm, uint8_t value) {
+void updatePin(uint8_t pin, uint8_t value) {
     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
-            if (pins[i].value == value) return;
             pins[i].autoModeEn = false;
-            if (pins[i].isPwm)
-                pins[i].enablePwm = enablePwm;
-            else
-                pins[i].enablePwm = false;
+            if (pins[i].value == value) return;
             if (pins[i].enablePwm) {
                 pins[i].value = value;
                 switch (value) {
                     case 0:
+                        analogWrite(pin, 0);
                         digitalWrite(pin, LOW);
                         break;
                     case 255:
+                        analogWrite(pin, 0);
                         digitalWrite(pin, HIGH);
                         break;
                     default:
@@ -171,8 +169,50 @@ boolean processAutoMode(boolean force) {
 boolean setPinAutoModeEn(uint8_t pin, boolean enabled) {
     for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pin == pins[i].number) {
+            if (pins[i].autoModeEn == enabled)
+                return false;
             pins[i].autoModeEn = enabled;
-            return processAutoMode(true);
+            if (enabled) {
+                return processAutoMode(true);
+            } else {
+                boolean upd = (pins[i].value != 0);
+                pins[i].value = 0;
+                if (pins[i].isPwm)
+                    analogWrite(pin, 0);
+                digitalWrite(pin, LOW);
+                return upd;
+            }
+        }
+    }
+    return false;
+}
+
+boolean setPinPwmEn(uint8_t pin, boolean pwmEn) {
+    for (byte i = 0; i < MANAGED_PINS_COUNT; i++) {
+        if (pin == pins[i].number) {
+            if (pins[i].enablePwm == pwmEn)
+                return false;
+            if (pins[i].isPwm) {
+                pins[i].enablePwm = pwmEn;
+                if (pins[i].autoModeEn) {
+                    return processAutoMode(true);
+                } else if (pwmEn) {
+                    return false;
+                } else {
+                    uint8_t oldVal = pins[i].value;
+                    boolean newVal = (oldVal > 100);
+                    pins[i].value = newVal ? 255 : 0;
+                    if (oldVal != pins[i].value) {
+                        analogWrite(pins[i].number, 0);
+                        digitalWrite(pins[i].number, newVal);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
         }
     }
     return false;
@@ -216,18 +256,21 @@ boolean forEachAutoPin(int pwm, boolean digital) {
     boolean hasChanged = false;
     for (int i = 0; i < MANAGED_PINS_COUNT; i++) {
         if (pins[i].autoModeEn) {
+            int pin = pins[i].number;
             if (pins[i].isPwm && pins[i].enablePwm) {
                 if (pwm != pins[i].value) {
                     pins[i].value = pwm;
                     switch (pwm) {
                         case 0:
-                            digitalWrite(pins[i].number, LOW);
+                            analogWrite(pin, 0);
+                            digitalWrite(pin, LOW);
                             break;
                         case 255:
-                            digitalWrite(pins[i].number, HIGH);
+                            analogWrite(pin, 0);
+                            digitalWrite(pin, HIGH);
                             break;
                         default:
-                            analogWrite(pins[i].number, pwm);
+                            analogWrite(pin, pwm);
                             break;
                     }
                     hasChanged = true;
@@ -236,7 +279,7 @@ boolean forEachAutoPin(int pwm, boolean digital) {
                 int val = digital ? 255 : 0;
                 if (val != pins[i].value) {
                     pins[i].value = val;
-                    digitalWrite(pins[i].number, digital);
+                    digitalWrite(pin, digital);
                     hasChanged = true;
                 }
             }

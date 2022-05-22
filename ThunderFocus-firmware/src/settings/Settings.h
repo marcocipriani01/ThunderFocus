@@ -6,6 +6,7 @@
 #include "../config.h"
 #if SETTINGS_SUPPORT == true
 #include <EEPROM.h>
+#include <math.h>
 #if ENABLE_DEVMAN == true
 #include "../devman/DevManagerDefinitions.h"
 #endif
@@ -41,10 +42,6 @@ struct Struct {
     uint16_t openServoVal;
     uint16_t closedServoVal;
     FlatPanel::CoverStatus coverStatus;
-#endif
-
-#ifdef EEPROM_END_CROP
-    uint8_t endCrop[EEPROM_END_CROP];
 #endif
 };
 

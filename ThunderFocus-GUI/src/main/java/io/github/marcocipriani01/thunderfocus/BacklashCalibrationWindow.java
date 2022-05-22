@@ -1,6 +1,7 @@
 package io.github.marcocipriani01.thunderfocus;
 
 import io.github.marcocipriani01.thunderfocus.board.Board;
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
 import jssc.SerialPortException;
 
 import javax.swing.*;
@@ -52,7 +53,7 @@ public class BacklashCalibrationWindow extends JDialog implements Board.Listener
                 board.run(Board.Commands.FOCUSER_REL_MOVE, this, 1);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (IllegalArgumentException | NumberFormatException ex) {
+            } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -63,20 +64,21 @@ public class BacklashCalibrationWindow extends JDialog implements Board.Listener
                 board.run(Board.Commands.FOCUSER_REL_MOVE, this, lastMoveSteps);
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (IllegalArgumentException | NumberFormatException ex) {
+            } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
         });
 
         board.addListener(this);
-        board.clearRequestedPositions();
+        Focuser focuser = board.focuser();
+        focuser.clearRequestedPositions();
         try {
-            wasPowerSaveOn = board.isPowerSaverOn();
+            wasPowerSaveOn = focuser.isPowerSaverEnabled();
             board.run(Board.Commands.FOCUSER_POWER_SAVER, this, 0);
             board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, 0);
             int maxTravel = settings.getFocuserMaxTravel();
             int target = maxTravel / 2;
-            if (target == board.getCurrentPos()) {
+            if (target == focuser.getPos()) {
                 phase = 1;
                 board.run(Board.Commands.FOCUSER_ABS_MOVE, this, maxTravel / 4);
             } else {

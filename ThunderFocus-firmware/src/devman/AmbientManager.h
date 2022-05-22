@@ -6,6 +6,7 @@
 
 #if TEMP_HUM_SENSOR != DISABLED
 #include <math.h>
+#include "MedianFilter.h"
 #if TEMP_HUM_SENSOR == BME280
 #include <Adafruit_BME280.h>
 #include <Adafruit_Sensor.h>
@@ -15,25 +16,25 @@
 #error "Unsupported temperature and humidity sensor!"
 #endif
 
-#define SENSORS_UPDATE_INTERVAL 10000L
+#define SENSORS_UPDATE_INTERVAL 1000L
 #define TEMP_ABSOLUTE_ZERO -273.0
-#define SENSORS_DATAPOINTS 6
+#define SENSORS_DATAPOINTS 30
 #define HUMIDITY_INVALID -1
 
 namespace AmbientManger {
 #if TEMP_HUM_SENSOR == BME280
-extern Adafruit_BME280 bme;
+extern Adafruit_BME280 sensor;
 #elif TEMP_HUM_SENSOR == HTU21D
-extern Adafruit_HTU21DF htu;
+extern Adafruit_HTU21DF sensor;
 #endif
 
 extern unsigned long lastSensorsCheck;
 extern double temperature;
-extern double temperatureSum;
 extern double humidity;
-extern double humiditySum;
-extern int integrationCount;
 extern double dewPoint;
+
+extern MedianFilter temperatureFilter;
+extern MedianFilter humidityFilter;
 
 void begin();
 void run();

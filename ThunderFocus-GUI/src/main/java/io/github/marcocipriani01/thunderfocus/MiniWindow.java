@@ -40,7 +40,7 @@ public class MiniWindow extends JFrame implements KeyListener {
                 Main.board.run(Board.Commands.FOCUSER_REL_MOVE, null, -Integer.parseInt(field.getText()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (IllegalArgumentException | NumberFormatException ex) {
+            } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
         });
@@ -51,7 +51,7 @@ public class MiniWindow extends JFrame implements KeyListener {
                 Main.board.run(Board.Commands.FOCUSER_REL_MOVE, null, Integer.parseInt(field.getText()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (IllegalArgumentException | NumberFormatException ex) {
+            } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
         });

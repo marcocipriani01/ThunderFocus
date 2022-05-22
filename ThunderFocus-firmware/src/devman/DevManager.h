@@ -31,7 +31,7 @@ void begin();
 boolean run();
 void updateSettings();
 Pin getPin(uint8_t index);
-void updatePin(uint8_t pin, boolean enablePwm, uint8_t value);
+void updatePin(uint8_t pin, uint8_t value);
 
 #if DEVMAN_HAS_AUTO_MODES
 AutoMode getAutoMode();
@@ -41,6 +41,7 @@ boolean processAutoMode(boolean force);
 int pwmMap(double in, double min, double max);
 boolean forEachAutoPin(int pwm, boolean digital);
 boolean setPinAutoModeEn(uint8_t pin, boolean enabled);
+boolean setPinPwmEn(uint8_t pin, boolean pwmEn);
 #endif
 #if TEMP_HUM_SENSOR != DISABLED
 boolean processDewPoint(double triggerDiff);

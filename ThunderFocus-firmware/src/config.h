@@ -117,12 +117,8 @@
 // ===================================================================================
 #if defined(__AVR__) || defined(CORE_TEENSY)
 #define SETTINGS_SUPPORT true
-#define EEPROM_MARKER 1
+#define EEPROM_MARKER (__TIME__[4] + __TIME__[6] + __TIME__[7] - (3 * '0'))
 #define EEPROM_START 0
-#if defined(__arm__) && defined(__MKL26Z64__)
-#define EEPROM_IO_DELAY 10
-#define EEPROM_END_CROP 4
-#endif
 #else
 #define SETTINGS_SUPPORT false
 #endif

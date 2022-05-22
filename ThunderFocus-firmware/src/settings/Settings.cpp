@@ -7,7 +7,9 @@ boolean requestSave = false;
 unsigned long lastSaveTime = 0L;
 
 void reset() {
+#if DEBUG_EN
     Serial.println(F(">Settings reset!"));
+#endif
     settings.marker = EEPROM_MARKER;
 #if FOCUSER_DRIVER != DISABLED
     settings.focuserPosition = 0L;
@@ -42,56 +44,51 @@ void load() {
     Serial.print(F(">EEPROM size = "));
     Serial.println(EEPROM.length());
     Serial.print(F(">Struct size = "));
-    Serial.println((int) sizeof(Struct));
+    Serial.println((int)sizeof(Struct));
+    Serial.print(F(">Compiled EEPROM marker = "));
+    Serial.println(EEPROM_MARKER);
 #endif
     if (sizeof(Struct) >= EEPROM.length()) {
-        Serial.println(F(">EEPROM size is too small, aborting."));
-        while (true)
-            ;
+        while (true) {
+            Serial.println(F(">Fatal error, the EEPROM is too small!"));
+#ifdef STATUS_LED
+            digitalWrite(STATUS_LED, HIGH);
+            delay(500);
+            digitalWrite(STATUS_LED, LOW);
+            delay(500);
+#else
+            delay(1000);
+#endif
+        }
     }
 #if DEBUG_EN
     Serial.println(F(">Loading settings..."));
 #endif
-    uint8_t* bytes = (uint8_t*)&settings;
-#ifdef EEPROM_END_CROP
-    for (unsigned int i = 0; i < (sizeof(Struct) - EEPROM_END_CROP); i++) {
-#else
-    for (unsigned int i = 0; i < sizeof(Struct); i++) {
-#endif
-        bytes[i] = EEPROM.read(i + EEPROM_START);
+    EEPROM.get(EEPROM_START, settings);
 #if DEBUG_EN
-        Serial.print(F(">Byte "));
-        Serial.print(i);
-        Serial.print(F(" = "));
-        Serial.println(bytes[i]);
+    Serial.print(F(">Stored EEPROM marker = "));
+    Serial.println(settings.marker);
 #endif
-    }
     if (settings.marker != EEPROM_MARKER) reset();
 #if FOCUSER_DRIVER != DISABLED
+    if (isnan(settings.focuserSpeed)) reset();
     settings.focuserSpeed = constrain(settings.focuserSpeed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
     if (settings.focuserBacklash < 0) settings.focuserBacklash = 0;
 #endif
+#if (ENABLE_DEVMAN == true) && (RTC_SUPPORT != DISABLED)
+    if (isnan(settings.latitude) || isnan(settings.longitude)) reset();
+#endif
 #if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
-        settings.servoDelay = constrain(settings.servoDelay, SERVO_DELAY_MIN, SERVO_DELAY_MAX);
-        settings.closedServoVal = constrain(settings.closedServoVal, CLOSED_SERVO_15deg, CLOSED_SERVO_m15deg);
-        settings.openServoVal = constrain(settings.openServoVal, OPEN_SERVO_290deg, OPEN_SERVO_170deg);
-        if (!((settings.coverStatus == FlatPanel::CLOSED) || (settings.coverStatus == FlatPanel::OPEN)))
-            settings.coverStatus = FlatPanel::CLOSED;
+    settings.servoDelay = constrain(settings.servoDelay, SERVO_DELAY_MIN, SERVO_DELAY_MAX);
+    settings.closedServoVal = constrain(settings.closedServoVal, CLOSED_SERVO_15deg, CLOSED_SERVO_m15deg);
+    settings.openServoVal = constrain(settings.openServoVal, OPEN_SERVO_290deg, OPEN_SERVO_170deg);
+    if (!((settings.coverStatus == FlatPanel::CLOSED) || (settings.coverStatus == FlatPanel::OPEN)))
+        settings.coverStatus = FlatPanel::CLOSED;
 #endif
 }
 
 void save() {
-    uint8_t* bytes = (uint8_t*)&settings;
-#ifdef EEPROM_END_CROP
-    for (unsigned int i = 0; i < (sizeof(Struct) - EEPROM_END_CROP); i++) {
-#else
-    for (unsigned int i = 0; i < sizeof(Struct); i++) {
-#endif
-        EEPROM.update(i + EEPROM_START, bytes[i]);
-#if defined(EEPROM_IO_DELAY) && (EEPROM_IO_DELAY > 0)
-        delay(EEPROM_IO_DELAY);
-#endif
-    }
+    EEPROM.put(EEPROM_START, settings);
     requestSave = false;
 }
 }  // namespace Settings

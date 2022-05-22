@@ -3,61 +3,57 @@
 
 namespace AmbientManger {
 #if TEMP_HUM_SENSOR == BME280
-Adafruit_BME280 bme;
+Adafruit_BME280 sensor;
 #elif TEMP_HUM_SENSOR == HTU21D
-Adafruit_HTU21DF htu;
+Adafruit_HTU21DF sensor;
 #endif
 
 unsigned long lastSensorsCheck = 0;
 double temperature = TEMP_ABSOLUTE_ZERO;
-double temperatureSum = 0.0;
 double humidity = HUMIDITY_INVALID;
-double humiditySum = 0.0;
-int integrationCount = 0;
 double dewPoint = TEMP_ABSOLUTE_ZERO;
+
+MedianFilter temperatureFilter(SENSORS_DATAPOINTS);
+MedianFilter humidityFilter(SENSORS_DATAPOINTS);
 
 void begin() {
 #if TEMP_HUM_SENSOR == BME280
-    if (!bme.begin(BME280_ADDRESS_ALTERNATE)) {
-        while (true) {
-            Serial.println(F(">BME280 sensor not found."));
-            delay(1000);
-        }
-    }
+    if (!sensor.begin(BME280_ADDRESS_ALTERNATE)) {
 #elif TEMP_HUM_SENSOR == HTU21D
-    if (!htu.begin()) {
-        while (true) {
-            Serial.println(F(">HTU21D sensor not found."));
-            delay(1000);
-        }
-    }
+    if (!sensor.begin()) {
 #endif
+        do {
+            Serial.println(F(">Temperature and humidity sensor not found."));
+#ifdef STATUS_LED
+            digitalWrite(STATUS_LED, HIGH);
+            delay(500);
+            digitalWrite(STATUS_LED, LOW);
+            delay(500);
+#else
+            delay(1000);
+#endif
+#if TEMP_HUM_SENSOR == BME280
+        } while (!sensor.begin(BME280_ADDRESS_ALTERNATE));
+#elif TEMP_HUM_SENSOR == HTU21D
+        } while (!sensor.begin());
+#endif
+    }
 }
 
 void run() {
     unsigned long t = millis();
-    if (t - lastSensorsCheck >= SENSORS_UPDATE_INTERVAL) {
-#if TEMP_HUM_SENSOR == BME280
-        float temp = bme.readTemperature();
-        float hum = bme.readHumidity();
-#elif TEMP_HUM_SENSOR == HTU21D
-        float temp = htu.readTemperature();
-        float hum = htu.readHumidity();
-#endif
-        if ((!isnan(hum)) && (!isnan(temp))) {
-            humiditySum += hum;
-            temperatureSum += temp;
-            integrationCount++;
-            if (integrationCount == SENSORS_DATAPOINTS) {
-                temperature = temperatureSum / ((double)integrationCount);
-                humidity = humiditySum / ((double)integrationCount);
-                // http://irtfweb.ifa.hawaii.edu/~tcs3/tcs3/Misc/Dewpoint_Calculation_Humidity_Sensor_E.pdf
-                double H = (log10(humidity) - 2) / 0.4343 + (17.62 * temperature) / (243.12 + temperature);
-                dewPoint = 243.12 * H / (17.62 - H);
-                integrationCount = 0;
-                humiditySum = 0.0;
-                temperatureSum = 0.0;
-            }
+    if ((t - lastSensorsCheck) >= SENSORS_UPDATE_INTERVAL) {
+        double tempRaw = temperatureFilter.add((double)sensor.readTemperature()),
+            humRaw = humidityFilter.add((double)sensor.readHumidity());
+        if (isnan(tempRaw) || isinf(tempRaw) || isnan(humRaw) || isinf(humRaw)) {
+            temperature = TEMP_ABSOLUTE_ZERO;
+            humidity = HUMIDITY_INVALID;
+            dewPoint = TEMP_ABSOLUTE_ZERO;
+        } else {
+            temperature = tempRaw;
+            humidity = humRaw;
+            double H = (log10(humidity) - 2.0) / 0.4343 + (17.62 * temperature) / (243.12 + temperature);
+            dewPoint = 243.12 * H / (17.62 - H);
         }
         lastSensorsCheck = t;
     }

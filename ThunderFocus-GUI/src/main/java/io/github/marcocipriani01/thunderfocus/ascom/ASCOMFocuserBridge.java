@@ -38,10 +38,10 @@ public class ASCOMFocuserBridge extends SimpleServer {
 
                 case "Connected" -> println(from, String.valueOf(Main.board.isConnected()));
 
-                case "Position" -> println(from, String.valueOf(Main.board.getCurrentPos()));
+                case "Position" -> println(from, String.valueOf(Main.board.focuser().getPos()));
 
                 case "IsMoving" -> println(from,
-                        String.valueOf(Main.board.getFocuserState() == Focuser.FocuserState.MOVING));
+                        String.valueOf(Main.board.focuser().getState() == Focuser.FocuserState.MOVING));
 
                 case "Halt" -> Main.board.run(Board.Commands.FOCUSER_STOP, null);
 

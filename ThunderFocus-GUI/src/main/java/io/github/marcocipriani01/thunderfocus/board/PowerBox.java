@@ -20,14 +20,14 @@ public class PowerBox {
     private final boolean rtcFeature;
     private final boolean ambientFeature;
 
-    private final ArrayList<ArduinoPin> pins = new ArrayList<>();
-    private AutoModes autoMode;
+    final ArrayList<ArduinoPin> pins = new ArrayList<>();
+    AutoModes autoMode;
     double temperature = ABSOLUTE_ZERO;
     double humidity = INVALID_HUMIDITY;
     double dewPoint = ABSOLUTE_ZERO;
-    private double latitude;
-    private double longitude;
-    private double sunElev = Double.MIN_VALUE;
+    double latitude;
+    double longitude;
+    double sunElev = Double.MIN_VALUE;
 
     public PowerBox(boolean ambientFeature, AutoModes autoMode) {
         this.rtcFeature = false;
@@ -67,24 +67,12 @@ public class PowerBox {
         return sunElev;
     }
 
-    void setSunElev(double sunElev) {
-        this.sunElev = sunElev;
-    }
-
     public double getLatitude() {
         return latitude;
     }
 
-    void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
-    }
-
-    void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     public double getTemperature() {
@@ -103,10 +91,10 @@ public class PowerBox {
         return pins;
     }
 
-    public ArrayList<ArduinoPin> listOnlyPwm() {
+    public ArrayList<ArduinoPin> listOnlyPWMEnabled() {
         ArrayList<ArduinoPin> list = new ArrayList<>();
         for (ArduinoPin ap : pins) {
-            if (ap.isPwm()) list.add(ap);
+            if (ap.isPWMEnabled()) list.add(ap);
         }
         return list;
     }
@@ -114,21 +102,13 @@ public class PowerBox {
     public ArrayList<ArduinoPin> listOnlyDigital() {
         ArrayList<ArduinoPin> list = new ArrayList<>();
         for (ArduinoPin ap : pins) {
-            if (!ap.isPwm()) list.add(ap);
+            if (!ap.isPWMEnabled()) list.add(ap);
         }
         return list;
     }
 
     public AutoModes getAutoMode() {
         return autoMode;
-    }
-
-    void setAutoMode(AutoModes autoMode) {
-        this.autoMode = autoMode;
-    }
-
-    void setAutoMode(int index) {
-        this.autoMode = AutoModes.values()[index];
     }
 
     public boolean supportsTime() {
@@ -146,15 +126,15 @@ public class PowerBox {
     public int countDigitalPins() {
         int count = 0;
         for (ArduinoPin ap : pins) {
-            if (!ap.isPwm()) count++;
+            if (!ap.isPWM()) count++;
         }
         return count;
     }
 
-    public int countPwmPins() {
+    public int countPWMEnabledPins() {
         int count = 0;
         for (ArduinoPin ap : pins) {
-            if (ap.isPwm()) count++;
+            if (ap.isPWMEnabled()) count++;
         }
         return count;
     }

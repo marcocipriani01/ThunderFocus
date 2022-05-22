@@ -1,13 +1,15 @@
 package io.github.marcocipriani01.thunderfocus;
 
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
-import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.Board;
+import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import jssc.SerialPortException;
 
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
@@ -22,7 +24,8 @@ import static io.github.marcocipriani01.thunderfocus.Main.settings;
 public class JPowerBoxTable extends JTable {
 
     private static final int DEF_ROW_HEIGHT = 60;
-    private static final int[] COLUMNS_WEIGHTS = {5, 3, 10, 4, 4};
+    private static final int[] COLUMNS_WEIGHTS_PWM = {5, 3, 10, 4, 4, 4};
+    private static final int[] COLUMNS_WEIGHTS = {5, 3, 4, 4, 4, 4};
     private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer();
     private final MainWindow mainWindow;
     private PowerBox powerBox = null;
@@ -43,6 +46,12 @@ public class JPowerBoxTable extends JTable {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scaleColumns();
+            }
+        });
     }
 
     public void refresh() {
@@ -52,34 +61,39 @@ public class JPowerBoxTable extends JTable {
         }
     }
 
-    public void fixWidths() {
+    public void scaleColumns() {
         if (powerBox == null) return;
         int tW = getWidth(), count = getColumnCount(), weightsSum = 0;
         TableColumn[] columns = new TableColumn[count];
+        int[] weights = (powerBox.countPWMEnabledPins() > 0) ? COLUMNS_WEIGHTS_PWM : COLUMNS_WEIGHTS;
         for (int i = 0; i < count; i++) {
             columns[i] = columnModel.getColumn(i);
-            weightsSum += COLUMNS_WEIGHTS[i];
+            weightsSum += weights[i];
         }
         DefaultTableCellRenderer centerTextRenderer = new DefaultTableCellRenderer();
         centerTextRenderer.setHorizontalAlignment(JLabel.CENTER);
         columns[1].setCellRenderer(centerTextRenderer);
         for (int i = 0; i < count; i++) {
-            columns[i].setMaxWidth(Math.round(tW * COLUMNS_WEIGHTS[i] / ((float) weightsSum)));
+            columns[i].setMaxWidth(Math.round(tW * weights[i] / ((float) weightsSum)));
+        }
+    }
+
+    public void scaleRows() {
+        for (int row = 0; row < getRowCount(); row++) {
+            setRowHeight(row, DEF_ROW_HEIGHT);
         }
     }
 
     public void setPowerBox(PowerBox powerBox) {
         this.powerBox = powerBox;
         ((PowerBoxTableModel) dataModel).fireTableStructureChanged();
-        for (int row = 0; row < getRowCount(); row++) {
-            setRowHeight(row, DEF_ROW_HEIGHT);
-        }
+        scaleRows();
     }
 
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
         if (column != 2) return super.getCellRenderer(row, column);
-        if (powerBox.getIndex(row).isPwm()) {
+        if (powerBox.getIndex(row).isPWMEnabled()) {
             return sliderEditorAndRenderer;
         }
         return getDefaultRenderer(Boolean.class);
@@ -88,7 +102,7 @@ public class JPowerBoxTable extends JTable {
     @Override
     public TableCellEditor getCellEditor(int row, int column) {
         if (column != 2) return super.getCellEditor(row, column);
-        if (powerBox.getIndex(row).isPwm()) return sliderEditorAndRenderer;
+        if (powerBox.getIndex(row).isPWMEnabled()) return sliderEditorAndRenderer;
         return getDefaultEditor(Boolean.class);
     }
 
@@ -114,9 +128,12 @@ public class JPowerBoxTable extends JTable {
                     return i18n("value");
                 }
                 case 3 -> {
-                    return i18n("on.when.app.open");
+                    return i18n("pwm");
                 }
                 case 4 -> {
+                    return i18n("on.when.app.open");
+                }
+                case 5 -> {
                     return i18n("auto");
                 }
             }
@@ -130,7 +147,7 @@ public class JPowerBoxTable extends JTable {
 
         @Override
         public int getColumnCount() {
-            return (powerBox == null) ? 0 : (powerBox.supportsAutoModes() ? 5 : 4);
+            return (powerBox == null) ? 0 : (powerBox.supportsAutoModes() ? 6 : 5);
         }
 
         @Override
@@ -145,16 +162,15 @@ public class JPowerBoxTable extends JTable {
                     return pin.getNumber();
                 }
                 case 2 -> {
-                    if (pin.isPwm()) {
-                        return pin.getValuePwm();
-                    } else {
-                        return pin.getValueBoolean();
-                    }
+                    return pin.isPWMEnabled() ? pin.getValuePWM() : pin.getValueBoolean();
                 }
                 case 3 -> {
-                    return powerBox.getIndex(rowIndex).isOnWhenAppOpen();
+                    return pin.isPWMEnabled();
                 }
                 case 4 -> {
+                    return powerBox.getIndex(rowIndex).isOnWhenAppOpen();
+                }
+                case 5 -> {
                     return powerBox.getIndex(rowIndex).isAutoModeEn();
                 }
                 default -> {
@@ -172,7 +188,7 @@ public class JPowerBoxTable extends JTable {
                 case 2 -> {
                     return Object.class;
                 }
-                case 3, 4 -> {
+                case 3, 4, 5 -> {
                     return Boolean.class;
                 }
                 default -> {
@@ -185,18 +201,19 @@ public class JPowerBoxTable extends JTable {
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             if (columnIndex == 0) return true;
             ArduinoPin pin = powerBox.getIndex(rowIndex);
-            if (pin.isOnWhenAppOpen()) return (columnIndex == 3);
-            if (pin.isAutoModeEn()) return (columnIndex == 4);
+            if (columnIndex == 3) return pin.isPWM();
+            if (pin.isOnWhenAppOpen()) return (columnIndex == 4);
+            if (pin.isAutoModeEn()) return (columnIndex == 5);
             return (columnIndex != 1);
         }
 
         @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        public void setValueAt(Object val, int rowIndex, int columnIndex) {
             if (powerBox == null) throw new NullPointerException("Null pins list.");
             ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
                 case 0 -> {
-                    pin.setName((String) aValue);
+                    pin.setName((String) val);
                     PowerBox.clonePins(powerBox, settings.powerBoxPins);
                     try {
                         Main.settings.save();
@@ -206,31 +223,46 @@ public class JPowerBoxTable extends JTable {
                 }
 
                 case 2 -> {
-                    if (pin.isPwm()) {
-                        pin.setValue((int) aValue);
-                    } else {
-                        pin.setValue((boolean) aValue);
-                    }
+                    if (pin.isPWMEnabled())
+                        pin.setValue((int) val);
+                    else
+                        pin.setValue((boolean) val);
                     try {
-                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
+                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
-                    } catch (IllegalArgumentException | NumberFormatException ex) {
+                    } catch (IllegalArgumentException ex) {
                         mainWindow.valueOutOfLimits(ex);
                     }
                 }
 
                 case 3 -> {
-                    boolean b = (boolean) aValue;
+                    boolean enablePWM = (boolean) val;
+                    pin.setPWMEnabled(enablePWM);
+                    try {
+                        Main.board.run(Board.Commands.POWER_BOX_EN_PIN_PWM, mainWindow, pin.getNumber(), enablePWM ? 1 : 0);
+                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
+                    } catch (IOException | SerialPortException ex) {
+                        mainWindow.connectionErr(ex);
+                    } catch (IllegalArgumentException ex) {
+                        mainWindow.valueOutOfLimits(ex);
+                    }
+                    ((PowerBoxTableModel) dataModel).fireTableStructureChanged();
+                    scaleRows();
+                    scaleColumns();
+                }
+
+                case 4 -> {
+                    boolean b = (boolean) val;
                     pin.setOnWhenAppOpen(b);
                     if (b) {
                         pin.setValue(true);
                         fireTableCellUpdated(rowIndex, 2);
                         try {
-                            Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePwm());
+                            Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
                         } catch (IOException | SerialPortException ex) {
                             mainWindow.connectionErr(ex);
-                        } catch (IllegalArgumentException | NumberFormatException ex) {
+                        } catch (IllegalArgumentException ex) {
                             mainWindow.valueOutOfLimits(ex);
                         }
                     }
@@ -242,14 +274,14 @@ public class JPowerBoxTable extends JTable {
                     }
                 }
 
-                case 4 -> {
-                    boolean b = (boolean) aValue;
+                case 5 -> {
+                    boolean b = (boolean) val;
                     pin.setAutoModeEn(b);
                     try {
                         Main.board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
-                    } catch (IllegalArgumentException | NumberFormatException ex) {
+                    } catch (IllegalArgumentException ex) {
                         mainWindow.valueOutOfLimits(ex);
                     }
                 }

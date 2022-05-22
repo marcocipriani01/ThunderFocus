@@ -20,11 +20,11 @@
 #define OPEN_SERVO_DEFAULT 550
 
 // Delay for the maximum speed
-#define SERVO_DELAY_MIN 1000
+#define SERVO_DELAY_MIN 1
 // Delay for the minimum speed
-#define SERVO_DELAY_MAX 16300
+#define SERVO_DELAY_MAX 20
 // Default delay
-#define SERVO_DELAY_DEFAULT 7000
+#define SERVO_DELAY_DEFAULT 10
 #else
 #error "Unknown servo motor model."
 #endif

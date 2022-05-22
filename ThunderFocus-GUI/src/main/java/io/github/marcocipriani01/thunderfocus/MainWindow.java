@@ -1,16 +1,13 @@
 package io.github.marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
-import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
-import io.github.marcocipriani01.thunderfocus.board.Focuser;
-import io.github.marcocipriani01.thunderfocus.board.PowerBox;
-import io.github.marcocipriani01.thunderfocus.board.Board;
+import io.github.marcocipriani01.thunderfocus.board.*;
 import io.github.marcocipriani01.thunderfocus.config.ExportableSettings;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
-import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocuserDriver;
+import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocusDriver;
 import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
 import jssc.SerialPortException;
 import org.jfree.chart.ChartPanel;
@@ -55,6 +52,8 @@ public class MainWindow extends JFrame implements
             new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/io/github/marcocipriani01/thunderfocus/res/power_box_tab.png")));
     private static final ImageIcon AMBIENT_TAB =
             new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ambient_tab.png")));
+    private static final ImageIcon FLAT_PANEL_TAB =
+            new ImageIcon(Objects.requireNonNull(MainWindow.class.getResource("/io/github/marcocipriani01/thunderfocus/res/flat_tab.png")));
     private final MiniWindow miniWindow = new MiniWindow();
     private final PresetsTableModel presetsTableModel;
     private JPanel parent;
@@ -129,6 +128,17 @@ public class MainWindow extends JFrame implements
     private JButton exportButton;
     private JButton importButton;
     private JLabel appNameLabel;
+    private JRadioButton closeCoverRadio;
+    private JRadioButton lightOnRadio;
+    private JRadioButton lightOffRadio;
+    private JRadioButton openCoverRadio;
+    private JLabel coverStatusLabel;
+    private JSlider coverSpeedSlider;
+    private JSpinner openAngleSpinner;
+    private JSpinner closedAngleSpinner;
+    private JSlider brightnessSlider;
+    private JButton saveServoConfig;
+    private JPanel flatPanelTab;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -152,6 +162,7 @@ public class MainWindow extends JFrame implements
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         removeTab(powerBoxTab);
         removeTab(ambientTab);
+        removeTab(flatPanelTab);
         tabPane.addChangeListener(this);
         configScrollPane.getVerticalScrollBar().setUnitIncrement(10);
 
@@ -175,7 +186,8 @@ public class MainWindow extends JFrame implements
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, copyIndiDriverNameButton,
                 saveConfigButton, powerBoxOnButton, powerBoxOffButton, cleanGraphButton, addPresetButton,
-                deletePresetButton, goToPresetButton, importButton, exportButton);
+                deletePresetButton, goToPresetButton, importButton, exportButton,
+                saveServoConfig, lightOnRadio, lightOffRadio, openCoverRadio, closeCoverRadio);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
         relativeMovField.setText(String.valueOf(settings.relativeStepSize));
@@ -188,6 +200,7 @@ public class MainWindow extends JFrame implements
         appThemeCombo.setSelectedItem(settings.theme);
         ascomBridgeCheckBox.setSelected(settings.ascomBridge);
         indiServerCheckBox.setSelected(settings.indiServer);
+        brightnessSlider.addChangeListener(this);
 
         parent.addMouseListener(new MouseAdapter() {
             @Override
@@ -235,8 +248,9 @@ public class MainWindow extends JFrame implements
         settings.addListener(this);
         startOrStopINDI(false);
 
-        setResizable(false);
-        setBounds(350, 150, 750, 770);
+        setResizable(true);
+        setBounds(350, 150, 790, 800);
+        setMinimumSize(new Dimension(770, 700));
         setVisible(true);
     }
 
@@ -327,8 +341,7 @@ public class MainWindow extends JFrame implements
         fokUnitsCombo.setSelectedItem(settings.focuserTicksUnit);
         fokMaxTravelSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.getFocuserMaxTravel(), 1, 2147483647, 1));
-        fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(
-                board.getBacklash(), 0, 1000, 1));
+        fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 1000, 1));
         powerBoxTable = new JPowerBoxTable(this);
         powerBoxAutoModeBox = new JComboBox<>();
         powerBoxAutoModeBox.addItemListener(this);
@@ -374,11 +387,14 @@ public class MainWindow extends JFrame implements
         plot.mapDatasetToRangeAxis(0, 0);
         plot.mapDatasetToRangeAxis(1, 1);
         timeSensorsChart = new ChartPanel(new JFreeChart(plot));
+
+        openAngleSpinner = new JSpinner(new SpinnerNumberModel(250, 170, 290, 1));
+        closedAngleSpinner = new JSpinner(new SpinnerNumberModel(0, -15, 15, 1));
     }
 
     private void refreshDriverName() {
         try {
-            driverNameBox.setText(INDIThunderFocuserDriver.DRIVER_NAME + "@" +
+            driverNameBox.setText(INDIThunderFocusDriver.DRIVER_NAME + "@" +
                     Main.getIP(localOrRemoteCombo.getSelectedIndex() == 0) + ":" + settings.indiServerPort);
         } catch (Exception e) {
             e.printStackTrace();
@@ -455,8 +471,8 @@ public class MainWindow extends JFrame implements
         }
     }
 
-    private void setButtonListeners(JButton... buttons) {
-        for (JButton b : buttons) {
+    private void setButtonListeners(AbstractButton... buttons) {
+        for (AbstractButton b : buttons) {
             b.addActionListener(this);
         }
     }
@@ -470,7 +486,7 @@ public class MainWindow extends JFrame implements
             board.run(Board.Commands.FOCUSER_REL_MOVE, this, stepSize);
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
-        } catch (IllegalArgumentException | NumberFormatException ex) {
+        } catch (IllegalArgumentException ex) {
             valueOutOfLimits(ex);
         }
         try {
@@ -495,7 +511,6 @@ public class MainWindow extends JFrame implements
         } else if (source == connectButton) {
             if (board.isConnected()) {
                 board.disconnect();
-                tabPane.setSelectedIndex(0);
             } else if (serialPortComboBox.getSelectedItem() != null) {
                 String port = (String) serialPortComboBox.getSelectedItem();
                 settings.setSerialPort(port, this);
@@ -538,7 +553,7 @@ public class MainWindow extends JFrame implements
                         Integer.parseInt(requestedPosField.getText().trim()));
             } catch (IOException | SerialPortException ex) {
                 connectionErr(ex);
-            } catch (IllegalArgumentException | NumberFormatException ex) {
+            } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
 
@@ -571,24 +586,29 @@ public class MainWindow extends JFrame implements
             int oldAscomPort = settings.ascomBridgePort;
             settings.ascomBridgePort = (int) ascomPortSpinner.getValue();
             if (board.isConnected() && board.isReady()) {
-                settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
-                settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
-                updateUnitsLabel();
-                settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
-                updateSlidersLimit();
+                Focuser focuser = board.focuser();
+                if (focuser != null) {
+                    settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
+                    settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
+                    updateUnitsLabel();
+                    settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
+                    updateSlidersLimit();
+                }
                 try {
-                    board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
-                    board.run(Board.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
-                    board.run(Board.Commands.FOCUSER_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
-                    board.run(Board.Commands.FOCUSER_POWER_SAVER, this, fokPowerSaverBox.isSelected() ? 1 : 0);
-                    if (board.isPowerBox() && board.getPowerBox().supportsAmbient()) {
+                    if (focuser != null) {
+                        board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
+                        board.run(Board.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
+                        board.run(Board.Commands.FOCUSER_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
+                    }
+                    PowerBox powerBox = board.powerBox();
+                    if ((powerBox != null) && powerBox.supportsAmbient()) {
                         board.run(Board.Commands.SET_TIME_LAT_LONG, this, 0,
                                 (int) (((double) powerBoxLatSpinner.getValue()) * 1000),
                                 (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
                     }
                 } catch (IOException | SerialPortException ex) {
                     connectionErr(ex);
-                } catch (IllegalArgumentException | NumberFormatException ex) {
+                } catch (IllegalArgumentException ex) {
                     valueOutOfLimits(ex);
                 }
             }
@@ -603,7 +623,7 @@ public class MainWindow extends JFrame implements
             }
             try {
                 switch (settings.theme) {
-                    case LIGHT -> FlatLightLaf.setup();
+                    case LIGHT -> FlatIntelliJLaf.setup();
                     case DARK -> FlatDarkLaf.setup();
                     default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
                             "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
@@ -617,10 +637,10 @@ public class MainWindow extends JFrame implements
 
         } else if (source == powerBoxOnButton) {
             try {
-                for (ArduinoPin p : board.getPowerBox().asList()) {
+                for (ArduinoPin p : board.powerBox().asList()) {
                     if (!p.isAutoModeEn()) {
                         p.setValue(255);
-                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
                     }
                 }
                 powerBoxTable.refresh();
@@ -632,10 +652,10 @@ public class MainWindow extends JFrame implements
 
         } else if (source == powerBoxOffButton) {
             try {
-                for (ArduinoPin p : board.getPowerBox().asList()) {
+                for (ArduinoPin p : board.powerBox().asList()) {
                     if (!p.isAutoModeEn()) {
                         p.setValue(0);
-                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePwm());
+                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
                     }
                 }
                 powerBoxTable.refresh();
@@ -651,7 +671,7 @@ public class MainWindow extends JFrame implements
             humiditySeries.clear();
 
         } else if (source == addPresetButton) {
-            int pos = board.getCurrentPos();
+            int pos = board.focuser().getPos();
             settings.presets.put(pos, i18n("description"));
             Integer[] positions = settings.presets.keySet().toArray(new Integer[0]);
             int index = IntStream.range(0, positions.length).filter(i -> positions[i] == pos).findFirst().orElse(-1);
@@ -687,7 +707,7 @@ public class MainWindow extends JFrame implements
                             settings.presets.keySet().toArray(new Integer[0])[selectedRow]);
                 } catch (IOException | SerialPortException ex) {
                     connectionErr(ex);
-                } catch (IllegalArgumentException | NumberFormatException ex) {
+                } catch (IllegalArgumentException ex) {
                     valueOutOfLimits(ex);
                 }
             }
@@ -745,6 +765,33 @@ public class MainWindow extends JFrame implements
                     JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
                 }
             }
+        } else if ((source == lightOnRadio) || (source == lightOffRadio)) {
+            try {
+                board.run(Board.Commands.FLAT_SET_LIGHT, this, lightOnRadio.isSelected() ? 1 : 0);
+            } catch (IOException | SerialPortException ex) {
+                connectionErr(ex);
+            } catch (IllegalArgumentException ex) {
+                valueOutOfLimits(ex);
+            }
+
+        } else if ((source == openCoverRadio) || (source == closeCoverRadio)) {
+            try {
+                board.run(Board.Commands.FLAT_SET_COVER, this, openCoverRadio.isSelected() ? 1 : 0);
+            } catch (IOException | SerialPortException ex) {
+                connectionErr(ex);
+            } catch (IllegalArgumentException ex) {
+                valueOutOfLimits(ex);
+            }
+
+        } else if (source == saveServoConfig) {
+            try {
+                board.run(Board.Commands.FLAT_SET_CONFIG, this, (int) openAngleSpinner.getValue(),
+                        (int) closedAngleSpinner.getValue(), coverSpeedSlider.getValue());
+            } catch (IOException | SerialPortException ex) {
+                connectionErr(ex);
+            } catch (IllegalArgumentException ex) {
+                valueOutOfLimits(ex);
+            }
         }
     }
 
@@ -787,34 +834,49 @@ public class MainWindow extends JFrame implements
         }
         refreshButton.setEnabled(!connected);
         serialPortComboBox.setEnabled(!connected);
-        posSlider.setEnabled(connected);
-        stopButton.setEnabled(connected);
-        fokOutButton.setEnabled(connected);
-        fokInButton.setEnabled(connected);
-        setRequestedPosButton.setEnabled(connected);
-        setZeroButton.setEnabled(connected);
-        relativeMovField.setEnabled(connected);
-        requestedPosField.setEnabled(connected);
-        ticksPosSlider.setEnabled(connected);
-        miniWindowButton.setEnabled(connected);
-        fokTicksCountSpinner.setEnabled(connected);
-        fokUnitsCombo.setEnabled(connected);
-        fokMaxTravelSpinner.setEnabled(connected);
-        fokBacklashSpinner.setEnabled(connected);
-        fokBacklashCalButton.setEnabled(connected);
-        fokSpeedSlider.setEnabled(connected);
-        fokReverseDirBox.setEnabled(connected);
-        fokPowerSaverBox.setEnabled(connected);
-        presetsTable.setEnabled(connected);
-        addPresetButton.setEnabled(connected);
-        deletePresetButton.setEnabled(connected);
-        goToPresetButton.setEnabled(connected);
         importButton.setEnabled(connected);
         exportButton.setEnabled(connected);
-        boolean pbEn = connected && board.isPowerBox();
-        powerBoxOnButton.setEnabled(pbEn);
-        powerBoxOffButton.setEnabled(pbEn);
-        powerBoxAutoModeBox.setEnabled(pbEn);
+
+        boolean focuserEn = connected && board.hasFocuser();
+        posSlider.setEnabled(focuserEn);
+        stopButton.setEnabled(focuserEn);
+        fokOutButton.setEnabled(focuserEn);
+        fokInButton.setEnabled(focuserEn);
+        setRequestedPosButton.setEnabled(focuserEn);
+        setZeroButton.setEnabled(focuserEn);
+        relativeMovField.setEnabled(focuserEn);
+        requestedPosField.setEnabled(focuserEn);
+        ticksPosSlider.setEnabled(focuserEn);
+        miniWindowButton.setEnabled(focuserEn);
+        fokTicksCountSpinner.setEnabled(focuserEn);
+        fokUnitsCombo.setEnabled(focuserEn);
+        fokMaxTravelSpinner.setEnabled(focuserEn);
+        fokBacklashSpinner.setEnabled(focuserEn);
+        fokBacklashCalButton.setEnabled(focuserEn);
+        fokSpeedSlider.setEnabled(focuserEn);
+        fokReverseDirBox.setEnabled(focuserEn);
+        fokPowerSaverBox.setEnabled(focuserEn);
+        presetsTable.setEnabled(focuserEn);
+        addPresetButton.setEnabled(focuserEn);
+        deletePresetButton.setEnabled(focuserEn);
+        goToPresetButton.setEnabled(focuserEn);
+
+        boolean powerBoxEn = connected && board.hasPowerBox();
+        powerBoxOnButton.setEnabled(powerBoxEn);
+        powerBoxOffButton.setEnabled(powerBoxEn);
+        powerBoxAutoModeBox.setEnabled(powerBoxEn);
+
+        boolean flat = connected && board.hasFlatPanel();
+        lightOnRadio.setEnabled(flat);
+        lightOffRadio.setEnabled(flat);
+        brightnessSlider.setEnabled(flat);
+        boolean hasServo = flat && board.flat().hasServo();
+        closeCoverRadio.setEnabled(hasServo);
+        openCoverRadio.setEnabled(hasServo);
+        coverSpeedSlider.setEnabled(hasServo);
+        openAngleSpinner.setEnabled(hasServo);
+        closedAngleSpinner.setEnabled(hasServo);
+        saveServoConfig.setEnabled(hasServo);
     }
 
     private void startOrStopINDI(boolean forceRestart) {
@@ -855,7 +917,10 @@ public class MainWindow extends JFrame implements
     public void stateChanged(ChangeEvent event) {
         Object source = event.getSource();
         if (source == tabPane) {
-            if (tabPane.getSelectedComponent() == powerBoxTab) powerBoxTable.fixWidths();
+            if (tabPane.getSelectedComponent() == powerBoxTab) {
+                powerBoxTable.scaleColumns();
+                powerBoxTable.scaleRows();
+            }
             return;
         }
         try {
@@ -864,6 +929,8 @@ public class MainWindow extends JFrame implements
             } else if (source == ticksPosSlider) {
                 board.run(Board.Commands.FOCUSER_ABS_MOVE,
                         this, Focuser.ticksToSteps(ticksPosSlider.getValue()));
+            } else if (source == brightnessSlider) {
+                board.run(Board.Commands.FLAT_SET_BRIGHTNESS, this, brightnessSlider.getValue());
             }
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
@@ -914,13 +981,13 @@ public class MainWindow extends JFrame implements
 
     private void updatePosSlider() {
         posSlider.removeChangeListener(MainWindow.this);
-        posSlider.setValue(board.getCurrentPos());
+        posSlider.setValue(board.focuser().getPos());
         posSlider.addChangeListener(MainWindow.this);
     }
 
     private void updateTicksPosSlider() {
         ticksPosSlider.removeChangeListener(MainWindow.this);
-        ticksPosSlider.setValue(board.getCurrentPosTicks());
+        ticksPosSlider.setValue(board.focuser().getPosTicks());
         ticksPosSlider.addChangeListener(MainWindow.this);
     }
 
@@ -932,9 +999,9 @@ public class MainWindow extends JFrame implements
     public void updateParam(Board.Parameters p) {
         SwingUtilities.invokeLater(() -> {
             switch (p) {
-                case REQUESTED_POS -> requestedPosField.setText(String.valueOf(board.getRequestedPos()));
+                case REQUESTED_POS -> requestedPosField.setText(String.valueOf(board.focuser().getTargetPos()));
                 case CURRENT_POS -> {
-                    currentPosField.setText(String.valueOf(board.getCurrentPos()));
+                    currentPosField.setText(String.valueOf(board.focuser().getPos()));
                     if (!posSlider.hasFocus()) {
                         updatePosSlider();
                     }
@@ -946,46 +1013,64 @@ public class MainWindow extends JFrame implements
                 }
                 case SPEED -> {
                     if (!fokSpeedSlider.hasFocus()) {
-                        fokSpeedSlider.setValue(board.getSpeed());
+                        fokSpeedSlider.setValue(board.focuser().getSpeed());
                     }
                 }
-                case BACKLASH -> fokBacklashSpinner.setValue(board.getBacklash());
-                case REVERSE_DIR -> fokReverseDirBox.setSelected(board.isReverseDir());
-                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(board.isPowerSaverOn());
+                case BACKLASH -> fokBacklashSpinner.setValue(board.focuser().getBacklash());
+                case REVERSE_DIR -> fokReverseDirBox.setSelected(board.focuser().isDirInverted());
+                case ENABLE_POWER_SAVE -> fokPowerSaverBox.setSelected(board.focuser().isPowerSaverEnabled());
                 case POWERBOX_PINS -> powerBoxTable.refresh();
                 case POWERBOX_AUTO_MODE -> {
                     powerBoxAutoModeBox.removeItemListener(this);
-                    powerBoxAutoModeBox.setSelectedItem(board.getPowerBox().getAutoMode());
+                    powerBoxAutoModeBox.setSelectedItem(board.powerBox().getAutoMode());
                     powerBoxAutoModeBox.addItemListener(this);
                 }
                 case POWERBOX_AMBIENT_DATA -> {
-                    PowerBox powerBox = board.getPowerBox();
+                    PowerBox powerBox = board.powerBox();
                     double temperature = powerBox.getTemperature();
                     Second instant = new Second(new Date());
                     if (temperature == PowerBox.ABSOLUTE_ZERO) {
                         tempDataset.setValue(-20D);
                     } else {
                         tempDataset.setValue(temperature);
-                        tempSeries.add(instant, temperature);
+                        tempSeries.addOrUpdate(instant, temperature);
                     }
                     double humidity = powerBox.getHumidity();
                     if (humidity == PowerBox.INVALID_HUMIDITY) {
                         humidityDataset.setValue(0D);
                     } else {
                         humidityDataset.setValue(humidity);
-                        humiditySeries.add(instant, humidity);
+                        humiditySeries.addOrUpdate(instant, humidity);
                     }
                     double dewPoint = powerBox.getDewPoint();
                     if (dewPoint == PowerBox.ABSOLUTE_ZERO) {
                         dewPointDataset.setValue(-20D);
                     } else {
                         dewPointDataset.setValue(dewPoint);
-                        dewPointSeries.add(instant, dewPoint);
+                        dewPointSeries.addOrUpdate(instant, dewPoint);
                     }
                 }
-                case POWERBOX_SUN_ELEV -> sunElevationField.setText(board.getPowerBox().getSunElev() + "°");
+                case POWERBOX_SUN_ELEV -> sunElevationField.setText(board.powerBox().getSunElev() + "°");
+                case FLAT_COVER_STATUS -> {
+                    FlatPanel flat = board.flat();
+                    updateFlatPanelComponents(flat);
+                }
             }
         });
+    }
+
+    private void updateFlatPanelComponents(FlatPanel flat) {
+        FlatPanel.CoverStatus coverStatus = flat.getCoverStatus();
+        openCoverRadio.removeActionListener(this);
+        closeCoverRadio.removeActionListener(this);
+        openCoverRadio.setSelected(coverStatus == FlatPanel.CoverStatus.OPEN);
+        closeCoverRadio.setSelected(coverStatus == FlatPanel.CoverStatus.CLOSED);
+        openCoverRadio.addActionListener(this);
+        closeCoverRadio.addActionListener(this);
+        boolean enabledRadios = (coverStatus != FlatPanel.CoverStatus.NEITHER_OPEN_NOR_CLOSED);
+        openCoverRadio.setEnabled(enabledRadios);
+        closeCoverRadio.setEnabled(enabledRadios);
+        coverStatusLabel.setText(coverStatus.getLabel());
     }
 
     @Override
@@ -1002,9 +1087,29 @@ public class MainWindow extends JFrame implements
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
-                    if (board.isPowerBox()) {
-                        tabPane.insertTab(i18n("powerbox.tab"), POWERBOX_TAB, powerBoxTab, "", 2);
-                        PowerBox powerBox = board.getPowerBox();
+                    Focuser focuser = board.focuser();
+                    if (focuser != null) {
+                        fokSpeedSlider.setValue(focuser.getSpeed());
+                        fokReverseDirBox.setSelected(focuser.isDirInverted());
+                        fokPowerSaverBox.setSelected(focuser.isPowerSaverEnabled());
+                        int currentPos = focuser.getPos();
+                        posSlider.removeChangeListener(MainWindow.this);
+                        posSlider.setValue(currentPos);
+                        posSlider.addChangeListener(MainWindow.this);
+                        ticksPosSlider.removeChangeListener(MainWindow.this);
+                        ticksPosSlider.setValue(Focuser.stepsToTicks(currentPos));
+                        ticksPosSlider.addChangeListener(MainWindow.this);
+                        String currentPosStr = String.valueOf(currentPos);
+                        currentPosField.setText(currentPosStr);
+                        requestedPosField.setText(currentPosStr);
+                        requestedPosField.setText(currentPosStr);
+                        fokBacklashSpinner.setValue(focuser.getBacklash());
+                    }
+                    PowerBox powerBox = board.powerBox();
+                    int tabInsertIndex = 2;
+                    if (powerBox != null) {
+                        tabPane.insertTab(i18n("powerbox.tab"), POWERBOX_TAB, powerBoxTab, "", tabInsertIndex);
+                        tabInsertIndex++;
                         powerBoxTable.setPowerBox(powerBox);
                         boolean supportsAutoModes = powerBox.supportsAutoModes();
                         powerBoxAutoModeLabel.setVisible(supportsAutoModes);
@@ -1012,11 +1117,12 @@ public class MainWindow extends JFrame implements
                         if (supportsAutoModes) {
                             powerBoxAutoModeBox.removeItemListener(this);
                             powerBoxAutoModeBox.setModel(new DefaultComboBoxModel<>(powerBox.supportedAutoModesArray()));
-                            powerBoxAutoModeBox.setSelectedItem(board.getPowerBox().getAutoMode());
+                            powerBoxAutoModeBox.setSelectedItem(board.powerBox().getAutoMode());
                             powerBoxAutoModeBox.addItemListener(this);
                         }
                         if (powerBox.supportsAmbient()) {
-                            tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", 3);
+                            tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", tabInsertIndex);
+                            tabInsertIndex++;
                         }
                         boolean supportsTime = powerBox.supportsTime();
                         sunElevationLabel.setVisible(supportsTime);
@@ -1028,21 +1134,32 @@ public class MainWindow extends JFrame implements
                             powerBoxLongSpinner.setValue(powerBox.getLongitude());
                         }
                     }
-                    fokSpeedSlider.setValue(board.getSpeed());
-                    fokReverseDirBox.setSelected(board.isReverseDir());
-                    fokPowerSaverBox.setSelected(board.isPowerSaverOn());
-                    int currentPos = board.getCurrentPos();
-                    posSlider.removeChangeListener(MainWindow.this);
-                    posSlider.setValue(currentPos);
-                    posSlider.addChangeListener(MainWindow.this);
-                    ticksPosSlider.removeChangeListener(MainWindow.this);
-                    ticksPosSlider.setValue(Focuser.stepsToTicks(currentPos));
-                    ticksPosSlider.addChangeListener(MainWindow.this);
-                    String currentPosStr = String.valueOf(currentPos);
-                    currentPosField.setText(currentPosStr);
-                    requestedPosField.setText(currentPosStr);
-                    requestedPosField.setText(currentPosStr);
-                    fokBacklashSpinner.setValue(board.getBacklash());
+                    FlatPanel flat = board.flat();
+                    if (flat != null) {
+                        tabPane.insertTab(i18n("flat.panel"), FLAT_PANEL_TAB, flatPanelTab, "", tabInsertIndex);
+                        boolean lightStatus = flat.getLightStatus();
+                        lightOnRadio.removeActionListener(this);
+                        lightOffRadio.removeActionListener(this);
+                        lightOnRadio.setSelected(lightStatus);
+                        lightOffRadio.setSelected(!lightStatus);
+                        lightOnRadio.addActionListener(this);
+                        lightOffRadio.addActionListener(this);
+                        brightnessSlider.removeChangeListener(this);
+                        brightnessSlider.setValue(flat.getBrightness());
+                        brightnessSlider.addChangeListener(this);
+                        if (flat.hasServo()) {
+                            updateFlatPanelComponents(flat);
+                            openAngleSpinner.removeChangeListener(this);
+                            closedAngleSpinner.removeChangeListener(this);
+                            coverSpeedSlider.removeChangeListener(this);
+                            openAngleSpinner.setValue(flat.getOpenServoVal());
+                            closedAngleSpinner.setValue(flat.getClosedServoVal());
+                            coverSpeedSlider.setValue(flat.getServoSpeed());
+                            openAngleSpinner.addChangeListener(this);
+                            closedAngleSpinner.addChangeListener(this);
+                            coverSpeedSlider.addChangeListener(this);
+                        }
+                    }
                     enableComponents(true);
                     startOrStopASCOM(false);
                     tabPane.setSelectedIndex(0);
@@ -1063,6 +1180,7 @@ public class MainWindow extends JFrame implements
                     removeTab(powerBoxTab);
                     enableComponents(false);
                     powerBoxTable.setPowerBox(null);
+                    tabPane.setSelectedIndex(0);
                 }
                 case ERROR: {
                     ok.setVisible(false);
@@ -1115,7 +1233,7 @@ public class MainWindow extends JFrame implements
                 board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, this, autoMode.ordinal());
         } catch (IOException | SerialPortException ex) {
             connectionErr(ex);
-        } catch (IllegalArgumentException | NumberFormatException ex) {
+        } catch (IllegalArgumentException ex) {
             valueOutOfLimits(ex);
         }
     }

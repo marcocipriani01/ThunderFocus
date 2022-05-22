@@ -243,7 +243,9 @@
               <grid id="a5693" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="16" left="16" bottom="16" right="16"/>
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="focuser.tab" icon="io/github/marcocipriani01/thunderfocus/res/focus_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="focuser.tab" icon="io/github/marcocipriani01/thunderfocus/res/focus_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="focuser.tab"/>
+                  </tabbedpane>
                 </constraints>
                 <properties>
                   <minimumSize width="-1" height="-1"/>
@@ -518,7 +520,9 @@
               <grid id="cb897" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="8" left="12" bottom="12" right="16"/>
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="preset" icon="io/github/marcocipriani01/thunderfocus/res/preset_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="preset" icon="io/github/marcocipriani01/thunderfocus/res/preset_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="preset"/>
+                  </tabbedpane>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -586,7 +590,9 @@
               <grid id="f43e7" binding="powerBoxTab" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="16" left="16" bottom="16" right="16"/>
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="powerbox.tab" icon="io/github/marcocipriani01/thunderfocus/res/power_box_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="powerbox.tab" icon="io/github/marcocipriani01/thunderfocus/res/power_box_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="powerbox.tab"/>
+                  </tabbedpane>
                 </constraints>
                 <properties/>
                 <border type="none">
@@ -689,7 +695,9 @@
               <grid id="38e76" binding="ambientTab" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="8" left="16" bottom="4" right="16"/>
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="sensors.tab" icon="io/github/marcocipriani01/thunderfocus/res/ambient_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="sensors.tab" icon="io/github/marcocipriani01/thunderfocus/res/ambient_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="sensors.tab"/>
+                  </tabbedpane>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -729,9 +737,201 @@
                   </component>
                 </children>
               </grid>
+              <grid id="856c3" binding="flatPanelTab" layout-manager="GridLayoutManager" row-count="13" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="16" left="16" bottom="16" right="16"/>
+                <constraints>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="flat.panel" icon="io/github/marcocipriani01/thunderfocus/res/flat_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="flat.panel"/>
+                  </tabbedpane>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="4aa65" class="javax.swing.JRadioButton" binding="closeCoverRadio">
+                    <constraints>
+                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.action.close"/>
+                    </properties>
+                  </component>
+                  <vspacer id="30c97">
+                    <constraints>
+                      <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </vspacer>
+                  <component id="f6b53" class="javax.swing.JRadioButton" binding="openCoverRadio">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.action.open"/>
+                    </properties>
+                  </component>
+                  <component id="b659a" class="javax.swing.JSlider" binding="brightnessSlider">
+                    <constraints>
+                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <majorTickSpacing value="20"/>
+                      <maximum value="255"/>
+                      <minorTickSpacing value="5"/>
+                      <paintLabels value="true"/>
+                      <paintTicks value="true"/>
+                      <toolTipText value=""/>
+                      <value value="0"/>
+                    </properties>
+                  </component>
+                  <component id="fbf78" class="javax.swing.JSlider" binding="coverSpeedSlider">
+                    <constraints>
+                      <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <majorTickSpacing value="5"/>
+                      <maximum value="10"/>
+                      <minorTickSpacing value="1"/>
+                      <paintLabels value="true"/>
+                      <paintTicks value="true"/>
+                      <snapToTicks value="true"/>
+                      <toolTipText value=""/>
+                      <value value="0"/>
+                    </properties>
+                  </component>
+                  <component id="635a6" class="javax.swing.JSeparator">
+                    <constraints>
+                      <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="81f5e" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <font style="1"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="brightness"/>
+                    </properties>
+                  </component>
+                  <component id="80fe6" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <font style="1"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.status"/>
+                    </properties>
+                  </component>
+                  <component id="39b1" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="speed"/>
+                    </properties>
+                  </component>
+                  <component id="a8676" class="javax.swing.JSpinner" binding="openAngleSpinner" custom-create="true">
+                    <constraints>
+                      <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="units.correspondence.steps"/>
+                    </properties>
+                  </component>
+                  <component id="6f1e1" class="javax.swing.JSpinner" binding="closedAngleSpinner" custom-create="true">
+                    <constraints>
+                      <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="units.correspondence.steps"/>
+                    </properties>
+                  </component>
+                  <component id="89bb5" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="open.angle"/>
+                    </properties>
+                  </component>
+                  <component id="afb73" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="closed.angle"/>
+                    </properties>
+                  </component>
+                  <component id="dff65" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <font style="1"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="config.tab"/>
+                    </properties>
+                  </component>
+                  <component id="ad339" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <font style="1"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.status"/>
+                    </properties>
+                  </component>
+                  <component id="d61ab" class="javax.swing.JRadioButton" binding="lightOnRadio">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.on"/>
+                    </properties>
+                  </component>
+                  <component id="b7cc1" class="javax.swing.JRadioButton" binding="lightOffRadio">
+                    <constraints>
+                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.off"/>
+                    </properties>
+                  </component>
+                  <component id="ce205" class="javax.swing.JLabel" binding="coverStatusLabel">
+                    <constraints>
+                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="-"/>
+                    </properties>
+                  </component>
+                  <component id="3537b" class="javax.swing.JButton" binding="saveServoConfig">
+                    <constraints>
+                      <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="-1" height="42"/>
+                        <maximum-size width="-1" height="42"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <icon value="io/github/marcocipriani01/thunderfocus/res/save.png"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save.tooltip"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
               <scrollpane id="2731a" binding="configScrollPane">
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="config.tab" icon="io/github/marcocipriani01/thunderfocus/res/config_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="config.tab" icon="io/github/marcocipriani01/thunderfocus/res/config_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="config.tab"/>
+                  </tabbedpane>
                 </constraints>
                 <properties>
                   <horizontalScrollBarPolicy value="31"/>
@@ -1170,7 +1370,9 @@
               </scrollpane>
               <scrollpane id="f7975">
                 <constraints>
-                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="info" icon="io/github/marcocipriani01/thunderfocus/res/info_tab.png"/>
+                  <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="info" icon="io/github/marcocipriani01/thunderfocus/res/info_tab.png">
+                    <tooltip resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="info"/>
+                  </tabbedpane>
                 </constraints>
                 <properties>
                   <verticalScrollBarPolicy value="22"/>
@@ -1259,6 +1461,14 @@
       <member id="2f782"/>
       <member id="20501"/>
       <member id="606bf"/>
+    </group>
+    <group name="coverStatusGroup">
+      <member id="4aa65"/>
+      <member id="f6b53"/>
+    </group>
+    <group name="lightRadios">
+      <member id="d61ab"/>
+      <member id="b7cc1"/>
     </group>
   </buttonGroups>
 </form>

@@ -18,9 +18,6 @@
 
 namespace Settings {
 struct Struct {
-#if defined(EEPROM_PADDING) && (EEPROM_PADDING > 0)
-    uint8_t padding[EEPROM_PADDING];
-#endif
     uint8_t marker;
 #if FOCUSER_DRIVER != DISABLED
     long focuserPosition;
@@ -44,6 +41,10 @@ struct Struct {
     uint16_t openServoVal;
     uint16_t closedServoVal;
     FlatPanel::CoverStatus coverStatus;
+#endif
+
+#ifdef EEPROM_END_CROP
+    uint8_t endCrop[EEPROM_END_CROP];
 #endif
 };
 

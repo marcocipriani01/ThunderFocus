@@ -19,12 +19,12 @@ void setup() {
     Serial.begin(SERIAL_SPEED);
     Serial.setTimeout(SERIAL_TIMEOUT);
 #if DEBUG_EN
-    Serial.println(F("LBoot"));
+    Serial.println(F(">Boot"));
 #endif
 #if SETTINGS_SUPPORT == true
     Settings::load();
 #if DEBUG_EN
-    Serial.println(F("LSettingsLoad"));
+    Serial.println(F(">SettingsLoad"));
 #endif
 #endif
 #if FOCUSER_DRIVER != DISABLED
@@ -51,7 +51,7 @@ void setup() {
     FlatPanel::begin();
 #endif
 #if DEBUG_EN
-    Serial.println(F("LSetupDone"));
+    Serial.println(F(">SetupDone"));
 #endif
 }
 
@@ -74,7 +74,7 @@ void run() {
         Serial.println((char)currentState);
         lastFocuserState = currentState;
     }
-    if ((t - focuserSyncTime) >= THUNDERFOCUS_SEND_DELAY) {
+    if ((t - focuserSyncTime) >= FOCUSER_SYNC_INTERVAL) {
         Serial.print(F("S"));
         Serial.println(Focuser::stepper.getPosition());
         focuserSyncTime = t;
@@ -104,7 +104,7 @@ void run() {
 #endif
 
 #if FLAT_PANEL != false
-    if ((t - flatPanelSyncTime) >= THUNDERFOCUS_SEND_DELAY) {
+    if ((t - flatPanelSyncTime) >= FLAT_SYNC_INTERVAL) {
         Serial.print(F("E"));
         Serial.println(FlatPanel::coverStatus);
         flatPanelSyncTime = t;
@@ -200,7 +200,7 @@ void serialEvent() {
 #endif
                 Serial.println();
 #if (RTC_SUPPORT != DISABLED) && DEBUG_EN
-                Serial.print(F("LStoredTime="));
+                Serial.print(F(">StoredTime="));
                 Serial.print(hour());
                 Serial.print(F(":"));
                 Serial.print(minute());
@@ -222,7 +222,7 @@ void serialEvent() {
             case 'R': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LMove="));
+                Serial.print(F(">Move="));
 #endif
                 Serial.println(n);
                 Focuser::stepper.move(n);
@@ -232,7 +232,7 @@ void serialEvent() {
             case 'A': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LGoTo="));
+                Serial.print(F(">GoTo="));
                 Serial.println(n);
 #endif
                 Focuser::stepper.moveTo(n);
@@ -241,7 +241,7 @@ void serialEvent() {
 
             case 'S': {
 #if DEBUG_EN
-                Serial.println(F("LStop"));
+                Serial.println(F(">Stop"));
 #endif
                 Focuser::stepper.stop();
                 break;
@@ -250,7 +250,7 @@ void serialEvent() {
             case 'P': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetPos="));
+                Serial.print(F(">SetPos="));
                 Serial.println(n);
 #endif
                 Focuser::stepper.setPosition(n);
@@ -260,7 +260,7 @@ void serialEvent() {
 
             case 'W': {
 #if DEBUG_EN
-                Serial.println(F("LSetZero"));
+                Serial.println(F(">SetZero"));
 #endif
                 Focuser::stepper.setPosition(0);
                 Settings::requestSave = true;
@@ -270,7 +270,7 @@ void serialEvent() {
             case 'H': {
                 boolean b = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LHoldControl="));
+                Serial.print(F(">HoldControl="));
                 Serial.println(b);
 #endif
                 Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
@@ -281,7 +281,7 @@ void serialEvent() {
             case 'V': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSpeed="));
+                Serial.print(F(">Speed="));
                 Serial.println(n);
 #endif
                 Focuser::stepper.setMaxSpeed(percentageToSpeed(n));
@@ -292,7 +292,7 @@ void serialEvent() {
             case 'B': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LBacklash="));
+                Serial.print(F(">Backlash="));
                 Serial.println(n);
 #endif
                 Focuser::stepper.setBacklash(n);
@@ -303,7 +303,7 @@ void serialEvent() {
             case 'D': {
                 boolean b = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LDirReverse="));
+                Serial.print(F(">DirReverse="));
                 Serial.println(b);
 #endif
                 Focuser::stepper.setDirectionInverted(b);
@@ -318,7 +318,7 @@ void serialEvent() {
                 byte value = Serial.parseInt();
                 boolean enablePwm = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetPin="));
+                Serial.print(F(">SetPin="));
                 Serial.print(pin);
                 Serial.print(F("@"));
                 Serial.println(value);
@@ -332,7 +332,7 @@ void serialEvent() {
             case 'K': {
                 DevManager::AutoMode mode = (DevManager::AutoMode)Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetAutoMode="));
+                Serial.print(F(">SetAutoMode="));
                 Serial.println((int)mode);
 #endif
                 if (DevManager::setAutoMode(mode)) updatePins();
@@ -344,7 +344,7 @@ void serialEvent() {
                 byte pin = Serial.parseInt();
                 boolean autoModeEnabled = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetPinAuto="));
+                Serial.print(F(">SetPinAuto="));
                 Serial.print(pin);
                 Serial.print(F("@"));
                 Serial.println(autoModeEnabled);
@@ -363,7 +363,7 @@ void serialEvent() {
                 if (time != 0) {
                     SunUtil::setRTCTime(time);
 #if DEBUG_EN
-                    Serial.print(F("LSetTime="));
+                    Serial.print(F(">SetTime="));
                     Serial.println(time);
 #endif
                 }
@@ -371,7 +371,7 @@ void serialEvent() {
                     Settings::settings.latitude = ((double)lat) / 1000.0;
                     Settings::settings.longitude = ((double)lng) / 1000.0;
 #if DEBUG_EN
-                    Serial.print(F("LSetWorldCoord="));
+                    Serial.print(F(">SetWorldCoord="));
                     Serial.print(lat);
                     Serial.print(F(","));
                     Serial.println(lng);
@@ -388,7 +388,7 @@ void serialEvent() {
             case 'Z': {
                 byte value = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetBrightness="));
+                Serial.print(F(">SetBrightness="));
                 Serial.println(value);
 #endif
                 FlatPanel::setBrightness(value);
@@ -398,7 +398,7 @@ void serialEvent() {
             case 'L': {
                 boolean value = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetLight="));
+                Serial.print(F(">SetLight="));
                 Serial.println(value);
 #endif
                 FlatPanel::setLight(value);
@@ -409,7 +409,7 @@ void serialEvent() {
             case 'Q': {
                 byte value = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F("LSetCover="));
+                Serial.print(F(">SetCover="));
                 Serial.println(value);
 #endif
                 if (value == 0)

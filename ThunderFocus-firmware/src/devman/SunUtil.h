@@ -21,12 +21,11 @@
 namespace SunUtil {
 extern double sunElevation;
 extern unsigned long lastUpdateTime;
-extern boolean timeReliable;
 
 void begin();
 double getSunElevation();
 void setRTCTime(unsigned long currentTime);
-time_t getRTCTime();
+time_t requestSync();
 }  // namespace SunUtil
 
 #endif

@@ -24,7 +24,7 @@
 #define TEMP_HUM_SENSOR HTU21D
 
 // ---------- Time ----------
-#define RTC_SUPPORT SERIAL_TIME
+#define RTC_SUPPORT DISABLED//SERIAL_TIME
 
 // ---------- Polar finder illuminator ----------
 #define ENABLE_PFI false

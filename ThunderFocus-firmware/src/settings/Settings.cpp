@@ -7,7 +7,7 @@ boolean requestSave = false;
 unsigned long lastSaveTime = 0L;
 
 void reset() {
-    Serial.println(F("LSettings reset!"));
+    Serial.println(F(">Settings reset!"));
     settings.marker = EEPROM_MARKER;
 #if FOCUSER_DRIVER != DISABLED
     settings.focuserPosition = 0L;
@@ -39,35 +39,33 @@ void reset() {
 
 void load() {
 #if DEBUG_EN
-    Serial.print(F("LEEPROM size = "));
+    Serial.print(F(">EEPROM size = "));
     Serial.println(EEPROM.length());
-    Serial.print(F("LStruct size = "));
-    Serial.println(sizeof(Struct));
+    Serial.print(F(">Struct size = "));
+    Serial.println((int) sizeof(Struct));
 #endif
     if (sizeof(Struct) >= EEPROM.length()) {
-        Serial.println(F("LEEPROM size is too small, aborting."));
+        Serial.println(F(">EEPROM size is too small, aborting."));
         while (true)
             ;
     }
 #if DEBUG_EN
-    Serial.println(F("LLoading settings..."));
+    Serial.println(F(">Loading settings..."));
 #endif
     uint8_t* bytes = (uint8_t*)&settings;
+#ifdef EEPROM_END_CROP
+    for (unsigned int i = 0; i < (sizeof(Struct) - EEPROM_END_CROP); i++) {
+#else
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
-        bytes[i] = EEPROM.read(i);
+#endif
+        bytes[i] = EEPROM.read(i + EEPROM_START);
 #if DEBUG_EN
-        Serial.print(F("LByte "));
+        Serial.print(F(">Byte "));
         Serial.print(i);
         Serial.print(F(" = "));
         Serial.println(bytes[i]);
 #endif
-#if defined(EEPROM_IO_DELAY) && (EEPROM_IO_DELAY > 0)
-        delay(EEPROM_IO_DELAY);
-#endif
     }
-#if DEBUG_EN
-    Serial.println(F("LRead complete"));
-#endif
     if (settings.marker != EEPROM_MARKER) reset();
 #if FOCUSER_DRIVER != DISABLED
     settings.focuserSpeed = constrain(settings.focuserSpeed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
@@ -84,8 +82,12 @@ void load() {
 
 void save() {
     uint8_t* bytes = (uint8_t*)&settings;
+#ifdef EEPROM_END_CROP
+    for (unsigned int i = 0; i < (sizeof(Struct) - EEPROM_END_CROP); i++) {
+#else
     for (unsigned int i = 0; i < sizeof(Struct); i++) {
-        EEPROM.update(i, bytes[i]);
+#endif
+        EEPROM.update(i + EEPROM_START, bytes[i]);
 #if defined(EEPROM_IO_DELAY) && (EEPROM_IO_DELAY > 0)
         delay(EEPROM_IO_DELAY);
 #endif

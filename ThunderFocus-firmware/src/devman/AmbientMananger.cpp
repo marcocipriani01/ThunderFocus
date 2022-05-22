@@ -20,14 +20,14 @@ void begin() {
 #if TEMP_HUM_SENSOR == BME280
     if (!bme.begin(BME280_ADDRESS_ALTERNATE)) {
         while (true) {
-            Serial.println(F("BME280 sensor not found."));
+            Serial.println(F(">BME280 sensor not found."));
             delay(1000);
         }
     }
 #elif TEMP_HUM_SENSOR == HTU21D
     if (!htu.begin()) {
         while (true) {
-            Serial.println(F("HTU21D sensor not found."));
+            Serial.println(F(">HTU21D sensor not found."));
             delay(1000);
         }
     }

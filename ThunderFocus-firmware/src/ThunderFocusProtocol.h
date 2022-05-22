@@ -5,6 +5,9 @@
 
 #include "config.h"
 #include "version.h"
+#if SETTINGS_SUPPORT == true
+#include "settings/Settings.h"
+#endif
 
 #if FOCUSER_DRIVER != DISABLED
 #include "focuser/Focuser.h"
@@ -30,7 +33,8 @@
 #define CMD_RECEIVE_WAIT 1
 #define SERIAL_TIMEOUT 100
 #define SERIAL_SPEED 115200
-#define THUNDERFOCUS_SEND_DELAY 150
+#define FOCUSER_SYNC_INTERVAL 150
+#define FLAT_SYNC_INTERVAL 200
 
 namespace ThunderFocus {
 #if FOCUSER_DRIVER != DISABLED

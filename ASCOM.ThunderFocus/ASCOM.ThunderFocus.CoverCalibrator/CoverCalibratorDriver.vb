@@ -380,8 +380,8 @@ Public Class CoverCalibrator
     Friend Sub ReadProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "CoverCalibrator"
-            traceState = Convert.ToBoolean(driverProfile.GetValue(driverID, traceStateProfileName, String.Empty, traceStateDefault))
-            comPort = driverProfile.GetValue(driverID, comPortProfileName, String.Empty, comPortDefault)
+            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, debugProfileName, String.Empty, debugDefault))
+            socketPort = Integer.Parse(driverProfile.GetValue(driverID, socketPortProfileName, String.Empty, socketPortDefault))
         End Using
     End Sub
 
@@ -391,8 +391,8 @@ Public Class CoverCalibrator
     Friend Sub WriteProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "CoverCalibrator"
-            driverProfile.WriteValue(driverID, traceStateProfileName, traceState.ToString())
-            driverProfile.WriteValue(driverID, comPortProfileName, comPort.ToString())
+            driverProfile.WriteValue(driverID, debugProfileName, debug.ToString())
+            driverProfile.WriteValue(driverID, socketPortProfileName, socketPort.ToString())
         End Using
 
     End Sub

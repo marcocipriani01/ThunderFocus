@@ -55,38 +55,48 @@ Public Class Focuser
         }
     Private ReadOnly ipAddress As IPAddress
 
-    Private Function ReadSocket() As String
-        If Connected = True Then
-            Try
-                Dim socketBuffer As Byte() = New Byte(1023) {}
-                Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
-                TL.LogMessage("ReadSocket", rcv)
-                Return rcv
-            Catch ex As Exception
-                TL.LogMessage("ReadSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring read attempt.")
+    Private Function SocketRead() As String
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            Dim socketBuffer As Byte() = New Byte(1023) {}
+            Dim bytesRec As Integer = socket.Receive(socketBuffer)
+            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+            TL.LogMessage("ReadSocket", rcv)
+            Return rcv
+        Catch ex As Exception
+            TL.LogIssue("ReadSocket", ex.Message)
+            Disconnect()
+        End Try
         Return String.Empty
     End Function
 
-    Private Sub SendSocket(msg As String)
-        If Connected = True Then
-            Try
-                TL.LogMessage("Connected Set", "Sending " + msg)
-                Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
-                socket.SendBufferSize = bytesToSend.Length
-                socket.Send(bytesToSend)
-            Catch ex As Exception
-                TL.LogMessage("SendSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring send attempt (" + msg + ")")
+    Private Sub SocketSend(msg As String)
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            TL.LogMessage("Connected Set", "Sending " + msg)
+            Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
+            socket.SendBufferSize = bytesToSend.Length
+            socket.Send(bytesToSend)
+        Catch ex As Exception
+            TL.LogIssue("SendSocket", ex.Message)
+            Disconnect()
+        End Try
+    End Sub
+
+    Private Sub Disconnect()
+        TL.LogMessage("Disconnect", "Disconnecting from port " + socketPort.ToString())
+        Try
+            socket.Shutdown(SocketShutdown.Both)
+            socket.Close()
+            connectedState = False
+        Catch ex As Exception
+            TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
+            Throw New DriverException("Disconnection error!")
+        End Try
     End Sub
 
     '
@@ -165,42 +175,36 @@ Public Class Focuser
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
-            If value = IsConnected Then
+            If value = connectedState Then
                 Return
             End If
-
             If value Then
                 TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    Dim remoteEP As IPEndPoint = New IPEndPoint(ipAddress, socketPort)
+                    Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
                     socket.Connect(remoteEP)
-                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("ThunderFocusPing" + Environment.NewLine)
+                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("hasFocuser" + Environment.NewLine)
                     socket.SendBufferSize = bytesToSend.Length
                     socket.Send(bytesToSend)
                     Thread.Sleep(200)
                     Dim socketBuffer As Byte() = New Byte(1023) {}
                     Dim bytesRec As Integer = socket.Receive(socketBuffer)
                     Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
-                    If rcv.Contains("ThunderFocusPingOK") Then
+                    If rcv.Contains("true") Then
                         connectedState = True
-                        TL.LogMessage("Connected Set", "Ping OK.")
+                        TL.LogMessage("Connected Set", "hasFocuser = true")
                     Else
                         connectedState = False
-                        TL.LogMessage("Connected Set", "Ping not OK!")
+                        TL.LogIssue("Connected Set", "hasFocuser = false")
+                        Throw New DriverException("This ThunderFocus board doesn't have a focuser!")
                     End If
                 Catch ex As Exception
-                    TL.LogMessage("Connected Set", "Connection exception! " + ex.Message)
+                    TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
                     connectedState = False
+                    Throw New DriverException("Could not connect to ThunderFocus!")
                 End Try
             Else
-                TL.LogMessage("Connected Set", "Disconnecting from port " + socketPort.ToString())
-                Try
-                    socket.Shutdown(SocketShutdown.Both)
-                    socket.Close()
-                    connectedState = False
-                Catch ex As Exception
-                    TL.LogMessage("Connected Set", "Disconnection exception! " + ex.Message)
-                End Try
+                Disconnect()
             End If
         End Set
     End Property
@@ -246,7 +250,11 @@ Public Class Focuser
 
     Public Sub Dispose() Implements IFocuserV3.Dispose
         TL.LogMessage("Dispose", "Disposing...")
-        Connected = False
+        Try
+            Disconnect()
+        Catch ex As Exception
+            TL.LogIssue("Dispose", "Exception disconnecting: " + ex.Message)
+        End Try
         TL.Enabled = False
         TL.Dispose()
         TL = Nothing
@@ -269,14 +277,14 @@ Public Class Focuser
 
     Public Sub Halt() Implements IFocuserV3.Halt
         CheckConnected("Attemped halt while disconnected!")
-        SendSocket("Halt")
+        SocketSend("Halt")
     End Sub
 
     Public ReadOnly Property IsMoving() As Boolean Implements IFocuserV3.IsMoving
         Get
             CheckConnected("Attemped get while disconnected!")
-            SendSocket("IsMoving")
-            Dim rcv As String = ReadSocket()
+            SocketSend("IsMoving")
+            Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
                 moving = rcv.Contains("true")
             End If
@@ -305,8 +313,8 @@ Public Class Focuser
     Public ReadOnly Property MaxStep() As Integer Implements IFocuserV3.MaxStep
         Get
             CheckConnected("Attemped get while disconnected!")
-            SendSocket("MaxStep")
-            Dim rcv As String = ReadSocket()
+            SocketSend("MaxStep")
+            Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
                 focuserSteps = Integer.Parse(rcv)
             End If
@@ -319,14 +327,14 @@ Public Class Focuser
         CheckConnected("Attemped Move while disconnected!")
         TL.LogMessage("Move", Position.ToString())
         focuserPosition = Position ' Set the focuser position
-        SendSocket("Move=" + Position.ToString())
+        SocketSend("Move=" + Position.ToString())
     End Sub
 
     Public ReadOnly Property Position() As Integer Implements IFocuserV3.Position
         Get
             CheckConnected("Attemped get while disconnected!")
-            SendSocket("Position")
-            Dim rcv As String = ReadSocket()
+            SocketSend("Position")
+            Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
                 focuserPosition = Integer.Parse(rcv)
             End If

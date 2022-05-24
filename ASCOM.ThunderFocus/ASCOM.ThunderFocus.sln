@@ -7,6 +7,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.CoverCal
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Focuser", "ASCOM.ThunderFocus.Focuser\ASCOM.ThunderFocus.Focuser.vbproj", "{87EA2D07-4E59-4307-BD8D-4EB415997C65}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Switch", "ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.vbproj", "{5614894A-9420-406F-93B4-BFB737A1635A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87EA2D07-4E59-4307-BD8D-4EB415997C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87EA2D07-4E59-4307-BD8D-4EB415997C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87EA2D07-4E59-4307-BD8D-4EB415997C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5614894A-9420-406F-93B4-BFB737A1635A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5614894A-9420-406F-93B4-BFB737A1635A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

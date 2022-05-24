@@ -37,7 +37,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
 
                 case "Connected" -> println(from, String.valueOf(Main.board.isConnected()));
 
-                case "HasFocuser" -> println(from, String.valueOf(Main.board.hasFocuser()));
+                case "hasFocuser" -> println(from, String.valueOf(Main.board.hasFocuser()));
 
                 case "hasFlat" -> println(from, String.valueOf(Main.board.hasFlatPanel()));
 

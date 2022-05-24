@@ -29,14 +29,19 @@ public class ASCOMFocuserBridge extends SimpleServer {
             }
             switch (cmd) {
                 case "ThunderFocusPing" -> {
-                    if (Main.board.isConnected()) {
+                    if (Main.board.isConnected())
                         println("ThunderFocusPingOK");
-                    } else {
+                    else
                         println("ThunderFocusNotConnected");
-                    }
                 }
 
                 case "Connected" -> println(from, String.valueOf(Main.board.isConnected()));
+
+                case "HasFocuser" -> println(from, String.valueOf(Main.board.hasFocuser()));
+
+                case "hasFlat" -> println(from, String.valueOf(Main.board.hasFlatPanel()));
+
+                case "hasPowerBox" -> println(from, String.valueOf(Main.board.hasPowerBox()));
 
                 case "Position" -> println(from, String.valueOf(Main.board.focuser().getPos()));
 
@@ -65,6 +70,34 @@ public class ASCOMFocuserBridge extends SimpleServer {
                 }
 
                 case "MaxStep" -> println(String.valueOf(Main.settings.getFocuserMaxTravel()));
+
+                case "CoverState" -> {
+
+                }
+
+                case "OpenCover" -> {
+
+                }
+
+                case "CloseCover" -> {
+
+                }
+
+                case "CalibratorState" -> {
+
+                }
+
+                case "Brightness" -> {
+
+                }
+
+                case "CalibratorOn" -> {
+
+                }
+
+                case "CalibratorOff" -> {
+
+                }
             }
         } catch (Exception e) {
             onError(e);

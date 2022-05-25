@@ -72,7 +72,7 @@ public abstract class SimpleServer {
                                     ex.printStackTrace();
                                 }
                                 clients.remove(socket);
-                                onClientRemoved(socket);
+                                onClientLost(socket);
                             }
                         }, "Reading thread").start();
                         onNewClient(socket);
@@ -151,7 +151,7 @@ public abstract class SimpleServer {
 
     protected abstract void onNewClient(Socket client);
 
-    protected abstract void onClientRemoved(Socket client);
+    protected abstract void onClientLost(Socket client);
 
     protected abstract void onError(Exception e);
 }

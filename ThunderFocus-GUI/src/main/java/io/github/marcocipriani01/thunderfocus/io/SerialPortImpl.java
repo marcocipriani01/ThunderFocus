@@ -25,7 +25,7 @@ public class SerialPortImpl implements SerialPortEventListener {
     /**
      * An instance of the {@link SerialPort} class.
      */
-    protected SerialPort serialPort = null;
+    protected volatile SerialPort serialPort = null;
     private String buf = "";
 
     /**

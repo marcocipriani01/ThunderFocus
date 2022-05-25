@@ -59,6 +59,9 @@
 #define ENABLE_DEVMAN false
 #endif
 #if ENABLE_DEVMAN == true
+#if MANAGED_PINS_COUNT <= 0
+#error "MANAGED_PINS_COUNT must be greater than 0"
+#endif
 #if defined(STATUS_LED) && (!defined(STATUS_LED_MANAGED))
 #error "STATUS_LED_MANAGED must be defined if STATUS_LED is defined"
 #endif

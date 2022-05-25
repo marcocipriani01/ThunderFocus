@@ -1,13 +1,13 @@
 package io.github.marcocipriani01.thunderfocus.ascom;
 
 import io.github.marcocipriani01.thunderfocus.Main;
-import io.github.marcocipriani01.thunderfocus.board.Focuser;
-import io.github.marcocipriani01.thunderfocus.board.Board;
+import io.github.marcocipriani01.thunderfocus.board.*;
 
 import java.net.InetAddress;
 import java.net.Socket;
 
-import static io.github.marcocipriani01.thunderfocus.Main.i18n;
+import static io.github.marcocipriani01.thunderfocus.Main.board;
+import static io.github.marcocipriani01.thunderfocus.Main.settings;
 
 public class ASCOMFocuserBridge extends SimpleServer {
 
@@ -18,85 +18,198 @@ public class ASCOMFocuserBridge extends SimpleServer {
     @Override
     protected void onMessage(Socket from, String msg) {
         try {
-            int param = Integer.MIN_VALUE;
             String cmd;
+            String[] params = {};
             if (msg.contains("=")) {
-                String[] split = msg.split("=");
-                cmd = split[0];
-                param = Integer.parseInt(split[1]);
+                cmd = msg.substring(0, msg.indexOf('='));
+                params = msg.substring(msg.indexOf('=') + 1).split(",");
             } else {
                 cmd = msg;
             }
+            if (cmd.equals("Connected")) {
+                println(from, String.valueOf(board.isConnected()));
+                return;
+            }
+            if (!board.isConnected()) {
+                println(from, "Disconnected");
+                return;
+            }
             switch (cmd) {
-                case "ThunderFocusPing" -> {
-                    if (Main.board.isConnected())
-                        println("ThunderFocusPingOK");
-                    else
-                        println("ThunderFocusNotConnected");
+                case "HasFocuser" -> println(from, String.valueOf(board.hasFocuser()));
+
+                case "HasFlat" -> println(from, String.valueOf(board.hasFlatPanel()));
+
+                case "HasPowerBox" -> println(from, String.valueOf(board.hasPowerBox()));
+
+                case "HasAmbientSensors" -> {
+                    PowerBox powerBox = board.powerBox();
+                    println(from, String.valueOf((powerBox != null) && powerBox.supportsAmbient()));
                 }
+            }
+            if (board.hasFocuser()) {
+                final Focuser focuser = board.focuser();
+                switch (cmd) {
+                    case "Position" -> println(from, String.valueOf(focuser.getPos()));
 
-                case "Connected" -> println(from, String.valueOf(Main.board.isConnected()));
+                    case "IsMoving" -> println(from,
+                            String.valueOf(focuser.getState() == Focuser.FocuserState.MOVING));
 
-                case "hasFocuser" -> println(from, String.valueOf(Main.board.hasFocuser()));
+                    case "Halt" -> board.run(Board.Commands.FOCUSER_STOP, null);
 
-                case "hasFlat" -> println(from, String.valueOf(Main.board.hasFlatPanel()));
+                    case "Move" -> board.run(Board.Commands.FOCUSER_ABS_MOVE, null, Integer.parseInt(params[0]));
 
-                case "hasPowerBox" -> println(from, String.valueOf(Main.board.hasPowerBox()));
-
-                case "Position" -> println(from, String.valueOf(Main.board.focuser().getPos()));
-
-                case "IsMoving" -> println(from,
-                        String.valueOf(Main.board.focuser().getState() == Focuser.FocuserState.MOVING));
-
-                case "Halt" -> Main.board.run(Board.Commands.FOCUSER_STOP, null);
-
-                case "DriverInfo" -> {
-                    String gui = Main.getAppVersion();
-                    if (gui == null) gui = "<?>";
-                    println(Main.APP_NAME + " v" + gui + ", " + i18n("board") + " v" + Main.board.getVersion());
+                    case "MaxStep" -> println(String.valueOf(Main.settings.getFocuserMaxTravel()));
                 }
+            }
+            if (board.hasPowerBox()) {
+                PowerBox powerBox = board.powerBox();
+                switch (cmd) {
+                    case "MaxSwitch" -> {
+                        int max = 0;
+                        for (ArduinoPin pin : powerBox.asList()) {
+                            int n = pin.getNumber();
+                            if (n > max) max = n;
+                        }
+                        println(from, String.valueOf(max + 1));
+                    }
 
-                case "Version" -> {
-                    String gui = Main.getAppVersion();
-                    if (gui == null) gui = "0.0";
-                    println(gui);
+                    case "GetSwitchName", "GetSwitchDescription" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber))
+                            println(from, powerBox.get(pinNumber).getName());
+                        else
+                            println(from, "<Unavailable>");
+                    }
+
+                    case "SetSwitchName" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            pin.setName(params[1]);
+                            PowerBox.clonePins(powerBox, settings.powerBoxPins);
+                            Main.settings.save();
+                        }
+                    }
+
+                    case "CanWrite" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            println(from, String.valueOf((!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen())));
+                        } else {
+                            println(from, "false");
+                        }
+                    }
+
+                    case "GetSwitch" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            println(from, pin.isPWMEnabled() ? "PWM" : String.valueOf(pin.getValueBoolean()));
+                        } else {
+                            println(from, "NonExistent");
+                        }
+                    }
+
+                    case "SetSwitch" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
+                                println(from, "CannotWrite");
+                            } else {
+                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, params[1].equals("True") ? 255 : 0);
+                                println(from, "OK");
+                            }
+                        } else {
+                            println(from, "NonExistent");
+                        }
+                    }
+
+                    case "MaxSwitchValue" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            println(from, pin.isPWMEnabled() ? "255.0" : "1.0");
+                        } else {
+                            println(from, "NonExistent");
+                        }
+                    }
+
+                    case "GetSwitchValue" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            println(from, pin.isPWMEnabled() ? String.valueOf(pin.getValuePWM()) : "Boolean");
+                        } else {
+                            println(from, "NonExistent");
+                        }
+                    }
+
+                    case "SetSwitchValue" -> {
+                        int pinNumber = Integer.parseInt(params[0]);
+                        if (powerBox.contains(pinNumber)) {
+                            ArduinoPin pin = powerBox.get(pinNumber);
+                            if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
+                                println(from, "CannotWrite");
+                            } else if (pin.isPWMEnabled()) {
+                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, Integer.parseInt(params[1]));
+                                println(from, "OK");
+                            } else {
+                                println(from, "Boolean");
+                            }
+                        } else {
+                            println(from, "NonExistent");
+                        }
+                    }
                 }
+            }
+            if (board.hasFlatPanel()) {
+                final FlatPanel flat = board.flat();
+                switch (cmd) {
+                    case "HasServo" -> println(from, String.valueOf(flat.hasServo()));
 
-                case "Name" -> println(Main.APP_NAME);
+                    case "CoverState" -> {
+                        if (!flat.hasServo())
+                            println(from, "NotPresent");
+                        switch (flat.getCoverStatus()) {
+                            case CLOSED -> println(from, "Closed");
+                            case OPEN -> println(from, "Open");
+                            case NEITHER_OPEN_NOR_CLOSED -> println(from, "Moving");
+                        }
+                    }
 
-                case "Move" -> {
-                    if (param == Integer.MIN_VALUE) return;
-                    Main.board.run(Board.Commands.FOCUSER_ABS_MOVE, null, param);
-                }
+                    case "OpenCover" -> {
+                        if (flat.hasServo()) {
+                            board.run(Board.Commands.FLAT_SET_COVER, null, 1);
+                            println(from, "OK");
+                        } else {
+                            println(from, "Error");
+                        }
+                    }
 
-                case "MaxStep" -> println(String.valueOf(Main.settings.getFocuserMaxTravel()));
+                    case "CloseCover" -> {
+                        if (flat.hasServo()) {
+                            board.run(Board.Commands.FLAT_SET_COVER, null, 0);
+                            println(from, "OK");
+                        } else {
+                            println(from, "Error");
+                        }
+                    }
 
-                case "CoverState" -> {
+                    case "CalibratorState" -> println(from, String.valueOf(flat.getLightStatus()));
 
-                }
+                    case "Brightness" -> println(from, String.valueOf(flat.getBrightness()));
 
-                case "OpenCover" -> {
+                    case "CalibratorOn" -> {
+                        board.run(Board.Commands.FLAT_SET_LIGHT, null, 1);
+                        board.run(Board.Commands.FLAT_SET_BRIGHTNESS, null, Integer.parseInt(params[0]));
+                    }
 
-                }
-
-                case "CloseCover" -> {
-
-                }
-
-                case "CalibratorState" -> {
-
-                }
-
-                case "Brightness" -> {
-
-                }
-
-                case "CalibratorOn" -> {
-
-                }
-
-                case "CalibratorOff" -> {
-
+                    case "CalibratorOff" -> {
+                        board.run(Board.Commands.FLAT_SET_LIGHT, null, 0);
+                        board.run(Board.Commands.FLAT_SET_BRIGHTNESS, null, 0);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -106,7 +219,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
 
     @Override
     protected boolean acceptClient(InetAddress address) {
-        return true;
+        return address.isLoopbackAddress();
     }
 
     @Override
@@ -120,7 +233,7 @@ public class ASCOMFocuserBridge extends SimpleServer {
     }
 
     @Override
-    protected void onClientRemoved(Socket client) {
+    protected void onClientLost(Socket client) {
 
     }
 }

@@ -19,19 +19,21 @@ public class Board implements SerialMessageListener {
 
     private final ArrayList<Listener> listeners = new ArrayList<>();
     private final SerialPortImpl serialPort = new SerialPortImpl();
-    private String version = null;
-    private PowerBox powerBox = null;
-    private Focuser focuser = null;
-    private FlatPanel flat = null;
+    private volatile String version = null;
+    private volatile PowerBox powerBox = null;
+    private volatile Focuser focuser = null;
+    private volatile FlatPanel flat = null;
     private volatile int timerCount = 0;
-    private Listener exclusiveCaller = null;
+    private volatile Listener exclusiveCaller = null;
     private volatile boolean ready = false;
 
     public Board() {
         serialPort.addListener(this);
     }
 
-    public String getVersion() {
+    public String getBoardVersion() {
+        if (!serialPort.isConnected())
+            throw new IllegalStateException("Not connected");
         return version;
     }
 
@@ -78,6 +80,7 @@ public class Board implements SerialMessageListener {
         focuser = null;
         powerBox = null;
         flat = null;
+        version = null;
     }
 
     public Focuser focuser() {
@@ -173,7 +176,7 @@ public class Board implements SerialMessageListener {
                         while (m.find()) {
                             String[] rcvPin = m.group(1).split("%");
                             int number = Integer.parseInt(rcvPin[0]), value = Integer.parseInt(rcvPin[1]);
-                            this.powerBox.getPin(number).setValue(value);
+                            this.powerBox.get(number).setValue(value);
                         }
                         notifyListeners(null, Parameters.POWERBOX_AUTO_MODE);
                         notifyListeners(null, Parameters.POWERBOX_PINS);
@@ -236,7 +239,7 @@ public class Board implements SerialMessageListener {
                                 int number = Integer.parseInt(rcvPin[0]),
                                         value = Integer.parseInt(rcvPin[1]);
                                 boolean isPwm = rcvPin[2].equals("1");
-                                ArduinoPin stored = PowerBox.getPin(Main.settings.powerBoxPins, number);
+                                ArduinoPin stored = PowerBox.getPinFrom(Main.settings.powerBoxPins, number);
                                 if (stored == null) {
                                     if (isPwm)
                                         this.powerBox.add(new ArduinoPin(number, i18n("output.pin.default.name") + " " + number,
@@ -389,7 +392,7 @@ public class Board implements SerialMessageListener {
                 }),
         POWER_BOX_SET('X', 2, (b, params) -> (b.hasPowerBox() && b.powerBox.contains(params[0]) && (params[1] >= 0) && (params[1] <= 255)),
                 (b, caller, params) -> {
-                    b.powerBox.getPin(params[0]).setValue(params[1]);
+                    b.powerBox.get(params[0]).setValue(params[1]);
                     b.notifyListeners(caller, Parameters.POWERBOX_PINS);
                 }),
         POWER_BOX_SET_AUTO_MODE('K', 1, (b, params) -> (b.hasPowerBox() && b.powerBox.supportedAutoModes().contains(PowerBox.AutoModes.values()[params[0]])),
@@ -399,12 +402,12 @@ public class Board implements SerialMessageListener {
                 }),
         POWER_BOX_EN_PIN_PWM('J', 2, (b, params) -> (b.hasPowerBox() && b.powerBox.contains(params[0]) && ((params[1] == 0) || (params[1] == 1))),
                 (b, caller, params) -> {
-                    b.powerBox.getPin(params[0]).setPWMEnabled(params[1] == 1);
+                    b.powerBox.get(params[0]).setPWMEnabled(params[1] == 1);
                     b.notifyListeners(caller, Parameters.POWERBOX_PINS);
                 }),
         POWER_BOX_SET_PIN_AUTO('Y', 2, (b, params) -> (b.hasPowerBox() && b.powerBox.contains(params[0]) && ((params[1] == 0) || (params[1] == 1))),
                 (b, caller, params) -> {
-                    b.powerBox.getPin(params[0]).setAutoModeEn(params[1] == 1);
+                    b.powerBox.get(params[0]).setAutoModeEn(params[1] == 1);
                     b.notifyListeners(caller, Parameters.POWERBOX_PINS);
                 }),
         FLAT_SET_BRIGHTNESS('Z', 1, (b, params) -> (b.hasFlatPanel() && (params[0] >= 0) && (params[0] <= 255)),
@@ -417,7 +420,7 @@ public class Board implements SerialMessageListener {
                 }),
         FLAT_SET_COVER('Q', 1, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() && ((params[0] == 0) || (params[0] == 1))), null),
         FLAT_SET_CONFIG('F', 3, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() &&
-                        (params[0] >= 170) && (params[0] <= 290) && (params[1] >= -15) && (params[1] <= 15) && (params[2] >= 0) && (params[2] <= 10)), null);
+                (params[0] >= 170) && (params[0] <= 290) && (params[1] >= -15) && (params[1] <= 15) && (params[2] >= 0) && (params[2] <= 10)), null);
 
         public final char id;
         public final int paramsCount;

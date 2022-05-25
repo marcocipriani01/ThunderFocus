@@ -50,7 +50,7 @@ public class PowerBox {
         }
     }
 
-    public static ArduinoPin getPin(ArrayList<ArduinoPin> pins, int pin) {
+    public static ArduinoPin getPinFrom(ArrayList<ArduinoPin> pins, int pin) {
         for (ArduinoPin ap : pins) {
             if (ap.getNumber() == pin) {
                 return ap;
@@ -60,7 +60,7 @@ public class PowerBox {
     }
 
     public void setOnWhenAppOpen(ArduinoPin pin, boolean onWhenAppOpen) {
-        getPin(pin.getNumber()).setOnWhenAppOpen(onWhenAppOpen);
+        get(pin.getNumber()).setOnWhenAppOpen(onWhenAppOpen);
     }
 
     public double getSunElev() {
@@ -156,8 +156,8 @@ public class PowerBox {
         return false;
     }
 
-    public ArduinoPin getPin(int pin) {
-        return getPin(pins, pin);
+    public ArduinoPin get(int pin) {
+        return getPinFrom(pins, pin);
     }
 
     /**

@@ -4,7 +4,7 @@
 '
 ' Description:	ASCOM Focuser driver for ThunderFocus
 '
-' Implements:	ASCOM Focuser interface version: 1.0
+' Implements:	ASCOM Focuser interface version: 3.0
 ' Author:		(MRC) Marco Cipriani <marco.cipriani.01@gmail.com>
 '
 ' Edit Log:
@@ -12,12 +12,15 @@
 ' Date			Who	Vers	Description
 ' -----------	---	-----	-------------------------------------------------------
 ' 07-DEC-2020	MRC	1.0.0	Initial edit, from Focuser template
-' 24-MAY-2022	MRC	2.0.0	Update
+' 26-MAY-2022	MRC	2.0.0	Update
 ' ---------------------------------------------------------------------------------
 '
 ' Your driver's ID is ASCOM.ThunderFocus.Focuser
 '
 #Const Device = "Focuser"
+
+Option Strict On
+Option Infer On
 
 Imports System.Net
 Imports System.Net.Sockets
@@ -37,7 +40,7 @@ Public Class Focuser
     Private Shared ReadOnly driverDescription As String = "ThunderFocus"
 
     Friend Shared socketPortProfileName As String = "Socket port"
-    Friend Shared socketPortDefault As Integer = 5001
+    Friend Shared socketPortDefault As String = "5001"
 
     Friend Shared debugProfileName As String = "Debug"
     Friend Shared debugDefault As String = "False"
@@ -156,14 +159,12 @@ Public Class Focuser
         Throw New MethodNotImplementedException("CommandBlind")
     End Sub
 
-    Public Function CommandBool(Command As String, Optional Raw As Boolean = False) As Boolean _
-        Implements IFocuserV3.CommandBool
+    Public Function CommandBool(Command As String, Optional Raw As Boolean = False) As Boolean Implements IFocuserV3.CommandBool
         CheckConnected("CommandBool")
         Throw New MethodNotImplementedException("CommandBool")
     End Function
 
-    Public Function CommandString(Command As String, Optional Raw As Boolean = False) As String _
-        Implements IFocuserV3.CommandString
+    Public Function CommandString(Command As String, Optional Raw As Boolean = False) As String Implements IFocuserV3.CommandString
         CheckConnected("CommandString")
         Throw New MethodNotImplementedException("CommandString")
     End Function
@@ -183,19 +184,14 @@ Public Class Focuser
                 Try
                     Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
                     socket.Connect(remoteEP)
-                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("hasFocuser" + Environment.NewLine)
+                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("HasFocuser" + Environment.NewLine)
                     socket.SendBufferSize = bytesToSend.Length
                     socket.Send(bytesToSend)
                     Thread.Sleep(200)
                     Dim socketBuffer As Byte() = New Byte(1023) {}
                     Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                    Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
-                    If rcv.Contains("true") Then
-                        connectedState = True
-                        TL.LogMessage("Connected Set", "hasFocuser = true")
-                    Else
-                        connectedState = False
-                        TL.LogIssue("Connected Set", "hasFocuser = false")
+                    connectedState = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Contains("true")
+                    If connectedState = False Then
                         Throw New DriverException("This ThunderFocus board doesn't have a focuser!")
                     End If
                 Catch ex As Exception
@@ -220,7 +216,7 @@ Public Class Focuser
     Public ReadOnly Property DriverInfo As String Implements IFocuserV3.DriverInfo
         Get
             Dim m_version As Version = Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            Dim s_driverInfo As String = "ThunderFocus ASCOM bridge v" + m_version.Major.ToString() + "." + m_version.Minor.ToString()
+            Dim s_driverInfo As String = "ThunderFocus focuser bridge v" + m_version.Major.ToString() + "." + m_version.Minor.ToString()
             TL.LogMessage("DriverInfo Get", s_driverInfo)
             Return s_driverInfo
         End Get
@@ -242,9 +238,7 @@ Public Class Focuser
 
     Public ReadOnly Property Name As String Implements IFocuserV3.Name
         Get
-            Dim s_name As String = "ThunderFocus"
-            TL.LogMessage("Name Get", s_name)
-            Return s_name
+            Return "ThunderFocus"
         End Get
     End Property
 
@@ -265,24 +259,23 @@ Public Class Focuser
 #Region "IFocuser Implementation"
 
     Private focuserPosition As Integer = 0
-    Private focuserSteps As Integer = 32767
+    Private focuserMaxTravel As Integer = 32767
     Private moving As Boolean = False
 
     Public ReadOnly Property Absolute() As Boolean Implements IFocuserV3.Absolute
         Get
-            TL.LogMessage("Absolute Get", True.ToString())
-            Return True ' This is an absolute focuser
+            Return True
         End Get
     End Property
 
     Public Sub Halt() Implements IFocuserV3.Halt
-        CheckConnected("Attemped halt while disconnected!")
+        CheckConnected("Attemped Halt while disconnected!")
         SocketSend("Halt")
     End Sub
 
     Public ReadOnly Property IsMoving() As Boolean Implements IFocuserV3.IsMoving
         Get
-            CheckConnected("Attemped get while disconnected!")
+            CheckConnected("Attemped IsMoving while disconnected!")
             SocketSend("IsMoving")
             Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
@@ -295,11 +288,9 @@ Public Class Focuser
 
     Public Property Link() As Boolean Implements IFocuserV3.Link
         Get
-            TL.LogMessage("Link Get", Me.Connected.ToString())
             Return Connected
         End Get
         Set(value As Boolean)
-            TL.LogMessage("Link Set", value.ToString())
             Connected = value
         End Set
     End Property
@@ -312,27 +303,34 @@ Public Class Focuser
 
     Public ReadOnly Property MaxStep() As Integer Implements IFocuserV3.MaxStep
         Get
-            CheckConnected("Attemped get while disconnected!")
+            CheckConnected("Attemped MaxStep while disconnected!")
             SocketSend("MaxStep")
             Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
-                focuserSteps = Integer.Parse(rcv)
+                focuserMaxTravel = Integer.Parse(rcv)
             End If
-            TL.LogMessage("MaxStep Get", focuserSteps.ToString())
-            Return focuserSteps
+            TL.LogMessage("MaxStep Get", focuserMaxTravel.ToString())
+            Return focuserMaxTravel
         End Get
     End Property
 
     Public Sub Move(Position As Integer) Implements IFocuserV3.Move
         CheckConnected("Attemped Move while disconnected!")
-        TL.LogMessage("Move", Position.ToString())
-        focuserPosition = Position ' Set the focuser position
+        If Position < 0 Or Position > focuserMaxTravel Then
+            Throw New DriverException("Position " + Position.ToString() + " is outside the allowed boundaries!")
+        End If
+        If focuserPosition <> Position Then
+            moving = True
+            'TODO: check if this is OK
+            'focuserPosition = Position
+        End If
         SocketSend("Move=" + Position.ToString())
+        TL.LogMessage("Move", Position.ToString())
     End Sub
 
     Public ReadOnly Property Position() As Integer Implements IFocuserV3.Position
         Get
-            CheckConnected("Attemped get while disconnected!")
+            CheckConnected("Attemped Position while disconnected!")
             SocketSend("Position")
             Dim rcv As String = SocketRead()
             If Not String.IsNullOrEmpty(rcv) Then
@@ -344,32 +342,32 @@ Public Class Focuser
 
     Public ReadOnly Property StepSize() As Double Implements IFocuserV3.StepSize
         Get
-            TL.LogMessage("StepSize Get", "Not implemented")
+            CheckConnected("Attemped StepSize while disconnected!")
             Throw New PropertyNotImplementedException("StepSize", False)
         End Get
     End Property
 
     Public Property TempComp() As Boolean Implements IFocuserV3.TempComp
         Get
-            TL.LogMessage("TempComp Get", False.ToString())
+            CheckConnected("Attemped TempComp while disconnected!")
             Return False
         End Get
         Set(value As Boolean)
-            TL.LogMessage("TempComp Set", "Not implemented")
+            CheckConnected("Attemped TempComp while disconnected!")
             Throw New PropertyNotImplementedException("TempComp", True)
         End Set
     End Property
 
     Public ReadOnly Property TempCompAvailable() As Boolean Implements IFocuserV3.TempCompAvailable
         Get
-            TL.LogMessage("TempCompAvailable Get", False.ToString())
-            Return False ' Temperature compensation is not available in this driver
+            CheckConnected("Attemped TempCompAvailable while disconnected!")
+            Return False
         End Get
     End Property
 
     Public ReadOnly Property Temperature() As Double Implements IFocuserV3.Temperature
         Get
-            TL.LogMessage("Temperature Get", "Not implemented")
+            CheckConnected("Attemped Temperature while disconnected!")
             Throw New PropertyNotImplementedException("Temperature", False)
         End Get
     End Property

@@ -1,22 +1,25 @@
 'tabs=4
 ' --------------------------------------------------------------------------------'
-' ASCOM CoverCalibrator driver for ThunderFocus
+' ASCOM Switch driver for ThunderFocus
 '
 ' Description:	ASCOM Switch driver for ThunderFocus
 '
-' Implements:	ASCOM Focuser interface version: 1.0
+' Implements:	ASCOM Switch interface version: 2.0
 ' Author:		(MRC) Marco Cipriani <marco.cipriani.01@gmail.com>
 '
 ' Edit Log:
 '
 ' Date			Who	Vers	Description
 ' -----------	---	-----	-------------------------------------------------------
-' 07-DEC-2020	MRC	1.0.0	Initial edit
+' 26-MAY-2022	MRC	1.0.0	First version
 ' ---------------------------------------------------------------------------------
 '
 ' Your driver's ID is ASCOM.ThunderFocus.Switch
 '
 #Const Device = "Switch"
+
+Option Strict On
+Option Infer On
 
 Imports System.Net
 Imports System.Net.Sockets
@@ -36,7 +39,7 @@ Public Class Switch
     Private Shared ReadOnly driverDescription As String = "ThunderFocus"
 
     Friend Shared socketPortProfileName As String = "Socket port"
-    Friend Shared socketPortDefault As Integer = 5001
+    Friend Shared socketPortDefault As String = "5001"
 
     Friend Shared debugProfileName As String = "Debug"
     Friend Shared debugDefault As String = "False"
@@ -54,38 +57,48 @@ Public Class Switch
         }
     Private ReadOnly ipAddress As IPAddress
 
-    Private Function ReadSocket() As String
-        If Connected = True Then
-            Try
-                Dim socketBuffer As Byte() = New Byte(1023) {}
-                Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
-                TL.LogMessage("ReadSocket", rcv)
-                Return rcv
-            Catch ex As Exception
-                TL.LogMessage("ReadSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring read attempt.")
+    Private Function SocketRead() As String
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            Dim socketBuffer As Byte() = New Byte(1023) {}
+            Dim bytesRec As Integer = socket.Receive(socketBuffer)
+            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+            TL.LogMessage("ReadSocket", rcv)
+            Return rcv
+        Catch ex As Exception
+            TL.LogIssue("ReadSocket", ex.Message)
+            Disconnect()
+        End Try
         Return String.Empty
     End Function
 
-    Private Sub SendSocket(msg As String)
-        If Connected = True Then
-            Try
-                TL.LogMessage("Connected Set", "Sending " + msg)
-                Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
-                socket.SendBufferSize = bytesToSend.Length
-                socket.Send(bytesToSend)
-            Catch ex As Exception
-                TL.LogMessage("SendSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring send attempt (" + msg + ")")
+    Private Sub SocketSend(msg As String)
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            TL.LogMessage("Connected Set", "Sending " + msg)
+            Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
+            socket.SendBufferSize = bytesToSend.Length
+            socket.Send(bytesToSend)
+        Catch ex As Exception
+            TL.LogIssue("SendSocket", ex.Message)
+            Disconnect()
+        End Try
+    End Sub
+
+    Private Sub Disconnect()
+        TL.LogMessage("Disconnect", "Disconnecting from port " + socketPort.ToString())
+        Try
+            socket.Shutdown(SocketShutdown.Both)
+            socket.Close()
+            connectedState = False
+        Catch ex As Exception
+            TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
+            Throw New DriverException("Disconnection error!")
+        End Try
     End Sub
 
     '
@@ -116,18 +129,17 @@ Public Class Switch
     ''' THIS IS THE ONLY PLACE WHERE SHOWING USER INTERFACE IS ALLOWED!
     ''' </summary>
     Public Sub SetupDialog() Implements ISwitchV2.SetupDialog
-        ' consider only showing the setup dialog if not connected
-        ' or call a different dialog if connected
+        Application.EnableVisualStyles()
         If IsConnected Then
-            System.Windows.Forms.MessageBox.Show("Already connected, just press OK")
+            MessageBox.Show("ASCOM bridge running, use the control panel to configure the switches.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            Using F As New SetupDialogForm()
+                Dim result As DialogResult = F.ShowDialog()
+                If result = DialogResult.OK Then
+                    WriteProfile()
+                End If
+            End Using
         End If
-
-        Using F As SetupDialogForm = New SetupDialogForm()
-            Dim result As System.Windows.Forms.DialogResult = F.ShowDialog()
-            If result = DialogResult.OK Then
-                WriteProfile() ' Persist device configuration values to the ASCOM Profile store
-            End If
-        End Using
     End Sub
 
     Public ReadOnly Property SupportedActions() As ArrayList Implements ISwitchV2.SupportedActions
@@ -137,37 +149,22 @@ Public Class Switch
         End Get
     End Property
 
-    Public Function Action(ByVal ActionName As String, ByVal ActionParameters As String) As String Implements ISwitchV2.Action
+    Public Function Action(ActionName As String, ActionParameters As String) As String Implements ISwitchV2.Action
         Throw New ActionNotImplementedException("Action " & ActionName & " is not supported by this driver")
     End Function
 
-    Public Sub CommandBlind(ByVal Command As String, Optional ByVal Raw As Boolean = False) Implements ISwitchV2.CommandBlind
+    Public Sub CommandBlind(Command As String, Optional Raw As Boolean = False) Implements ISwitchV2.CommandBlind
         CheckConnected("CommandBlind")
-        ' TODO The optional CommandBlind method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandBlind must send the supplied command to the mount And return immediately without waiting for a response
-
         Throw New MethodNotImplementedException("CommandBlind")
     End Sub
 
-    Public Function CommandBool(ByVal Command As String, Optional ByVal Raw As Boolean = False) As Boolean _
-        Implements ISwitchV2.CommandBool
+    Public Function CommandBool(Command As String, Optional Raw As Boolean = False) As Boolean Implements ISwitchV2.CommandBool
         CheckConnected("CommandBool")
-        ' TODO The optional CommandBool method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandBool must send the supplied command to the mount, wait for a response and parse this to return a True Or False value
-
-        ' Dim retString as String = CommandString(command, raw) ' Send the command And wait for the response
-        ' Dim retBool as Boolean = XXXXXXXXXXXXX ' Parse the returned string And create a boolean True / False value
-        ' Return retBool ' Return the boolean value to the client
-
         Throw New MethodNotImplementedException("CommandBool")
     End Function
 
-    Public Function CommandString(ByVal Command As String, Optional ByVal Raw As Boolean = False) As String _
-        Implements ISwitchV2.CommandString
+    Public Function CommandString(Command As String, Optional Raw As Boolean = False) As String Implements ISwitchV2.CommandString
         CheckConnected("CommandString")
-        ' TODO The optional CommandString method should either be implemented OR throw a MethodNotImplementedException
-        ' If implemented, CommandString must send the supplied command to the mount and wait for a response before returning this to the client
-
         Throw New MethodNotImplementedException("CommandString")
     End Function
 
@@ -178,25 +175,37 @@ Public Class Switch
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
-            If value = IsConnected Then
+            If value = connectedState Then
                 Return
             End If
-
             If value Then
-                connectedState = True
-                TL.LogMessage("Connected Set", "Connecting to port " + comPort)
-                ' TODO connect to the device
+                TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
+                Try
+                    Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
+                    socket.Connect(remoteEP)
+                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("HasPowerBox" + Environment.NewLine)
+                    socket.SendBufferSize = bytesToSend.Length
+                    socket.Send(bytesToSend)
+                    Thread.Sleep(200)
+                    Dim socketBuffer As Byte() = New Byte(1023) {}
+                    Dim bytesRec As Integer = socket.Receive(socketBuffer)
+                    connectedState = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Contains("true")
+                    If connectedState = False Then
+                        Throw New DriverException("This ThunderFocus board doesn't have a powerbox!")
+                    End If
+                Catch ex As Exception
+                    TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
+                    connectedState = False
+                    Throw New DriverException("Could not connect to ThunderFocus!")
+                End Try
             Else
-                connectedState = False
-                TL.LogMessage("Connected Set", "Disconnecting from port " + comPort)
-                ' TODO disconnect from the device
+                Disconnect()
             End If
         End Set
     End Property
 
     Public ReadOnly Property Description As String Implements ISwitchV2.Description
         Get
-            ' this pattern seems to be needed to allow a public property to return a private field
             Dim d As String = driverDescription
             TL.LogMessage("Description Get", d)
             Return d
@@ -205,9 +214,8 @@ Public Class Switch
 
     Public ReadOnly Property DriverInfo As String Implements ISwitchV2.DriverInfo
         Get
-            Dim m_version As Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            ' TODO customise this driver description
-            Dim s_driverInfo As String = "Information about the driver itself. Version: " + m_version.Major.ToString() + "." + m_version.Minor.ToString()
+            Dim m_version As Version = Reflection.Assembly.GetExecutingAssembly().GetName().Version
+            Dim s_driverInfo As String = "ThunderFocus powerbox bridge v" + m_version.Major.ToString() + "." + m_version.Minor.ToString()
             TL.LogMessage("DriverInfo Get", s_driverInfo)
             Return s_driverInfo
         End Get
@@ -215,7 +223,6 @@ Public Class Switch
 
     Public ReadOnly Property DriverVersion() As String Implements ISwitchV2.DriverVersion
         Get
-            ' Get our own assembly and report its version number
             TL.LogMessage("DriverVersion Get", Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2))
             Return Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2)
         End Get
@@ -223,21 +230,24 @@ Public Class Switch
 
     Public ReadOnly Property InterfaceVersion() As Short Implements ISwitchV2.InterfaceVersion
         Get
-            TL.LogMessage("InterfaceVersion Get", "2")
-            Return 2
+            TL.LogMessage("InterfaceVersion Get", "3")
+            Return 3
         End Get
     End Property
 
     Public ReadOnly Property Name As String Implements ISwitchV2.Name
         Get
-            Dim s_name As String = "Short driver name - please customise"
-            TL.LogMessage("Name Get", s_name)
-            Return s_name
+            Return "ThunderFocus"
         End Get
     End Property
 
     Public Sub Dispose() Implements ISwitchV2.Dispose
-        ' Clean up the trace logger and util objects
+        TL.LogMessage("Dispose", "Disposing...")
+        Try
+            Disconnect()
+        Catch ex As Exception
+            TL.LogIssue("Dispose", "Exception disconnecting: " + ex.Message)
+        End Try
         TL.Enabled = False
         TL.Dispose()
         TL = Nothing
@@ -247,15 +257,21 @@ Public Class Switch
 
 #Region "ISwitchV2 Implementation"
 
-    Dim numSwitches As Short = 0
+    Private maxSwitchVal As Short = 0
 
     ''' <summary>
     ''' The number of switches managed by this driver
     ''' </summary>
     Public ReadOnly Property MaxSwitch As Short Implements ISwitchV2.MaxSwitch
         Get
-            TL.LogMessage("MaxSwitch Get", numSwitches.ToString())
-            Return numSwitches
+            CheckConnected("Attemped MaxSwitch while disconnected!")
+            SocketSend("MaxSwitch")
+            Dim rcv As String = SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                maxSwitchVal = Short.Parse(rcv)
+            End If
+            TL.LogMessage("MaxSwitch Get", maxSwitchVal.ToString())
+            Return maxSwitchVal
         End Get
     End Property
 
@@ -265,9 +281,14 @@ Public Class Switch
     ''' <param name="id">The switch number to return</param>
     ''' <returns>The name of the switch</returns>
     Public Function GetSwitchName(id As Short) As String Implements ISwitchV2.GetSwitchName
-        Validate("GetSwitchName", id)
-        TL.LogMessage("GetSwitchName", "Not Implemented")
-        Throw New MethodNotImplementedException("GetSwitchName")
+        CheckConnected("Attemped GetSwitchName while disconnected!")
+        SocketSend("GetSwitchName")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("GetSwitchName", rcv)
+            Return rcv
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Function
 
     ''' <summary>
@@ -276,9 +297,8 @@ Public Class Switch
     ''' <param name="id">The number of the switch whose name is to be set</param>
     ''' <param name="name">The name of the switch</param>
     Sub SetSwitchName(id As Short, name As String) Implements ISwitchV2.SetSwitchName
-        Validate("SetSwitchName", id)
-        TL.LogMessage("SetSwitchName", "Not Implemented")
-        Throw New MethodNotImplementedException("SetSwitchName")
+        CheckConnected("Attemped SetSwitchName while disconnected!")
+        SocketSend("SetSwitchName=" + id.ToString() + "," + name)
     End Sub
 
     ''' <summary>
@@ -355,9 +375,7 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function MinSwitchValue(id As Short) As Double Implements ISwitchV2.MinSwitchValue
-        Validate("MinSwitchValue", id)
-        TL.LogMessage("MinSwitchValue", "Not Implemented")
-        Throw New MethodNotImplementedException("MinSwitchValue")
+        Return 0.0
     End Function
 
     ''' <summary>
@@ -368,9 +386,7 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function SwitchStep(id As Short) As Double Implements ISwitchV2.SwitchStep
-        Validate("SwitchStep", id)
-        TL.LogMessage("SwitchStep", "Not Implemented")
-        Throw New MethodNotImplementedException("SwitchStep")
+        Return 1.0
     End Function
 
     ''' <summary>
@@ -414,8 +430,8 @@ Public Class Switch
     ''' <param name="message">The message.</param>
     ''' <param name="id">The id.</param>
     Private Sub Validate(message As String, id As Short)
-        If (id < 0 Or id >= numSwitches) Then
-            Throw New InvalidValueException(message, id.ToString(), String.Format("0 to {0}", numSwitches - 1))
+        If (id < 0 Or id >= maxSwitchVal) Then
+            Throw New InvalidValueException(message, id.ToString(), String.Format("0 to {0}", maxSwitchVal - 1))
         End If
     End Sub
 
@@ -428,7 +444,7 @@ Public Class Switch
     ''' <param name="expectBoolean"></param>
     Private Sub Validate(message As String, id As Short, expectBoolean As Boolean)
         Validate(message, id)
-        Dim ns As Integer = (((MaxSwitchValue(id) - MinSwitchValue(id)) / SwitchStep(id)) + 1)
+        Dim ns As Integer = CInt(((MaxSwitchValue(id) / SwitchStep(id)) + 1))
         If (expectBoolean And ns <> 2) Or (Not expectBoolean And ns <= 2) Then
             TL.LogMessage(message, String.Format("Switch {0} has the wrong number of states", id, ns))
             Throw New MethodNotImplementedException(String.Format("{0}({1})", message, id))
@@ -444,11 +460,10 @@ Public Class Switch
     ''' <param name="value">The value.</param>
     Private Sub Validate(message As String, id As Short, value As Double)
         Validate(message, id, False)
-        Dim min = MinSwitchValue(id)
         Dim max = MaxSwitchValue(id)
-        If (value < min Or value > max) Then
-            TL.LogMessage(message, String.Format("Value {1} for Switch {0} is out of the allowed range {2} to {3}", id, value, min, max))
-            Throw New InvalidValueException(message, value.ToString(), String.Format("Switch({0}) range {1} to {2}", id, min, max))
+        If (value < 0.0 Or value > max) Then
+            TL.LogMessage(message, String.Format("Value {1} for Switch {0} is out of the allowed range {2} to {3}", id, value, 0.0, max))
+            Throw New InvalidValueException(message, value.ToString(), String.Format("Switch({0}) range {1} to {2}", id, 0.0, max))
         End If
     End Sub
 #End Region

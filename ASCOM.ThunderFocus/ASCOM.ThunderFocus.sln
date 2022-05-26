@@ -9,6 +9,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Focuser"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Switch", "ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.vbproj", "{5614894A-9420-406F-93B4-BFB737A1635A}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.ObservingConditions", "ASCOM.ThunderFocus.ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.vbproj", "{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5614894A-9420-406F-93B4-BFB737A1635A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

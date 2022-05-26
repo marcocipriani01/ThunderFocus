@@ -3,7 +3,7 @@ package io.github.marcocipriani01.thunderfocus;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.IntelliJTheme;
-import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
+import io.github.marcocipriani01.thunderfocus.ascom.ASCOMBridge;
 import io.github.marcocipriani01.thunderfocus.board.*;
 import io.github.marcocipriani01.thunderfocus.config.ExportableSettings;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
@@ -404,7 +404,7 @@ public class MainWindow extends JFrame implements
 
     private void askClose() {
         if ((Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS) && Main.isAscomRunning()
-                && (Main.ascomFocuserBridge.getClientsCount() > 0)) {
+                && (Main.ascomBridge.getClientsCount() > 0)) {
             try {
                 setVisible(false);
                 SystemTray tray = SystemTray.getSystemTray();
@@ -894,17 +894,17 @@ public class MainWindow extends JFrame implements
             if (settings.ascomBridge) {
                 if (Main.isAscomRunning()) {
                     if (forceRestart) {
-                        Main.ascomFocuserBridge.close();
-                        Main.ascomFocuserBridge = new ASCOMFocuserBridge(settings.ascomBridgePort);
-                        Main.ascomFocuserBridge.connect();
+                        Main.ascomBridge.close();
+                        Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
+                        Main.ascomBridge.connect();
                     }
                 } else {
-                    Main.ascomFocuserBridge = new ASCOMFocuserBridge(settings.ascomBridgePort);
-                    Main.ascomFocuserBridge.connect();
+                    Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
+                    Main.ascomBridge.connect();
                 }
                 ascomStatusLabel.setText(i18n("bridge.active"));
             } else {
-                if (Main.isAscomRunning()) Main.ascomFocuserBridge.close();
+                if (Main.isAscomRunning()) Main.ascomBridge.close();
                 ascomStatusLabel.setText(i18n("bridge.inactive"));
             }
         } catch (IOException e) {
@@ -1168,7 +1168,7 @@ public class MainWindow extends JFrame implements
                 case DISCONNECTED: {
                     if (Main.isAscomRunning()) {
                         try {
-                            Main.ascomFocuserBridge.close();
+                            Main.ascomBridge.close();
                             ascomStatusLabel.setText(i18n("bridge.inactive"));
                         } catch (IOException ex) {
                             onCriticalError(ex);

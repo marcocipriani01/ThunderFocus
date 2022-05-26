@@ -2,9 +2,8 @@ package io.github.marcocipriani01.thunderfocus;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
-import io.github.marcocipriani01.thunderfocus.ascom.ASCOMFocuserBridge;
+import io.github.marcocipriani01.thunderfocus.ascom.ASCOMBridge;
 import io.github.marcocipriani01.thunderfocus.board.Board;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIServerCreator;
@@ -31,7 +30,7 @@ public class Main {
             Main.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final Board board;
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
-    public static ASCOMFocuserBridge ascomFocuserBridge;
+    public static ASCOMBridge ascomBridge;
     private static Path pidLock;
 
     static {
@@ -112,7 +111,7 @@ public class Main {
     }
 
     public static boolean isAscomRunning() {
-        return (ascomFocuserBridge != null) && (ascomFocuserBridge.isConnected());
+        return (ascomBridge != null) && (ascomBridge.isConnected());
     }
 
     public static void exit(int code) {
@@ -123,7 +122,7 @@ public class Main {
         }
         if (isAscomRunning()) {
             try {
-                ascomFocuserBridge.close();
+                ascomBridge.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

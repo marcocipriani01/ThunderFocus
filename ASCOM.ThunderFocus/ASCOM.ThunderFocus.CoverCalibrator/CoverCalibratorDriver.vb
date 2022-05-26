@@ -4,19 +4,22 @@
 '
 ' Description:	ASCOM CoverCalibrator driver for ThunderFocus
 '
-' Implements:	ASCOM Focuser interface version: 1.0
+' Implements:	ASCOM CoverCalibrator interface version: 1.0
 ' Author:		(MRC) Marco Cipriani <marco.cipriani.01@gmail.com>
 '
 ' Edit Log:
 '
 ' Date			Who	Vers	Description
 ' -----------	---	-----	-------------------------------------------------------
-' 07-DEC-2020	MRC	1.0.0	Initial edit
+' 26-MAY-2022	MRC	1.0.0	First version
 ' ---------------------------------------------------------------------------------
 '
 ' Your driver's ID is ASCOM.ThunderFocus.CoverCalibrator
 '
 #Const Device = "CoverCalibrator"
+
+Option Strict On
+Option Infer On
 
 Imports System.Net
 Imports System.Net.Sockets
@@ -36,7 +39,7 @@ Public Class CoverCalibrator
     Private Shared ReadOnly driverDescription As String = "ThunderFocus CoverCalibrator"
 
     Friend Shared socketPortProfileName As String = "Socket port"
-    Friend Shared socketPortDefault As Integer = 5001
+    Friend Shared socketPortDefault As String = "5001"
 
     Friend Shared debugProfileName As String = "Debug"
     Friend Shared debugDefault As String = "False"
@@ -54,38 +57,48 @@ Public Class CoverCalibrator
         }
     Private ReadOnly ipAddress As IPAddress
 
-    Private Function ReadSocket() As String
-        If Connected = True Then
-            Try
-                Dim socketBuffer As Byte() = New Byte(1023) {}
-                Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
-                TL.LogMessage("ReadSocket", rcv)
-                Return rcv
-            Catch ex As Exception
-                TL.LogMessage("ReadSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring read attempt.")
+    Private Function SocketRead() As String
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            Dim socketBuffer As Byte() = New Byte(1023) {}
+            Dim bytesRec As Integer = socket.Receive(socketBuffer)
+            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+            TL.LogMessage("ReadSocket", rcv)
+            Return rcv
+        Catch ex As Exception
+            TL.LogIssue("ReadSocket", ex.Message)
+            Disconnect()
+        End Try
         Return String.Empty
     End Function
 
-    Private Sub SendSocket(msg As String)
-        If Connected = True Then
-            Try
-                TL.LogMessage("Connected Set", "Sending " + msg)
-                Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
-                socket.SendBufferSize = bytesToSend.Length
-                socket.Send(bytesToSend)
-            Catch ex As Exception
-                TL.LogMessage("SendSocket", ex.Message)
-                Connected = False
-            End Try
-        Else
-            TL.LogMessage("ReadSocket", "Ignoring send attempt (" + msg + ")")
+    Private Sub SocketSend(msg As String)
+        If Connected = False Then
+            Throw New DriverException("Not connected!")
         End If
+        Try
+            TL.LogMessage("Connected Set", "Sending " + msg)
+            Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
+            socket.SendBufferSize = bytesToSend.Length
+            socket.Send(bytesToSend)
+        Catch ex As Exception
+            TL.LogIssue("SendSocket", ex.Message)
+            Disconnect()
+        End Try
+    End Sub
+
+    Private Sub Disconnect()
+        TL.LogMessage("Disconnect", "Disconnecting from port " + socketPort.ToString())
+        Try
+            socket.Shutdown(SocketShutdown.Both)
+            socket.Close()
+            connectedState = False
+        Catch ex As Exception
+            TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
+            Throw New DriverException("Disconnection error!")
+        End Try
     End Sub
 
     '
@@ -118,7 +131,7 @@ Public Class CoverCalibrator
     Public Sub SetupDialog() Implements ICoverCalibratorV1.SetupDialog
         Application.EnableVisualStyles()
         If IsConnected Then
-            MessageBox.Show("ASCOM bridge running, use the control panel to configure the flat panel.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("ASCOM bridge running, use the control panel to configure the flat .", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As New SetupDialogForm()
                 Dim result As DialogResult = F.ShowDialog()
@@ -164,25 +177,37 @@ Public Class CoverCalibrator
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
-            If value = IsConnected Then
+            If value = connectedState Then
                 Return
             End If
-
             If value Then
-                connectedState = True
-                TL.LogMessage("Connected Set", "Connecting to port " + comPort)
-                ' TODO connect to the device
+                TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
+                Try
+                    Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
+                    socket.Connect(remoteEP)
+                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("HasFlat" + Environment.NewLine)
+                    socket.SendBufferSize = bytesToSend.Length
+                    socket.Send(bytesToSend)
+                    Thread.Sleep(200)
+                    Dim socketBuffer As Byte() = New Byte(1023) {}
+                    Dim bytesRec As Integer = socket.Receive(socketBuffer)
+                    connectedState = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Contains("true")
+                    If connectedState = False Then
+                        Throw New DriverException("This ThunderFocus board doesn't have a flat panel!")
+                    End If
+                Catch ex As Exception
+                    TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
+                    connectedState = False
+                    Throw New DriverException("Could not connect to ThunderFocus!")
+                End Try
             Else
-                connectedState = False
-                TL.LogMessage("Connected Set", "Disconnecting from port " + comPort)
-                ' TODO disconnect from the device
+                Disconnect()
             End If
         End Set
     End Property
 
     Public ReadOnly Property Description As String Implements ICoverCalibratorV1.Description
         Get
-            ' this pattern seems to be needed to allow a public property to return a private field
             Dim d As String = driverDescription
             TL.LogMessage("Description Get", d)
             Return d
@@ -191,9 +216,8 @@ Public Class CoverCalibrator
 
     Public ReadOnly Property DriverInfo As String Implements ICoverCalibratorV1.DriverInfo
         Get
-            Dim m_version As Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
-            ' TODO customise this driver description
-            Dim s_driverInfo As String = "Information about the driver itself. Version: " + m_version.Major.ToString() + "." + m_version.Minor.ToString()
+            Dim m_version As Version = Reflection.Assembly.GetExecutingAssembly().GetName().Version
+            Dim s_driverInfo As String = "ThunderFocus flat bridge v" + m_version.Major.ToString() + "." + m_version.Minor.ToString()
             TL.LogMessage("DriverInfo Get", s_driverInfo)
             Return s_driverInfo
         End Get
@@ -201,7 +225,6 @@ Public Class CoverCalibrator
 
     Public ReadOnly Property DriverVersion() As String Implements ICoverCalibratorV1.DriverVersion
         Get
-            ' Get our own assembly and report its version number
             TL.LogMessage("DriverVersion Get", Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2))
             Return Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2)
         End Get
@@ -216,34 +239,52 @@ Public Class CoverCalibrator
 
     Public ReadOnly Property Name As String Implements ICoverCalibratorV1.Name
         Get
-            Dim s_name As String = "Short driver name - please customise"
-            TL.LogMessage("Name Get", s_name)
-            Return s_name
+            Return "ThunderFocus"
         End Get
     End Property
 
     Public Sub Dispose() Implements ICoverCalibratorV1.Dispose
-        ' Clean up the trace logger and util objects
+        TL.LogMessage("Dispose", "Disposing...")
+        Try
+            Disconnect()
+        Catch ex As Exception
+            TL.LogIssue("Dispose", "Exception disconnecting: " + ex.Message)
+        End Try
         TL.Enabled = False
         TL.Dispose()
         TL = Nothing
-        utilities.Dispose()
-        utilities = Nothing
-        astroUtilities.Dispose()
-        astroUtilities = Nothing
     End Sub
 
 #End Region
 
 #Region "ICoverCalibrator Implementation"
 
+    Private coverVal As CoverStatus = CoverStatus.Unknown
+    Private brightnessVal As Integer = 0
+    Private calibratorVal As CalibratorStatus = CalibratorStatus.Unknown
+
     ''' <summary>
     ''' Returns the state of the device cover, if present, otherwise returns "NotPresent"
     ''' </summary>
     Public ReadOnly Property CoverState() As CoverStatus Implements ICoverCalibratorV1.CoverState
         Get
-            TL.LogMessage("CoverState Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("CoverState", False)
+            CheckConnected("Attemped CoverState while disconnected!")
+            SocketSend("CoverState")
+            Dim rcv As String = SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                Select Case rcv
+                    Case "Closed"
+                        coverVal = CoverStatus.Closed
+                    Case "Open"
+                        coverVal = CoverStatus.Open
+                    Case "NotPresent"
+                        coverVal = CoverStatus.NotPresent
+                    Case Else
+                        TL.LogIssue("CoverState", "Unknown CoverStatus")
+                End Select
+            End If
+            TL.LogMessage("CoverState Get", coverVal.ToString())
+            Return coverVal
         End Get
     End Property
 
@@ -251,24 +292,31 @@ Public Class CoverCalibrator
     ''' Initiates cover opening if a cover is present
     ''' </summary>
     Public Sub OpenCover() Implements ICoverCalibratorV1.OpenCover
-        TL.LogMessage("OpenCover", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("OpenCover")
+        CheckConnected("Attemped OpenCover while disconnected!")
+        SocketSend("OpenCover")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+            Throw New MethodNotImplementedException("OpenCover")
+        End If
     End Sub
 
     ''' <summary>
     ''' Initiates cover closing if a cover is present
     ''' </summary>
     Public Sub CloseCover() Implements ICoverCalibratorV1.CloseCover
-        TL.LogMessage("CloseCover", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("CloseCover")
+        CheckConnected("Attemped CloseCover while disconnected!")
+        SocketSend("CloseCover")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+            Throw New MethodNotImplementedException("CloseCover")
+        End If
     End Sub
 
     ''' <summary>
     ''' Stops any cover movement that may be in progress if a cover is present and cover movement can be interrupted.
     ''' </summary>
     Public Sub HaltCover() Implements ICoverCalibratorV1.HaltCover
-        TL.LogMessage("HaltCover", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("HaltCover")
+        Throw New MethodNotImplementedException("HaltCover")
     End Sub
 
     ''' <summary>
@@ -276,8 +324,21 @@ Public Class CoverCalibrator
     ''' </summary>
     Public ReadOnly Property CalibratorState() As CalibratorStatus Implements ICoverCalibratorV1.CalibratorState
         Get
-            TL.LogMessage("CalibratorState Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("CalibratorState", False)
+            CheckConnected("Attemped CalibratorState while disconnected!")
+            SocketSend("CalibratorState")
+            Dim rcv As String = SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                Select Case rcv
+                    Case "Ready"
+                        calibratorVal = CalibratorStatus.Ready
+                    Case "Off"
+                        calibratorVal = CalibratorStatus.Off
+                    Case Else
+                        TL.LogIssue("CoverState", "Unknown CalibratorStatus")
+                End Select
+            End If
+            TL.LogMessage("CalibratorState Get", calibratorVal.ToString())
+            Return calibratorVal
         End Get
     End Property
 
@@ -286,8 +347,14 @@ Public Class CoverCalibrator
     ''' </summary>
     Public ReadOnly Property Brightness As Integer Implements ICoverCalibratorV1.Brightness
         Get
-            TL.LogMessage("Brightness Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("Brightness", False)
+            CheckConnected("Attemped Brightness while disconnected!")
+            SocketSend("Brightness")
+            Dim rcv As String = SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                brightnessVal = CInt(rcv)
+            End If
+            TL.LogMessage("Brightness Get", brightnessVal.ToString())
+            Return brightnessVal
         End Get
     End Property
 
@@ -296,8 +363,7 @@ Public Class CoverCalibrator
     ''' </summary>
     Public ReadOnly Property MaxBrightness As Integer Implements ICoverCalibratorV1.MaxBrightness
         Get
-            TL.LogMessage("MaxBrightness Get", "Not implemented")
-            Throw New ASCOM.PropertyNotImplementedException("MaxBrightness", False)
+            Return 255
         End Get
     End Property
 
@@ -306,16 +372,24 @@ Public Class CoverCalibrator
     ''' </summary>
     ''' <param name="Brightness"></param>
     Public Sub CalibratorOn(Brightness As Integer) Implements ICoverCalibratorV1.CalibratorOn
-        TL.LogMessage("CalibratorOn", $"Not implemented. Value set: {Brightness}")
-        Throw New ASCOM.MethodNotImplementedException("CalibratorOn")
+        CheckConnected("Attemped CalibratorOn while disconnected!")
+        SocketSend("CalibratorOn=" + Brightness.ToString())
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+            Throw New MethodNotImplementedException("CalibratorOn")
+        End If
     End Sub
 
     ''' <summary>
     ''' Turns the calibrator off if the device has calibration capability
     ''' </summary>
     Public Sub CalibratorOff() Implements ICoverCalibratorV1.CalibratorOff
-        TL.LogMessage("CalibratorOff", "Not implemented")
-        Throw New ASCOM.MethodNotImplementedException("CalibratorOff")
+        CheckConnected("Attemped CalibratorOff while disconnected!")
+        SocketSend("CalibratorOff")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+            Throw New MethodNotImplementedException("CalibratorOff")
+        End If
     End Sub
 
 #End Region

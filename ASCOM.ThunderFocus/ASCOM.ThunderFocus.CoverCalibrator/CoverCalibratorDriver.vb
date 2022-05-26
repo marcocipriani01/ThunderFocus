@@ -395,13 +395,10 @@ Public Class CoverCalibrator
 #End Region
 
 #Region "Private properties and methods"
-    ' here are some useful properties and methods that can be used as required
-    ' to help with
 
 #Region "ASCOM Registration"
 
     Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
-
         Using P As New Profile() With {.DeviceType = "CoverCalibrator"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -409,21 +406,16 @@ Public Class CoverCalibrator
                 P.Unregister(driverID)
             End If
         End Using
-
     End Sub
 
     <ComRegisterFunction()>
-    Public Shared Sub RegisterASCOM(ByVal T As Type)
-
+    Public Shared Sub RegisterASCOM(T As Type)
         RegUnregASCOM(True)
-
     End Sub
 
     <ComUnregisterFunction()>
-    Public Shared Sub UnregisterASCOM(ByVal T As Type)
-
+    Public Shared Sub UnregisterASCOM(T As Type)
         RegUnregASCOM(False)
-
     End Sub
 
 #End Region
@@ -433,7 +425,6 @@ Public Class CoverCalibrator
     ''' </summary>
     Private ReadOnly Property IsConnected As Boolean
         Get
-            ' TODO check that the driver hardware connection exists and is connected to the hardware
             Return connectedState
         End Get
     End Property
@@ -442,7 +433,7 @@ Public Class CoverCalibrator
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
-    Private Sub CheckConnected(ByVal message As String)
+    Private Sub CheckConnected(message As String)
         If Not IsConnected Then
             Throw New NotConnectedException(message)
         End If

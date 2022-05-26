@@ -375,8 +375,6 @@ Public Class Focuser
 #End Region
 
 #Region "Private properties and methods"
-    ' here are some useful properties and methods that can be used as required
-    ' to help with
 
 #Region "ASCOM Registration"
 

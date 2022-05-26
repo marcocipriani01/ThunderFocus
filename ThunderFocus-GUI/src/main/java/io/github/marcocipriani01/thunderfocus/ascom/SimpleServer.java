@@ -43,7 +43,7 @@ public abstract class SimpleServer {
     /**
      * Starts the connection to the client/server.
      */
-    public void connect() {
+    public void start() {
         if (connected) throw new IllegalStateException("Already connected.");
         new Thread(() -> {
             try {

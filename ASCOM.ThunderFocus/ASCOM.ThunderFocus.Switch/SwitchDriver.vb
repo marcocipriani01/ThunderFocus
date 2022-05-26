@@ -57,6 +57,8 @@ Public Class Switch
         }
     Private ReadOnly ipAddress As IPAddress
 
+    Private maxSwitchVal As Short = 0
+
     Private Function SocketRead() As String
         If Connected = False Then
             Throw New DriverException("Not connected!")
@@ -95,6 +97,7 @@ Public Class Switch
             socket.Shutdown(SocketShutdown.Both)
             socket.Close()
             connectedState = False
+            maxSwitchVal = 0
         Catch ex As Exception
             TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
             Throw New DriverException("Disconnection error!")
@@ -193,6 +196,14 @@ Public Class Switch
                     If connectedState = False Then
                         Throw New DriverException("This ThunderFocus board doesn't have a powerbox!")
                     End If
+                    SocketSend("MaxSwitch")
+                    Dim rcv As String = SocketRead()
+                    If String.IsNullOrEmpty(rcv) Then
+                        Disconnect()
+                        Throw New DriverException("Trouble reading information from ThunderFocus!")
+                    End If
+                    maxSwitchVal = Short.Parse(rcv)
+                    TL.LogMessage("Connected Set", "Number of switches = " + CStr(MaxSwitch))
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
                     connectedState = False
@@ -257,20 +268,12 @@ Public Class Switch
 
 #Region "ISwitchV2 Implementation"
 
-    Private maxSwitchVal As Short = 0
-
     ''' <summary>
     ''' The number of switches managed by this driver
     ''' </summary>
     Public ReadOnly Property MaxSwitch As Short Implements ISwitchV2.MaxSwitch
         Get
             CheckConnected("Attemped MaxSwitch while disconnected!")
-            SocketSend("MaxSwitch")
-            Dim rcv As String = SocketRead()
-            If Not String.IsNullOrEmpty(rcv) Then
-                maxSwitchVal = Short.Parse(rcv)
-            End If
-            TL.LogMessage("MaxSwitch Get", maxSwitchVal.ToString())
             Return maxSwitchVal
         End Get
     End Property
@@ -282,6 +285,7 @@ Public Class Switch
     ''' <returns>The name of the switch</returns>
     Public Function GetSwitchName(id As Short) As String Implements ISwitchV2.GetSwitchName
         CheckConnected("Attemped GetSwitchName while disconnected!")
+        ValidateId("GetSwitchName", id)
         SocketSend("GetSwitchName")
         Dim rcv As String = SocketRead()
         If Not String.IsNullOrEmpty(rcv) Then
@@ -298,6 +302,7 @@ Public Class Switch
     ''' <param name="name">The name of the switch</param>
     Sub SetSwitchName(id As Short, name As String) Implements ISwitchV2.SetSwitchName
         CheckConnected("Attemped SetSwitchName while disconnected!")
+        ValidateId("SetSwitchName", id)
         SocketSend("SetSwitchName=" + id.ToString() + "," + name)
     End Sub
 
@@ -307,9 +312,7 @@ Public Class Switch
     ''' <param name="id">The number of the switch whose description is to be returned</param><returns></returns>
     ''' <exception cref="InvalidValueException">If id is outside the range 0 to MaxSwitch - 1</exception>
     Public Function GetSwitchDescription(id As Short) As String Implements ISwitchV2.GetSwitchDescription
-        Validate("GetSwitchDescription", id)
-        TL.LogMessage("GetSwitchDescription", "Not Implemented")
-        Throw New MethodNotImplementedException("GetSwitchDescription")
+        Return GetSwitchName(id)
     End Function
 
     ''' <summary>
@@ -323,9 +326,15 @@ Public Class Switch
     ''' <exception cref="MethodNotImplementedException">If the method is not implemented</exception>
     ''' <exception cref="InvalidValueException">If id is outside the range 0 to MaxSwitch - 1</exception>
     Public Function CanWrite(id As Short) As Boolean Implements ISwitchV2.CanWrite
-        Validate("CanWrite", id)
-        TL.LogMessage("CanWrite", "Default true")
-        Return True
+        CheckConnected("Attemped CanWrite while disconnected!")
+        ValidateId("CanWrite", id)
+        SocketSend("CanWrite")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("CanWrite", rcv)
+            Return rcv.Contains("true")
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Function
 
 #Region "boolean members"
@@ -336,9 +345,18 @@ Public Class Switch
     ''' <param name="id">The switch number to return</param>
     ''' <returns>True or false</returns>
     Function GetSwitch(id As Short) As Boolean Implements ISwitchV2.GetSwitch
-        Validate("GetSwitch", id, True)
-        TL.LogMessage("GetSwitch", "Not Implemented")
-        Throw New ASCOM.MethodNotImplementedException("GetSwitch")
+        CheckConnected("Attemped GetSwitch while disconnected!")
+        ValidateStates("GetSwitch", id, True)
+        SocketSend("GetSwitch")
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("GetSwitch", rcv)
+            If rcv.Contains("PWM") Then
+                Throw New MethodNotImplementedException("GetSwitch is not implemented for multi-value switches")
+            End If
+            Return rcv.Contains("true")
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Function
 
     ''' <summary>
@@ -348,9 +366,9 @@ Public Class Switch
     ''' <param name="ID">The number of the switch to set</param>
     ''' <param name="State">The required switch state</param>
     Sub SetSwitch(id As Short, state As Boolean) Implements ISwitchV2.SetSwitch
-        Validate("SetSwitch", id, True)
-        TL.LogMessage("SetSwitch", "Not Implemented")
-        Throw New ASCOM.MethodNotImplementedException("SetSwitch")
+        CheckConnected("Attemped SetSwitch while disconnected!")
+        ValidateStates("SetSwitch", id, True)
+
     End Sub
 
 #End Region
@@ -363,7 +381,8 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function MaxSwitchValue(id As Short) As Double Implements ISwitchV2.MaxSwitchValue
-        Validate("MaxSwitchValue", id)
+        CheckConnected("Attemped MaxSwitchValue while disconnected!")
+        ValidateId("MaxSwitchValue", id)
         TL.LogMessage("MaxSwitchValue", "Not Implemented")
         Throw New MethodNotImplementedException("MaxSwitchValue")
     End Function
@@ -375,6 +394,8 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function MinSwitchValue(id As Short) As Double Implements ISwitchV2.MinSwitchValue
+        CheckConnected("Attemped MinSwitchValue while disconnected!")
+        ValidateId("MinSwitchValue", id)
         Return 0.0
     End Function
 
@@ -386,6 +407,8 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function SwitchStep(id As Short) As Double Implements ISwitchV2.SwitchStep
+        CheckConnected("Attemped SwitchStep while disconnected!")
+        ValidateId("SwitchStep", id)
         Return 1.0
     End Function
 
@@ -396,9 +419,9 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <returns></returns>
     Function GetSwitchValue(id As Short) As Double Implements ISwitchV2.GetSwitchValue
-        Validate("GetSwitchValue", id, False)
-        TL.LogMessage("GetSwitchValue", "Not Implemented")
-        Throw New MethodNotImplementedException("GetSwitchValue")
+        CheckConnected("Attemped GetSwitchValue while disconnected!")
+        ValidateStates("GetSwitchValue", id, False)
+
     End Function
 
     ''' <summary>
@@ -410,12 +433,9 @@ Public Class Switch
     ''' <param name="id"></param>
     ''' <param name="value"></param>
     Sub SetSwitchValue(id As Short, value As Double) Implements ISwitchV2.SetSwitchValue
-        Validate("SetSwitchValue", id, value)
-        If value < MinSwitchValue(id) Or value > MaxSwitchValue(id) Then
-            Throw New InvalidValueException("", value.ToString(), String.Format("{0} to {1}", MinSwitchValue(id), MaxSwitchValue(id)))
-        End If
-        TL.LogMessage("SetSwitchValue", "Not Implemented")
-        Throw New MethodNotImplementedException("SetSwitchValue")
+        CheckConnected("Attemped SetSwitchValue while disconnected!")
+        ValidateRange("SetSwitchValue", id, value)
+
     End Sub
 
 #End Region
@@ -429,7 +449,7 @@ Public Class Switch
     ''' </summary>
     ''' <param name="message">The message.</param>
     ''' <param name="id">The id.</param>
-    Private Sub Validate(message As String, id As Short)
+    Private Sub ValidateId(message As String, id As Short)
         If (id < 0 Or id >= maxSwitchVal) Then
             Throw New InvalidValueException(message, id.ToString(), String.Format("0 to {0}", maxSwitchVal - 1))
         End If
@@ -442,11 +462,11 @@ Public Class Switch
     ''' <param name="message"></param>
     ''' <param name="id"></param>
     ''' <param name="expectBoolean"></param>
-    Private Sub Validate(message As String, id As Short, expectBoolean As Boolean)
-        Validate(message, id)
-        Dim ns As Integer = CInt(((MaxSwitchValue(id) / SwitchStep(id)) + 1))
+    Private Sub ValidateStates(message As String, id As Short, expectBoolean As Boolean)
+        ValidateId(message, id)
+        Dim ns As Integer = CInt(MaxSwitchValue(id) + 1)
         If (expectBoolean And ns <> 2) Or (Not expectBoolean And ns <= 2) Then
-            TL.LogMessage(message, String.Format("Switch {0} has the wrong number of states", id, ns))
+            TL.LogIssue(message, String.Format("Switch {0} has the wrong number of states", id, ns))
             Throw New MethodNotImplementedException(String.Format("{0}({1})", message, id))
         End If
     End Sub
@@ -458,10 +478,10 @@ Public Class Switch
     ''' <param name="message">The message.</param>
     ''' <param name="id">The id.</param>
     ''' <param name="value">The value.</param>
-    Private Sub Validate(message As String, id As Short, value As Double)
-        Validate(message, id, False)
+    Private Sub ValidateRange(message As String, id As Short, value As Double)
+        ValidateStates(message, id, False)
         Dim max = MaxSwitchValue(id)
-        If (value < 0.0 Or value > max) Then
+        If value < 0.0 Or value > max Then
             TL.LogMessage(message, String.Format("Value {1} for Switch {0} is out of the allowed range {2} to {3}", id, value, 0.0, max))
             Throw New InvalidValueException(message, value.ToString(), String.Format("Switch({0}) range {1} to {2}", id, 0.0, max))
         End If
@@ -469,13 +489,10 @@ Public Class Switch
 #End Region
 
 #Region "Private properties and methods"
-    ' here are some useful properties and methods that can be used as required
-    ' to help with
 
 #Region "ASCOM Registration"
 
-    Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
-
+    Private Shared Sub RegUnregASCOM(bRegister As Boolean)
         Using P As New Profile() With {.DeviceType = "Switch"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -483,21 +500,16 @@ Public Class Switch
                 P.Unregister(driverID)
             End If
         End Using
-
     End Sub
 
     <ComRegisterFunction()>
-    Public Shared Sub RegisterASCOM(ByVal T As Type)
-
+    Public Shared Sub RegisterASCOM(T As Type)
         RegUnregASCOM(True)
-
     End Sub
 
     <ComUnregisterFunction()>
-    Public Shared Sub UnregisterASCOM(ByVal T As Type)
-
+    Public Shared Sub UnregisterASCOM(T As Type)
         RegUnregASCOM(False)
-
     End Sub
 
 #End Region
@@ -516,7 +528,7 @@ Public Class Switch
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
-    Private Sub CheckConnected(ByVal message As String)
+    Private Sub CheckConnected(message As String)
         If Not IsConnected Then
             Throw New NotConnectedException(message)
         End If

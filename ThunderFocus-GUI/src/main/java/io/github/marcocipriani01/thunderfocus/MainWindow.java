@@ -333,15 +333,20 @@ public class MainWindow extends JFrame implements
         localOrRemoteCombo = new JComboBox<>(new String[]{i18n("local"), i18n("remote")});
         indiPortSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.indiServerPort, 1024, 65535, 1));
+        indiPortSpinner.setEditor(new JSpinner.NumberEditor(indiPortSpinner, "#"));
         ascomPortSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.ascomBridgePort, 1024, 65535, 1));
+        ascomPortSpinner.setEditor(new JSpinner.NumberEditor(ascomPortSpinner, "#"));
         fokTicksCountSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.focuserTicksCount, 10, 2147483647, 1));
+        fokTicksCountSpinner.setEditor(new JSpinner.NumberEditor(fokTicksCountSpinner, "#"));
         fokUnitsCombo = new JComboBox<>(Settings.Units.values());
         fokUnitsCombo.setSelectedItem(settings.focuserTicksUnit);
         fokMaxTravelSpinner = new JSpinner(new SpinnerNumberModel(
                 settings.getFocuserMaxTravel(), 1, 2147483647, 1));
+        fokMaxTravelSpinner.setEditor(new JSpinner.NumberEditor(fokMaxTravelSpinner, "#"));
         fokBacklashSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 1000, 1));
+        fokBacklashSpinner.setEditor(new JSpinner.NumberEditor(fokBacklashSpinner, "#"));
         powerBoxTable = new JPowerBoxTable(this);
         powerBoxAutoModeBox = new JComboBox<>();
         powerBoxAutoModeBox.addItemListener(this);
@@ -575,7 +580,23 @@ public class MainWindow extends JFrame implements
             }
 
         } else if (source == saveConfigButton) {
-            settings.theme = (Settings.Theme) appThemeCombo.getSelectedItem();
+            Settings.Theme newTheme = Objects.requireNonNull((Settings.Theme) appThemeCombo.getSelectedItem());
+            if (settings.theme != newTheme) {
+                settings.theme = newTheme;
+                try {
+                    switch (newTheme) {
+                        case LIGHT -> FlatIntelliJLaf.setup();
+                        case DARK -> FlatDarkLaf.setup();
+                        default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
+                                "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
+                    }
+                    SwingUtilities.updateComponentTreeUI(this);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
+                aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
+            }
             settings.indiServer = indiServerCheckBox.isSelected();
             settings.ascomBridge = ascomBridgeCheckBox.isSelected();
             settings.autoConnect = autoConnectBox.isSelected();
@@ -616,24 +637,10 @@ public class MainWindow extends JFrame implements
             if (board.isConnected()) startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
             try {
                 settings.save();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-                JOptionPane.showMessageDialog(this, i18n("error.saving"),
-                        APP_NAME, JOptionPane.ERROR_MESSAGE);
-            }
-            try {
-                switch (settings.theme) {
-                    case LIGHT -> FlatIntelliJLaf.setup();
-                    case DARK -> FlatDarkLaf.setup();
-                    default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
-                            "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
-                }
-                SwingUtilities.updateComponentTreeUI(this);
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
             }
-            appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
-            aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
 
         } else if (source == powerBoxOnButton) {
             try {
@@ -896,11 +903,11 @@ public class MainWindow extends JFrame implements
                     if (forceRestart) {
                         Main.ascomBridge.close();
                         Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
-                        Main.ascomBridge.connect();
+                        Main.ascomBridge.start();
                     }
                 } else {
                     Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
-                    Main.ascomBridge.connect();
+                    Main.ascomBridge.start();
                 }
                 ascomStatusLabel.setText(i18n("bridge.active"));
             } else {

@@ -21,11 +21,9 @@
 Option Strict On
 Option Infer On
 
-Imports System.Net
-Imports System.Net.Sockets
-Imports System.Threading
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
+Imports ThunderFocus
 
 <Guid("d3ad7299-1f00-4943-8432-cd5cf33afb73")>
 <ClassInterface(ClassInterfaceType.None)>
@@ -38,86 +36,27 @@ Public Class Switch
     Friend Shared driverID As String = "ASCOM.ThunderFocus.Switch"
     Private Shared ReadOnly driverDescription As String = "ThunderFocus Powerbox"
 
-    Friend Shared socketPortProfileName As String = "Socket port"
-    Friend Shared socketPortDefault As String = "5001"
-
-    Friend Shared debugProfileName As String = "Debug"
-    Friend Shared debugDefault As String = "False"
-
     Friend Shared socketPort As Integer = 5001
     Friend Shared debug As Boolean = False
 
+    Private ReadOnly helper As DriverHelper
     Private connectedState As Boolean = False
     Private TL As TraceLogger
 
-    Private ReadOnly socket As Socket
-    Private ReadOnly ipAddress As IPAddress
-
     Private maxSwitchVal As Short = 0
-
-    Private Function SocketRead() As String
-        If Connected = False Then
-            Throw New DriverException("Not connected!")
-        End If
-        Try
-            Dim socketBuffer As Byte() = New Byte(1023) {}
-            Dim bytesRec As Integer = socket.Receive(socketBuffer)
-            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Replace("\n", "").Replace("\r", "").Trim()
-            TL.LogMessage("ReadSocket", rcv)
-            Return rcv
-        Catch ex As Exception
-            TL.LogIssue("ReadSocket", ex.Message)
-            Disconnect()
-        End Try
-        Return String.Empty
-    End Function
-
-    Private Sub SocketSend(msg As String)
-        If Connected = False Then
-            Throw New DriverException("Not connected!")
-        End If
-        Try
-            TL.LogMessage("SocketSend", "Sending " + msg)
-            Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
-            socket.SendBufferSize = bytesToSend.Length
-            socket.Send(bytesToSend)
-        Catch ex As Exception
-            TL.LogIssue("SendSocket", ex.Message)
-            Disconnect()
-        End Try
-    End Sub
-
-    Private Sub Disconnect()
-        TL.LogMessage("Disconnect", "Disconnecting from port " + socketPort.ToString())
-        Try
-            socket.Shutdown(SocketShutdown.Both)
-            socket.Close()
-            connectedState = False
-            maxSwitchVal = 0
-        Catch ex As Exception
-            TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
-            Throw New DriverException("Disconnection error!")
-        End Try
-    End Sub
 
     '
     ' Constructor - Must be public for COM registration!
     '
     Public Sub New()
         ReadProfile() ' Read device configuration from the ASCOM Profile store
-        TL = New TraceLogger("", "ThunderFocus") With {
+        TL = New TraceLogger("", "ThunderFocus_Switch") With {
             .Enabled = debug
         }
         TL.LogMessage("Switch", "Starting initialisation")
         connectedState = False
         Application.EnableVisualStyles()
-        Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
-        ipAddress = ipHostInfo.AddressList(0)
-        socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
-            .NoDelay = True,
-            .ReceiveTimeout = 1000,
-            .SendTimeout = 1000
-        }
+        helper = New DriverHelper()
         TL.LogMessage("Switch", "Completed initialisation")
     End Sub
 
@@ -185,22 +124,12 @@ Public Class Switch
             If value Then
                 TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
-                    socket.Connect(remoteEP)
-                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("HasPowerBox" + Environment.NewLine)
-                    socket.SendBufferSize = bytesToSend.Length
-                    socket.Send(bytesToSend)
-                    Thread.Sleep(200)
-                    Dim socketBuffer As Byte() = New Byte(1023) {}
-                    Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                    connectedState = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Contains("true")
-                    If connectedState = False Then
-                        Throw New DriverException("This ThunderFocus board doesn't have a powerbox!")
-                    End If
-                    SocketSend("MaxSwitch")
-                    Dim rcv As String = SocketRead()
+                    connectedState = helper.Connect(socketPort, "HasPowerBox")
+                    helper.SocketSend("MaxSwitch")
+                    Dim rcv As String = helper.SocketRead()
                     If String.IsNullOrEmpty(rcv) Then
-                        Disconnect()
+                        helper.Disconnect()
+                        connectedState = False
                         Throw New DriverException("Trouble reading information from ThunderFocus!")
                     End If
                     maxSwitchVal = Short.Parse(rcv)
@@ -210,8 +139,12 @@ Public Class Switch
                     connectedState = False
                     Throw New DriverException("Could not connect to ThunderFocus!")
                 End Try
+                If connectedState = False Then
+                    Throw New DriverException("This ThunderFocus board doesn't have a powerbox!")
+                End If
             Else
-                Disconnect()
+                helper.Disconnect()
+                connectedState = False
             End If
         End Set
     End Property
@@ -249,16 +182,17 @@ Public Class Switch
 
     Public ReadOnly Property Name As String Implements ISwitchV2.Name
         Get
-            Return "ThunderFocus"
+            Return "ThunderFocus powerbox"
         End Get
     End Property
 
     Public Sub Dispose() Implements ISwitchV2.Dispose
         TL.LogMessage("Dispose", "Disposing...")
         Try
-            Disconnect()
+            helper.Disconnect()
+            connectedState = False
         Catch ex As Exception
-            TL.LogIssue("Dispose", "Exception disconnecting: " + ex.Message)
+            TL.LogIssue("Dispose", "Exception while disconnecting: " + ex.Message)
         End Try
         TL.Enabled = False
         TL.Dispose()
@@ -287,12 +221,16 @@ Public Class Switch
     Public Function GetSwitchName(id As Short) As String Implements ISwitchV2.GetSwitchName
         CheckConnected("Attemped GetSwitchName while disconnected!")
         ValidateId("GetSwitchName", id)
-        SocketSend("GetSwitchName=" + id.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("GetSwitchName", rcv)
-            Return rcv
-        End If
+        Try
+            helper.SocketSend("GetSwitchName=" + id.ToString())
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                TL.LogMessage("GetSwitchName", rcv)
+                Return rcv
+            End If
+        Catch ex As Exception
+            TL.LogIssue("GetSwitchName", "Exception while getting switch name: " + ex.Message)
+        End Try
         Throw New DriverException("No response from ThunderFocus!")
     End Function
 
@@ -304,7 +242,11 @@ Public Class Switch
     Sub SetSwitchName(id As Short, name As String) Implements ISwitchV2.SetSwitchName
         CheckConnected("Attemped SetSwitchName while disconnected!")
         ValidateId("SetSwitchName", id)
-        SocketSend("SetSwitchName=" + id.ToString() + "," + name)
+        Try
+            helper.SocketSend("SetSwitchName=" + id.ToString() + "," + name)
+        Catch ex As Exception
+            TL.LogIssue("SetSwitchName", "Exception while setting switch name: " + ex.Message)
+        End Try
     End Sub
 
     ''' <summary>
@@ -329,12 +271,16 @@ Public Class Switch
     Public Function CanWrite(id As Short) As Boolean Implements ISwitchV2.CanWrite
         CheckConnected("Attemped CanWrite while disconnected!")
         ValidateId("CanWrite", id)
-        SocketSend("CanWrite=" + id.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("CanWrite", rcv)
-            Return rcv.Contains("true")
-        End If
+        Try
+            helper.SocketSend("CanWrite=" + id.ToString())
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                TL.LogMessage("CanWrite", rcv)
+                Return rcv.Contains("true")
+            End If
+        Catch ex As Exception
+            TL.LogIssue("CanWrite", "Exception while getting switch write state: " + ex.Message)
+        End Try
         Throw New DriverException("No response from ThunderFocus!")
     End Function
 
@@ -348,15 +294,19 @@ Public Class Switch
     Function GetSwitch(id As Short) As Boolean Implements ISwitchV2.GetSwitch
         CheckConnected("Attemped GetSwitch while disconnected!")
         ValidateStates("GetSwitch", id, True)
-        SocketSend("GetSwitch=" + id.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("GetSwitch", rcv)
-            If rcv.Contains("PWM") Then
-                Throw New MethodNotImplementedException("GetSwitch is not implemented for multi-value switches")
+        Try
+            helper.SocketSend("GetSwitch=" + id.ToString())
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) Then
+                TL.LogMessage("GetSwitch", rcv)
+                If rcv.Contains("PWM") Then
+                    Throw New MethodNotImplementedException("GetSwitch is not implemented for multi-value switches")
+                End If
+                Return rcv.Contains("true")
             End If
-            Return rcv.Contains("true")
-        End If
+        Catch ex As Exception
+            TL.LogIssue("GetSwitch", "Exception while getting switch state: " + ex.Message)
+        End Try
         Throw New DriverException("No response from ThunderFocus!")
     End Function
 
@@ -375,8 +325,13 @@ Public Class Switch
         Else
             stateStr = "false"
         End If
-        SocketSend("SetSwitch=" + id.ToString() + "," + stateStr)
-        Dim rcv As String = SocketRead()
+        Dim rcv As String = ""
+        Try
+            helper.SocketSend("SetSwitch=" + id.ToString() + "," + stateStr)
+            rcv = helper.SocketRead()
+        Catch ex As Exception
+            TL.LogIssue("SetSwitch", "Exception while setting switch state: " + ex.Message)
+        End Try
         If String.IsNullOrEmpty(rcv) Then
             Throw New DriverException("No response from ThunderFocus!")
         End If
@@ -398,16 +353,21 @@ Public Class Switch
     Function MaxSwitchValue(id As Short) As Double Implements ISwitchV2.MaxSwitchValue
         CheckConnected("Attemped MaxSwitchValue while disconnected!")
         ValidateId("MaxSwitchValue", id)
-        SocketSend("MaxSwitchValue=" + id.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("MaxSwitchValue", rcv)
-            If rcv.Contains("NonExistent") Then
-                Return 1.0
-            End If
-            Return CDbl(rcv)
+        Dim rcv As String = ""
+        Try
+            helper.SocketSend("MaxSwitchValue=" + id.ToString())
+            rcv = helper.SocketRead()
+        Catch ex As Exception
+            TL.LogIssue("MaxSwitchValue", "Exception while getting switch max value: " + ex.Message)
+        End Try
+        If String.IsNullOrEmpty(rcv) Then
+            Throw New DriverException("No response from ThunderFocus!")
         End If
-        Throw New DriverException("No response from ThunderFocus!")
+        TL.LogMessage("MaxSwitchValue", rcv)
+        If rcv.Contains("NonExistent") Then
+            Return 1.0
+        End If
+        Return CDbl(rcv)
     End Function
 
     ''' <summary>
@@ -444,16 +404,21 @@ Public Class Switch
     Function GetSwitchValue(id As Short) As Double Implements ISwitchV2.GetSwitchValue
         CheckConnected("Attemped GetSwitchValue while disconnected!")
         ValidateStates("GetSwitchValue", id, False)
-        SocketSend("GetSwitchValue=" + id.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("GetSwitchValue", rcv)
-            If rcv.Contains("Boolean") Then
-                Throw New MethodNotImplementedException("GetSwitchValue is not implemented for boolean switches")
-            End If
-            Return CDbl(rcv)
+        Dim rcv As String = ""
+        Try
+            helper.SocketSend("GetSwitchValue=" + id.ToString())
+            rcv = helper.SocketRead()
+        Catch ex As Exception
+            TL.LogIssue("GetSwitchValue", "Exception while getting switch value: " + ex.Message)
+        End Try
+        If String.IsNullOrEmpty(rcv) Then
+            Throw New DriverException("No response from ThunderFocus!")
         End If
-        Throw New DriverException("No response from ThunderFocus!")
+        TL.LogMessage("GetSwitchValue", rcv)
+        If rcv.Contains("Boolean") Then
+            Throw New MethodNotImplementedException("GetSwitchValue is not implemented for boolean switches")
+        End If
+        Return CDbl(rcv)
     End Function
 
     ''' <summary>
@@ -467,15 +432,20 @@ Public Class Switch
     Sub SetSwitchValue(id As Short, value As Double) Implements ISwitchV2.SetSwitchValue
         CheckConnected("Attemped SetSwitchValue while disconnected!")
         ValidateRange("SetSwitchValue", id, value)
-        SocketSend("SetSwitchValue=" + id.ToString() + "," + value.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) Then
-            TL.LogMessage("SetSwitchValue", rcv)
-            If Not rcv.Contains("OK") Then
-                Throw New MethodNotImplementedException("SetSwitchValue is not implemented for boolean switches")
-            End If
+        Dim rcv As String = ""
+        Try
+            helper.SocketSend("SetSwitchValue=" + id.ToString() + "," + value.ToString())
+            rcv = helper.SocketRead()
+        Catch ex As Exception
+            TL.LogIssue("SetSwitchValue", "Exception while setting switch value: " + ex.Message)
+        End Try
+        If String.IsNullOrEmpty(rcv) Then
+            Throw New DriverException("No response from ThunderFocus!")
         End If
-        Throw New DriverException("No response from ThunderFocus!")
+        TL.LogMessage("SetSwitchValue", rcv)
+        If Not rcv.Contains("OK") Then
+            Throw New MethodNotImplementedException("SetSwitchValue is not implemented for boolean switches")
+        End If
     End Sub
 
 #End Region
@@ -580,8 +550,8 @@ Public Class Switch
     Friend Sub ReadProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "Switch"
-            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, debugProfileName, String.Empty, debugDefault))
-            socketPort = Integer.Parse(driverProfile.GetValue(driverID, socketPortProfileName, String.Empty, socketPortDefault))
+            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, DriverHelper.debugProfileName, String.Empty, DriverHelper.debugDefault))
+            socketPort = Integer.Parse(driverProfile.GetValue(driverID, DriverHelper.socketPortProfileName, String.Empty, DriverHelper.socketPortDefault))
         End Using
     End Sub
 
@@ -591,8 +561,8 @@ Public Class Switch
     Friend Sub WriteProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "Switch"
-            driverProfile.WriteValue(driverID, debugProfileName, debug.ToString())
-            driverProfile.WriteValue(driverID, socketPortProfileName, socketPort.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.debugProfileName, debug.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.socketPortProfileName, socketPort.ToString())
         End Using
 
     End Sub

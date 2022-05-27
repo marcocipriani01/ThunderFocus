@@ -4,12 +4,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.CoverCalibrator", "ASCOM.ThunderFocus.CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.vbproj", "{71BB4DA7-4092-416D-89FE-97CD15207371}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4} = {74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}
+	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Focuser", "ASCOM.ThunderFocus.Focuser\ASCOM.ThunderFocus.Focuser.vbproj", "{87EA2D07-4E59-4307-BD8D-4EB415997C65}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4} = {74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}
+	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.Switch", "ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.vbproj", "{5614894A-9420-406F-93B4-BFB737A1635A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4} = {74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}
+	EndProjectSection
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ASCOM.ThunderFocus.ObservingConditions", "ASCOM.ThunderFocus.ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.vbproj", "{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4} = {74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}
+	EndProjectSection
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ThunderFocus.DriverHelper", "ThunderFocus.DriverHelper\ThunderFocus.DriverHelper.vbproj", "{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,9 +44,11 @@ Global
 		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5614894A-9420-406F-93B4-BFB737A1635A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94F0D11A-E96B-4B3A-870A-91A3B1E9932F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

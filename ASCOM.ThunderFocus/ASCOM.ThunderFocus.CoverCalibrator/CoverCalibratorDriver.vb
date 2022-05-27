@@ -21,11 +21,9 @@
 Option Strict On
 Option Infer On
 
-Imports System.Net
-Imports System.Net.Sockets
-Imports System.Threading
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
+Imports ThunderFocus
 
 <Guid("79e4943f-dc9c-4336-8a82-be3056198549")>
 <ClassInterface(ClassInterfaceType.None)>
@@ -38,83 +36,25 @@ Public Class CoverCalibrator
     Friend Shared driverID As String = "ASCOM.ThunderFocus.CoverCalibrator"
     Private Shared ReadOnly driverDescription As String = "ThunderFocus CoverCalibrator"
 
-    Friend Shared socketPortProfileName As String = "Socket port"
-    Friend Shared socketPortDefault As String = "5001"
-
-    Friend Shared debugProfileName As String = "Debug"
-    Friend Shared debugDefault As String = "False"
-
     Friend Shared socketPort As Integer = 5001
     Friend Shared debug As Boolean = False
 
+    Private ReadOnly helper As DriverHelper
     Private connectedState As Boolean = False
     Private TL As TraceLogger
-
-    Private ReadOnly socket As Socket
-    Private ReadOnly ipAddress As IPAddress
-
-    Private Function SocketRead() As String
-        If Connected = False Then
-            Throw New DriverException("Not connected!")
-        End If
-        Try
-            Dim socketBuffer As Byte() = New Byte(1023) {}
-            Dim bytesRec As Integer = socket.Receive(socketBuffer)
-            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Replace("\n", "").Replace("\r", "").Trim()
-            TL.LogMessage("ReadSocket", rcv)
-            Return rcv
-        Catch ex As Exception
-            TL.LogIssue("ReadSocket", ex.Message)
-            Disconnect()
-        End Try
-        Return String.Empty
-    End Function
-
-    Private Sub SocketSend(msg As String)
-        If Connected = False Then
-            Throw New DriverException("Not connected!")
-        End If
-        Try
-            TL.LogMessage("SocketSend", "Sending " + msg)
-            Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
-            socket.SendBufferSize = bytesToSend.Length
-            socket.Send(bytesToSend)
-        Catch ex As Exception
-            TL.LogIssue("SendSocket", ex.Message)
-            Disconnect()
-        End Try
-    End Sub
-
-    Private Sub Disconnect()
-        TL.LogMessage("Disconnect", "Disconnecting from port " + socketPort.ToString())
-        Try
-            socket.Shutdown(SocketShutdown.Both)
-            socket.Close()
-            connectedState = False
-        Catch ex As Exception
-            TL.LogIssue("Connected Set", "Disconnection exception! " + ex.Message)
-            Throw New DriverException("Disconnection error!")
-        End Try
-    End Sub
 
     '
     ' Constructor - Must be public for COM registration!
     '
     Public Sub New()
         ReadProfile() ' Read device configuration from the ASCOM Profile store
-        TL = New TraceLogger("", "ThunderFocus") With {
+        TL = New TraceLogger("", "ThunderFocus_CoverCalibrator") With {
             .Enabled = debug
         }
         TL.LogMessage("CoverCalibrator", "Starting initialisation")
         connectedState = False
         Application.EnableVisualStyles()
-        Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
-        ipAddress = ipHostInfo.AddressList(0)
-        socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
-            .NoDelay = True,
-            .ReceiveTimeout = 1000,
-            .SendTimeout = 1000
-        }
+        helper = New DriverHelper()
         TL.LogMessage("CoverCalibrator", "Completed initialisation")
     End Sub
 
@@ -184,25 +124,18 @@ Public Class CoverCalibrator
             If value Then
                 TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    Dim remoteEP As New IPEndPoint(ipAddress, socketPort)
-                    socket.Connect(remoteEP)
-                    Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes("HasFlat" + Environment.NewLine)
-                    socket.SendBufferSize = bytesToSend.Length
-                    socket.Send(bytesToSend)
-                    Thread.Sleep(200)
-                    Dim socketBuffer As Byte() = New Byte(1023) {}
-                    Dim bytesRec As Integer = socket.Receive(socketBuffer)
-                    connectedState = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Contains("true")
-                    If connectedState = False Then
-                        Throw New DriverException("This ThunderFocus board doesn't have a flat panel!")
-                    End If
+                    connectedState = helper.Connect(socketPort, "HasFlat")
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
                     connectedState = False
                     Throw New DriverException("Could not connect to ThunderFocus!")
                 End Try
+                If connectedState = False Then
+                    Throw New DriverException("This ThunderFocus board doesn't have a flat panel!")
+                End If
             Else
-                Disconnect()
+                helper.Disconnect()
+                connectedState = False
             End If
         End Set
     End Property
@@ -240,16 +173,17 @@ Public Class CoverCalibrator
 
     Public ReadOnly Property Name As String Implements ICoverCalibratorV1.Name
         Get
-            Return "ThunderFocus"
+            Return "ThunderFocus flat panel"
         End Get
     End Property
 
     Public Sub Dispose() Implements ICoverCalibratorV1.Dispose
         TL.LogMessage("Dispose", "Disposing...")
         Try
-            Disconnect()
+            helper.Disconnect()
+            connectedState = False
         Catch ex As Exception
-            TL.LogIssue("Dispose", "Exception disconnecting: " + ex.Message)
+            TL.LogIssue("Dispose", "Exception while disconnecting: " + ex.Message)
         End Try
         TL.Enabled = False
         TL.Dispose()
@@ -270,21 +204,25 @@ Public Class CoverCalibrator
     Public ReadOnly Property CoverState() As CoverStatus Implements ICoverCalibratorV1.CoverState
         Get
             CheckConnected("Attemped CoverState while disconnected!")
-            SocketSend("CoverState")
-            Dim rcv As String = SocketRead()
-            If Not String.IsNullOrEmpty(rcv) Then
-                Select Case rcv
-                    Case "Closed"
-                        coverVal = CoverStatus.Closed
-                    Case "Open"
-                        coverVal = CoverStatus.Open
-                    Case "NotPresent"
-                        coverVal = CoverStatus.NotPresent
-                    Case Else
-                        TL.LogIssue("CoverState", "Unknown CoverStatus")
-                End Select
-            End If
-            TL.LogMessage("CoverState Get", coverVal.ToString())
+            Try
+                helper.SocketSend("CoverState")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) Then
+                    Select Case rcv
+                        Case "Closed"
+                            coverVal = CoverStatus.Closed
+                        Case "Open"
+                            coverVal = CoverStatus.Open
+                        Case "NotPresent"
+                            coverVal = CoverStatus.NotPresent
+                        Case Else
+                            TL.LogIssue("CoverState", "Unknown CoverStatus")
+                    End Select
+                End If
+                TL.LogMessage("CoverState Get", coverVal.ToString())
+            Catch ex As Exception
+                TL.LogIssue("CoverState Get", "Exception: " + ex.Message)
+            End Try
             Return coverVal
         End Get
     End Property
@@ -294,11 +232,15 @@ Public Class CoverCalibrator
     ''' </summary>
     Public Sub OpenCover() Implements ICoverCalibratorV1.OpenCover
         CheckConnected("Attemped OpenCover while disconnected!")
-        SocketSend("OpenCover")
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-            Throw New MethodNotImplementedException("OpenCover")
-        End If
+        Try
+            helper.SocketSend("OpenCover")
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                Throw New MethodNotImplementedException("OpenCover")
+            End If
+        Catch ex As Exception
+            TL.LogIssue("OpenCover", "Exception: " + ex.Message)
+        End Try
     End Sub
 
     ''' <summary>
@@ -306,11 +248,15 @@ Public Class CoverCalibrator
     ''' </summary>
     Public Sub CloseCover() Implements ICoverCalibratorV1.CloseCover
         CheckConnected("Attemped CloseCover while disconnected!")
-        SocketSend("CloseCover")
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-            Throw New MethodNotImplementedException("CloseCover")
-        End If
+        Try
+            helper.SocketSend("CloseCover")
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                Throw New MethodNotImplementedException("CloseCover")
+            End If
+        Catch ex As Exception
+            TL.LogIssue("CloseCover", "Exception: " + ex.Message)
+        End Try
     End Sub
 
     ''' <summary>
@@ -326,19 +272,23 @@ Public Class CoverCalibrator
     Public ReadOnly Property CalibratorState() As CalibratorStatus Implements ICoverCalibratorV1.CalibratorState
         Get
             CheckConnected("Attemped CalibratorState while disconnected!")
-            SocketSend("CalibratorState")
-            Dim rcv As String = SocketRead()
-            If Not String.IsNullOrEmpty(rcv) Then
-                Select Case rcv
-                    Case "Ready"
-                        calibratorVal = CalibratorStatus.Ready
-                    Case "Off"
-                        calibratorVal = CalibratorStatus.Off
-                    Case Else
-                        TL.LogIssue("CoverState", "Unknown CalibratorStatus")
-                End Select
-            End If
-            TL.LogMessage("CalibratorState Get", calibratorVal.ToString())
+            Try
+                helper.SocketSend("CalibratorState")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) Then
+                    Select Case rcv
+                        Case "Ready"
+                            calibratorVal = CalibratorStatus.Ready
+                        Case "Off"
+                            calibratorVal = CalibratorStatus.Off
+                        Case Else
+                            TL.LogIssue("CoverState", "Unknown CalibratorStatus")
+                    End Select
+                End If
+                TL.LogMessage("CalibratorState Get", calibratorVal.ToString())
+            Catch ex As Exception
+                TL.LogIssue("CalibratorState Get", "Exception: " + ex.Message)
+            End Try
             Return calibratorVal
         End Get
     End Property
@@ -349,12 +299,16 @@ Public Class CoverCalibrator
     Public ReadOnly Property Brightness As Integer Implements ICoverCalibratorV1.Brightness
         Get
             CheckConnected("Attemped Brightness while disconnected!")
-            SocketSend("Brightness")
-            Dim rcv As String = SocketRead()
-            If Not String.IsNullOrEmpty(rcv) Then
-                brightnessVal = CInt(rcv)
-            End If
-            TL.LogMessage("Brightness Get", brightnessVal.ToString())
+            Try
+                helper.SocketSend("Brightness")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) Then
+                    brightnessVal = CInt(rcv)
+                End If
+                TL.LogMessage("Brightness Get", brightnessVal.ToString())
+            Catch ex As Exception
+                TL.LogIssue("Brightness Get", "Exception: " + ex.Message)
+            End Try
             Return brightnessVal
         End Get
     End Property
@@ -374,11 +328,15 @@ Public Class CoverCalibrator
     ''' <param name="Brightness"></param>
     Public Sub CalibratorOn(Brightness As Integer) Implements ICoverCalibratorV1.CalibratorOn
         CheckConnected("Attemped CalibratorOn while disconnected!")
-        SocketSend("CalibratorOn=" + Brightness.ToString())
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-            Throw New MethodNotImplementedException("CalibratorOn")
-        End If
+        Try
+            helper.SocketSend("CalibratorOn=" + Brightness.ToString())
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                Throw New MethodNotImplementedException("CalibratorOn")
+            End If
+        Catch ex As Exception
+            TL.LogIssue("CalibratorOn", "Exception: " + ex.Message)
+        End Try
     End Sub
 
     ''' <summary>
@@ -386,11 +344,15 @@ Public Class CoverCalibrator
     ''' </summary>
     Public Sub CalibratorOff() Implements ICoverCalibratorV1.CalibratorOff
         CheckConnected("Attemped CalibratorOff while disconnected!")
-        SocketSend("CalibratorOff")
-        Dim rcv As String = SocketRead()
-        If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-            Throw New MethodNotImplementedException("CalibratorOff")
-        End If
+        Try
+            helper.SocketSend("CalibratorOff")
+            Dim rcv As String = helper.SocketRead()
+            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                Throw New MethodNotImplementedException("CalibratorOff")
+            End If
+        Catch ex As Exception
+            TL.LogIssue("CalibratorOff", "Exception: " + ex.Message)
+        End Try
     End Sub
 
 #End Region
@@ -446,8 +408,8 @@ Public Class CoverCalibrator
     Friend Sub ReadProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "CoverCalibrator"
-            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, debugProfileName, String.Empty, debugDefault))
-            socketPort = Integer.Parse(driverProfile.GetValue(driverID, socketPortProfileName, String.Empty, socketPortDefault))
+            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, DriverHelper.debugProfileName, String.Empty, DriverHelper.debugDefault))
+            socketPort = Integer.Parse(driverProfile.GetValue(driverID, DriverHelper.socketPortProfileName, String.Empty, DriverHelper.socketPortDefault))
         End Using
     End Sub
 
@@ -457,8 +419,8 @@ Public Class CoverCalibrator
     Friend Sub WriteProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "CoverCalibrator"
-            driverProfile.WriteValue(driverID, debugProfileName, debug.ToString())
-            driverProfile.WriteValue(driverID, socketPortProfileName, socketPort.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.debugProfileName, debug.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.socketPortProfileName, socketPort.ToString())
         End Using
 
     End Sub

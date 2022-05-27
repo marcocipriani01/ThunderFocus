@@ -26,7 +26,7 @@ Public Class DriverHelper
         Dim remoteEP As New IPEndPoint(ipAddress, port)
         socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
                 .NoDelay = True,
-                .ReceiveTimeout = 1000,
+                .ReceiveTimeout = 3000,
                 .SendTimeout = 1000
             }
         socket.Connect(remoteEP)
@@ -44,7 +44,7 @@ Public Class DriverHelper
     End Function
 
     Public Sub Disconnect()
-        If IsNothing(socket) Then
+        If Not IsNothing(socket) Then
             Try
                 socket.Shutdown(SocketShutdown.Both)
                 socket.Close()

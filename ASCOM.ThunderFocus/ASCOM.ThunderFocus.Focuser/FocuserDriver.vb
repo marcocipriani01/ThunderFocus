@@ -24,7 +24,6 @@ Option Infer On
 
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
-Imports ThunderFocus
 
 <Guid("3c3516af-337e-4766-924a-9c4c318f507a")>
 <ClassInterface(ClassInterfaceType.None)>
@@ -76,7 +75,7 @@ Public Class Focuser
         If IsConnected Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the focuser.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            Using F As New FocuserSetupDialog()
+            Using F As New SetupDialogForm()
                 Dim result As DialogResult = F.ShowDialog()
                 If result = DialogResult.OK Then
                     WriteProfile()
@@ -124,7 +123,9 @@ Public Class Focuser
             If value Then
                 TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    connectedState = helper.Connect(socketPort, "HasFocuser")
+                    SyncLock helper
+                        connectedState = helper.Connect(socketPort, "HasFocuser")
+                    End SyncLock
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
                     connectedState = False
@@ -134,7 +135,9 @@ Public Class Focuser
                     Throw New DriverException("This ThunderFocus board doesn't have a focuser!")
                 End If
             Else
-                helper.Disconnect()
+                SyncLock helper
+                    helper.Disconnect()
+                End SyncLock
                 connectedState = False
             End If
         End Set
@@ -180,7 +183,9 @@ Public Class Focuser
     Public Sub Dispose() Implements IFocuserV3.Dispose
         TL.LogMessage("Dispose", "Disposing...")
         Try
-            helper.Disconnect()
+            SyncLock helper
+                helper.Disconnect()
+            End SyncLock
             connectedState = False
         Catch ex As Exception
             TL.LogIssue("Dispose", "Exception while disconnecting: " + ex.Message)
@@ -207,7 +212,9 @@ Public Class Focuser
     Public Sub Halt() Implements IFocuserV3.Halt
         CheckConnected("Attemped Halt while disconnected!")
         Try
-            helper.SocketSend("Halt")
+            SyncLock helper
+                helper.SocketSend("Halt")
+            End SyncLock
         Catch ex As Exception
             Throw New DriverException(ex.Message)
         End Try
@@ -217,12 +224,14 @@ Public Class Focuser
         Get
             CheckConnected("Attemped IsMoving while disconnected!")
             Try
-                helper.SocketSend("IsMoving")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    moving = rcv.Contains("true")
-                End If
-                TL.LogMessage("IsMoving Get", moving.ToString())
+                SyncLock helper
+                    helper.SocketSend("IsMoving")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        moving = rcv.Contains("true")
+                    End If
+                    TL.LogMessage("IsMoving Get", moving.ToString())
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("IsMoving Get", "Exception: " + ex.Message)
             End Try
@@ -249,12 +258,14 @@ Public Class Focuser
         Get
             CheckConnected("Attemped MaxStep while disconnected!")
             Try
-                helper.SocketSend("MaxStep")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    focuserMaxTravel = Integer.Parse(rcv)
-                End If
-                TL.LogMessage("MaxStep Get", focuserMaxTravel.ToString())
+                SyncLock helper
+                    helper.SocketSend("MaxStep")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        focuserMaxTravel = Integer.Parse(rcv)
+                    End If
+                    TL.LogMessage("MaxStep Get", focuserMaxTravel.ToString())
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("MaxStep Get", "Exception: " + ex.Message)
             End Try
@@ -268,13 +279,15 @@ Public Class Focuser
             Throw New DriverException("Position " + Position.ToString() + " is outside the allowed boundaries!")
         End If
         Try
-            helper.SocketSend("Move=" + Position.ToString())
-            TL.LogMessage("Move", Position.ToString())
-            If focuserPosition <> Position Then
-                moving = True
-                'TODO: check if this is OK
-                'focuserPosition = Position
-            End If
+            SyncLock helper
+                helper.SocketSend("Move=" + Position.ToString())
+                TL.LogMessage("Move", Position.ToString())
+                If focuserPosition <> Position Then
+                    moving = True
+                    'TODO: check if this is OK
+                    'focuserPosition = Position
+                End If
+            End SyncLock
         Catch ex As Exception
             TL.LogIssue("Move", "Exception: " + ex.Message)
         End Try
@@ -284,11 +297,13 @@ Public Class Focuser
         Get
             CheckConnected("Attemped Position while disconnected!")
             Try
-                helper.SocketSend("Position")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    focuserPosition = Integer.Parse(rcv)
-                End If
+                SyncLock helper
+                    helper.SocketSend("Position")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        focuserPosition = Integer.Parse(rcv)
+                    End If
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("Position Get", "Exception: " + ex.Message)
             End Try

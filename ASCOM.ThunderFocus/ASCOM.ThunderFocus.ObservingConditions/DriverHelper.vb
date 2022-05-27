@@ -44,7 +44,7 @@ Public Class DriverHelper
     End Function
 
     Public Sub Disconnect()
-        If IsNothing(socket) Then
+        If Not IsNothing(socket) Then
             Try
                 socket.Shutdown(SocketShutdown.Both)
                 socket.Close()

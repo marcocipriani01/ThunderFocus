@@ -23,7 +23,6 @@ Option Infer On
 
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
-Imports ThunderFocus
 
 <Guid("8a4e1828-b0d7-413b-84d9-006da8c93be4")>
 <ClassInterface(ClassInterfaceType.None)>
@@ -74,7 +73,7 @@ Public Class CoverCalibrator
         If IsConnected Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the flat .", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            Using F As New CoverCalibratorSetupDialog()
+            Using F As New SetupDialogForm()
                 Dim result As DialogResult = F.ShowDialog()
                 If result = DialogResult.OK Then
                     WriteProfile()
@@ -124,7 +123,9 @@ Public Class CoverCalibrator
             If value Then
                 TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    connectedState = helper.Connect(socketPort, "HasFlat")
+                    SyncLock helper
+                        connectedState = helper.Connect(socketPort, "HasFlat")
+                    End SyncLock
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
                     connectedState = False
@@ -134,7 +135,9 @@ Public Class CoverCalibrator
                     Throw New DriverException("This ThunderFocus board doesn't have a flat panel!")
                 End If
             Else
-                helper.Disconnect()
+                SyncLock helper
+                    helper.Disconnect()
+                End SyncLock
                 connectedState = False
             End If
         End Set
@@ -180,7 +183,9 @@ Public Class CoverCalibrator
     Public Sub Dispose() Implements ICoverCalibratorV1.Dispose
         TL.LogMessage("Dispose", "Disposing...")
         Try
-            helper.Disconnect()
+            SyncLock helper
+                helper.Disconnect()
+            End SyncLock
             connectedState = False
         Catch ex As Exception
             TL.LogIssue("Dispose", "Exception while disconnecting: " + ex.Message)
@@ -205,21 +210,23 @@ Public Class CoverCalibrator
         Get
             CheckConnected("Attemped CoverState while disconnected!")
             Try
-                helper.SocketSend("CoverState")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    Select Case rcv
-                        Case "Closed"
-                            coverVal = CoverStatus.Closed
-                        Case "Open"
-                            coverVal = CoverStatus.Open
-                        Case "NotPresent"
-                            coverVal = CoverStatus.NotPresent
-                        Case Else
-                            TL.LogIssue("CoverState", "Unknown CoverStatus")
-                    End Select
-                End If
-                TL.LogMessage("CoverState Get", coverVal.ToString())
+                SyncLock helper
+                    helper.SocketSend("CoverState")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        Select Case rcv
+                            Case "Closed"
+                                coverVal = CoverStatus.Closed
+                            Case "Open"
+                                coverVal = CoverStatus.Open
+                            Case "NotPresent"
+                                coverVal = CoverStatus.NotPresent
+                            Case Else
+                                TL.LogIssue("CoverState", "Unknown CoverStatus")
+                        End Select
+                    End If
+                    TL.LogMessage("CoverState Get", coverVal.ToString())
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("CoverState Get", "Exception: " + ex.Message)
             End Try
@@ -233,11 +240,13 @@ Public Class CoverCalibrator
     Public Sub OpenCover() Implements ICoverCalibratorV1.OpenCover
         CheckConnected("Attemped OpenCover while disconnected!")
         Try
-            helper.SocketSend("OpenCover")
-            Dim rcv As String = helper.SocketRead()
-            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-                Throw New MethodNotImplementedException("OpenCover")
-            End If
+            SyncLock helper
+                helper.SocketSend("OpenCover")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                    Throw New MethodNotImplementedException("OpenCover")
+                End If
+            End SyncLock
         Catch ex As Exception
             TL.LogIssue("OpenCover", "Exception: " + ex.Message)
         End Try
@@ -249,11 +258,13 @@ Public Class CoverCalibrator
     Public Sub CloseCover() Implements ICoverCalibratorV1.CloseCover
         CheckConnected("Attemped CloseCover while disconnected!")
         Try
-            helper.SocketSend("CloseCover")
-            Dim rcv As String = helper.SocketRead()
-            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-                Throw New MethodNotImplementedException("CloseCover")
-            End If
+            SyncLock helper
+                helper.SocketSend("CloseCover")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                    Throw New MethodNotImplementedException("CloseCover")
+                End If
+            End SyncLock
         Catch ex As Exception
             TL.LogIssue("CloseCover", "Exception: " + ex.Message)
         End Try
@@ -273,19 +284,21 @@ Public Class CoverCalibrator
         Get
             CheckConnected("Attemped CalibratorState while disconnected!")
             Try
-                helper.SocketSend("CalibratorState")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    Select Case rcv
-                        Case "Ready"
-                            calibratorVal = CalibratorStatus.Ready
-                        Case "Off"
-                            calibratorVal = CalibratorStatus.Off
-                        Case Else
-                            TL.LogIssue("CoverState", "Unknown CalibratorStatus")
-                    End Select
-                End If
-                TL.LogMessage("CalibratorState Get", calibratorVal.ToString())
+                SyncLock helper
+                    helper.SocketSend("CalibratorState")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        Select Case rcv
+                            Case "Ready"
+                                calibratorVal = CalibratorStatus.Ready
+                            Case "Off"
+                                calibratorVal = CalibratorStatus.Off
+                            Case Else
+                                TL.LogIssue("CoverState", "Unknown CalibratorStatus")
+                        End Select
+                    End If
+                    TL.LogMessage("CalibratorState Get", calibratorVal.ToString())
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("CalibratorState Get", "Exception: " + ex.Message)
             End Try
@@ -300,12 +313,14 @@ Public Class CoverCalibrator
         Get
             CheckConnected("Attemped Brightness while disconnected!")
             Try
-                helper.SocketSend("Brightness")
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    brightnessVal = CInt(rcv)
-                End If
-                TL.LogMessage("Brightness Get", brightnessVal.ToString())
+                SyncLock helper
+                    helper.SocketSend("Brightness")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        brightnessVal = CInt(rcv)
+                    End If
+                    TL.LogMessage("Brightness Get", brightnessVal.ToString())
+                End SyncLock
             Catch ex As Exception
                 TL.LogIssue("Brightness Get", "Exception: " + ex.Message)
             End Try
@@ -329,11 +344,13 @@ Public Class CoverCalibrator
     Public Sub CalibratorOn(Brightness As Integer) Implements ICoverCalibratorV1.CalibratorOn
         CheckConnected("Attemped CalibratorOn while disconnected!")
         Try
-            helper.SocketSend("CalibratorOn=" + Brightness.ToString())
-            Dim rcv As String = helper.SocketRead()
-            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-                Throw New MethodNotImplementedException("CalibratorOn")
-            End If
+            SyncLock helper
+                helper.SocketSend("CalibratorOn=" + Brightness.ToString())
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                    Throw New MethodNotImplementedException("CalibratorOn")
+                End If
+            End SyncLock
         Catch ex As Exception
             TL.LogIssue("CalibratorOn", "Exception: " + ex.Message)
         End Try
@@ -345,11 +362,13 @@ Public Class CoverCalibrator
     Public Sub CalibratorOff() Implements ICoverCalibratorV1.CalibratorOff
         CheckConnected("Attemped CalibratorOff while disconnected!")
         Try
-            helper.SocketSend("CalibratorOff")
-            Dim rcv As String = helper.SocketRead()
-            If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
-                Throw New MethodNotImplementedException("CalibratorOff")
-            End If
+            SyncLock helper
+                helper.SocketSend("CalibratorOff")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                    Throw New MethodNotImplementedException("CalibratorOff")
+                End If
+            End SyncLock
         Catch ex As Exception
             TL.LogIssue("CalibratorOff", "Exception: " + ex.Message)
         End Try

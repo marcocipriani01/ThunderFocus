@@ -3,7 +3,7 @@ Option Infer On
 Imports MetroFramework
 
 <ComVisible(False)>
-Public Class ObservingConditionsSetupDialog
+Public Class SetupDialogForm
 
     Private Sub OK_Button_Click(sender As Object, e As EventArgs) Handles OK_Button.Click ' OK button event handler
         ObservingConditions.socketPort = CInt(SocketPortSpinner.Value)

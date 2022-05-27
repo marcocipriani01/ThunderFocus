@@ -11,8 +11,19 @@ import static io.github.marcocipriani01.thunderfocus.Main.settings;
 
 public class ASCOMBridge extends SimpleServer {
 
+    private Runnable onClientListChange = null;
+
     public ASCOMBridge(int port) {
         super(port);
+    }
+
+    public ASCOMBridge(int port, Runnable onClientListChang) {
+        super(port);
+        this.onClientListChange = onClientListChang;
+    }
+
+    public void setOnClientListChange(Runnable onClientListChange) {
+        this.onClientListChange = onClientListChange;
     }
 
     @Override
@@ -236,8 +247,7 @@ public class ASCOMBridge extends SimpleServer {
 
     @Override
     protected boolean acceptClient(InetAddress address) {
-        //return address.isLoopbackAddress();
-        return true;
+        return address.isLinkLocalAddress();
     }
 
     @Override
@@ -247,11 +257,11 @@ public class ASCOMBridge extends SimpleServer {
 
     @Override
     protected void onNewClient(Socket client) {
-
+        if (onClientListChange != null) onClientListChange.run();
     }
 
     @Override
     protected void onClientLost(Socket client) {
-
+        if (onClientListChange != null) onClientListChange.run();
     }
 }

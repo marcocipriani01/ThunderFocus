@@ -65,24 +65,29 @@ public abstract class SimpleServer {
                                 while ((inputLine = in.readLine()) != null) {
                                     onMessage(socket, inputLine);
                                 }
-                            } catch (IOException e) {
-                                try {
-                                    socket.close();
-                                } catch (IOException ex) {
-                                    ex.printStackTrace();
-                                }
-                                clients.remove(socket);
-                                onClientLost(socket);
+                                closeClient(socket);
+                            } catch (Exception e) {
+                                closeClient(socket);
                             }
                         }, "Reading thread").start();
                         onNewClient(socket);
                     } catch (Exception ignored) {
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 onError(e);
             }
         }, "Connection thread").start();
+    }
+
+    private void closeClient(Socket socket) {
+        try {
+            socket.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        clients.remove(socket);
+        onClientLost(socket);
     }
 
     /**
@@ -107,7 +112,11 @@ public abstract class SimpleServer {
         if (!connected) throw new IllegalStateException("Not connected!");
         new Thread(() -> {
             for (Socket s : clients.keySet()) {
-                clients.get(s).println(msg);
+                try {
+                    clients.get(s).println(msg);
+                } catch (Exception ex) {
+                    closeClient(s);
+                }
             }
         }, "Socket write").start();
     }
@@ -119,7 +128,13 @@ public abstract class SimpleServer {
      */
     public void println(Socket client, String msg) {
         if (!connected) throw new IllegalStateException("Not connected!");
-        new Thread(() -> clients.get(client).println(msg), "Socket write").start();
+        new Thread(() -> {
+            try {
+                clients.get(client).println(msg);
+            } catch (Exception ex) {
+                closeClient(client);
+            }
+        }, "Socket write").start();
     }
 
     public int getClientsCount() {

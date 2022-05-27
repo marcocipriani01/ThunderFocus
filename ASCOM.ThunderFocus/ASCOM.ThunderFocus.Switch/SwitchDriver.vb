@@ -268,6 +268,12 @@ Public Class Switch
         If descr.Contains("<Unavailable>") Then
             Return "This switch doesn't exist on the powerbox."
         End If
+        If MaxSwitchValue(id) = 255.0 Then
+            descr += " (PWM)"
+        End If
+        If Not CanWrite(id) Then
+            descr += ", automatic mode enabled."
+        End If
         Return descr
     End Function
 

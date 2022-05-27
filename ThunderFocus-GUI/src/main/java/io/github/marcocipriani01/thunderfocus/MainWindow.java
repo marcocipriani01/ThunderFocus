@@ -139,6 +139,7 @@ public class MainWindow extends JFrame implements
     private JSlider brightnessSlider;
     private JButton saveServoConfig;
     private JPanel flatPanelTab;
+    private JLabel powerboxLockLabel;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -408,8 +409,8 @@ public class MainWindow extends JFrame implements
     }
 
     private void askClose() {
-        if ((Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS) && Main.isAscomRunning()
-                && (Main.ascomBridge.getClientsCount() > 0)) {
+        if ((Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS) &&
+                Main.isAscomRunning() && (Main.ascomBridge.getClientsCount() > 0)) {
             try {
                 setVisible(false);
                 SystemTray tray = SystemTray.getSystemTray();
@@ -645,7 +646,7 @@ public class MainWindow extends JFrame implements
         } else if (source == powerBoxOnButton) {
             try {
                 for (ArduinoPin p : board.powerBox().asList()) {
-                    if (!p.isAutoModeEn()) {
+                    if ((!p.isAutoModeEn()) && (!p.isOnWhenAppOpen())) {
                         p.setValue(255);
                         board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
                     }
@@ -660,7 +661,7 @@ public class MainWindow extends JFrame implements
         } else if (source == powerBoxOffButton) {
             try {
                 for (ArduinoPin p : board.powerBox().asList()) {
-                    if (!p.isAutoModeEn()) {
+                    if ((!p.isAutoModeEn()) && (!p.isOnWhenAppOpen())) {
                         p.setValue(0);
                         board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
                     }
@@ -903,11 +904,11 @@ public class MainWindow extends JFrame implements
                 if (Main.isAscomRunning()) {
                     if (forceRestart) {
                         Main.ascomBridge.close();
-                        Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
+                        Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort, this::onASCOMClientListChange);
                         Main.ascomBridge.start();
                     }
                 } else {
-                    Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort);
+                    Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort, this::onASCOMClientListChange);
                     Main.ascomBridge.start();
                 }
                 ascomStatusLabel.setText(i18n("bridge.active"));
@@ -919,6 +920,15 @@ public class MainWindow extends JFrame implements
             onCriticalError(e);
             ascomStatusLabel.setText(i18n("error"));
         }
+    }
+
+    private void onASCOMClientListChange() {
+        int clientsCount = ascomBridge.getClientsCount();
+        boolean lock = isAscomRunning() && (clientsCount > 0);
+        powerBoxTable.setConfigLock(lock);
+        powerboxLockLabel.setVisible(lock);
+        ascomStatusLabel.setText((clientsCount > 0) ?
+                (i18n("bridge.active") + " (" + clientsCount + ")") : i18n("bridge.active"));
     }
 
     @Override

@@ -587,7 +587,7 @@
                   </scrollpane>
                 </children>
               </grid>
-              <grid id="f43e7" binding="powerBoxTab" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="f43e7" binding="powerBoxTab" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="16" left="16" bottom="16" right="16"/>
                 <constraints>
                   <tabbedpane title-resource-bundle="io/github/marcocipriani01/thunderfocus/lang" title-key="powerbox.tab" icon="io/github/marcocipriani01/thunderfocus/res/power_box_tab.png">
@@ -623,7 +623,7 @@
                   </component>
                   <component id="f2c8" class="javax.swing.JButton" binding="powerBoxOffButton">
                     <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="-1" height="42"/>
                         <maximum-size width="-1" height="42"/>
                       </grid>
@@ -637,7 +637,7 @@
                   </component>
                   <component id="4d45a" class="javax.swing.JButton" binding="powerBoxOnButton">
                     <constraints>
-                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                      <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="-1" height="42"/>
                         <maximum-size width="-1" height="42"/>
                       </grid>
@@ -651,7 +651,7 @@
                   </component>
                   <component id="e8ce1" class="javax.swing.JLabel" binding="powerBoxAutoModeLabel">
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <font style="1"/>
@@ -661,7 +661,7 @@
                   </component>
                   <component id="ef84c" class="javax.swing.JComboBox" binding="powerBoxAutoModeBox" custom-create="true">
                     <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="pbox.auto.mode.tooltip"/>
@@ -670,7 +670,7 @@
                   </component>
                   <component id="211c2" class="javax.swing.JTextField" binding="sunElevationField">
                     <constraints>
-                      <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                      <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
                       </grid>
                     </constraints>
@@ -683,10 +683,21 @@
                   </component>
                   <component id="cfa0a" class="javax.swing.JLabel" binding="sunElevationLabel">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="sun.elev"/>
+                      <visible value="false"/>
+                    </properties>
+                  </component>
+                  <component id="498b" class="javax.swing.JLabel" binding="powerboxLockLabel">
+                    <constraints>
+                      <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <horizontalAlignment value="0"/>
+                      <icon value="io/github/marcocipriani01/thunderfocus/res/lock.png"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="powerbox.lock"/>
                       <visible value="false"/>
                     </properties>
                   </component>

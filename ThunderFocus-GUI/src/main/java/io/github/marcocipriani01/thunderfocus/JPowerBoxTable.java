@@ -28,6 +28,7 @@ public class JPowerBoxTable extends JTable {
     private static final int[] COLUMNS_WEIGHTS = {5, 3, 4, 4, 4, 4};
     private final SliderEditorAndRenderer sliderEditorAndRenderer = new SliderEditorAndRenderer();
     private final MainWindow mainWindow;
+    private boolean lockConfig = false;
     private PowerBox powerBox = null;
 
     /**
@@ -54,16 +55,20 @@ public class JPowerBoxTable extends JTable {
         });
     }
 
+    public void setConfigLock(boolean b) {
+        lockConfig = b;
+        refresh();
+    }
+
     public void refresh() {
         ((PowerBoxTableModel) dataModel).fireTableDataChanged();
-        for (int row = 0; row < getRowCount(); row++) {
-            setRowHeight(row, DEF_ROW_HEIGHT);
-        }
+        scaleRows();
     }
 
     public void scaleColumns() {
         if (powerBox == null) return;
-        int tW = getWidth(), count = getColumnCount(), weightsSum = 0;
+        int tW = getWidth(), count = dataModel.getColumnCount(), weightsSum = 0;
+        //if (count == 0) return;
         TableColumn[] columns = new TableColumn[count];
         int[] weights = (powerBox.countPWMEnabledPins() > 0) ? COLUMNS_WEIGHTS_PWM : COLUMNS_WEIGHTS;
         for (int i = 0; i < count; i++) {
@@ -79,7 +84,7 @@ public class JPowerBoxTable extends JTable {
     }
 
     public void scaleRows() {
-        for (int row = 0; row < getRowCount(); row++) {
+        for (int row = 0; row < dataModel.getRowCount(); row++) {
             setRowHeight(row, DEF_ROW_HEIGHT);
         }
     }
@@ -199,8 +204,9 @@ public class JPowerBoxTable extends JTable {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if (columnIndex == 0) return true;
             ArduinoPin pin = powerBox.getIndex(rowIndex);
+            if (lockConfig) return (columnIndex == 2) && (!pin.isOnWhenAppOpen()) && (!pin.isAutoModeEn());
+            if (columnIndex == 0) return true;
             if (columnIndex == 3) return pin.isPWM();
             if (pin.isOnWhenAppOpen()) return (columnIndex == 4);
             if (pin.isAutoModeEn()) return (columnIndex == 5);

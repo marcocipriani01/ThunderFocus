@@ -332,7 +332,9 @@ public class Board implements SerialMessageListener {
         POWERBOX_AUTO_MODE,
         POWERBOX_AMBIENT_DATA,
         POWERBOX_SUN_ELEV,
-        FLAT_COVER_STATUS
+        FLAT_COVER_STATUS,
+        FLAT_LIGHT_STATUS,
+        FLAT_BRIGHTNESS
     }
 
     public enum ConnectionState {
@@ -413,10 +415,12 @@ public class Board implements SerialMessageListener {
         FLAT_SET_BRIGHTNESS('Z', 1, (b, params) -> (b.hasFlatPanel() && (params[0] >= 0) && (params[0] <= 255)),
                 (b, caller, params) -> {
                     b.flat.brightness = params[0];
+                    b.notifyListeners(caller, Parameters.FLAT_BRIGHTNESS);
                 }),
         FLAT_SET_LIGHT('L', 1, (b, params) -> (b.hasFlatPanel() && ((params[0] == 0) || (params[0] == 1))),
                 (b, caller, params) -> {
                     b.flat.lightStatus = (params[0] == 1);
+                    b.notifyListeners(caller, Parameters.FLAT_LIGHT_STATUS);
                 }),
         FLAT_SET_COVER('Q', 1, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() && ((params[0] == 0) || (params[0] == 1))), null),
         FLAT_SET_CONFIG('F', 3, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() &&

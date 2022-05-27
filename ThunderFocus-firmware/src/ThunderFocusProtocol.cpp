@@ -11,8 +11,8 @@ unsigned long sensorsSyncTime = 0L;
 #if RTC_SUPPORT != DISABLED
 unsigned long sunSyncTime = 0L;
 #endif
-#if FLAT_PANEL != false
-unsigned long flatPanelSyncTime = 0L;
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+FlatPanel::CoverStatus lastCoverStatus = FlatPanel::CoverStatus::NEITHER_OPEN_NOR_CLOSED;
 #endif
 
 void setup() {
@@ -50,6 +50,9 @@ void setup() {
 #endif
 #if FLAT_PANEL == true
     FlatPanel::begin();
+#if SERVO_MOTOR != DISABLED
+    lastCoverStatus = FlatPanel::coverStatus;
+#endif
 #endif
 #if DEBUG_EN
     Serial.println(F(">Setup done"));
@@ -104,12 +107,15 @@ void run() {
 #endif
 #endif
 
-#if FLAT_PANEL != false
-    if ((t - flatPanelSyncTime) >= FLAT_SYNC_INTERVAL) {
+#if FLAT_PANEL == true
+    FlatPanel::run();
+#if SERVO_MOTOR != DISABLED
+    if (lastCoverStatus != FlatPanel::coverStatus) {
         Serial.print(F("E"));
         Serial.println(FlatPanel::coverStatus);
-        flatPanelSyncTime = t;
+        lastCoverStatus = FlatPanel::coverStatus;
     }
+#endif
 #endif
 }
 

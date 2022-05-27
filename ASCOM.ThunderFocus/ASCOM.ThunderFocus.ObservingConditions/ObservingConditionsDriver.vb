@@ -21,6 +21,7 @@
 Option Strict On
 Option Infer On
 
+Imports System.Globalization
 Imports System.Net
 Imports System.Net.Sockets
 Imports System.Threading

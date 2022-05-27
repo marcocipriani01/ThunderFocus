@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class SetupDialogForm
+Partial Class FocuserSetupDialog
     Inherits MetroFramework.Forms.MetroForm
 
     'Form overrides dispose to clean up the component list.
@@ -22,7 +22,7 @@ Partial Class SetupDialogForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SetupDialogForm))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FocuserSetupDialog))
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.OK_Button = New MetroFramework.Controls.MetroButton()
         Me.Cancel_Button = New MetroFramework.Controls.MetroButton()
@@ -161,7 +161,7 @@ Partial Class SetupDialogForm
         Me.MaximizeBox = False
         Me.Name = "SetupDialogForm"
         Me.Style = MetroFramework.MetroColorStyle.Red
-        Me.Text = "ThunderFocus weather bridge"
+        Me.Text = "ThunderFocus focuser bridge"
         Me.Theme = MetroFramework.MetroThemeStyle.Dark
         Me.TableLayoutPanel1.ResumeLayout(False)
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()

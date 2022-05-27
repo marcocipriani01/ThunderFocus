@@ -24,8 +24,8 @@
 namespace FlatPanel {
 #if SERVO_MOTOR != DISABLED
 extern ServoHack servo;
-extern int targetVal;
-extern int currentVal;
+extern uint16_t targetVal;
+extern uint16_t currentVal;
 extern CoverStatus coverStatus;
 extern MotorDirection motorDirection;
 extern unsigned long lastMoveTime;

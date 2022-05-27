@@ -4,9 +4,10 @@
 namespace FlatPanel {
 
 #if SERVO_MOTOR != DISABLED
-int targetVal = 0;
-int currentVal = 0;
 ServoHack servo;
+uint16_t targetVal = 0;
+uint16_t currentVal = 0;
+unsigned long lastMoveTime = 0L;
 CoverStatus coverStatus = CLOSED;
 MotorDirection motorDirection = NONE;
 #endif
@@ -115,6 +116,7 @@ void run() {
         } else {
             motorDirection = NONE;
         }
+        lastMoveTime = t;
     }
 #endif
 }

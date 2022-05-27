@@ -36,7 +36,7 @@ Public Class Switch
     ' Driver ID and descriptive string that shows in the Chooser
     '
     Friend Shared driverID As String = "ASCOM.ThunderFocus.Switch"
-    Private Shared ReadOnly driverDescription As String = "ThunderFocus"
+    Private Shared ReadOnly driverDescription As String = "ThunderFocus Powerbox"
 
     Friend Shared socketPortProfileName As String = "Socket port"
     Friend Shared socketPortDefault As String = "5001"
@@ -44,17 +44,13 @@ Public Class Switch
     Friend Shared debugProfileName As String = "Debug"
     Friend Shared debugDefault As String = "False"
 
-    Friend Shared socketPort As Integer
-    Friend Shared debug As Boolean
+    Friend Shared socketPort As Integer = 5001
+    Friend Shared debug As Boolean = False
 
-    Private connectedState As Boolean
+    Private connectedState As Boolean = False
     Private TL As TraceLogger
 
-    Private ReadOnly socket As New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
-            .NoDelay = True,
-            .ReceiveTimeout = 500,
-            .SendTimeout = 1000
-        }
+    Private ReadOnly socket As Socket
     Private ReadOnly ipAddress As IPAddress
 
     Private maxSwitchVal As Short = 0
@@ -66,7 +62,7 @@ Public Class Switch
         Try
             Dim socketBuffer As Byte() = New Byte(1023) {}
             Dim bytesRec As Integer = socket.Receive(socketBuffer)
-            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Replace("\n", "").Replace("\r", "").Trim()
             TL.LogMessage("ReadSocket", rcv)
             Return rcv
         Catch ex As Exception
@@ -81,7 +77,7 @@ Public Class Switch
             Throw New DriverException("Not connected!")
         End If
         Try
-            TL.LogMessage("Connected Set", "Sending " + msg)
+            TL.LogMessage("SocketSend", "Sending " + msg)
             Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
             socket.SendBufferSize = bytesToSend.Length
             socket.Send(bytesToSend)
@@ -117,6 +113,11 @@ Public Class Switch
         Application.EnableVisualStyles()
         Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
         ipAddress = ipHostInfo.AddressList(0)
+        socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
+            .NoDelay = True,
+            .ReceiveTimeout = 1000,
+            .SendTimeout = 1000
+        }
         TL.LogMessage("Switch", "Completed initialisation")
     End Sub
 
@@ -286,7 +287,7 @@ Public Class Switch
     Public Function GetSwitchName(id As Short) As String Implements ISwitchV2.GetSwitchName
         CheckConnected("Attemped GetSwitchName while disconnected!")
         ValidateId("GetSwitchName", id)
-        SocketSend("GetSwitchName")
+        SocketSend("GetSwitchName=" + id.ToString())
         Dim rcv As String = SocketRead()
         If Not String.IsNullOrEmpty(rcv) Then
             TL.LogMessage("GetSwitchName", rcv)
@@ -328,7 +329,7 @@ Public Class Switch
     Public Function CanWrite(id As Short) As Boolean Implements ISwitchV2.CanWrite
         CheckConnected("Attemped CanWrite while disconnected!")
         ValidateId("CanWrite", id)
-        SocketSend("CanWrite")
+        SocketSend("CanWrite=" + id.ToString())
         Dim rcv As String = SocketRead()
         If Not String.IsNullOrEmpty(rcv) Then
             TL.LogMessage("CanWrite", rcv)
@@ -347,7 +348,7 @@ Public Class Switch
     Function GetSwitch(id As Short) As Boolean Implements ISwitchV2.GetSwitch
         CheckConnected("Attemped GetSwitch while disconnected!")
         ValidateStates("GetSwitch", id, True)
-        SocketSend("GetSwitch")
+        SocketSend("GetSwitch=" + id.ToString())
         Dim rcv As String = SocketRead()
         If Not String.IsNullOrEmpty(rcv) Then
             TL.LogMessage("GetSwitch", rcv)
@@ -368,7 +369,21 @@ Public Class Switch
     Sub SetSwitch(id As Short, state As Boolean) Implements ISwitchV2.SetSwitch
         CheckConnected("Attemped SetSwitch while disconnected!")
         ValidateStates("SetSwitch", id, True)
-
+        Dim stateStr As String
+        If state Then
+            stateStr = "true"
+        Else
+            stateStr = "false"
+        End If
+        SocketSend("SetSwitch=" + id.ToString() + "," + stateStr)
+        Dim rcv As String = SocketRead()
+        If String.IsNullOrEmpty(rcv) Then
+            Throw New DriverException("No response from ThunderFocus!")
+        End If
+        TL.LogMessage("SetSwitch", rcv)
+        If rcv.Contains("CannotWrite") Then
+            Throw New MethodNotImplementedException("Cannot write to this switch!")
+        End If
     End Sub
 
 #End Region
@@ -383,8 +398,16 @@ Public Class Switch
     Function MaxSwitchValue(id As Short) As Double Implements ISwitchV2.MaxSwitchValue
         CheckConnected("Attemped MaxSwitchValue while disconnected!")
         ValidateId("MaxSwitchValue", id)
-        TL.LogMessage("MaxSwitchValue", "Not Implemented")
-        Throw New MethodNotImplementedException("MaxSwitchValue")
+        SocketSend("MaxSwitchValue=" + id.ToString())
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("MaxSwitchValue", rcv)
+            If rcv.Contains("NonExistent") Then
+                Return 1.0
+            End If
+            Return CDbl(rcv)
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Function
 
     ''' <summary>
@@ -421,7 +444,16 @@ Public Class Switch
     Function GetSwitchValue(id As Short) As Double Implements ISwitchV2.GetSwitchValue
         CheckConnected("Attemped GetSwitchValue while disconnected!")
         ValidateStates("GetSwitchValue", id, False)
-
+        SocketSend("GetSwitchValue=" + id.ToString())
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("GetSwitchValue", rcv)
+            If rcv.Contains("Boolean") Then
+                Throw New MethodNotImplementedException("GetSwitchValue is not implemented for boolean switches")
+            End If
+            Return CDbl(rcv)
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Function
 
     ''' <summary>
@@ -435,7 +467,15 @@ Public Class Switch
     Sub SetSwitchValue(id As Short, value As Double) Implements ISwitchV2.SetSwitchValue
         CheckConnected("Attemped SetSwitchValue while disconnected!")
         ValidateRange("SetSwitchValue", id, value)
-
+        SocketSend("SetSwitchValue=" + id.ToString() + "," + value.ToString())
+        Dim rcv As String = SocketRead()
+        If Not String.IsNullOrEmpty(rcv) Then
+            TL.LogMessage("SetSwitchValue", rcv)
+            If Not rcv.Contains("OK") Then
+                Throw New MethodNotImplementedException("SetSwitchValue is not implemented for boolean switches")
+            End If
+        End If
+        Throw New DriverException("No response from ThunderFocus!")
     End Sub
 
 #End Region

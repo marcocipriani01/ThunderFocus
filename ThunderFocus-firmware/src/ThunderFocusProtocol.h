@@ -35,7 +35,6 @@
 #define SERIAL_SPEED 115200
 #define SENSORS_SYNC_INTERVAL 10000L
 #define FOCUSER_SYNC_INTERVAL 150L
-#define FLAT_SYNC_INTERVAL 200L
 
 namespace ThunderFocus {
 #if FOCUSER_DRIVER != DISABLED
@@ -55,8 +54,8 @@ extern unsigned long sensorsSyncTime;
 extern unsigned long sunSyncTime;
 #endif
 
-#if FLAT_PANEL != false
-extern unsigned long flatPanelSyncTime;
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+extern FlatPanel::CoverStatus lastCoverStatus;
 #endif
 
 void setup();

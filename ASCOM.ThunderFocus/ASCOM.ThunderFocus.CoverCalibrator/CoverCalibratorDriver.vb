@@ -44,17 +44,13 @@ Public Class CoverCalibrator
     Friend Shared debugProfileName As String = "Debug"
     Friend Shared debugDefault As String = "False"
 
-    Friend Shared socketPort As Integer
-    Friend Shared debug As Boolean
+    Friend Shared socketPort As Integer = 5001
+    Friend Shared debug As Boolean = False
 
-    Private connectedState As Boolean
+    Private connectedState As Boolean = False
     Private TL As TraceLogger
 
-    Private ReadOnly socket As New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
-            .NoDelay = True,
-            .ReceiveTimeout = 500,
-            .SendTimeout = 1000
-        }
+    Private ReadOnly socket As Socket
     Private ReadOnly ipAddress As IPAddress
 
     Private Function SocketRead() As String
@@ -64,7 +60,7 @@ Public Class CoverCalibrator
         Try
             Dim socketBuffer As Byte() = New Byte(1023) {}
             Dim bytesRec As Integer = socket.Receive(socketBuffer)
-            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec)
+            Dim rcv As String = Encoding.ASCII.GetString(socketBuffer, 0, bytesRec).Replace("\n", "").Replace("\r", "").Trim()
             TL.LogMessage("ReadSocket", rcv)
             Return rcv
         Catch ex As Exception
@@ -79,7 +75,7 @@ Public Class CoverCalibrator
             Throw New DriverException("Not connected!")
         End If
         Try
-            TL.LogMessage("Connected Set", "Sending " + msg)
+            TL.LogMessage("SocketSend", "Sending " + msg)
             Dim bytesToSend As Byte() = Encoding.UTF8.GetBytes(msg + Environment.NewLine)
             socket.SendBufferSize = bytesToSend.Length
             socket.Send(bytesToSend)
@@ -114,6 +110,11 @@ Public Class CoverCalibrator
         Application.EnableVisualStyles()
         Dim ipHostInfo As IPHostEntry = Dns.GetHostEntry(Dns.GetHostName())
         ipAddress = ipHostInfo.AddressList(0)
+        socket = New Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp) With {
+            .NoDelay = True,
+            .ReceiveTimeout = 1000,
+            .SendTimeout = 1000
+        }
         TL.LogMessage("CoverCalibrator", "Completed initialisation")
     End Sub
 
@@ -133,7 +134,7 @@ Public Class CoverCalibrator
         If IsConnected Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the flat .", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            Using F As New SetupDialogForm()
+            Using F As New CoverCalibratorSetupDialog()
                 Dim result As DialogResult = F.ShowDialog()
                 If result = DialogResult.OK Then
                     WriteProfile()

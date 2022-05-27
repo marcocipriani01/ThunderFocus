@@ -123,7 +123,7 @@ public class ASCOMBridge extends SimpleServer {
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
                                 println(from, "CannotWrite");
                             } else {
-                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, params[1].equals("True") ? 255 : 0);
+                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, params[1].contains("true") ? 255 : 0);
                                 println(from, "OK");
                             }
                         } else {
@@ -158,7 +158,7 @@ public class ASCOMBridge extends SimpleServer {
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
                                 println(from, "CannotWrite");
                             } else if (pin.isPWMEnabled()) {
-                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, Integer.parseInt(params[1]));
+                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, (int) Double.parseDouble(params[1]));
                                 println(from, "OK");
                             } else {
                                 println(from, "Boolean");
@@ -236,7 +236,8 @@ public class ASCOMBridge extends SimpleServer {
 
     @Override
     protected boolean acceptClient(InetAddress address) {
-        return address.isLoopbackAddress();
+        //return address.isLoopbackAddress();
+        return true;
     }
 
     @Override

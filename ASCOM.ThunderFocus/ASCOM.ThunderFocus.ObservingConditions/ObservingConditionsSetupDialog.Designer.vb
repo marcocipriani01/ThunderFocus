@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class SetupDialogForm
+Partial Class ObservingConditionsSetupDialog
     Inherits MetroFramework.Forms.MetroForm
 
     'Form overrides dispose to clean up the component list.
@@ -22,6 +22,7 @@ Partial Class SetupDialogForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ObservingConditionsSetupDialog))
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.OK_Button = New MetroFramework.Controls.MetroButton()
         Me.Cancel_Button = New MetroFramework.Controls.MetroButton()
@@ -102,7 +103,6 @@ Partial Class SetupDialogForm
         'PictureBox2
         '
         Me.PictureBox2.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.PictureBox2.Cursor = System.Windows.Forms.Cursors.Hand
         Me.PictureBox2.Image = Global.ASCOM.ThunderFocus.My.Resources.Resources.ThunderFocus
         Me.PictureBox2.Location = New System.Drawing.Point(77, 157)
         Me.PictureBox2.Name = "PictureBox2"
@@ -143,7 +143,7 @@ Partial Class SetupDialogForm
         Me.MetroLabel2.Text = "Debug:"
         Me.MetroLabel2.Theme = MetroFramework.MetroThemeStyle.Dark
         '
-        'SetupDialogForm
+        'ObservingConditionsSetupDialog
         '
         Me.AcceptButton = Me.OK_Button
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -157,10 +157,11 @@ Partial Class SetupDialogForm
         Me.Controls.Add(Me.SocketPortSpinner)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.TableLayoutPanel1)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
-        Me.Name = "SetupDialogForm"
+        Me.Name = "ObservingConditionsSetupDialog"
         Me.Style = MetroFramework.MetroColorStyle.Red
-        Me.Text = "ThunderFocus flat bridge"
+        Me.Text = "ThunderFocus weather bridge"
         Me.Theme = MetroFramework.MetroThemeStyle.Dark
         Me.TableLayoutPanel1.ResumeLayout(False)
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()

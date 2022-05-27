@@ -3,11 +3,11 @@ Option Infer On
 Imports MetroFramework
 
 <ComVisible(False)>
-Public Class SetupDialogForm
+Public Class ObservingConditionsSetupDialog
 
     Private Sub OK_Button_Click(sender As Object, e As EventArgs) Handles OK_Button.Click ' OK button event handler
-        Focuser.socketPort = CInt(SocketPortSpinner.Value)
-        Focuser.debug = DebugToggle.Checked
+        ObservingConditions.socketPort = CInt(SocketPortSpinner.Value)
+        ObservingConditions.debug = DebugToggle.Checked
         DialogResult = DialogResult.OK
         Close()
     End Sub
@@ -34,7 +34,7 @@ Public Class SetupDialogForm
     End Sub
 
     Private Sub SetupDialogForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load ' Form load event handler
-        SocketPortSpinner.Value = Focuser.socketPort
-        DebugToggle.Checked = Focuser.debug
+        SocketPortSpinner.Value = ObservingConditions.socketPort
+        DebugToggle.Checked = ObservingConditions.debug
     End Sub
 End Class

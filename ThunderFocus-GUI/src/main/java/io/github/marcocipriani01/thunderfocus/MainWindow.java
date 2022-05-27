@@ -743,6 +743,7 @@ public class MainWindow extends JFrame implements
                     "Settings files (*.thunder)", "thunder"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
+                    //TODO: apply settings
                     int oldIndiPort = settings.indiServerPort;
                     int oldAscomPort = settings.ascomBridgePort;
                     ExportableSettings es = ExportableSettings.load(chooser.getSelectedFile().toPath());
@@ -1058,9 +1059,20 @@ public class MainWindow extends JFrame implements
                     }
                 }
                 case POWERBOX_SUN_ELEV -> sunElevationField.setText(board.powerBox().getSunElev() + "°");
-                case FLAT_COVER_STATUS -> {
-                    FlatPanel flat = board.flat();
-                    updateFlatPanelComponents(flat);
+                case FLAT_COVER_STATUS -> updateFlatPanelComponents(board.flat());
+                case FLAT_LIGHT_STATUS -> {
+                    lightOnRadio.removeActionListener(this);
+                    lightOffRadio.removeActionListener(this);
+                    boolean lightStatus = board.flat().getLightStatus();
+                    lightOnRadio.setSelected(lightStatus);
+                    lightOffRadio.setSelected(!lightStatus);
+                    lightOnRadio.addActionListener(this);
+                    lightOffRadio.addActionListener(this);
+                }
+                case FLAT_BRIGHTNESS -> {
+                    brightnessSlider.removeChangeListener(this);
+                    brightnessSlider.setValue(board.flat().getBrightness());
+                    brightnessSlider.addChangeListener(this);
                 }
             }
         });

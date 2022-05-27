@@ -129,10 +129,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="SetupDialogForm.Designer.vb">
-      <DependentUpon>SetupDialogForm.vb</DependentUpon>
+    <Compile Include="CoverCalibratorSetupDialog.Designer.vb">
+      <DependentUpon>CoverCalibratorSetupDialog.vb</DependentUpon>
     </Compile>
-    <Compile Include="SetupDialogForm.vb">
+    <Compile Include="CoverCalibratorSetupDialog.vb">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
@@ -143,9 +143,9 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="SetupDialogForm.resx">
+    <EmbeddedResource Include="CoverCalibratorSetupDialog.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>SetupDialogForm.vb</DependentUpon>
+      <DependentUpon>CoverCalibratorSetupDialog.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

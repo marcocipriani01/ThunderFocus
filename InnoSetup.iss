@@ -19,16 +19,12 @@ WizardStyle=modern
 OutputBaseFilename=ThunderFocus_Win_64bit
 OutputDir=Installers
 WizardImageFile=".\WizardImage.bmp"
-SetupIconFile=".\ThunderFocusASCOM\Resources\icon.ico"
-UninstallDisplayIcon=".\ThunderFocusASCOM\Resources\icon.ico"
-ChangesEnvironment=yes
+SetupIconFile=".\ASCOM.ThunderFocus\Resources\icon.ico"
+UninstallDisplayIcon=".\ASCOM.ThunderFocus\Resources\icon.ico"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
-
-[Registry]
-Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "thunderfok"; ValueData: "{app}"; Flags: createvalueifdoesntexist preservestringtype
 
 [Dirs]
 Name: "{app}"
@@ -38,7 +34,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: ".\JRE-bundle\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: ".\ThunderFocusASCOM\bin\Release\ASCOM.ThunderFocus.Focuser.dll"; DestDir: "{commoncf}\ASCOM\Focuser\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\ASCOM.ThunderFocus\ASCOM.ThunderFocus.Focuser\bin\Release\*"; DestDir: "{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\ASCOM.ThunderFocus\ASCOM.ThunderFocus.CoverCalibrator\bin\Release\*"; DestDir: "{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\ASCOM.ThunderFocus\ASCOM.ThunderFocus.Switch\bin\Release\*"; DestDir: "{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch\"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\ThunderFocus"; Filename: "{app}\bin\javaw.exe"; IconFilename: "{app}\icon.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""
@@ -47,20 +45,28 @@ Name: "{group}\{cm:UninstallProgram,ThunderFocus}"; IconFilename: "{app}\uninsta
 Name: "{autodesktop}\ThunderFocus"; Filename: "{app}\bin\javaw.exe"; Tasks: desktopicon; IconFilename: "{app}\icon.ico"; Parameters: "-jar ""{app}\ThunderFocus.jar"""
 
 [Run]
-Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit
-Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64
-Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit
-Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64
+Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit
+Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64
+Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 32bit
+Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 64bit; Check: IsWin64
+Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 32bit
+Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64
 Filename: "{app}\bin\javaw.exe"; Parameters: "-jar ""{app}\ThunderFocus.jar"""; Description: "{cm:LaunchProgram,ThunderFocus}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
 Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL1"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL2"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Focuser\ASCOM.ThunderFocus.Focuser.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL3"
+Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL4"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL5"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL6"
+Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL7"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL8"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL9"
 
 [Code]
 const
-   REQUIRED_PLATFORM_VERSION = 6.2;    // Set this to the minimum required ASCOM Platform version for this application
+   REQUIRED_PLATFORM_VERSION = 6.5;    // Set this to the minimum required ASCOM Platform version for this application
 
 //
 // Function to return the ASCOM Platform's version number as a double.

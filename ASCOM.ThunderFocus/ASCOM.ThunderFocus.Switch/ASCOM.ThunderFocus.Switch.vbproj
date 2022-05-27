@@ -114,6 +114,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DriverHelper.vb" />
     <Compile Include="SwitchDriver.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -183,12 +184,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ThunderFocus.DriverHelper\ThunderFocus.DriverHelper.vbproj">
-      <Project>{74A817CD-1E8A-4824-BADD-1F66E4AA3FF4}</Project>
-      <Name>ThunderFocus.DriverHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

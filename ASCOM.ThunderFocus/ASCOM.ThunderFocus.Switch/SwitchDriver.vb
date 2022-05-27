@@ -25,7 +25,7 @@ Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 Imports ThunderFocus
 
-<Guid("d3ad7299-1f00-4943-8432-cd5cf33afb73")>
+<Guid("ff584723-1c09-49b8-a0e5-e263b1be2332")>
 <ClassInterface(ClassInterfaceType.None)>
 Public Class Switch
     Implements ISwitchV2

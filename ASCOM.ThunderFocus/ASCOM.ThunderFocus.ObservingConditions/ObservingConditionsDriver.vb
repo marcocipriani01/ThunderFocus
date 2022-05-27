@@ -28,7 +28,7 @@ Imports System.Threading
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 
-<Guid("85c45996-e7eb-4ff2-bd4a-4e7385acca5b")>
+<Guid("e44c825f-5946-49a6-8794-3f3a6af69187")>
 <ClassInterface(ClassInterfaceType.None)>
 Public Class ObservingConditions
     Implements IObservingConditions

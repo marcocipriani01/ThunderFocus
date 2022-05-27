@@ -26,7 +26,7 @@ Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 Imports ThunderFocus
 
-<Guid("863670cf-a7a6-4314-9479-c99e1c6fce06")>
+<Guid("3c3516af-337e-4766-924a-9c4c318f507a")>
 <ClassInterface(ClassInterfaceType.None)>
 Public Class Focuser
     Implements IFocuserV3

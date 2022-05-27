@@ -25,7 +25,7 @@ Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 Imports ThunderFocus
 
-<Guid("79e4943f-dc9c-4336-8a82-be3056198549")>
+<Guid("8a4e1828-b0d7-413b-84d9-006da8c93be4")>
 <ClassInterface(ClassInterfaceType.None)>
 Public Class CoverCalibrator
     Implements ICoverCalibratorV1

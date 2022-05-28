@@ -1,0 +1,77 @@
+Conform Report Hash (V1): E4218E0155E0C13C74D91455A374CBF3CBE38444A8F2DD1DA3D3823DED298A05CAD092E50C9DB1AF18A14A8EAB5324CAEE1FDD9671D436D906E5BE96F411C5D9
+
+ 
+ConformanceCheck ASCOM Device Conformance Checker Version 6.6.8048.17861, Build time: 13/01/2022 09:55:24
+ConformanceCheck Running on: ASCOM Platform 6.6 6.6.0.3444
+ 
+ConformanceCheck Driver ProgID: ASCOM.ThunderFocus.CoverCalibrator
+ 
+Error handling 
+Error number for "Not Implemented" is: 80040400
+Error number for "Invalid Value 1" is: 80040405
+Error number for "Value Not Set 1" is: 80040402
+Error number for "Value Not Set 2" is: 80040403
+Error messages will not be interpreted to infer state.
+ 
+16:39:38.977 Driver Access Checks              OK       
+16:39:39.646 AccessChecks                      OK       Successfully created driver using late binding
+16:39:39.908 AccessChecks                      OK       Successfully connected using late binding
+16:39:39.916 AccessChecks                      INFO     The driver is a .NET object
+16:39:39.921 AccessChecks                      INFO     The AssemblyQualifiedName is: ASCOM.ThunderFocus.CoverCalibrator, ASCOM.ThunderFocus.CoverCalibrator, Vers
+16:39:39.925 AccessChecks                      INFO     The driver implements interface: ASCOM.DeviceInterface.ICoverCalibratorV1
+16:39:40.616 AccessChecks                      OK       Successfully created driver using early binding to ICoverCalibratorV1 interface
+16:39:40.888 AccessChecks                      OK       Successfully connected using early binding to ICoverCalibratorV1 interface
+16:39:40.957 AccessChecks                      OK       Successfully created driver using driver access toolkit
+16:39:41.218 AccessChecks                      OK       Successfully connected using driver access toolkit
+ 
+Conform is using ASCOM.DriverAccess.CoverCalibrator to get a CoverCalibrator object
+16:39:41.268 ConformanceCheck                  OK       Driver instance created successfully
+ 
+Pre-connect checks 
+ 
+Connect 
+16:39:41.622 ConformanceCheck                  OK       Connected OK
+ 
+Common Driver Methods 
+16:39:41.675 InterfaceVersion                  OK       1
+16:39:41.716 Connected                         OK       True
+16:39:41.763 Description                       OK       ThunderFocus CoverCalibrator
+16:39:41.811 DriverInfo                        OK       ThunderFocus flat bridge v1.0
+16:39:41.856 DriverVersion                     OK       1.0
+16:39:41.903 Name                              OK       ThunderFocus flat panel
+16:39:41.949 CommandString                     INFO     Conform cannot test the CommandString method
+16:39:41.957 CommandBlind                      INFO     Conform cannot test the CommandBlind method
+16:39:41.962 CommandBool                       INFO     Conform cannot test the CommandBool method
+16:39:41.967 Action                            INFO     Conform cannot test the Action method
+16:39:41.972 SupportedActions                  OK       Driver returned an empty action list
+ 
+Properties 
+16:39:42.171 CalibratorState                   OK       Off
+16:39:42.189 CoverState                        OK       Error
+16:39:42.193 MaxBrightness                     OK       255
+16:39:42.231 Brightness                        OK       255
+ 
+Methods 
+16:39:43.076 OpenCover                         OK       OpenCover was successful. The asynchronous open took 0,8 seconds
+16:39:49.700 CloseCover                        OK       CloseCover was successful. The asynchronous close took 6,6 seconds
+16:39:50.618 HaltCover                         OK       Cover is no longer moving after issuing the HaltCover command
+16:39:50.783 CalibratorOn                      OK       CalibratorOn with brightness -1 threw an InvalidValueException as expected
+16:39:51.905 CalibratorOn                      OK       CalibratorOn with brightness 0 was successful. The synchronous operation took 1,1 seconds
+16:39:51.911 CalibratorOn                      OK       The Brightness property does return the value that was set
+16:39:53.035 CalibratorOn                      OK       CalibratorOn with brightness 63 was successful. The synchronous operation took 1,1 seconds
+16:39:53.043 CalibratorOn                      OK       The Brightness property does return the value that was set
+16:39:54.166 CalibratorOn                      OK       CalibratorOn with brightness 127 was successful. The synchronous operation took 1,1 seconds
+16:39:54.174 CalibratorOn                      OK       The Brightness property does return the value that was set
+16:39:55.283 CalibratorOn                      OK       CalibratorOn with brightness 191 was successful. The synchronous operation took 1,1 seconds
+16:39:55.289 CalibratorOn                      OK       The Brightness property does return the value that was set
+16:39:56.412 CalibratorOn                      OK       CalibratorOn with brightness 255 was successful. The synchronous operation took 1,1 seconds
+16:39:56.416 CalibratorOn                      OK       The Brightness property does return the value that was set
+16:39:56.550 CalibratorOn                      OK       CalibratorOn with brightness 256 threw an InvalidValueException as expected
+16:39:57.671 CalibratorOff                     OK       CalibratorOff was successful. The synchronous action took 1,1 seconds
+16:39:57.677 CalibratorOff                     OK       Brightness is set to zero when the calibrator is turned off
+ 
+Conformance test complete 
+ 
+No errors, warnings or issues found: your driver passes ASCOM validation!! 
+ 
+Driver Hash Value: 667C14426C5DE6749E491E6192C5C7EF6989B024EB5982284EBCA44263C6D3F13B7568A53E7D091028A3BB341CCE734EA4E3FFBDA59CF1042F38994F87EC7F40

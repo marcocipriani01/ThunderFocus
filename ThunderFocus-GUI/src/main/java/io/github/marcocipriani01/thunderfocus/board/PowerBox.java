@@ -14,7 +14,7 @@ import static io.github.marcocipriani01.thunderfocus.Main.i18n;
  */
 public class PowerBox {
 
-    public static final double ABSOLUTE_ZERO = -273.0;
+    public static final double ABSOLUTE_ZERO = -273.15;
     public static final double INVALID_HUMIDITY = -1.0;
 
     private final boolean rtcFeature;

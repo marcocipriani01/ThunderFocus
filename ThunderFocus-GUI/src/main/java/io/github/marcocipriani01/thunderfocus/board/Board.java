@@ -427,7 +427,8 @@ public class Board implements SerialMessageListener {
                 }),
         FLAT_SET_COVER('Q', 1, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() && ((params[0] == 0) || (params[0] == 1))), null),
         FLAT_SET_CONFIG('F', 3, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo() &&
-                (params[0] >= 170) && (params[0] <= 290) && (params[1] >= -15) && (params[1] <= 15) && (params[2] >= 0) && (params[2] <= 10)), null);
+                (params[0] >= 170) && (params[0] <= 290) && (params[1] >= -15) && (params[1] <= 15) && (params[2] >= 0) && (params[2] <= 10)), null),
+        FLAT_HALT('M', 0, (b, params) -> (b.hasFlatPanel() && b.flat.hasServo()), null);
 
         public final char id;
         public final int paramsCount;

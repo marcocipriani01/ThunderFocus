@@ -21,10 +21,6 @@
 Option Strict On
 Option Infer On
 
-Imports System.Globalization
-Imports System.Net
-Imports System.Net.Sockets
-Imports System.Threading
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 
@@ -36,37 +32,35 @@ Public Class ObservingConditions
     '
     ' Driver ID and descriptive string that shows in the Chooser
     '
-    Friend Shared driverID As String = "ASCOM.SimpleSQM.ObservingConditions"
-    Private Shared ReadOnly driverDescription As String = "SimpleSQM"
+    Friend Shared driverID As String = "ASCOM.ThunderFocus.ObservingConditions"
+    Private Shared ReadOnly driverDescription As String = "ThunderFocus ambient"
 
-    Friend Shared comPortProfileName As String = "COM Port"
-    Friend Shared comPort As String
+    Friend Shared socketPort As Integer = 5001
+    Friend Shared debug As Boolean = False
 
-    Friend Shared debugProfileName As String = "Debug"
-    Friend Shared debug As Boolean
-
-    Friend Shared limitMagProfileName As String = "Limit magnitude"
-    Friend Shared limitMag As Double = 19.0
-
-    Friend WithEvents Serial As New IO.Ports.SerialPort()
-    Private WithEvents UpdateTimer As New Threading.Timer(AddressOf updateTimer_Tick, Nothing, Timeout.Infinite, Timeout.Infinite)
-
-    Private sqmValue As Double = -1.0
-    Private sqmUpdateTime As DateTime = Nothing
-
-    Private connectedState As Boolean
+    Private ReadOnly helper As DriverHelper
+    Private connectedState As Boolean = False
     Private TL As TraceLogger
+
+    Private temp As Double = 0.0
+    Private hum As Double = 0.0
+    Private dataUpdateTime As DateTime = Nothing
+
+    Private ReadOnly myProperties As String() = {"temperature", "humidity"}
 
     '
     ' Constructor - Must be public for COM registration!
     '
     Public Sub New()
-        ReadProfile()
-        TL = New TraceLogger("", "SimpleSQM") With {
+        ReadProfile() ' Read device configuration from the ASCOM Profile store
+        TL = New TraceLogger("", "ThunderFocus_ObservingConditions") With {
             .Enabled = debug
         }
-        Application.EnableVisualStyles()
+        TL.LogMessage("ObservingConditions", "Starting initialisation")
         connectedState = False
+        Application.EnableVisualStyles()
+        helper = New DriverHelper()
+        TL.LogMessage("ObservingConditions", "Completed initialisation")
     End Sub
 
     '
@@ -81,16 +75,17 @@ Public Class ObservingConditions
     ''' THIS IS THE ONLY PLACE WHERE SHOWING USER INTERFACE IS ALLOWED!
     ''' </summary>
     Public Sub SetupDialog() Implements IObservingConditions.SetupDialog
-        If IsConnected Then
-            MessageBox.Show("Già connesso.", "SimpleSQM", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Application.EnableVisualStyles()
+        If connectedState Then
+            MessageBox.Show("ASCOM bridge running, use the control panel to configure the powerbox.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            Using F As New SetupDialogForm()
+                Dim result As DialogResult = F.ShowDialog()
+                If result = DialogResult.OK Then
+                    WriteProfile()
+                End If
+            End Using
         End If
-        Using dialog As SimpleSQM = New SimpleSQM()
-            Dim result As DialogResult = dialog.ShowDialog()
-            If result = DialogResult.OK Then
-                TL.Enabled = debug
-                WriteProfile()
-            End If
-        End Using
     End Sub
 
     Public ReadOnly Property SupportedActions() As ArrayList Implements IObservingConditions.SupportedActions
@@ -122,8 +117,8 @@ Public Class ObservingConditions
 
     Public Property Connected() As Boolean Implements IObservingConditions.Connected
         Get
-            TL.LogMessage("Connected Get", IsConnected.ToString())
-            Return IsConnected
+            TL.LogMessage("Connected Get", connectedState.ToString())
+            Return connectedState
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
@@ -131,118 +126,105 @@ Public Class ObservingConditions
                 Return
             End If
             If value Then
-                If Serial.IsOpen Then
-                    Throw New DriverException("Already connected!")
-                End If
-                If comPort = "" Then
-                    Throw New DriverException("Set the serial port first.")
-                End If
-                TL.LogMessage("Connected Set", "Connecting to port " + comPort)
-                Serial.PortName = comPort
-                Serial.NewLine = vbCr
-                'serial.DtrEnable = True
-                'serial.RtsEnable = True
-                Serial.ReadTimeout = 8000
-                Serial.BaudRate = 115200
-                Serial.Open()
-                Thread.Sleep(200)
-                Serial.WriteLine(">")
-                Thread.Sleep(800)
-                Dim msg As String
+                TL.LogMessage("Connected Set", "Connecting to port " + socketPort.ToString())
                 Try
-                    msg = Serial.ReadLine().Replace(vbCr, "").Trim()
-                Catch tex1 As TimeoutException
-                    Serial.WriteLine(">")
-                    Thread.Sleep(2000)
-                    Try
-                        msg = Serial.ReadLine().Replace(vbCr, "").Trim()
-                    Catch tex2 As TimeoutException
-                        Serial.Close()
-                        Throw New DriverException("No SimpleSQM device detected on the selected port!")
-                        Return
-                    End Try
+                    SyncLock helper
+                        connectedState = helper.Connect(socketPort, "HasAmbientSensors")
+                        helper.SocketSend("GetTemperature")
+                        Dim rcv As String = helper.SocketRead()
+                        If String.IsNullOrEmpty(rcv) Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Trouble reading information from ThunderFocus!")
+                        End If
+                        temp = Double.Parse(rcv)
+                        If temp < -20.0 Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Sensors data not yet available, wait and retry!")
+                        End If
+                        TL.LogMessage("Connected Set", "Temperature = " + temp.ToString())
+                        helper.SocketSend("GetHumidity")
+                        rcv = helper.SocketRead()
+                        If String.IsNullOrEmpty(rcv) Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Trouble reading information from ThunderFocus!")
+                        End If
+                        hum = Double.Parse(rcv)
+                        If hum < 0.0 Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Sensors data not yet available, wait and retry!")
+                        End If
+                        TL.LogMessage("Connected Set", "Humidity = " + hum.ToString())
+                    End SyncLock
+                    dataUpdateTime = Date.Now
+                Catch ex As Exception
+                    TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
+                    connectedState = False
+                    Throw New DriverException("Could not connect to ThunderFocus!")
                 End Try
-                TL.LogMessage("SerialPort", msg)
-                If msg.StartsWith("<") Then
-                    sqmValue = Double.Parse(msg.Substring(1), CultureInfo.InvariantCulture) - 19.0 + limitMag
-                    TL.LogMessage("SQM", sqmValue.ToString())
-                    sqmUpdateTime = Date.Now
-                    UpdateTimer.Change(15000, 15000)
-                    connectedState = True
-                Else
-                    Serial.Close()
-                    Throw New DriverException("No SimpleSQM device detected on the selected port!")
-                    Return
+                If connectedState = False Then
+                    Throw New DriverException("This ThunderFocus board doesn't have a temperature sensor!")
                 End If
             Else
-                TL.LogMessage("Connected Set", "Disconnecting from port " + comPort)
-                If Serial.IsOpen Then
-                    Serial.Close()
-                End If
-                UpdateTimer.Change(Timeout.Infinite, Timeout.Infinite)
-                sqmValue = -1.0
-                sqmUpdateTime = Nothing
+                SyncLock helper
+                    helper.Disconnect()
+                End SyncLock
+                dataUpdateTime = Nothing
                 connectedState = False
             End If
         End Set
     End Property
 
-    Private Sub serialPort_DataReceived(sender As Object, e As IO.Ports.SerialDataReceivedEventArgs) Handles Serial.DataReceived
-        If connectedState Then
-            Thread.Sleep(100)
-            Try
-                While Serial.BytesToRead > 0
-                    Dim msg As String = Serial.ReadExisting()
-                    TL.LogMessage("SerialPort", msg)
-                    If msg.StartsWith("<") Then
-                        sqmValue = Double.Parse(msg.Substring(1), CultureInfo.InvariantCulture) - 19.0 + limitMag
-                        TL.LogMessage("SQM", sqmValue.ToString())
-                        sqmUpdateTime = Date.Now
-                    End If
-                End While
-            Catch ex As Exception
-                TL.LogMessage("SerialPort", ex.Message)
-            End Try
-        End If
-    End Sub
-
-    Private Sub updateTimer_Tick(state As Object)
-        If Serial.IsOpen Then
-            Serial.WriteLine(">")
-        End If
-    End Sub
-
     Public ReadOnly Property Description As String Implements IObservingConditions.Description
         Get
-            Return driverDescription
+            Dim d As String = driverDescription
+            TL.LogMessage("Description Get", d)
+            Return d
         End Get
     End Property
 
     Public ReadOnly Property DriverInfo As String Implements IObservingConditions.DriverInfo
         Get
-            Return "SimpleSQM ASCOM driver"
+            Dim m_version As Version = Reflection.Assembly.GetExecutingAssembly().GetName().Version
+            Dim s_driverInfo As String = "ThunderFocus focuser bridge v" + m_version.Major.ToString() + "." + m_version.Minor.ToString()
+            TL.LogMessage("DriverInfo Get", s_driverInfo)
+            Return s_driverInfo
         End Get
     End Property
 
     Public ReadOnly Property DriverVersion() As String Implements IObservingConditions.DriverVersion
         Get
+            TL.LogMessage("DriverVersion Get", Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2))
             Return Reflection.Assembly.GetExecutingAssembly.GetName.Version.ToString(2)
         End Get
     End Property
 
     Public ReadOnly Property InterfaceVersion() As Short Implements IObservingConditions.InterfaceVersion
         Get
+            TL.LogMessage("InterfaceVersion Get", "1")
             Return 1
         End Get
     End Property
 
     Public ReadOnly Property Name As String Implements IObservingConditions.Name
         Get
-            Return "SimpleSQM"
+            Return "ThunderFocus weather"
         End Get
     End Property
 
     Public Sub Dispose() Implements IObservingConditions.Dispose
+        TL.LogMessage("Dispose", "Disposing...")
+        Try
+            SyncLock helper
+                helper.Disconnect()
+            End SyncLock
+            connectedState = False
+        Catch ex As Exception
+            TL.LogIssue("Dispose", "Exception while disconnecting: " + ex.Message)
+        End Try
         TL.Enabled = False
         TL.Dispose()
         TL = Nothing
@@ -281,7 +263,20 @@ Public Class ObservingConditions
 
     Public ReadOnly Property Humidity() As Double Implements IObservingConditions.Humidity
         Get
-            Throw New PropertyNotImplementedException("Humidity", False)
+            CheckConnected("Attemped Humidity while disconnected!")
+            Try
+                SyncLock helper
+                    helper.SocketSend("GetHumidity")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        hum = Double.Parse(rcv)
+                    End If
+                    TL.LogMessage("Humidity Get", hum.ToString())
+                End SyncLock
+            Catch ex As Exception
+                TL.LogIssue("Humidity Get", "Exception: " + ex.Message)
+            End Try
+            Return hum
         End Get
     End Property
 
@@ -305,12 +300,7 @@ Public Class ObservingConditions
 
     Public ReadOnly Property SkyQuality() As Double Implements IObservingConditions.SkyQuality
         Get
-            CheckConnected("SkyQuality")
-            If sqmValue < 0.0 Or sqmValue >= 30.0 Then
-                TL.LogMessage("SkyQuality", "Rcv: " + sqmValue.ToString())
-                Throw New DriverException("Invalid SQM value received.")
-            End If
-            Return sqmValue
+            Throw New PropertyNotImplementedException("SkyQuality", False)
         End Get
     End Property
 
@@ -328,7 +318,20 @@ Public Class ObservingConditions
 
     Public ReadOnly Property Temperature() As Double Implements IObservingConditions.Temperature
         Get
-            Throw New PropertyNotImplementedException("Temperature", False)
+            CheckConnected("Attemped Temperature while disconnected!")
+            Try
+                SyncLock helper
+                    helper.SocketSend("GetTemperature")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        temp = Double.Parse(rcv)
+                    End If
+                    TL.LogMessage("Temperature Get", temp.ToString())
+                End SyncLock
+            Catch ex As Exception
+                TL.LogIssue("Temperature Get", "Exception: " + ex.Message)
+            End Try
+            Return temp
         End Get
     End Property
 
@@ -350,29 +353,41 @@ Public Class ObservingConditions
         End Get
     End Property
 
+    Private Function HasProperty(name As String) As Boolean
+        name = name.Trim().ToLowerInvariant()
+        For Each p As String In myProperties
+            If p.Equals(name) Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
+
     Public Function TimeSinceLastUpdate(PropertyName As String) As Double Implements IObservingConditions.TimeSinceLastUpdate
         CheckConnected("TimeSinceLastUpdate")
         If String.IsNullOrEmpty(PropertyName) Then
-            If IsNothing(sqmUpdateTime) Then
-                Throw New DriverException("sqmUpdateTime = null")
+            If IsNothing(dataUpdateTime) Then
+                Throw New DriverException("dataUpdateTime = null")
             End If
-            Return (Date.Now - sqmUpdateTime).TotalSeconds
-        ElseIf PropertyName.Trim().ToLowerInvariant().Equals("skyquality") Then
-            If IsNothing(sqmUpdateTime) Then
-                Throw New DriverException("sqmUpdateTime = null")
+            Return (Date.Now - dataUpdateTime).TotalSeconds
+        ElseIf HasProperty(PropertyName) Then
+            If IsNothing(dataUpdateTime) Then
+                Throw New DriverException("dataUpdateTime = null")
             End If
-            Return (Date.Now - sqmUpdateTime).TotalSeconds
+            Return (Date.Now - dataUpdateTime).TotalSeconds
         Else
             Throw New MethodNotImplementedException("Property not implemented")
         End If
     End Function
 
     Public Function SensorDescription(PropertyName As String) As String Implements IObservingConditions.SensorDescription
-        Select Case PropertyName.Trim.ToLowerInvariant
+        Select Case PropertyName.Trim.ToLowerInvariant()
             Case "averageperiod"
                 Return "Not implemented, data is instantaneous."
-            Case "skyquality"
-                Return "Sky quality measured in magnitudes per square arc second."
+            Case "temperature"
+                Return "Outside temperature in °C."
+            Case "humidity"
+                Return "Relative humidity in %."
             Case Else
                 Throw New MethodNotImplementedException("Property not implemented")
         End Select
@@ -388,7 +403,7 @@ Public Class ObservingConditions
 
 #Region "ASCOM Registration"
 
-    Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
+    Private Shared Sub RegUnregASCOM(bRegister As Boolean)
         Using P As New Profile() With {.DeviceType = "ObservingConditions"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -411,20 +426,11 @@ Public Class ObservingConditions
 #End Region
 
     ''' <summary>
-    ''' Returns true if there is a valid connection to the driver hardware
-    ''' </summary>
-    Private ReadOnly Property IsConnected As Boolean
-        Get
-            Return connectedState
-        End Get
-    End Property
-
-    ''' <summary>
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
     Private Sub CheckConnected(message As String)
-        If Not IsConnected Then
+        If Not connectedState Then
             Throw New NotConnectedException(message)
         End If
     End Sub
@@ -435,9 +441,8 @@ Public Class ObservingConditions
     Friend Sub ReadProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "ObservingConditions"
-            comPort = driverProfile.GetValue(driverID, comPortProfileName, String.Empty, "")
-            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, debugProfileName, String.Empty, False))
-            limitMag = Convert.ToDouble(driverProfile.GetValue(driverID, limitMagProfileName, String.Empty, "19.0"))
+            debug = Convert.ToBoolean(driverProfile.GetValue(driverID, DriverHelper.debugProfileName, String.Empty, DriverHelper.debugDefault))
+            socketPort = Integer.Parse(driverProfile.GetValue(driverID, DriverHelper.socketPortProfileName, String.Empty, DriverHelper.socketPortDefault))
         End Using
     End Sub
 
@@ -447,9 +452,8 @@ Public Class ObservingConditions
     Friend Sub WriteProfile()
         Using driverProfile As New Profile()
             driverProfile.DeviceType = "ObservingConditions"
-            driverProfile.WriteValue(driverID, comPortProfileName, comPort.ToString())
-            driverProfile.WriteValue(driverID, debugProfileName, debug.ToString())
-            driverProfile.WriteValue(driverID, limitMagProfileName, limitMag.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.debugProfileName, debug.ToString())
+            driverProfile.WriteValue(driverID, DriverHelper.socketPortProfileName, socketPort.ToString())
         End Using
 
     End Sub

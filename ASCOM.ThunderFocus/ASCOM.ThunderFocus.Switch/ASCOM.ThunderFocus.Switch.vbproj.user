@@ -6,7 +6,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files\N.I.N.A. - Nighttime Imaging %27N%27 Astronomy\NINA.exe</StartProgram>
+    <StartProgram>C:\Program Files %28x86%29\ASCOM\Conform\Conform.exe</StartProgram>
     <StartWorkingDirectory>
     </StartWorkingDirectory>
   </PropertyGroup>

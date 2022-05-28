@@ -72,7 +72,7 @@ Public Class Switch
     ''' </summary>
     Public Sub SetupDialog() Implements ISwitchV2.SetupDialog
         Application.EnableVisualStyles()
-        If IsConnected Then
+        If connectedState Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the switches.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As New SetupDialogForm()
@@ -112,8 +112,8 @@ Public Class Switch
 
     Public Property Connected() As Boolean Implements ISwitchV2.Connected
         Get
-            TL.LogMessage("Connected Get", IsConnected.ToString())
-            Return IsConnected
+            TL.LogMessage("Connected Get", connectedState.ToString())
+            Return connectedState
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
@@ -133,7 +133,7 @@ Public Class Switch
                             Throw New DriverException("Trouble reading information from ThunderFocus!")
                         End If
                         maxSwitchVal = Short.Parse(rcv)
-                        TL.LogMessage("Connected Set", "Number of switches = " + CStr(MaxSwitch))
+                        TL.LogMessage("Connected Set", "Number of switches = " + maxSwitchVal.ToString())
                     End SyncLock
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
@@ -178,8 +178,8 @@ Public Class Switch
 
     Public ReadOnly Property InterfaceVersion() As Short Implements ISwitchV2.InterfaceVersion
         Get
-            TL.LogMessage("InterfaceVersion Get", "3")
-            Return 3
+            TL.LogMessage("InterfaceVersion Get", "2")
+            Return 2
         End Get
     End Property
 
@@ -435,6 +435,7 @@ Public Class Switch
     ''' <returns></returns>
     Function GetSwitchValue(id As Short) As Double Implements ISwitchV2.GetSwitchValue
         CheckConnected("Attemped GetSwitchValue while disconnected!")
+        ValidateId("GetSwitchValue", id)
         Dim rcv As String = ""
         Try
             SyncLock helper
@@ -563,21 +564,11 @@ Public Class Switch
 #End Region
 
     ''' <summary>
-    ''' Returns true if there is a valid connection to the driver hardware
-    ''' </summary>
-    Private ReadOnly Property IsConnected As Boolean
-        Get
-            ' TODO check that the driver hardware connection exists and is connected to the hardware
-            Return connectedState
-        End Get
-    End Property
-
-    ''' <summary>
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
     Private Sub CheckConnected(message As String)
-        If Not IsConnected Then
+        If Not connectedState Then
             Throw New NotConnectedException(message)
         End If
     End Sub

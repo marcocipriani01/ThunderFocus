@@ -72,7 +72,7 @@ Public Class Focuser
     ''' </summary>
     Public Sub SetupDialog() Implements IFocuserV3.SetupDialog
         Application.EnableVisualStyles()
-        If IsConnected Then
+        If connectedState Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the focuser.", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As New SetupDialogForm()
@@ -86,7 +86,6 @@ Public Class Focuser
 
     Public ReadOnly Property SupportedActions() As ArrayList Implements IFocuserV3.SupportedActions
         Get
-            TL.LogMessage("SupportedActions Get", "Returning empty arraylist")
             Return New ArrayList()
         End Get
     End Property
@@ -112,8 +111,8 @@ Public Class Focuser
 
     Public Property Connected() As Boolean Implements IFocuserV3.Connected
         Get
-            TL.LogMessage("Connected Get", IsConnected.ToString())
-            Return IsConnected
+            TL.LogMessage("Connected Get", connectedState.ToString())
+            Return connectedState
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
@@ -349,7 +348,7 @@ Public Class Focuser
 
 #Region "ASCOM Registration"
 
-    Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
+    Private Shared Sub RegUnregASCOM(bRegister As Boolean)
         Using P As New Profile() With {.DeviceType = "Focuser"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -372,20 +371,11 @@ Public Class Focuser
 #End Region
 
     ''' <summary>
-    ''' Returns true if there is a valid connection to the driver hardware
-    ''' </summary>
-    Private ReadOnly Property IsConnected As Boolean
-        Get
-            Return connectedState
-        End Get
-    End Property
-
-    ''' <summary>
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
     Private Sub CheckConnected(message As String)
-        If Not IsConnected Then
+        If Not connectedState Then
             Throw New NotConnectedException(message)
         End If
     End Sub

@@ -35,6 +35,8 @@ Public Class CoverCalibrator
     Friend Shared driverID As String = "ASCOM.ThunderFocus.CoverCalibrator"
     Private Shared ReadOnly driverDescription As String = "ThunderFocus CoverCalibrator"
 
+    Private ReadOnly moveDelay As Integer = 200
+
     Friend Shared socketPort As Integer = 5001
     Friend Shared debug As Boolean = False
 
@@ -70,7 +72,7 @@ Public Class CoverCalibrator
     ''' </summary>
     Public Sub SetupDialog() Implements ICoverCalibratorV1.SetupDialog
         Application.EnableVisualStyles()
-        If IsConnected Then
+        If connectedState Then
             MessageBox.Show("ASCOM bridge running, use the control panel to configure the flat .", "ThunderFocus", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             Using F As New SetupDialogForm()
@@ -112,8 +114,8 @@ Public Class CoverCalibrator
 
     Public Property Connected() As Boolean Implements ICoverCalibratorV1.Connected
         Get
-            TL.LogMessage("Connected Get", IsConnected.ToString())
-            Return IsConnected
+            TL.LogMessage("Connected Get", connectedState.ToString())
+            Return connectedState
         End Get
         Set(value As Boolean)
             TL.LogMessage("Connected Set", value.ToString())
@@ -219,6 +221,10 @@ Public Class CoverCalibrator
                                 coverVal = CoverStatus.Closed
                             Case "Open"
                                 coverVal = CoverStatus.Open
+                            Case "Moving"
+                                coverVal = CoverStatus.Moving
+                            Case "Error"
+                                coverVal = CoverStatus.Error
                             Case "NotPresent"
                                 coverVal = CoverStatus.NotPresent
                             Case Else
@@ -246,6 +252,7 @@ Public Class CoverCalibrator
                 If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
                     Throw New MethodNotImplementedException("OpenCover")
                 End If
+                Threading.Thread.Sleep(moveDelay)
             End SyncLock
         Catch ex As Exception
             TL.LogIssue("OpenCover", "Exception: " + ex.Message)
@@ -264,6 +271,7 @@ Public Class CoverCalibrator
                 If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
                     Throw New MethodNotImplementedException("CloseCover")
                 End If
+                Threading.Thread.Sleep(moveDelay)
             End SyncLock
         Catch ex As Exception
             TL.LogIssue("CloseCover", "Exception: " + ex.Message)
@@ -274,7 +282,19 @@ Public Class CoverCalibrator
     ''' Stops any cover movement that may be in progress if a cover is present and cover movement can be interrupted.
     ''' </summary>
     Public Sub HaltCover() Implements ICoverCalibratorV1.HaltCover
-        Throw New MethodNotImplementedException("HaltCover")
+        CheckConnected("Attemped HaltCover while disconnected!")
+        Try
+            SyncLock helper
+                helper.SocketSend("HaltCover")
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) And rcv.Equals("Error") Then
+                    Throw New MethodNotImplementedException("HaltCover")
+                End If
+                Threading.Thread.Sleep(moveDelay)
+            End SyncLock
+        Catch ex As Exception
+            TL.LogIssue("HaltCover", "Exception: " + ex.Message)
+        End Try
     End Sub
 
     ''' <summary>
@@ -343,6 +363,9 @@ Public Class CoverCalibrator
     ''' <param name="Brightness"></param>
     Public Sub CalibratorOn(Brightness As Integer) Implements ICoverCalibratorV1.CalibratorOn
         CheckConnected("Attemped CalibratorOn while disconnected!")
+        If Brightness < 0 Or Brightness > 255 Then
+            Throw New InvalidValueException("Brightness out of bounds!")
+        End If
         Try
             SyncLock helper
                 helper.SocketSend("CalibratorOn=" + Brightness.ToString())
@@ -380,7 +403,7 @@ Public Class CoverCalibrator
 
 #Region "ASCOM Registration"
 
-    Private Shared Sub RegUnregASCOM(ByVal bRegister As Boolean)
+    Private Shared Sub RegUnregASCOM(bRegister As Boolean)
         Using P As New Profile() With {.DeviceType = "CoverCalibrator"}
             If bRegister Then
                 P.Register(driverID, driverDescription)
@@ -403,20 +426,11 @@ Public Class CoverCalibrator
 #End Region
 
     ''' <summary>
-    ''' Returns true if there is a valid connection to the driver hardware
-    ''' </summary>
-    Private ReadOnly Property IsConnected As Boolean
-        Get
-            Return connectedState
-        End Get
-    End Property
-
-    ''' <summary>
     ''' Use this function to throw an exception if we aren't connected to the hardware
     ''' </summary>
     ''' <param name="message"></param>
     Private Sub CheckConnected(message As String)
-        If Not IsConnected Then
+        If Not connectedState Then
             Throw New NotConnectedException(message)
         End If
     End Sub

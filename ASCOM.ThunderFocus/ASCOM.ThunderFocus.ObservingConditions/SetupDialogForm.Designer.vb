@@ -167,7 +167,7 @@ Partial Class SetupDialogForm
         Me.MaximizeBox = False
         Me.Name = "SetupDialogForm"
         Me.Style = MetroFramework.MetroColorStyle.Red
-        Me.Text = "ThunderFocus weather bridge"
+        Me.Text = "ThunderFocus ambient bridge"
         Me.Theme = MetroFramework.MetroThemeStyle.Dark
         Me.TableLayoutPanel1.ResumeLayout(False)
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()

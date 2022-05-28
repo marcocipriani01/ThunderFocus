@@ -43,6 +43,7 @@ void setLight(boolean val);
 void setBrightness(int val);
 #if SERVO_MOTOR != DISABLED
 void setShutter(int val);
+void halt();
 #endif
 };  // namespace FlatPanel
 

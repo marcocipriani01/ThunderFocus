@@ -110,11 +110,7 @@ void run() {
 #if FLAT_PANEL == true
     FlatPanel::run();
 #if SERVO_MOTOR != DISABLED
-    if (lastCoverStatus != FlatPanel::coverStatus) {
-        Serial.print(F("E"));
-        Serial.println(FlatPanel::coverStatus);
-        lastCoverStatus = FlatPanel::coverStatus;
-    }
+    updateCoverStatus();
 #endif
 #endif
 }
@@ -264,7 +260,7 @@ void serialEvent() {
             case 'H': {
                 boolean b = Serial.parseInt();
 #if DEBUG_EN
-                Serial.print(F(">HoldControl="));
+                Serial.print(F(">PowerSave="));
                 Serial.println(b);
 #endif
                 Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
@@ -433,7 +429,16 @@ void serialEvent() {
                     FlatPanel::setShutter(FlatPanel::CLOSED);
                 else if (value == 1)
                     FlatPanel::setShutter(FlatPanel::OPEN);
+                updateCoverStatus();
                 break;
+            }
+
+            case 'M': {
+#if DEBUG_EN
+                Serial.println(F(">FlatPanelHalt"));
+#endif
+                FlatPanel::halt();
+                updateCoverStatus();
             }
 
             case 'F': {
@@ -456,6 +461,16 @@ void serialEvent() {
         }
     }
 }
+
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+    void updateCoverStatus() {
+        if (lastCoverStatus != FlatPanel::coverStatus) {
+            Serial.print(F("E"));
+            Serial.println(FlatPanel::coverStatus);
+            lastCoverStatus = FlatPanel::coverStatus;
+        }
+    }
+#endif
 
 #if ENABLE_DEVMAN == true
 void updatePins() {

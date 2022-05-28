@@ -62,7 +62,10 @@ public class FlatPanel {
     }
 
     public enum CoverStatus {
-        NEITHER_OPEN_NOR_CLOSED(i18n("cover.moving")), CLOSED(i18n("cover.closed")), OPEN(i18n("cover.open"));
+        NEITHER_OPEN_NOR_CLOSED(i18n("cover.moving")),
+        CLOSED(i18n("cover.closed")),
+        OPEN(i18n("cover.open")),
+        HALT(i18n("cover.halt"));
 
         private final String label;
 

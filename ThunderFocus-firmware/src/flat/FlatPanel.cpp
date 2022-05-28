@@ -39,15 +39,24 @@ void begin() {
 
 #if SERVO_MOTOR != DISABLED
 void setShutter(int val) {
-    if (val == OPEN && coverStatus != OPEN) {
+    if ((val == OPEN) && (coverStatus != OPEN)) {
         motorDirection = OPENING;
+        coverStatus = NEITHER_OPEN_NOR_CLOSED;
         targetVal = Settings::settings.openServoVal;
         targetBrightness = 0;
         currentBrightness = 0;
         analogWrite(EL_PANEL_PIN, 0);
-    } else if (val == CLOSED && coverStatus != CLOSED) {
+    } else if ((val == CLOSED) && (coverStatus != CLOSED)) {
         motorDirection = CLOSING;
+        coverStatus = NEITHER_OPEN_NOR_CLOSED;
         targetVal = Settings::settings.closedServoVal;
+    }
+}
+
+void halt() {
+    if (motorDirection != NONE) {
+        motorDirection = NONE;
+        coverStatus = HALT;   
     }
 }
 #endif
@@ -93,7 +102,6 @@ void run() {
 #if SERVO_MOTOR != DISABLED
     if ((motorDirection != NONE) && ((t - lastMoveTime) >= Settings::settings.servoDelay)) {
         if ((currentVal > targetVal) && (motorDirection == OPENING)) {
-            coverStatus = NEITHER_OPEN_NOR_CLOSED;
             currentVal -= SERVO_STEP_SIZE;
             servo.write(currentVal);
             if (currentVal <= targetVal) {
@@ -103,7 +111,6 @@ void run() {
                 Settings::requestSave = true;
             }
         } else if ((currentVal < targetVal) && (motorDirection == CLOSING)) {
-            coverStatus = NEITHER_OPEN_NOR_CLOSED;
             currentVal += SERVO_STEP_SIZE;
             servo.write(currentVal);
             if (currentVal >= targetVal) {

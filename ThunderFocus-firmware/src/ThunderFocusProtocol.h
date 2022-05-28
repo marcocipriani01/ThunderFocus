@@ -56,6 +56,7 @@ extern unsigned long sunSyncTime;
 
 #if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
 extern FlatPanel::CoverStatus lastCoverStatus;
+void updateCoverStatus();
 #endif
 
 void setup();

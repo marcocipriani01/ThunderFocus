@@ -140,6 +140,7 @@ public class MainWindow extends JFrame implements
     private JButton saveServoConfig;
     private JPanel flatPanelTab;
     private JLabel powerboxLockLabel;
+    private JButton haltFlatButton;
     private DefaultValueDataset tempDataset;
     private DefaultValueDataset humidityDataset;
     private DefaultValueDataset dewPointDataset;
@@ -187,7 +188,7 @@ public class MainWindow extends JFrame implements
         setButtonListeners(connectButton, refreshButton, setRequestedPosButton, fokBacklashCalButton,
                 setZeroButton, fokInButton, fokOutButton, miniWindowButton, stopButton, copyIndiDriverNameButton,
                 saveConfigButton, powerBoxOnButton, powerBoxOffButton, cleanGraphButton, addPresetButton,
-                deletePresetButton, goToPresetButton, importButton, exportButton,
+                deletePresetButton, goToPresetButton, importButton, exportButton, haltFlatButton,
                 saveServoConfig, lightOnRadio, lightOffRadio, openCoverRadio, closeCoverRadio);
         pinWindowButton.addActionListener(this);
         requestedPosField.addActionListener(this);
@@ -791,6 +792,15 @@ public class MainWindow extends JFrame implements
             } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
+
+        } else if (source == haltFlatButton) {
+            try {
+                board.run(Board.Commands.FLAT_HALT, this);
+            } catch (IOException | SerialPortException ex) {
+                connectionErr(ex);
+            } catch (IllegalArgumentException ex) {
+                valueOutOfLimits(ex);
+            }
         }
     }
 
@@ -882,17 +892,20 @@ public class MainWindow extends JFrame implements
         powerBoxOffButton.setEnabled(powerBoxEn);
         powerBoxAutoModeBox.setEnabled(powerBoxEn);
 
-        boolean flat = connected && board.hasFlatPanel();
-        lightOnRadio.setEnabled(flat);
-        lightOffRadio.setEnabled(flat);
-        brightnessSlider.setEnabled(flat);
-        boolean hasServo = flat && board.flat().hasServo();
-        closeCoverRadio.setEnabled(hasServo);
-        openCoverRadio.setEnabled(hasServo);
+        FlatPanel flat = board.flat();
+        boolean hasFlat = connected && (flat != null);
+        lightOnRadio.setEnabled(hasFlat);
+        lightOffRadio.setEnabled(hasFlat);
+        brightnessSlider.setEnabled(hasFlat);
+        boolean hasServo = hasFlat && flat.hasServo();
+        boolean enableFlatMove = hasServo && (flat.getCoverStatus() != FlatPanel.CoverStatus.NEITHER_OPEN_NOR_CLOSED);
+        closeCoverRadio.setEnabled(enableFlatMove);
+        openCoverRadio.setEnabled(enableFlatMove);
         coverSpeedSlider.setEnabled(hasServo);
         openAngleSpinner.setEnabled(hasServo);
         closedAngleSpinner.setEnabled(hasServo);
         saveServoConfig.setEnabled(hasServo);
+        haltFlatButton.setEnabled(hasServo && (flat.getCoverStatus() == FlatPanel.CoverStatus.NEITHER_OPEN_NOR_CLOSED));
     }
 
     private void startOrStopINDI(boolean forceRestart) {
@@ -1107,6 +1120,7 @@ public class MainWindow extends JFrame implements
         openCoverRadio.setEnabled(enabledRadios);
         closeCoverRadio.setEnabled(enabledRadios);
         coverStatusLabel.setText(coverStatus.getLabel());
+        haltFlatButton.setEnabled(coverStatus == FlatPanel.CoverStatus.NEITHER_OPEN_NOR_CLOSED);
     }
 
     @Override

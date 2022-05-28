@@ -179,8 +179,7 @@ public class Main {
                     if (version != null) return version;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return null;
     }

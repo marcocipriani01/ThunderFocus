@@ -20,9 +20,9 @@
 #define OPEN_SERVO_DEFAULT 550
 
 // Delay for the maximum speed
-#define SERVO_DELAY_MIN 1
+#define SERVO_DELAY_MIN 5
 // Delay for the minimum speed
-#define SERVO_DELAY_MAX 20
+#define SERVO_DELAY_MAX 50
 // Default delay
 #define SERVO_DELAY_DEFAULT 10
 #else

@@ -73,7 +73,7 @@ public class ASCOMBridge extends SimpleServer {
             exit = true;
             PowerBox powerBox = board.powerBox();
             if (powerBox == null) {
-                if (cmd.equals("HasPowerBox")) println(from, "false");
+                if (cmd.equals("HasPowerBox") || cmd.equals("HasAmbientSensors")) println(from, "false");
                 else exit = false;
             } else {
                 switch (cmd) {
@@ -205,6 +205,7 @@ public class ASCOMBridge extends SimpleServer {
                             case CLOSED -> println(from, "Closed");
                             case OPEN -> println(from, "Open");
                             case NEITHER_OPEN_NOR_CLOSED -> println(from, "Moving");
+                            case HALT -> println(from, "Error");
                         }
                     }
 
@@ -220,6 +221,15 @@ public class ASCOMBridge extends SimpleServer {
                     case "CloseCover" -> {
                         if (flat.hasServo()) {
                             board.run(Board.Commands.FLAT_SET_COVER, null, 0);
+                            println(from, "OK");
+                        } else {
+                            println(from, "Error");
+                        }
+                    }
+
+                    case "HaltCover" -> {
+                        if (flat.hasServo()) {
+                            board.run(Board.Commands.FLAT_HALT, null);
                             println(from, "OK");
                         } else {
                             println(from, "Error");

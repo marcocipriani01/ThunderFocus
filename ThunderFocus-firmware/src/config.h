@@ -3,9 +3,9 @@
 
 #define DEBUG_EN true
 
-#include "boards/thunderfocus_v2.h"
+//#include "boards/thunderfocus_v2.h"
 //#include "boards/arduino_nano_prototype.h"
-//#include "boards/guidescope.h"
+#include "boards/guidescope.h"
 
 
 // ===================================================================================

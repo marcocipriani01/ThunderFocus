@@ -55,16 +55,19 @@ public class Board implements SerialMessageListener {
     }
 
     public synchronized void disconnect() {
-        if (powerBox != null) {
+        disconnect(true);
+    }
+
+    public synchronized void disconnect(boolean applyPins) {
+        if ((powerBox != null) && applyPins) {
             try {
                 for (ArduinoPin pin : powerBox.asList()) {
                     if (pin.isOnWhenAppOpen()) {
                         pin.setValue(false);
-                        Commands.POWER_BOX_SET.run(this, null, pin.getNumber(), pin.getValuePWM());
+                        Commands.POWER_BOX_SET.run(this, null, false, pin.getNumber(), pin.getValuePWM());
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
         updConnSate(ConnectionState.TIMEOUT);
@@ -73,8 +76,7 @@ public class Board implements SerialMessageListener {
         ready = false;
         try {
             serialPort.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         updConnSate(ConnectionState.DISCONNECTED);
         focuser = null;
@@ -362,9 +364,10 @@ public class Board implements SerialMessageListener {
                 b.powerBox.longitude = ((double) params[2]) / 1000.0;
             }
         }),
-        FOCUSER_REL_MOVE('R', 1, (b, params) -> b.hasFocuser()),
+        FOCUSER_REL_MOVE('R', 1, (b, params) -> (b.hasFocuser() &&
+                ((b.focuser.pos + params[0]) >= 0) && ((b.focuser.pos + params[0]) <= Main.settings.getFocuserMaxTravel()))),
         FOCUSER_ABS_MOVE('A', 1,
-                (b, params) -> (board.hasFocuser()) && (params[0] >= 0) && (params[0] <= Main.settings.getFocuserMaxTravel()),
+                (b, params) -> (board.hasFocuser() && (params[0] >= 0) && (params[0] <= Main.settings.getFocuserMaxTravel())),
                 (b, caller, params) -> {
                     b.focuser.targetPos = params[0];
                     b.notifyListeners(caller, Parameters.REQUESTED_POS);
@@ -452,6 +455,11 @@ public class Board implements SerialMessageListener {
 
         private void run(Board b, Listener caller, int... params)
                 throws IllegalArgumentException, SerialPortException, IOException {
+            run(b, caller, true, params);
+        }
+
+        private void run(Board b, Listener caller, boolean applyPinsOnDisconnect, int... params)
+                throws IllegalArgumentException, SerialPortException, IOException {
             StringBuilder cmd = new StringBuilder("$").append(id);
             if (params.length != paramsCount)
                 throw new IllegalArgumentException("Missing/too much parameters.");
@@ -464,7 +472,7 @@ public class Board implements SerialMessageListener {
                 b.serialPort.println(cmd.toString());
                 if (whenDone != null) whenDone.action(b, caller, params);
             } catch (SerialPortException | IOException e) {
-                b.disconnect();
+                b.disconnect(applyPinsOnDisconnect);
                 throw e;
             }
         }

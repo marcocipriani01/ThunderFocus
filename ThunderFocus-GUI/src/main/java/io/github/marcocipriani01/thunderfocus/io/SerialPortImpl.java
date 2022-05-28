@@ -101,6 +101,7 @@ public class SerialPortImpl implements SerialPortEventListener {
      * @see #connect
      */
     public void disconnect() throws IOException {
+        if (serialPort == null) return;
         try {
             serialPort.closePort();
             serialPort = null;

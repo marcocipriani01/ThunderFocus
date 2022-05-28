@@ -9,6 +9,7 @@ import java.net.Socket;
 import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.settings;
 
+@SuppressWarnings("unused")
 public class ASCOMBridge extends SimpleServer {
 
     private Runnable onClientListChange = null;

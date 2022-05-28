@@ -124,7 +124,7 @@ public class ASCOMBridge extends SimpleServer {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             println(from, pin.isPWMEnabled() ? "PWM" : String.valueOf(pin.getValueBoolean()));
                         } else {
-                            println(from, "NonExistent");
+                            println(from, "ReadOnly");
                         }
                     }
 
@@ -133,13 +133,13 @@ public class ASCOMBridge extends SimpleServer {
                         if (powerBox.contains(pinNumber)) {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
-                                println(from, "CannotWrite");
+                                println(from, "ReadOnly");
                             } else {
                                 Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, params[1].contains("true") ? 255 : 0);
                                 println(from, "OK");
                             }
                         } else {
-                            println(from, "NonExistent");
+                            println(from, "ReadOnly");
                         }
                     }
 
@@ -147,9 +147,9 @@ public class ASCOMBridge extends SimpleServer {
                         int pinNumber = Integer.parseInt(params[0]);
                         if (powerBox.contains(pinNumber)) {
                             ArduinoPin pin = powerBox.get(pinNumber);
-                            println(from, pin.isPWMEnabled() ? "255.0" : "1.0");
+                            println(from, pin.isPWMEnabled() ? "255" : "1");
                         } else {
-                            println(from, "NonExistent");
+                            println(from, "ReadOnly");
                         }
                     }
 
@@ -159,7 +159,7 @@ public class ASCOMBridge extends SimpleServer {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             println(from, pin.isPWMEnabled() ? String.valueOf(pin.getValuePWM()) : "Boolean");
                         } else {
-                            println(from, "NonExistent");
+                            println(from, "ReadOnly");
                         }
                     }
 
@@ -168,15 +168,13 @@ public class ASCOMBridge extends SimpleServer {
                         if (powerBox.contains(pinNumber)) {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
-                                println(from, "CannotWrite");
-                            } else if (pin.isPWMEnabled()) {
-                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, (int) Double.parseDouble(params[1]));
-                                println(from, "OK");
+                                println(from, "ReadOnly");
                             } else {
-                                println(from, "Boolean");
+                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, Integer.parseInt(params[1]));
+                                println(from, "OK");
                             }
                         } else {
-                            println(from, "NonExistent");
+                            println(from, "ReadOnly");
                         }
                     }
 

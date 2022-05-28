@@ -362,8 +362,8 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("SetSwitch", rcv)
-        If rcv.Contains("CannotWrite") Then
-            Throw New MethodNotImplementedException("Cannot write to this switch!")
+        If rcv.Contains("ReadOnly") Then
+            Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
     End Sub
 
@@ -392,11 +392,11 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("MaxSwitchValue", rcv)
-        If rcv.Contains("NonExistent") Then
+        If rcv.Contains("ReadOnly") Then
             Return 1.0
         End If
         Try
-            Return CDbl(rcv)
+            Return CInt(rcv)
         Catch ex As Exception
             Throw New DriverException("Invalid response from ThunderFocus!")
         End Try
@@ -452,10 +452,10 @@ Public Class Switch
         If rcv.Contains("Boolean") Then
             Throw New MethodNotImplementedException("GetSwitchValue is not implemented for boolean switches")
         End If
-        If rcv.Contains("NonExistent") Then
+        If rcv.Contains("ReadOnly") Then
             Return 0.0
         End If
-        Return CDbl(rcv)
+        Return CInt(rcv)
     End Function
 
     ''' <summary>
@@ -469,10 +469,14 @@ Public Class Switch
     Sub SetSwitchValue(id As Short, value As Double) Implements ISwitchV2.SetSwitchValue
         CheckConnected("Attemped SetSwitchValue while disconnected!")
         ValidateRange("SetSwitchValue", id, value)
+        If value = 1.0 And MaxSwitchValue(id) = 1.0 Then
+            TL.LogMessage("SetSwitchValue", "Setting switch #" + id.ToString() + " to 1.0 because it is a boolean switch")
+            value = 255.0
+        End If
         Dim rcv As String = ""
         Try
             SyncLock helper
-                helper.SocketSend("SetSwitchValue=" + id.ToString() + "," + value.ToString())
+                helper.SocketSend("SetSwitchValue=" + id.ToString() + "," + CInt(value).ToString())
                 rcv = helper.SocketRead()
             End SyncLock
         Catch ex As Exception
@@ -482,8 +486,8 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("SetSwitchValue", rcv)
-        If Not rcv.Contains("OK") Then
-            Throw New MethodNotImplementedException("SetSwitchValue is not implemented for boolean switches")
+        If rcv.Contains("ReadOnly") Then
+            Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
     End Sub
 

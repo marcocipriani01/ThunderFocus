@@ -21,6 +21,7 @@
 Option Strict On
 Option Infer On
 
+Imports System.Globalization
 Imports ASCOM.DeviceInterface
 Imports ASCOM.Utilities
 
@@ -137,7 +138,7 @@ Public Class ObservingConditions
                             connectedState = False
                             Throw New DriverException("Trouble reading information from ThunderFocus!")
                         End If
-                        temp = Double.Parse(rcv)
+                        temp = Double.Parse(rcv, CultureInfo.InvariantCulture)
                         If temp < -20.0 Then
                             helper.Disconnect()
                             connectedState = False
@@ -151,7 +152,7 @@ Public Class ObservingConditions
                             connectedState = False
                             Throw New DriverException("Trouble reading information from ThunderFocus!")
                         End If
-                        hum = Double.Parse(rcv)
+                        hum = Double.Parse(rcv, CultureInfo.InvariantCulture)
                         If hum < 0.0 Then
                             helper.Disconnect()
                             connectedState = False
@@ -269,7 +270,7 @@ Public Class ObservingConditions
                     helper.SocketSend("GetHumidity")
                     Dim rcv As String = helper.SocketRead()
                     If Not String.IsNullOrEmpty(rcv) Then
-                        hum = Double.Parse(rcv)
+                        hum = Double.Parse(rcv, CultureInfo.InvariantCulture)
                     End If
                     TL.LogMessage("Humidity Get", hum.ToString())
                 End SyncLock
@@ -324,7 +325,7 @@ Public Class ObservingConditions
                     helper.SocketSend("GetTemperature")
                     Dim rcv As String = helper.SocketRead()
                     If Not String.IsNullOrEmpty(rcv) Then
-                        temp = Double.Parse(rcv)
+                        temp = Double.Parse(rcv, CultureInfo.InvariantCulture)
                     End If
                     TL.LogMessage("Temperature Get", temp.ToString())
                 End SyncLock

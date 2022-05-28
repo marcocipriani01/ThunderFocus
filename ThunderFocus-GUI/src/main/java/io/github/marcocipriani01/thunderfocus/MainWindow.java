@@ -581,23 +581,7 @@ public class MainWindow extends JFrame implements
             }
 
         } else if (source == saveConfigButton) {
-            Settings.Theme newTheme = Objects.requireNonNull((Settings.Theme) appThemeCombo.getSelectedItem());
-            if (settings.theme != newTheme) {
-                settings.theme = newTheme;
-                try {
-                    switch (newTheme) {
-                        case LIGHT -> FlatIntelliJLaf.setup();
-                        case DARK -> FlatDarkLaf.setup();
-                        default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
-                                "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
-                    }
-                    SwingUtilities.updateComponentTreeUI(this);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
-                aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
-            }
+            setTheme(Objects.requireNonNull((Settings.Theme) appThemeCombo.getSelectedItem()));
             settings.indiServer = indiServerCheckBox.isSelected();
             settings.ascomBridge = ascomBridgeCheckBox.isSelected();
             settings.autoConnect = autoConnectBox.isSelected();
@@ -612,8 +596,8 @@ public class MainWindow extends JFrame implements
                 if (focuser != null) {
                     settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
                     settings.focuserTicksUnit = Settings.Units.values()[fokUnitsCombo.getSelectedIndex()];
-                    updateUnitsLabel();
                     settings.setFokMaxTravel((int) fokMaxTravelSpinner.getValue(), this);
+                    updateUnitsLabel();
                     updateSlidersLimit();
                 }
                 try {
@@ -621,6 +605,7 @@ public class MainWindow extends JFrame implements
                         board.run(Board.Commands.FOCUSER_SET_BACKLASH, this, (int) fokBacklashSpinner.getValue());
                         board.run(Board.Commands.FOCUSER_SET_SPEED, this, fokSpeedSlider.getValue());
                         board.run(Board.Commands.FOCUSER_REVERSE_DIR, this, fokReverseDirBox.isSelected() ? 1 : 0);
+                        board.run(Board.Commands.FOCUSER_POWER_SAVER, null, fokPowerSaverBox.isSelected() ? 1 : 0);
                     }
                     PowerBox powerBox = board.powerBox();
                     if ((powerBox != null) && powerBox.supportsAmbient()) {
@@ -633,9 +618,9 @@ public class MainWindow extends JFrame implements
                 } catch (IllegalArgumentException ex) {
                     valueOutOfLimits(ex);
                 }
+                startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
             }
             startOrStopINDI(settings.indiServerPort != oldIndiPort);
-            if (board.isConnected()) startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
             try {
                 settings.save();
             } catch (IOException ex) {
@@ -744,30 +729,35 @@ public class MainWindow extends JFrame implements
                     "Settings files (*.thunder)", "thunder"));
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    //TODO: apply settings
                     int oldIndiPort = settings.indiServerPort;
                     int oldAscomPort = settings.ascomBridgePort;
                     ExportableSettings es = ExportableSettings.load(chooser.getSelectedFile().toPath());
                     es.applyTo(settings, board);
+                    setTheme(es.theme);
                     appThemeCombo.setSelectedItem(es.theme);
-                    relativeMovField.setText(String.valueOf(es.relativeStepSize));
                     localOrRemoteCombo.setSelectedItem(i18n(es.showIpIndiDriver ? "remote" : "local"));
                     ascomBridgeCheckBox.setSelected(es.ascomBridge);
                     indiServerCheckBox.setSelected(es.indiServer);
                     autoConnectBox.setSelected(es.autoConnect);
                     indiPortSpinner.setValue(es.indiServerPort);
                     ascomPortSpinner.setValue(es.ascomBridgePort);
-                    fokTicksCountSpinner.setValue(es.focuserTicksCount);
-                    fokUnitsCombo.setSelectedItem(es.focuserTicksUnit);
-                    fokBacklashSpinner.setValue(es.backlash);
-                    fokSpeedSlider.setValue(es.speed);
-                    fokReverseDirBox.setSelected(es.reverseDir);
-                    fokPowerSaverBox.setSelected(es.powerSaver);
-                    updateUnitsLabel();
-                    updateSlidersLimit();
+                    if (board.isConnected() && board.isReady()) {
+                        if (board.hasFocuser()) {
+                            relativeMovField.setText(String.valueOf(es.relativeStepSize));
+                            fokTicksCountSpinner.setValue(es.focuserTicksCount);
+                            fokUnitsCombo.setSelectedItem(es.focuserTicksUnit);
+                            fokBacklashSpinner.setValue(es.backlash);
+                            fokSpeedSlider.setValue(es.speed);
+                            fokReverseDirBox.setSelected(es.reverseDir);
+                            fokPowerSaverBox.setSelected(es.powerSaver);
+                            fokMaxTravelSpinner.setValue(es.getFocuserMaxTravel());
+                            updateUnitsLabel();
+                            updateSlidersLimit();
+                            presetsTableModel.fireTableDataChanged();
+                        }
+                        startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
+                    }
                     startOrStopINDI(settings.indiServerPort != oldIndiPort);
-                    startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
-                    presetsTableModel.fireTableDataChanged();
                     powerBoxTable.refresh();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -801,6 +791,25 @@ public class MainWindow extends JFrame implements
             } catch (IllegalArgumentException ex) {
                 valueOutOfLimits(ex);
             }
+        }
+    }
+
+    private void setTheme(Settings.Theme newTheme) {
+        if (settings.theme != newTheme) {
+            settings.theme = newTheme;
+            try {
+                switch (newTheme) {
+                    case LIGHT -> FlatIntelliJLaf.setup();
+                    case DARK -> FlatDarkLaf.setup();
+                    default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
+                            "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
+                }
+                SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
+            aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
         }
     }
 
@@ -843,8 +852,6 @@ public class MainWindow extends JFrame implements
         }
         refreshButton.setEnabled(!connected);
         serialPortComboBox.setEnabled(!connected);
-        importButton.setEnabled(connected);
-        exportButton.setEnabled(connected);
 
         boolean focuserEn = connected && board.hasFocuser();
         posSlider.setEnabled(focuserEn);

@@ -43,8 +43,6 @@ public class ExportableSettings extends Settings {
     private double longitude = 0.0;
 
     public ExportableSettings(Settings s, Board b) {
-        if (!b.isConnected() || !b.isReady())
-            throw new IllegalStateException("Board not connected!");
         this.theme = s.theme;
         this.showIpIndiDriver = s.showIpIndiDriver;
         this.indiServer = s.indiServer;
@@ -53,28 +51,30 @@ public class ExportableSettings extends Settings {
         this.ascomBridgePort = s.ascomBridgePort;
         this.serialPort = s.serialPort;
         this.autoConnect = s.autoConnect;
-        Focuser focuser = b.focuser();
-        if (focuser != null) {
-            this.backlash = focuser.getBacklash();
-            this.speed = focuser.getSpeed();
-            this.powerSaver = focuser.isPowerSaverEnabled();
-            this.reverseDir = focuser.isDirInverted();
-            this.relativeStepSize = s.relativeStepSize;
-            this.presets = s.presets;
-            this.focuserMaxTravel = s.focuserMaxTravel;
-            this.focuserTicksCount = s.focuserTicksCount;
-            this.focuserTicksUnit = s.focuserTicksUnit;
-        }
-        PowerBox powerBox = b.powerBox();
-        if (powerBox != null) {
-            if (powerBox.supportsAutoModes()) {
-                this.autoMode = powerBox.getAutoMode();
-                if (powerBox.supportsTime()) {
-                    this.latitude = powerBox.getLatitude();
-                    this.longitude = powerBox.getLongitude();
-                }
+        if (b.isConnected() && b.isReady()) {
+            Focuser focuser = b.focuser();
+            if (focuser != null) {
+                this.backlash = focuser.getBacklash();
+                this.speed = focuser.getSpeed();
+                this.powerSaver = focuser.isPowerSaverEnabled();
+                this.reverseDir = focuser.isDirInverted();
+                this.relativeStepSize = s.relativeStepSize;
+                this.presets = s.presets;
+                this.focuserMaxTravel = s.focuserMaxTravel;
+                this.focuserTicksCount = s.focuserTicksCount;
+                this.focuserTicksUnit = s.focuserTicksUnit;
             }
-            this.powerBoxPins = s.powerBoxPins;
+            PowerBox powerBox = b.powerBox();
+            if (powerBox != null) {
+                if (powerBox.supportsAutoModes()) {
+                    this.autoMode = powerBox.getAutoMode();
+                    if (powerBox.supportsTime()) {
+                        this.latitude = powerBox.getLatitude();
+                        this.longitude = powerBox.getLongitude();
+                    }
+                }
+                this.powerBoxPins = s.powerBoxPins;
+            }
         }
     }
 
@@ -107,34 +107,39 @@ public class ExportableSettings extends Settings {
         s.ascomBridge = this.ascomBridge;
         s.indiServerPort = this.indiServerPort;
         s.ascomBridgePort = this.ascomBridgePort;
-        s.setFokMaxTravel(this.focuserMaxTravel, null);
         s.focuserTicksCount = this.focuserTicksCount;
         s.focuserTicksUnit = this.focuserTicksUnit;
         s.autoConnect = this.autoConnect;
         s.powerBoxPins = this.powerBoxPins;
+        s.setFokMaxTravel(this.focuserMaxTravel, null);
         s.save();
-        board.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
-        board.run(Board.Commands.FOCUSER_SET_SPEED, null, this.speed);
-        board.run(Board.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
-        board.run(Board.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
-        if (board.hasPowerBox()) {
+        if (board.isConnected() && board.isReady()) {
+            Focuser focuser = board.focuser();
+            if (focuser != null) {
+                board.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
+                board.run(Board.Commands.FOCUSER_SET_SPEED, null, this.speed);
+                board.run(Board.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
+                board.run(Board.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
+            }
             PowerBox powerBox = board.powerBox();
-            for (ArduinoPin p : this.powerBoxPins) {
-                if (powerBox.contains(p)) {
-                    if (p.isOnWhenAppOpen()) {
-                        board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
-                        powerBox.setOnWhenAppOpen(p, true);
-                        board.run(Board.Commands.POWER_BOX_SET, null, p.getNumber(), 255);
-                    } else {
-                        powerBox.setOnWhenAppOpen(p, false);
+            if (powerBox != null) {
+                for (ArduinoPin p : this.powerBoxPins) {
+                    if (powerBox.contains(p)) {
+                        if (p.isOnWhenAppOpen()) {
+                            board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
+                            powerBox.setOnWhenAppOpen(p, true);
+                            board.run(Board.Commands.POWER_BOX_SET, null, p.getNumber(), 255);
+                        } else {
+                            powerBox.setOnWhenAppOpen(p, false);
+                        }
                     }
                 }
+                if (powerBox.supportsAutoModes() && (this.autoMode != PowerBox.AutoModes.UNAVAILABLE))
+                    board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
+                if (powerBox.supportsAmbient())
+                    board.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
+                            (int) ((this.latitude) * 1000), (int) ((this.longitude) * 1000));
             }
-            if (powerBox.supportsAutoModes())
-                board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
-            if (powerBox.supportsAmbient())
-                board.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
-                        (int) ((this.latitude) * 1000), (int) ((this.longitude) * 1000));
         }
     }
 }

@@ -124,7 +124,7 @@ public class ASCOMBridge extends SimpleServer {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             println(from, pin.isPWMEnabled() ? "PWM" : String.valueOf(pin.getValueBoolean()));
                         } else {
-                            println(from, "ReadOnly");
+                            println(from, "Unavailable");
                         }
                     }
 
@@ -139,7 +139,7 @@ public class ASCOMBridge extends SimpleServer {
                                 println(from, "OK");
                             }
                         } else {
-                            println(from, "ReadOnly");
+                            println(from, "Unavailable");
                         }
                     }
 
@@ -149,7 +149,7 @@ public class ASCOMBridge extends SimpleServer {
                             ArduinoPin pin = powerBox.get(pinNumber);
                             println(from, pin.isPWMEnabled() ? "255" : "1");
                         } else {
-                            println(from, "ReadOnly");
+                            println(from, "Unavailable");
                         }
                     }
 
@@ -157,9 +157,9 @@ public class ASCOMBridge extends SimpleServer {
                         int pinNumber = Integer.parseInt(params[0]);
                         if (powerBox.contains(pinNumber)) {
                             ArduinoPin pin = powerBox.get(pinNumber);
-                            println(from, pin.isPWMEnabled() ? String.valueOf(pin.getValuePWM()) : "Boolean");
+                            println(from, pin.isPWMEnabled() ? String.valueOf(pin.getValuePWM()) : String.valueOf(pin.getValueBoolean()));
                         } else {
-                            println(from, "ReadOnly");
+                            println(from, "Unavailable");
                         }
                     }
 
@@ -174,13 +174,15 @@ public class ASCOMBridge extends SimpleServer {
                                 println(from, "OK");
                             }
                         } else {
-                            println(from, "ReadOnly");
+                            println(from, "Unavailable");
                         }
                     }
 
                     case "GetTemperature" -> println(from, String.valueOf(powerBox.getTemperature()));
 
                     case "GetHumidity" -> println(from, String.valueOf(powerBox.getHumidity()));
+
+                    case "DewPoint" -> println(from, String.valueOf(powerBox.getDewPoint()));
 
                     default -> exit = false;
                 }

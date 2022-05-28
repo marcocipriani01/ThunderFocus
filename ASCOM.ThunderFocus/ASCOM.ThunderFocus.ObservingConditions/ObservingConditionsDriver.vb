@@ -43,11 +43,12 @@ Public Class ObservingConditions
     Private connectedState As Boolean = False
     Private TL As TraceLogger
 
-    Private temp As Double = 0.0
-    Private hum As Double = 0.0
+    Private temp As Double = -273.15
+    Private hum As Double = -1.0
+    Private dew As Double = -273.15
     Private dataUpdateTime As DateTime = Nothing
 
-    Private ReadOnly myProperties As String() = {"temperature", "humidity"}
+    Private ReadOnly myProperties As String() = {"temperature", "humidity", "dewpoint"}
 
     '
     ' Constructor - Must be public for COM registration!
@@ -159,6 +160,20 @@ Public Class ObservingConditions
                             Throw New DriverException("Sensors data not yet available, wait and retry!")
                         End If
                         TL.LogMessage("Connected Set", "Humidity = " + hum.ToString())
+                        helper.SocketSend("DewPoint")
+                        rcv = helper.SocketRead()
+                        If String.IsNullOrEmpty(rcv) Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Trouble reading information from ThunderFocus!")
+                        End If
+                        dew = Double.Parse(rcv, CultureInfo.InvariantCulture)
+                        If dew < -20.0 Then
+                            helper.Disconnect()
+                            connectedState = False
+                            Throw New DriverException("Sensors data not yet available, wait and retry!")
+                        End If
+                        TL.LogMessage("Connected Set", "Dew point = " + dew.ToString())
                     End SyncLock
                     dataUpdateTime = Date.Now
                 Catch ex As Exception
@@ -258,7 +273,20 @@ Public Class ObservingConditions
 
     Public ReadOnly Property DewPoint() As Double Implements IObservingConditions.DewPoint
         Get
-            Throw New PropertyNotImplementedException("DewPoint", False)
+            CheckConnected("Attemped DewPoint while disconnected!")
+            Try
+                SyncLock helper
+                    helper.SocketSend("DewPoint")
+                    Dim rcv As String = helper.SocketRead()
+                    If Not String.IsNullOrEmpty(rcv) Then
+                        dew = Double.Parse(rcv, CultureInfo.InvariantCulture)
+                    End If
+                    TL.LogMessage("DewPoint Get", hum.ToString())
+                End SyncLock
+            Catch ex As Exception
+                TL.LogIssue("DewPoint Get", "Exception: " + ex.Message)
+            End Try
+            Return dew
         End Get
     End Property
 
@@ -386,9 +414,11 @@ Public Class ObservingConditions
             Case "averageperiod"
                 Return "Not implemented, data is instantaneous."
             Case "temperature"
-                Return "Outside temperature in °C."
+                Return "Temperature in °C"
             Case "humidity"
-                Return "Relative humidity in %."
+                Return "Relative humidity in %"
+            Case "dewpoint"
+                Return "Dew point in °C"
             Case Else
                 Throw New MethodNotImplementedException("Property not implemented")
         End Select

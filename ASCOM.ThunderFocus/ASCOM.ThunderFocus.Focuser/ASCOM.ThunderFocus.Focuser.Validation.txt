@@ -1,0 +1,69 @@
+Conform Report Hash (V1): 4C890C8C1EBB550DCDFB4CA50DEB8FAB02908EF7644E530509587AE961917A4B7237DCBCF2A641D6326E24E771EDCC168AAD7E80A15D7CB6A272A6BA36FA6AE0
+
+ 
+ConformanceCheck ASCOM Device Conformance Checker Version 6.6.8048.17861, Build time: 13/01/2022 09:55:24
+ConformanceCheck Running on: ASCOM Platform 6.6 6.6.0.3444
+ 
+ConformanceCheck Driver ProgID: ASCOM.ThunderFocus.Focuser
+ 
+Error handling 
+Error number for "Not Implemented" is: 80040400
+Error number for "Invalid Value 1" is: 80040404
+Error number for "Value Not Set 1" is: 80040402
+Error number for "Value Not Set 2" is: 80040403
+Error messages will not be interpreted to infer state.
+ 
+00:58:13.877 Driver Access Checks              OK       
+00:58:14.543 AccessChecks                      OK       Successfully created driver using late binding
+00:58:14.807 AccessChecks                      OK       Successfully connected using late binding
+00:58:14.816 AccessChecks                      INFO     The driver is a .NET object
+00:58:14.820 AccessChecks                      INFO     The AssemblyQualifiedName is: ASCOM.ThunderFocus.Focuser, ASCOM.ThunderFocus.Focuser, Version=2.0.0.0, Cul
+00:58:14.823 AccessChecks                      INFO     The driver implements interface: ASCOM.DeviceInterface.IFocuserV3
+00:58:15.570 AccessChecks                      INFO     Device does not expose IFocuser interface
+00:58:15.725 AccessChecks                      INFO     Device does not expose IFocuserV2 interface
+00:58:16.079 AccessChecks                      INFO     Device exposes IFocuserV3 interface
+00:58:16.196 AccessChecks                      OK       Successfully created driver using driver access toolkit
+00:58:16.461 AccessChecks                      OK       Successfully connected using driver access toolkit
+00:58:16.468 AccessChecks                      OK       Successfully disconnected using driver access toolkit
+ 
+Conform is using ASCOM.DriverAccess.Focuser to get a Focuser object
+00:58:16.565 ConformanceCheck                  OK       Driver instance created successfully
+00:58:16.885 ConformanceCheck                  OK       Connected OK
+ 
+Common Driver Methods 
+00:58:16.942 InterfaceVersion                  OK       3
+00:58:16.982 Connected                         OK       True
+00:58:17.028 Description                       OK       ThunderFocus Focuser
+00:58:17.074 DriverInfo                        OK       ThunderFocus focuser bridge v2.0
+00:58:17.121 DriverVersion                     OK       2.0
+00:58:17.168 Name                              OK       ThunderFocus focuser
+00:58:17.215 CommandString                     INFO     Conform cannot test the CommandString method
+00:58:17.219 CommandBlind                      INFO     Conform cannot test the CommandBlind method
+00:58:17.224 CommandBool                       INFO     Conform cannot test the CommandBool method
+00:58:17.230 Action                            INFO     Conform cannot test the Action method
+00:58:17.236 SupportedActions                  OK       Driver returned an empty action list
+ 
+Properties 
+00:58:17.393 Absolute                          OK       True
+00:58:17.401 IsMoving                          OK       False
+00:58:17.409 MaxStep                           OK       32767
+00:58:17.415 MaxIncrement                      OK       32767
+00:58:17.420 Position                          OK       5000
+00:58:17.554 StepSize                          OK       Optional member threw a PropertyNotImplementedException exception.
+00:58:17.561 TempCompAvailable                 OK       False
+00:58:17.566 TempComp Read                     OK       False
+00:58:17.663 TempComp Write                    OK       Temperature compensation is not available and a PropertyNotImplementedException exception was generated as expected
+00:58:17.860 Temperature                       OK       Optional member threw a PropertyNotImplementedException exception.
+ 
+Methods 
+00:58:17.928 Halt                              OK       Focuser halted OK
+00:58:17.943 Move - TempComp False                      Moving to position: 8277
+00:58:17.956 Move - TempComp False                      Asynchronous move found
+00:58:17.964 Move - TempComp False             INFO     Move was within -3277 counts of desired position
+00:58:17.977 Move - TempComp False             INFO     Returning to original position: 5000
+ 
+Conformance test complete 
+ 
+No errors, warnings or issues found: your driver passes ASCOM validation!! 
+ 
+Driver Hash Value: 33C8C72BC97793083FC3AF2A814D560B6C0A21EE26804F9DD854D3F7B7CA947007C9AABFFE4675A206E0D8981DFA43CD34504F5C2F3CDA2B3200483A1603E429

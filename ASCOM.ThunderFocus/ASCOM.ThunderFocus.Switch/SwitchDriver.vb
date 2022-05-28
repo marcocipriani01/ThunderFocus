@@ -315,7 +315,7 @@ Public Class Switch
     ''' <returns>True or false</returns>
     Function GetSwitch(id As Short) As Boolean Implements ISwitchV2.GetSwitch
         CheckConnected("Attemped GetSwitch while disconnected!")
-        ValidateStates("GetSwitch", id, True)
+        ValidateId("GetSwitch", id)
         Try
             SyncLock helper
                 helper.SocketSend("GetSwitch=" + id.ToString())
@@ -342,7 +342,7 @@ Public Class Switch
     ''' <param name="State">The required switch state</param>
     Sub SetSwitch(id As Short, state As Boolean) Implements ISwitchV2.SetSwitch
         CheckConnected("Attemped SetSwitch while disconnected!")
-        ValidateStates("SetSwitch", id, True)
+        ValidateId("SetSwitch", id)
         Dim stateStr As String
         If state Then
             stateStr = "true"
@@ -362,7 +362,7 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("SetSwitch", rcv)
-        If rcv.Contains("ReadOnly") Then
+        If rcv.Contains("ReadOnly") Or rcv.Contains("Unavailable") Then
             Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
     End Sub
@@ -392,7 +392,7 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("MaxSwitchValue", rcv)
-        If rcv.Contains("ReadOnly") Then
+        If rcv.Contains("Unavailable") Then
             Return 1.0
         End If
         Try
@@ -449,10 +449,10 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("GetSwitchValue", rcv)
-        If rcv.Contains("Boolean") Then
-            Throw New MethodNotImplementedException("GetSwitchValue is not implemented for boolean switches")
+        If rcv.Contains("true") Then
+            Return 1.0
         End If
-        If rcv.Contains("ReadOnly") Then
+        If rcv.Contains("false") Or rcv.Contains("Unavailable") Then
             Return 0.0
         End If
         Return CInt(rcv)
@@ -486,7 +486,7 @@ Public Class Switch
             Throw New DriverException("No response from ThunderFocus!")
         End If
         TL.LogMessage("SetSwitchValue", rcv)
-        If rcv.Contains("ReadOnly") Then
+        If rcv.Contains("ReadOnly") Or rcv.Contains("Unavailable") Then
             Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
     End Sub
@@ -509,22 +509,6 @@ Public Class Switch
     End Sub
 
     ''' <summary>
-    ''' Checks that the number of states for the switch is correct and throws a methodNotImplemented exception if not.
-    ''' Boolean switches must have 2 states and multi-value switches more than 2.
-    ''' </summary>
-    ''' <param name="message"></param>
-    ''' <param name="id"></param>
-    ''' <param name="expectBoolean"></param>
-    Private Sub ValidateStates(message As String, id As Short, expectBoolean As Boolean)
-        ValidateId(message, id)
-        Dim ns As Integer = CInt(MaxSwitchValue(id) + 1)
-        If (expectBoolean And ns <> 2) Or (Not expectBoolean And ns <= 2) Then
-            TL.LogIssue(message, String.Format("Switch {0} has the wrong number of states", id, ns))
-            Throw New MethodNotImplementedException(String.Format("{0}({1})", message, id))
-        End If
-    End Sub
-
-    ''' <summary>
     ''' Checks that the switch id and value are in range and throws an
     ''' InvalidValueException if they are not.
     ''' </summary>
@@ -532,7 +516,7 @@ Public Class Switch
     ''' <param name="id">The id.</param>
     ''' <param name="value">The value.</param>
     Private Sub ValidateRange(message As String, id As Short, value As Double)
-        ValidateStates(message, id, False)
+        ValidateId(message, id)
         Dim max = MaxSwitchValue(id)
         If value < 0.0 Or value > max Then
             TL.LogMessage(message, String.Format("Value {1} for Switch {0} is out of the allowed range {2} to {3}", id, value, 0.0, max))

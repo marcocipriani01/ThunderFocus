@@ -283,8 +283,6 @@ Public Class Focuser
                 TL.LogMessage("Move", Position.ToString())
                 If focuserPosition <> Position Then
                     moving = True
-                    'TODO: check if this is OK
-                    'focuserPosition = Position
                 End If
             End SyncLock
         Catch ex As Exception

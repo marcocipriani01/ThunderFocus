@@ -14,18 +14,13 @@ public class INDIServerCreator extends INDIServerAccessImpl implements INDIServe
     public INDIServerInterface createOrGet(String host, Integer port) {
         INDIServerInterface old = get();
         INDIServerInterface server = super.createOrGet(host, port);
-        if (server != old) {
-            driverAndListener(server);
-        }
+        if (server != old) driverAndListener(server);
         return server;
     }
 
     public void start(int port, boolean forceRestart) {
-        if (forceRestart) {
-            driverAndListener(restart(null, port));
-        } else {
-            createOrGet(null, port);
-        }
+        if (forceRestart) driverAndListener(restart(null, port));
+        else createOrGet(null, port);
     }
 
     private void driverAndListener(INDIServerInterface server) {

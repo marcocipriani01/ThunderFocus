@@ -45,16 +45,16 @@ public class Settings {
     public Theme theme = Theme.LIGHT;
     @SerializedName("Show IP in INDI driver")
     @Expose
-    public boolean showIpIndiDriver = false;
+    public boolean showIpIndiDriver = (Main.OPERATING_SYSTEM != Main.OperatingSystem.LINUX);
     @SerializedName("INDI server")
     @Expose
-    public boolean indiServer = false;
+    public boolean indiServer = (Main.OPERATING_SYSTEM != Main.OperatingSystem.WINDOWS);
     @SerializedName("ASCOM bridge")
     @Expose
-    public boolean ascomBridge = false;
+    public boolean ascomBridge = (Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS);
     @SerializedName("INDI port")
     @Expose
-    public int indiServerPort = 7626;
+    public int indiServerPort = (Main.OPERATING_SYSTEM == Main.OperatingSystem.WINDOWS) ? 7624 : 7626;
     @SerializedName("ASCOM port")
     @Expose
     public int ascomBridgePort = 5001;
@@ -66,7 +66,7 @@ public class Settings {
     public Units focuserTicksUnit = Units.TICKS;
     @SerializedName("Auto connect")
     @Expose
-    public boolean autoConnect = false;
+    public boolean autoConnect = true;
     @Expose
     @SerializedName("Powerbox pins")
     public ArrayList<ArduinoPin> powerBoxPins = new ArrayList<>();

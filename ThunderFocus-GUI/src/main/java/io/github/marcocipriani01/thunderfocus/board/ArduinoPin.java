@@ -85,12 +85,16 @@ public class ArduinoPin {
         onWhenAppOpen = other.onWhenAppOpen;
     }
 
-    private static int constrain(int n) {
+    public static int constrain(int n) {
         return (n >= 255 ? 255 : (Math.max(n, 0)));
     }
 
     public boolean isPWMEnabled() {
         return isPWM && enablePWM;
+    }
+
+    public boolean isDigitalPin() {
+        return (!isPWM) || (!enablePWM);
     }
 
     public void setPWMEnabled(boolean enablePWM) {

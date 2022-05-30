@@ -16,11 +16,9 @@ public class PowerBox {
 
     public static final double ABSOLUTE_ZERO = -273.15;
     public static final double INVALID_HUMIDITY = -1.0;
-
+    final ArrayList<ArduinoPin> pins = new ArrayList<>();
     private final boolean rtcFeature;
     private final boolean ambientFeature;
-
-    final ArrayList<ArduinoPin> pins = new ArrayList<>();
     AutoModes autoMode;
     double temperature = ABSOLUTE_ZERO;
     double humidity = INVALID_HUMIDITY;
@@ -91,18 +89,10 @@ public class PowerBox {
         return pins;
     }
 
-    public ArrayList<ArduinoPin> listOnlyPWMEnabled() {
+    public ArrayList<ArduinoPin> filter(PinFilter filter) {
         ArrayList<ArduinoPin> list = new ArrayList<>();
-        for (ArduinoPin ap : pins) {
-            if (ap.isPWMEnabled()) list.add(ap);
-        }
-        return list;
-    }
-
-    public ArrayList<ArduinoPin> listOnlyDigital() {
-        ArrayList<ArduinoPin> list = new ArrayList<>();
-        for (ArduinoPin ap : pins) {
-            if (!ap.isPWMEnabled()) list.add(ap);
+        for (ArduinoPin pin : pins) {
+            if (filter.filter(pin)) list.add(pin);
         }
         return list;
     }
@@ -123,20 +113,11 @@ public class PowerBox {
         return pins.size();
     }
 
-    public int countDigitalPins() {
-        int count = 0;
+    public boolean hasPWMPins() {
         for (ArduinoPin ap : pins) {
-            if (!ap.isPWM()) count++;
+            if (ap.isPWMEnabled()) return true;
         }
-        return count;
-    }
-
-    public int countPWMEnabledPins() {
-        int count = 0;
-        for (ArduinoPin ap : pins) {
-            if (ap.isPWMEnabled()) count++;
-        }
-        return count;
+        return false;
     }
 
     public ArduinoPin getIndex(int index) {
@@ -243,5 +224,9 @@ public class PowerBox {
         public String toString() {
             return label;
         }
+    }
+
+    public interface PinFilter {
+        boolean filter(ArduinoPin pin);
     }
 }

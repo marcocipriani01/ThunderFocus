@@ -1,4 +1,4 @@
-package io.github.marcocipriani01.thunderfocus.io;
+package io.github.marcocipriani01.thunderfocus.serial;
 
 /**
  * Serial message listener interface.

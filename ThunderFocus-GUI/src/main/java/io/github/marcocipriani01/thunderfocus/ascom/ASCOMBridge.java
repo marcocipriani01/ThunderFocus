@@ -39,10 +39,10 @@ public class ASCOMBridge extends SimpleServer {
                 cmd = msg;
             }
             if (cmd.equals("Connected")) {
-                println(from, String.valueOf(board.isConnected()));
+                println(from, String.valueOf(board.isReady()));
                 return;
             }
-            if (!board.isConnected()) {
+            if (!board.isReady()) {
                 println(from, "Disconnected");
                 return;
             }
@@ -135,7 +135,7 @@ public class ASCOMBridge extends SimpleServer {
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
                                 println(from, "ReadOnly");
                             } else {
-                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, params[1].contains("true") ? 255 : 0);
+                                Main.board.run(Board.Commands.POWER_BOX_SET_PIN, null, pinNumber, params[1].contains("true") ? 255 : 0);
                                 println(from, "OK");
                             }
                         } else {
@@ -170,7 +170,7 @@ public class ASCOMBridge extends SimpleServer {
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
                                 println(from, "ReadOnly");
                             } else {
-                                Main.board.run(Board.Commands.POWER_BOX_SET, null, pinNumber, Integer.parseInt(params[1]));
+                                Main.board.run(Board.Commands.POWER_BOX_SET_PIN, null, pinNumber, Integer.parseInt(params[1]));
                                 println(from, "OK");
                             }
                         } else {

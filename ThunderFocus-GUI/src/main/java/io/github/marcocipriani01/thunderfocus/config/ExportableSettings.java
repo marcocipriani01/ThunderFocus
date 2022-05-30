@@ -51,7 +51,7 @@ public class ExportableSettings extends Settings {
         this.ascomBridgePort = s.ascomBridgePort;
         this.serialPort = s.serialPort;
         this.autoConnect = s.autoConnect;
-        if (b.isConnected() && b.isReady()) {
+        if (b.isReady()) {
             Focuser focuser = b.focuser();
             if (focuser != null) {
                 this.backlash = focuser.getBacklash();
@@ -97,8 +97,6 @@ public class ExportableSettings extends Settings {
     }
 
     public void applyTo(Settings s, Board b) throws IllegalArgumentException, SerialPortException, IOException {
-        if (!b.isConnected() || !b.isReady())
-            throw new IllegalStateException("Board not connected!");
         s.relativeStepSize = this.relativeStepSize;
         s.presets = this.presets;
         s.theme = this.theme;
@@ -113,7 +111,7 @@ public class ExportableSettings extends Settings {
         s.powerBoxPins = this.powerBoxPins;
         s.setFokMaxTravel(this.focuserMaxTravel, null);
         s.save();
-        if (board.isConnected() && board.isReady()) {
+        if (board.isReady()) {
             Focuser focuser = board.focuser();
             if (focuser != null) {
                 board.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
@@ -128,7 +126,7 @@ public class ExportableSettings extends Settings {
                         if (p.isOnWhenAppOpen()) {
                             board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
                             powerBox.setOnWhenAppOpen(p, true);
-                            board.run(Board.Commands.POWER_BOX_SET, null, p.getNumber(), 255);
+                            board.run(Board.Commands.POWER_BOX_SET_PIN, null, p.getNumber(), 255);
                         } else {
                             powerBox.setOnWhenAppOpen(p, false);
                         }

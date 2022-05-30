@@ -1,11 +1,11 @@
 package io.github.marcocipriani01.thunderfocus.indi;
 
-import io.github.marcocipriani01.thunderfocus.board.Focuser;
-import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.board.ArduinoPin;
-import io.github.marcocipriani01.thunderfocus.board.PowerBox;
 import io.github.marcocipriani01.thunderfocus.board.Board;
-import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import io.github.marcocipriani01.thunderfocus.board.Focuser;
+import io.github.marcocipriani01.thunderfocus.board.PowerBox;
+import io.github.marcocipriani01.thunderfocus.config.Settings;
+import io.github.marcocipriani01.thunderfocus.serial.SerialPortImpl;
 import jssc.SerialPortException;
 import org.indilib.i4j.Constants;
 import org.indilib.i4j.driver.*;
@@ -16,6 +16,7 @@ import org.indilib.i4j.properties.INDIStandardProperty;
 import org.indilib.i4j.protocol.api.INDIConnection;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -247,9 +248,9 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                 for (INDINumberElementAndValue eAV : elementsAndValues) {
                     INDINumberElement element = eAV.getElement();
                     ArduinoPin pin = pinsMap.get(element);
-                    pin.setValue(eAV.getValue().intValue());
+                    board.run(Board.Commands.POWER_BOX_SET_PIN, this, pin.getNumber(),
+                            ArduinoPin.constrain(eAV.getValue().intValue()));
                     element.setValue((double) pin.getValuePWM());
-                    board.run(Board.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePWM());
                 }
                 pwmPinsProp.setState(Constants.PropertyStates.OK);
                 updateProperty(pwmPinsProp);
@@ -260,7 +261,6 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
                 pwmPinsProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(pwmPinsProp);
             }
@@ -405,9 +405,9 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                     INDISwitchElement element = eAV.getElement();
                     ArduinoPin pin = pinsMap.get(element);
                     Constants.SwitchStatus val = eAV.getValue();
-                    pin.setValue(val);
+                    board.run(Board.Commands.POWER_BOX_SET_PIN, this, pin.getNumber(),
+                            (val == Constants.SwitchStatus.ON) ? 255 : 0);
                     element.setValue(val);
-                    board.run(Board.Commands.POWER_BOX_SET, this, pin.getNumber(), pin.getValuePWM());
                 }
                 digitalPinProps.setState(Constants.PropertyStates.OK);
                 updateProperty(digitalPinProps);
@@ -418,7 +418,6 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
                 digitalPinProps.setState(Constants.PropertyStates.ALERT);
                 updateProperty(digitalPinProps);
             }
@@ -472,53 +471,62 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
     }
 
     private void onBoardConnected() {
+        connectionProp.setState(Constants.PropertyStates.OK);
+        connectElem.setValue(Constants.SwitchStatus.ON);
+        disconnectElem.setValue(Constants.SwitchStatus.OFF);
+        updateProperty(connectionProp);
+
+        Focuser focuser = board.focuser();
+        if (focuser != null) {
+            initializeStandardProperties();
+            showSpeedProperty();
+            showStopFocusingProperty();
+            if (focuser.isDirInverted()) focusReverseEnE.setValue(Constants.SwitchStatus.ON);
+            else focusReverseDisE.setValue(Constants.SwitchStatus.ON);
+            focuserMaxPositionE.setValue(settings.getFocuserMaxTravel());
+            addProperty(focusRelPositionP);
+            addProperty(focusDirectionP);
+            addProperty(syncFocusPositionP);
+            addProperty(focuserMaxPositionP);
+            addProperty(focusReverseP);
+            positionChanged(focuser.getPos());
+        }
+
+        updatePowerBoxProperties();
+    }
+
+    private void updatePowerBoxProperties() {
         pinsMap = new HashMap<>();
         if (digitalPinProps != null) removeProperty(digitalPinProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
-        if (board.hasPowerBox()) {
-            PowerBox powerBox = board.powerBox();
-            if (powerBox.countDigitalPins() > 0) {
+        PowerBox powerBox = board.powerBox();
+        if (powerBox != null) {
+            ArrayList<ArduinoPin> digitalPins = powerBox.filter(pin ->
+                    pin.isDigitalPin() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
+            if (digitalPins.size() > 0) {
                 digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
-                for (ArduinoPin pin : powerBox.listOnlyDigital()) {
+                for (ArduinoPin pin : digitalPins) {
                     String pinName = pin.getName();
                     pinsMap.put(new INDIElementBuilder<>(INDISwitchElement.class, digitalPinProps).name(pinName)
                             .label(pinName).switchValue(pin.getValueINDI()).create(), pin);
                 }
                 addProperty(digitalPinProps);
             }
-            if (powerBox.countPWMEnabledPins() > 0) {
+            ArrayList<ArduinoPin> pwmPins = powerBox.filter(pin ->
+                    pin.isPWMEnabled() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
+            if (pwmPins.size() > 0) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
                         .group(MANAGE_PINS_GROUP).create();
-                for (ArduinoPin pin : powerBox.listOnlyPWMEnabled()) {
+                for (ArduinoPin pin : pwmPins) {
                     String pinName = pin.getName();
-                    pinsMap.put(new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName).label(pinName)
-                            .step(1).numberFormat("%.0f").maximum(255.0).numberValue(pin.getValuePWM()).create(), pin);
+                    pinsMap.put(new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName)
+                            .label(pinName).step(1).numberFormat("%.0f")
+                            .maximum(255.0).numberValue(pin.getValuePWM()).create(), pin);
                 }
                 addProperty(pwmPinsProp);
             }
         }
-
-        initializeStandardProperties();
-        showSpeedProperty();
-        showStopFocusingProperty();
-        Focuser focuser = board.focuser();
-        if (focuser.isDirInverted()) {
-            focusReverseEnE.setValue(Constants.SwitchStatus.ON);
-        } else {
-            focusReverseDisE.setValue(Constants.SwitchStatus.ON);
-        }
-        focuserMaxPositionE.setValue(settings.getFocuserMaxTravel());
-        connectElem.setValue(Constants.SwitchStatus.ON);
-        disconnectElem.setValue(Constants.SwitchStatus.OFF);
-        connectionProp.setState(Constants.PropertyStates.OK);
-        addProperty(focusRelPositionP);
-        addProperty(focusDirectionP);
-        addProperty(syncFocusPositionP);
-        addProperty(focuserMaxPositionP);
-        addProperty(focusReverseP);
-        updateProperty(connectionProp);
-        positionChanged(focuser.getPos());
     }
 
     @Override
@@ -540,6 +548,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                 focusReverseEnE.setValue(reverseDir ? Constants.SwitchStatus.ON : Constants.SwitchStatus.OFF);
                 focusReverseDisE.setValue(reverseDir ? Constants.SwitchStatus.OFF : Constants.SwitchStatus.ON);
             }
+            case POWERBOX_PINS, POWERBOX_AUTO_MODE -> updatePowerBoxProperties();
         }
     }
 

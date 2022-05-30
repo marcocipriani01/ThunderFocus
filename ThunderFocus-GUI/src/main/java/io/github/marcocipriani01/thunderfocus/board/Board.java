@@ -1,8 +1,8 @@
 package io.github.marcocipriani01.thunderfocus.board;
 
 import io.github.marcocipriani01.thunderfocus.Main;
-import io.github.marcocipriani01.thunderfocus.io.SerialMessageListener;
-import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import io.github.marcocipriani01.thunderfocus.serial.SerialMessageListener;
+import io.github.marcocipriani01.thunderfocus.serial.SerialPortImpl;
 import jssc.SerialPortException;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class Board implements SerialMessageListener {
     }
 
     public boolean isReady() {
-        return ready;
+        return serialPort.isConnected() && ready;
     }
 
     public synchronized void connect(String port) throws SerialPortException {
@@ -64,7 +64,7 @@ public class Board implements SerialMessageListener {
                 for (ArduinoPin pin : powerBox.asList()) {
                     if (pin.isOnWhenAppOpen()) {
                         pin.setValue(false);
-                        Commands.POWER_BOX_SET.run(this, null, false, pin.getNumber(), pin.getValuePWM());
+                        Commands.POWER_BOX_SET_PIN.run(this, null, false, pin.getNumber(), pin.getValuePWM());
                     }
                 }
             } catch (Exception ignored) {
@@ -102,7 +102,7 @@ public class Board implements SerialMessageListener {
     }
 
     public void run(Commands cmd, Listener caller, int... params) throws IllegalArgumentException, SerialPortException, IOException {
-        if (isConnected() && ready && ((exclusiveCaller == null) || (caller == exclusiveCaller)))
+        if (isReady() && ((exclusiveCaller == null) || (caller == exclusiveCaller)))
             cmd.run(this, caller, params);
     }
 
@@ -256,7 +256,7 @@ public class Board implements SerialMessageListener {
                                     else
                                         this.powerBox.add(new ArduinoPin(number, stored.getName(),
                                                 255, rcvPin[3].equals("1"), true));
-                                    Commands.POWER_BOX_SET.run(this, null, number, 255);
+                                    Commands.POWER_BOX_SET_PIN.run(this, null, number, 255);
                                 } else {
                                     if (isPwm)
                                         this.powerBox.add(new ArduinoPin(number, stored.getName(),
@@ -395,11 +395,14 @@ public class Board implements SerialMessageListener {
                     b.focuser.powerSaver = (params[0] == 1);
                     b.notifyListeners(caller, Parameters.ENABLE_POWER_SAVE);
                 }),
-        POWER_BOX_SET('X', 2, (b, params) -> (b.hasPowerBox() && b.powerBox.contains(params[0]) && (params[1] >= 0) && (params[1] <= 255)),
-                (b, caller, params) -> {
-                    b.powerBox.get(params[0]).setValue(params[1]);
-                    b.notifyListeners(caller, Parameters.POWERBOX_PINS);
-                }),
+        POWER_BOX_SET_PIN('X', 2, (b, params) -> {
+            if (b.powerBox == null) return false;
+            ArduinoPin pin = b.powerBox.get(params[0]);
+            return ((pin != null) && (params[1] >= 0) && (params[1] <= 255) && (!pin.isAutoModeEn()));
+        }, (b, caller, params) -> {
+            b.powerBox.get(params[0]).setValue(params[1]);
+            b.notifyListeners(caller, Parameters.POWERBOX_PINS);
+        }),
         POWER_BOX_SET_AUTO_MODE('K', 1, (b, params) -> (b.hasPowerBox() && b.powerBox.supportedAutoModes().contains(PowerBox.AutoModes.values()[params[0]])),
                 (b, caller, params) -> {
                     b.powerBox.autoMode = PowerBox.AutoModes.values()[params[0]];

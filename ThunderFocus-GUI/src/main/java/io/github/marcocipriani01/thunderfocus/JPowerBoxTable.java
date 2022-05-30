@@ -70,7 +70,7 @@ public class JPowerBoxTable extends JTable {
         int tW = getWidth(), count = dataModel.getColumnCount(), weightsSum = 0;
         //if (count == 0) return;
         TableColumn[] columns = new TableColumn[count];
-        int[] weights = (powerBox.countPWMEnabledPins() > 0) ? COLUMNS_WEIGHTS_PWM : COLUMNS_WEIGHTS;
+        int[] weights = (powerBox.hasPWMPins()) ? COLUMNS_WEIGHTS_PWM : COLUMNS_WEIGHTS;
         for (int i = 0; i < count; i++) {
             columns[i] = columnModel.getColumn(i);
             weightsSum += weights[i];
@@ -157,7 +157,7 @@ public class JPowerBoxTable extends JTable {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            if (powerBox == null) throw new NullPointerException("Null pins list.");
+            if (powerBox == null) throw new NullPointerException("Null powerbox.");
             ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
                 case 0 -> {
@@ -229,12 +229,9 @@ public class JPowerBoxTable extends JTable {
                 }
 
                 case 2 -> {
-                    if (pin.isPWMEnabled())
-                        pin.setValue((int) val);
-                    else
-                        pin.setValue((boolean) val);
                     try {
-                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
+                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(),
+                                pin.isPWMEnabled() ? ArduinoPin.constrain((int) val) : (((boolean) val) ? 255 : 0));
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (IllegalArgumentException ex) {
@@ -247,7 +244,7 @@ public class JPowerBoxTable extends JTable {
                     pin.setPWMEnabled(enablePWM);
                     try {
                         Main.board.run(Board.Commands.POWER_BOX_EN_PIN_PWM, mainWindow, pin.getNumber(), enablePWM ? 1 : 0);
-                        Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
+                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), pin.getValuePWM());
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (IllegalArgumentException ex) {
@@ -265,7 +262,7 @@ public class JPowerBoxTable extends JTable {
                         pin.setValue(true);
                         fireTableCellUpdated(rowIndex, 2);
                         try {
-                            Main.board.run(Board.Commands.POWER_BOX_SET, mainWindow, pin.getNumber(), pin.getValuePWM());
+                            Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), 255);
                         } catch (IOException | SerialPortException ex) {
                             mainWindow.connectionErr(ex);
                         } catch (IllegalArgumentException ex) {

@@ -8,7 +8,7 @@ import io.github.marcocipriani01.thunderfocus.board.*;
 import io.github.marcocipriani01.thunderfocus.config.ExportableSettings;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
 import io.github.marcocipriani01.thunderfocus.indi.INDIThunderFocusDriver;
-import io.github.marcocipriani01.thunderfocus.io.SerialPortImpl;
+import io.github.marcocipriani01.thunderfocus.serial.SerialPortImpl;
 import jssc.SerialPortException;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -229,19 +229,20 @@ public class MainWindow extends JFrame implements
 
         boolean autoConnect = settings.autoConnect;
         autoConnectBox.setSelected(autoConnect);
-        boolean selectPort = false;
         String serialPort = settings.getSerialPort();
-        for (String p : SerialPortImpl.scanSerialPorts()) {
-            serialPortComboBox.addItem(p);
-            if (p.equals(serialPort)) selectPort = true;
-        }
-        if (selectPort) {
-            serialPortComboBox.setSelectedItem(serialPort);
-            if (autoConnect && (!board.isConnected())) {
-                try {
-                    board.connect(serialPort);
-                } catch (SerialPortException ex) {
-                    ex.printStackTrace();
+        if (!serialPort.isEmpty()) {
+            for (String p : SerialPortImpl.scanSerialPorts()) {
+                serialPortComboBox.addItem(p);
+                if (p.equals(serialPort)) {
+                    serialPortComboBox.setSelectedItem(serialPort);
+                    if (autoConnect && (!board.isConnected())) {
+                        try {
+                            board.connect(serialPort);
+                        } catch (SerialPortException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    break;
                 }
             }
         }
@@ -592,7 +593,7 @@ public class MainWindow extends JFrame implements
             settings.indiServerPort = (int) indiPortSpinner.getValue();
             int oldAscomPort = settings.ascomBridgePort;
             settings.ascomBridgePort = (int) ascomPortSpinner.getValue();
-            if (board.isConnected() && board.isReady()) {
+            if (board.isReady()) {
                 Focuser focuser = board.focuser();
                 if (focuser != null) {
                     settings.focuserTicksCount = (int) fokTicksCountSpinner.getValue();
@@ -633,8 +634,7 @@ public class MainWindow extends JFrame implements
             try {
                 for (ArduinoPin p : board.powerBox().asList()) {
                     if ((!p.isAutoModeEn()) && (!p.isOnWhenAppOpen())) {
-                        p.setValue(255);
-                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
+                        board.run(Board.Commands.POWER_BOX_SET_PIN, this, p.getNumber(), 255);
                     }
                 }
                 powerBoxTable.refresh();
@@ -648,8 +648,7 @@ public class MainWindow extends JFrame implements
             try {
                 for (ArduinoPin p : board.powerBox().asList()) {
                     if ((!p.isAutoModeEn()) && (!p.isOnWhenAppOpen())) {
-                        p.setValue(0);
-                        board.run(Board.Commands.POWER_BOX_SET, this, p.getNumber(), p.getValuePWM());
+                        board.run(Board.Commands.POWER_BOX_SET_PIN, this, p.getNumber(), 0);
                     }
                 }
                 powerBoxTable.refresh();
@@ -742,7 +741,7 @@ public class MainWindow extends JFrame implements
                     autoConnectBox.setSelected(es.autoConnect);
                     indiPortSpinner.setValue(es.indiServerPort);
                     ascomPortSpinner.setValue(es.ascomBridgePort);
-                    if (board.isConnected() && board.isReady()) {
+                    if (board.isReady()) {
                         if (board.hasFocuser()) {
                             relativeMovField.setText(String.valueOf(es.relativeStepSize));
                             fokTicksCountSpinner.setValue(es.focuserTicksCount);
@@ -989,7 +988,7 @@ public class MainWindow extends JFrame implements
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (board.isConnected() && board.isReady()) {
+        if (board.isReady()) {
             int keyCode = e.getKeyCode();
             if (keyCode == KeyEvent.VK_RIGHT) {
                 fokOutButton.doClick();

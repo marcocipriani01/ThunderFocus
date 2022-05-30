@@ -24,8 +24,8 @@ public class Main {
 
     public static final ResourceBundle RES_BUNDLE;
     public static final String APP_NAME;
-    public static final Settings settings;
     public static final OperatingSystem OPERATING_SYSTEM;
+    public static final Settings settings;
     public static final Image APP_LOGO = Toolkit.getDefaultToolkit().getImage(
             Main.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final Board board;

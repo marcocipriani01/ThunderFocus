@@ -148,6 +148,13 @@ public class MainWindow extends JFrame implements
     private TimeSeries dewPointSeries;
     private TimeSeries humiditySeries;
 
+    public MainWindow(File config) {
+        this();
+        if (JOptionPane.showConfirmDialog(this, String.format(i18n("config.import"), config.getName()),
+                APP_NAME, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)
+            importConfig(config);
+    }
+
     public MainWindow() {
         super(APP_NAME);
         setIconImage(Main.APP_LOGO);
@@ -247,6 +254,8 @@ public class MainWindow extends JFrame implements
             }
         }
 
+        if (settings.theme == Settings.Theme.SYSTEM)
+            themeDetector.registerListener(this::updateDarkMode);
         board.addListener(this);
         settings.addListener(this);
         startOrStopINDI(false);
@@ -610,7 +619,7 @@ public class MainWindow extends JFrame implements
                         board.run(Board.Commands.FOCUSER_POWER_SAVER, null, fokPowerSaverBox.isSelected() ? 1 : 0);
                     }
                     PowerBox powerBox = board.powerBox();
-                    if ((powerBox != null) && powerBox.supportsAmbient()) {
+                    if ((powerBox != null) && powerBox.hasAmbientSensors()) {
                         board.run(Board.Commands.SET_TIME_LAT_LONG, this, 0,
                                 (int) (((double) powerBoxLatSpinner.getValue()) * 1000),
                                 (int) (((double) powerBoxLongSpinner.getValue()) * 1000));
@@ -727,43 +736,8 @@ public class MainWindow extends JFrame implements
             chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
             chooser.setFileFilter(new FileNameExtensionFilter(
                     "Settings files (*.thunder)", "thunder"));
-            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                try {
-                    int oldIndiPort = settings.indiServerPort;
-                    int oldAscomPort = settings.ascomBridgePort;
-                    ExportableSettings es = ExportableSettings.load(chooser.getSelectedFile().toPath());
-                    es.applyTo(settings, board);
-                    setTheme(es.theme);
-                    appThemeCombo.setSelectedItem(es.theme);
-                    localOrRemoteCombo.setSelectedItem(i18n(es.showIpIndiDriver ? "remote" : "local"));
-                    ascomBridgeCheckBox.setSelected(es.ascomBridge);
-                    indiServerCheckBox.setSelected(es.indiServer);
-                    autoConnectBox.setSelected(es.autoConnect);
-                    indiPortSpinner.setValue(es.indiServerPort);
-                    ascomPortSpinner.setValue(es.ascomBridgePort);
-                    if (board.isReady()) {
-                        if (board.hasFocuser()) {
-                            relativeMovField.setText(String.valueOf(es.relativeStepSize));
-                            fokTicksCountSpinner.setValue(es.focuserTicksCount);
-                            fokUnitsCombo.setSelectedItem(es.focuserTicksUnit);
-                            fokBacklashSpinner.setValue(es.backlash);
-                            fokSpeedSlider.setValue(es.speed);
-                            fokReverseDirBox.setSelected(es.reverseDir);
-                            fokPowerSaverBox.setSelected(es.powerSaver);
-                            fokMaxTravelSpinner.setValue(es.getFocuserMaxTravel());
-                            updateUnitsLabel();
-                            updateSlidersLimit();
-                            presetsTableModel.fireTableDataChanged();
-                        }
-                        startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
-                    }
-                    startOrStopINDI(settings.indiServerPort != oldIndiPort);
-                    powerBoxTable.refresh();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+                importConfig(chooser.getSelectedFile());
         } else if ((source == lightOnRadio) || (source == lightOffRadio)) {
             try {
                 board.run(Board.Commands.FLAT_SET_LIGHT, this, lightOnRadio.isSelected() ? 1 : 0);
@@ -803,15 +777,67 @@ public class MainWindow extends JFrame implements
         }
     }
 
+    private void importConfig(File file) {
+        try {
+            int oldIndiPort = settings.indiServerPort;
+            int oldAscomPort = settings.ascomBridgePort;
+            ExportableSettings es = ExportableSettings.load(file.toPath());
+            es.applyTo(settings, board);
+            setTheme(es.theme);
+            appThemeCombo.setSelectedItem(es.theme);
+            localOrRemoteCombo.setSelectedItem(i18n(es.showIpIndiDriver ? "remote" : "local"));
+            ascomBridgeCheckBox.setSelected(es.ascomBridge);
+            indiServerCheckBox.setSelected(es.indiServer);
+            autoConnectBox.setSelected(es.autoConnect);
+            indiPortSpinner.setValue(es.indiServerPort);
+            ascomPortSpinner.setValue(es.ascomBridgePort);
+            if (board.isReady()) {
+                if (board.hasFocuser()) {
+                    relativeMovField.setText(String.valueOf(es.relativeStepSize));
+                    fokTicksCountSpinner.setValue(es.focuserTicksCount);
+                    fokUnitsCombo.setSelectedItem(es.focuserTicksUnit);
+                    fokBacklashSpinner.setValue(es.backlash);
+                    fokSpeedSlider.setValue(es.speed);
+                    fokReverseDirBox.setSelected(es.reverseDir);
+                    fokPowerSaverBox.setSelected(es.powerSaver);
+                    fokMaxTravelSpinner.setValue(es.getFocuserMaxTravel());
+                    updateUnitsLabel();
+                    updateSlidersLimit();
+                    presetsTableModel.fireTableDataChanged();
+                }
+                startOrStopASCOM(settings.ascomBridgePort != oldAscomPort);
+            }
+            startOrStopINDI(settings.indiServerPort != oldIndiPort);
+            powerBoxTable.refresh();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, i18n("error.saving"), APP_NAME, JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void setTheme(Settings.Theme newTheme) {
         if (settings.theme != newTheme) {
             settings.theme = newTheme;
             try {
                 switch (newTheme) {
-                    case LIGHT -> FlatIntelliJLaf.setup();
-                    case DARK -> FlatDarkLaf.setup();
-                    default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
-                            "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
+                    case SYSTEM -> {
+                        themeDetector.registerListener(this::updateDarkMode);
+                        if (themeDetector.isDark()) FlatDarkLaf.setup();
+                        else FlatIntelliJLaf.setup();
+                    }
+                    case LIGHT -> {
+                        themeDetector.removeListener(this::updateDarkMode);
+                        FlatIntelliJLaf.setup();
+                    }
+                    case DARK -> {
+                        themeDetector.removeListener(this::updateDarkMode);
+                        FlatDarkLaf.setup();
+                    }
+                    default -> {
+                        themeDetector.removeListener(this::updateDarkMode);
+                        IntelliJTheme.setup(Main.class.getResourceAsStream(
+                                "/io/github/marcocipriani01/thunderfocus/themes/" + Objects.requireNonNull(settings.theme.getFileName())));
+                    }
                 }
                 SwingUtilities.updateComponentTreeUI(this);
             } catch (Exception ex) {
@@ -1008,12 +1034,8 @@ public class MainWindow extends JFrame implements
     @Override
     public void focusLost(FocusEvent e) {
         Object source = e.getSource();
-        if (source == posSlider) {
-            updatePosSlider();
-
-        } else if (source == ticksPosSlider) {
-            updateTicksPosSlider();
-        }
+        if (source == posSlider) updatePosSlider();
+        else if (source == ticksPosSlider) updateTicksPosSlider();
     }
 
     private void updatePosSlider() {
@@ -1039,14 +1061,8 @@ public class MainWindow extends JFrame implements
                 case REQUESTED_POS -> requestedPosField.setText(String.valueOf(board.focuser().getTargetPos()));
                 case CURRENT_POS -> {
                     currentPosField.setText(String.valueOf(board.focuser().getPos()));
-                    if (!posSlider.hasFocus()) {
-                        updatePosSlider();
-                    }
-                }
-                case CURRENT_POS_TICKS -> {
-                    if (!ticksPosSlider.hasFocus()) {
-                        updateTicksPosSlider();
-                    }
+                    if (!posSlider.hasFocus()) updatePosSlider();
+                    if (!ticksPosSlider.hasFocus()) updateTicksPosSlider();
                 }
                 case SPEED -> {
                     if (!fokSpeedSlider.hasFocus()) {
@@ -1130,9 +1146,9 @@ public class MainWindow extends JFrame implements
     @Override
     public void updateConnectionState(Board.ConnectionState connectionState) {
         SwingUtilities.invokeLater(() -> {
-            connStatusLabel.setText(connectionState.getLabel());
             switch (connectionState) {
                 case CONNECTED_READY: {
+                    connStatusLabel.setText(String.format(connectionState.getLabel(), board.getBoardVersion()));
                     ok.setVisible(true);
                     timeout.setVisible(false);
                     err.setVisible(false);
@@ -1159,7 +1175,6 @@ public class MainWindow extends JFrame implements
                     if (powerBox != null) {
                         tabPane.insertTab(i18n("powerbox.tab"), POWERBOX_TAB, powerBoxTab, "", tabInsertIndex);
                         tabInsertIndex++;
-                        powerBoxTable.setPowerBox(powerBox);
                         boolean supportsAutoModes = powerBox.supportsAutoModes();
                         powerBoxAutoModeLabel.setVisible(supportsAutoModes);
                         powerBoxAutoModeBox.setVisible(supportsAutoModes);
@@ -1169,11 +1184,11 @@ public class MainWindow extends JFrame implements
                             powerBoxAutoModeBox.setSelectedItem(board.powerBox().getAutoMode());
                             powerBoxAutoModeBox.addItemListener(this);
                         }
-                        if (powerBox.supportsAmbient()) {
+                        if (powerBox.hasAmbientSensors()) {
                             tabPane.insertTab(i18n("sensors.tab"), AMBIENT_TAB, ambientTab, "", tabInsertIndex);
                             tabInsertIndex++;
                         }
-                        boolean supportsTime = powerBox.supportsTime();
+                        boolean supportsTime = powerBox.hasRTC();
                         sunElevationLabel.setVisible(supportsTime);
                         sunElevationField.setVisible(supportsTime);
                         sunElevationField.setText("?");
@@ -1182,6 +1197,7 @@ public class MainWindow extends JFrame implements
                             powerBoxLatSpinner.setValue(powerBox.getLatitude());
                             powerBoxLongSpinner.setValue(powerBox.getLongitude());
                         }
+                        powerBoxTable.setPowerBox(powerBox);
                     }
                     FlatPanel flat = board.flat();
                     if (flat != null) {
@@ -1211,10 +1227,13 @@ public class MainWindow extends JFrame implements
                     }
                     enableComponents(true);
                     startOrStopASCOM(false);
-                    tabPane.setSelectedIndex(0);
+                    tabPane.removeChangeListener(this);
+                    tabPane.setSelectedIndex((focuser != null) ? 0 : ((powerBox != null) ? 2 : (flat != null) ? 2 : 0));
+                    tabPane.addChangeListener(this);
                     break;
                 }
                 case DISCONNECTED: {
+                    connStatusLabel.setText(connectionState.getLabel());
                     if (Main.isAscomRunning()) {
                         try {
                             Main.ascomBridge.close();
@@ -1227,17 +1246,22 @@ public class MainWindow extends JFrame implements
                     powerBoxConfigPanel.setVisible(false);
                     removeTab(ambientTab);
                     removeTab(powerBoxTab);
+                    removeTab(flatPanelTab);
                     enableComponents(false);
                     powerBoxTable.setPowerBox(null);
+                    tabPane.removeChangeListener(this);
                     tabPane.setSelectedIndex(0);
+                    tabPane.addChangeListener(this);
                 }
                 case ERROR: {
+                    connStatusLabel.setText(connectionState.getLabel());
                     ok.setVisible(false);
                     timeout.setVisible(false);
                     err.setVisible(true);
                     break;
                 }
                 case TIMEOUT: {
+                    connStatusLabel.setText(connectionState.getLabel());
                     ok.setVisible(false);
                     timeout.setVisible(true);
                     err.setVisible(false);
@@ -1249,9 +1273,7 @@ public class MainWindow extends JFrame implements
 
     private void removeTab(Component tab) {
         int i = tabPane.indexOfComponent(tab);
-        if (i != -1) {
-            tabPane.removeTabAt(i);
-        }
+        if (i != -1) tabPane.removeTabAt(i);
     }
 
     @Override
@@ -1285,6 +1307,20 @@ public class MainWindow extends JFrame implements
         } catch (IllegalArgumentException ex) {
             valueOutOfLimits(ex);
         }
+    }
+
+    private void updateDarkMode(Boolean isDark) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                if (themeDetector.isDark()) FlatDarkLaf.setup();
+                else FlatIntelliJLaf.setup();
+                SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            appNameLabel.setFont(new Font(appNameLabel.getFont().getName(), Font.BOLD, 24));
+            aboutLabel.setFont(new Font(aboutLabel.getFont().getName(), Font.BOLD, 13));
+        });
     }
 
     private static class PresetsTableModel extends AbstractTableModel {

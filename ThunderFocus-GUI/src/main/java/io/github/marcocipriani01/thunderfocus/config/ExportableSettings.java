@@ -68,7 +68,7 @@ public class ExportableSettings extends Settings {
             if (powerBox != null) {
                 if (powerBox.supportsAutoModes()) {
                     this.autoMode = powerBox.getAutoMode();
-                    if (powerBox.supportsTime()) {
+                    if (powerBox.hasRTC()) {
                         this.latitude = powerBox.getLatitude();
                         this.longitude = powerBox.getLongitude();
                     }
@@ -134,7 +134,7 @@ public class ExportableSettings extends Settings {
                 }
                 if (powerBox.supportsAutoModes() && (this.autoMode != PowerBox.AutoModes.UNAVAILABLE))
                     board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
-                if (powerBox.supportsAmbient())
+                if (powerBox.hasAmbientSensors())
                     board.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
                             (int) ((this.latitude) * 1000), (int) ((this.longitude) * 1000));
             }

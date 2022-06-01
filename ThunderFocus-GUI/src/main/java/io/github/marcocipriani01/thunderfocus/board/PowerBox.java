@@ -101,11 +101,11 @@ public class PowerBox {
         return autoMode;
     }
 
-    public boolean supportsTime() {
+    public boolean hasRTC() {
         return rtcFeature;
     }
 
-    public boolean supportsAmbient() {
+    public boolean hasAmbientSensors() {
         return ambientFeature;
     }
 

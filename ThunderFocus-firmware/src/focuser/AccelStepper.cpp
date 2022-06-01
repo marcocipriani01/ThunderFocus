@@ -2,7 +2,7 @@
 #if FOCUSER_DRIVER != DISABLED
 
 #pragma region Constructor
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
 AccelStepper::AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4) {
     _currentPos = 0;
     _targetPos = 0;
@@ -99,7 +99,7 @@ void AccelStepper::stop() {
 void AccelStepper::move(long relative) {
 #if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_AUTO_POWER == true
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
 #endif
     _enabled = true;
@@ -120,7 +120,7 @@ void AccelStepper::move(long relative) {
 void AccelStepper::moveTo(long absolute) {
 #if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
 #if ACCELSTEPPER_AUTO_POWER == true
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
     if (_enablePin != -1) digitalWrite(_enablePin, LOW);
 #endif
     _enabled = true;
@@ -160,7 +160,7 @@ boolean AccelStepper::runSpeed() {
 #if ACCELSTEPPER_AUTO_POWER == true
         if (_enabled && (_autoPowerTimeout != 0) && (((unsigned long)(time - _lastStepTime)) >= (_autoPowerTimeout * 1000L))) {
             _enabled = false;
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
             digitalWrite(_in1, LOW);
             digitalWrite(_in2, LOW);
             digitalWrite(_in3, LOW);
@@ -175,7 +175,7 @@ boolean AccelStepper::runSpeed() {
 #if ACCELSTEPPER_AUTO_POWER == true
     if (!_enabled) {
         _enabled = true;
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
         if (_enablePin != -1) digitalWrite(_enablePin, LOW);
 #endif
     }
@@ -192,10 +192,10 @@ boolean AccelStepper::runSpeed() {
 #else
         _currentPos += (dir ? (-1) : 1);
 #endif
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
 #if ACCELSTEPPER_INVERT_DIR_SUPPORT == true
         if (_invertDir) dir = !dir;
 #endif
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
         digitalWrite(_dirPin, dir);
         digitalWrite(_stepPin, HIGH);
 #if ACCELSTEPPER_MIN_PULSE_WIDTH > 0
@@ -203,8 +203,10 @@ boolean AccelStepper::runSpeed() {
 #endif
         digitalWrite(_stepPin, LOW);
 #else
-#if ACCELSTEPPER_28BYJ_48_HALF_STEPPING == true
-        switch ((_currentPos + _currentBacklash) & 0x7) {
+#if ACCELSTEPPER_UNIPOLAR_HALF_STEPPING == true
+        int step = (_currentPos + _currentBacklash) & 0x7;
+        if (_invertDir) step = 7 - step;
+        switch (step) {
         case 0: // 1000
             setOutputPins(0b0001);
             break;
@@ -231,6 +233,8 @@ boolean AccelStepper::runSpeed() {
             break;
         }
 #else
+        int step = (_currentPos + _currentBacklash) & 0x3;
+        if (_invertDir) step = 3 - step;
         switch ((_currentPos + _currentBacklash) & 0x3) {
         case 0: // 1010
             setOutputPins(0b0101);
@@ -419,7 +423,7 @@ long AccelStepper::getBacklash() {
 
 #pragma region Power
 #if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
 void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
     _enablePin = enPin;
     if (_enablePin != -1) {
@@ -434,7 +438,7 @@ void AccelStepper::setEnablePin(uint8_t enPin, boolean enabled) {
 
 void AccelStepper::setEnabled(boolean enabled) {
     if ((distanceToGo0() != 0) && (_enabled != enabled)) {
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
         if (!enabled) {
             digitalWrite(_in1, LOW);
             digitalWrite(_in2, LOW);
@@ -551,7 +555,7 @@ long AccelStepper::distanceToGo0() {
 #endif
 }
 
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
 void AccelStepper::setOutputPins(uint8_t mask) {
     digitalWrite(_in1, (mask & 0b0001) != 0);
     digitalWrite(_in2, (mask & 0b0010) != 0);

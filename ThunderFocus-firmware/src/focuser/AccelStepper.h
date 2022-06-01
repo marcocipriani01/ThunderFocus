@@ -16,8 +16,8 @@
 #endif
 #define ACCELSTEPPER_INVERT_DIR_SUPPORT true
 #if FOCUSER_DRIVER == BIPOLAR
-#define ACCELSTEPPER_28BYJ_48_STEPPER false
-#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING false
+#define ACCELSTEPPER_UNIPOLAR_STEPPER false
+#define ACCELSTEPPER_UNIPOLAR_HALF_STEPPING false
 #ifdef FOCUSER_EN
 #define ACCELSTEPPER_ENABLE_PIN_FEATURE true
 #define ACCELSTEPPER_AUTO_POWER true
@@ -28,8 +28,8 @@
 #elif FOCUSER_DRIVER == UNIPOLAR
 #define ACCELSTEPPER_ENABLE_PIN_FEATURE true
 #define ACCELSTEPPER_AUTO_POWER true
-#define ACCELSTEPPER_28BYJ_48_STEPPER true
-#define ACCELSTEPPER_28BYJ_48_HALF_STEPPING true
+#define ACCELSTEPPER_UNIPOLAR_STEPPER true
+#define ACCELSTEPPER_UNIPOLAR_HALF_STEPPING true
 #else
 #error "FOCUSER_DRIVER must be either BIPOLAR or UNIPOLAR"
 #endif
@@ -40,7 +40,7 @@
 
 class AccelStepper {
    public:
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
     AccelStepper(uint8_t in1, uint8_t in2, uint8_t in3, uint8_t in4);
 #else
     AccelStepper(uint8_t stepPin, uint8_t dirPin);
@@ -78,7 +78,7 @@ class AccelStepper {
 #endif
 
 #if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
     void setEnablePin(uint8_t enPin, boolean enabled);
 #endif
     void setEnabled(boolean enabled);
@@ -115,11 +115,11 @@ class AccelStepper {
    private:
     long distanceToGo0();
 
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
     void setOutputPins(uint8_t mask);
 #endif
 
-#if ACCELSTEPPER_28BYJ_48_STEPPER == true
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == true
     uint8_t _in1;
     uint8_t _in2;
     uint8_t _in3;
@@ -145,7 +145,7 @@ class AccelStepper {
 #endif
 
 #if ACCELSTEPPER_ENABLE_PIN_FEATURE == true
-#if ACCELSTEPPER_28BYJ_48_STEPPER == false
+#if ACCELSTEPPER_UNIPOLAR_STEPPER == false
     uint8_t _enablePin;
 #endif
     boolean _enabled;

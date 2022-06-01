@@ -42,7 +42,7 @@ public class Settings {
     public LinkedHashMap<Integer, String> presets = new LinkedHashMap<>();
     @SerializedName("AppTheme")
     @Expose
-    public Theme theme = Theme.LIGHT;
+    public Theme theme = Theme.SYSTEM;
     @SerializedName("Show IP in INDI driver")
     @Expose
     public boolean showIpIndiDriver = (Main.OPERATING_SYSTEM != Main.OperatingSystem.LINUX);
@@ -161,6 +161,7 @@ public class Settings {
     }
 
     public enum Theme {
+        SYSTEM(i18n("system.theme")),
         LIGHT(i18n("light")),
         DARK(i18n("dark")),
         Arc_Dark("Arc Dark", "Arc Dark.json"),

@@ -3,6 +3,7 @@ package io.github.marcocipriani01.thunderfocus;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.IntelliJTheme;
+import com.jthemedetecor.OsThemeDetector;
 import io.github.marcocipriani01.thunderfocus.ascom.ASCOMBridge;
 import io.github.marcocipriani01.thunderfocus.board.Board;
 import io.github.marcocipriani01.thunderfocus.config.Settings;
@@ -11,6 +12,7 @@ import io.github.marcocipriani01.thunderfocus.indi.INDIServerCreator;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.nio.file.Files;
@@ -30,6 +32,7 @@ public class Main {
             Main.class.getResource("/io/github/marcocipriani01/thunderfocus/res/ThunderFocus.png"));
     public static final Board board;
     public static final INDIServerCreator indiServerCreator = new INDIServerCreator();
+    public static final OsThemeDetector themeDetector;
     public static ASCOMBridge ascomBridge;
     private static Path pidLock;
 
@@ -39,11 +42,16 @@ public class Main {
         OPERATING_SYSTEM = getOperatingSystem();
         settings = Settings.load();
         board = new Board();
+        themeDetector = OsThemeDetector.getDetector();
     }
 
     public static void main(String[] args) {
         try {
             switch (settings.theme) {
+                case SYSTEM -> {
+                    if (themeDetector.isDark()) FlatDarkLaf.setup();
+                    else FlatIntelliJLaf.setup();
+                }
                 case LIGHT -> FlatIntelliJLaf.setup();
                 case DARK -> FlatDarkLaf.setup();
                 default -> IntelliJTheme.setup(Main.class.getResourceAsStream(
@@ -59,6 +67,9 @@ public class Main {
             UIManager.put("ScrollBar.trackInsets", new Insets(2, 4, 2, 4));
             UIManager.put("ScrollBar.thumbInsets", new Insets(2, 2, 2, 2));
             UIManager.put("ScrollBar.track", new Color(0xe0e0e0));
+            UIManager.put("TitlePane.showIcon", false);
+            UIManager.put("TitlePane.centerTitle", true);
+            UIManager.put("TitlePane.iconSize", new Dimension(16, 16));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,7 +102,17 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        SwingUtilities.invokeLater(MainWindow::new);
+        if (args.length > 0) {
+            File config = new File(args[0]);
+            if (config.exists() && config.isFile()) {
+                System.err.println("Invalid argument: " + args[0]);
+                SwingUtilities.invokeLater(() -> new MainWindow(config));
+            } else {
+                SwingUtilities.invokeLater(MainWindow::new);
+            }
+        } else {
+            SwingUtilities.invokeLater(MainWindow::new);
+        }
     }
 
     public static String i18n(String id) {

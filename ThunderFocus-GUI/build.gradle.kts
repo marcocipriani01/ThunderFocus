@@ -26,4 +26,5 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
     implementation("io.github.java-native:jssc:2.9.4")
     implementation("org.jfree:jfreechart:1.5.3")
+    implementation("com.github.Dansoftowner:jSystemThemeDetector:3.8")
 }

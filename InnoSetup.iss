@@ -21,6 +21,7 @@ OutputDir=Installers
 WizardImageFile=".\WizardImage.bmp"
 SetupIconFile=".\ASCOM.ThunderFocus\Resources\icon.ico"
 UninstallDisplayIcon=".\ASCOM.ThunderFocus\Resources\icon.ico"
+ChangesAssociations = yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -63,6 +64,12 @@ Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\CoverCal
 Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL7"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL8"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL9"
+
+[Registry]
+Root: HKCR; Subkey: ".thunder"; ValueData: "ThunderFocus"; Flags: uninsdeletevalue; ValueType: string; ValueName: ""
+Root: HKCR; Subkey: "ThunderFocus"; ValueData: "ThunderFocus config file"; Flags: uninsdeletekey; ValueType: string; ValueName: ""
+Root: HKCR; Subkey: "ThunderFocus\DefaultIcon"; ValueData: "{app}\icon.ico"; ValueType: string; ValueName: ""
+Root: HKCR; Subkey: "ThunderFocus\shell\open\command"; ValueData: """{app}\bin\javaw.exe"" ""-jar"" ""{app}\ThunderFocus.jar"" ""%1"""; ValueType: string; ValueName: ""
 
 [Code]
 const

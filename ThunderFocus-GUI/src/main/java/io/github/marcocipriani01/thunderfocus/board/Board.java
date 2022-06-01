@@ -32,8 +32,7 @@ public class Board implements SerialMessageListener {
     }
 
     public String getBoardVersion() {
-        if (!serialPort.isConnected())
-            throw new IllegalStateException("Not connected");
+        if (!isReady()) throw new IllegalStateException("Not connected");
         return version;
     }
 
@@ -143,7 +142,6 @@ public class Board implements SerialMessageListener {
                         if (newCurrentPos != focuser.pos) {
                             focuser.pos = newCurrentPos;
                             notifyListeners(null, Parameters.CURRENT_POS);
-                            notifyListeners(null, Parameters.CURRENT_POS_TICKS);
                         }
                     }
 
@@ -155,7 +153,7 @@ public class Board implements SerialMessageListener {
 
                     case 'A' -> { // Arrived
                         for (Listener l : listeners) {
-                            l.onReachedPos();
+                            l.onFocuserReachedPos();
                         }
                     }
 
@@ -284,6 +282,7 @@ public class Board implements SerialMessageListener {
                 ready = true;
                 updConnSate(ConnectionState.CONNECTED_READY);
             } catch (Exception e) {
+                System.err.println("Error while parsing config: " + msg);
                 nOnCriticalError(e);
                 disconnect();
             }
@@ -296,13 +295,14 @@ public class Board implements SerialMessageListener {
         e.printStackTrace();
     }
 
-    private void notifyListeners(Listener notMe, Parameters p) {
+    public void notifyListeners(Listener notMe, Parameters p) {
         for (Listener l : listeners) {
             if (l != notMe) l.updateParam(p);
         }
     }
 
     private void updFocuserState(Focuser.FocuserState focuserState) {
+        System.out.println("Focuser state: " + focuserState.toString());
         this.focuser.state = focuserState;
         for (Listener l : listeners) {
             l.updateFocuserState(focuserState);
@@ -325,7 +325,6 @@ public class Board implements SerialMessageListener {
     public enum Parameters {
         REQUESTED_POS,
         CURRENT_POS,
-        CURRENT_POS_TICKS,
         SPEED,
         BACKLASH,
         REVERSE_DIR,
@@ -358,7 +357,7 @@ public class Board implements SerialMessageListener {
 
     public enum Commands {
         PRINT_CONFIG('C'),
-        SET_TIME_LAT_LONG('T', 3, (b, params) -> (b.hasPowerBox() && b.powerBox.supportsTime()), (b, caller, params) -> {
+        SET_TIME_LAT_LONG('T', 3, (b, params) -> (b.hasPowerBox() && b.powerBox.hasRTC()), (b, caller, params) -> {
             if ((params[1] != 0) && (params[2] != 0)) {
                 b.powerBox.latitude = ((double) params[1]) / 1000.0;
                 b.powerBox.longitude = ((double) params[2]) / 1000.0;
@@ -498,7 +497,7 @@ public class Board implements SerialMessageListener {
         default void updateFocuserState(Focuser.FocuserState focuserState) {
         }
 
-        default void onReachedPos() {
+        default void onFocuserReachedPos() {
         }
 
         default void updateParam(Parameters p) {
@@ -513,7 +512,7 @@ public class Board implements SerialMessageListener {
         public synchronized void run() {
             if (isConnected() && (!ready)) {
                 try {
-                    System.err.println("Sending focuser settings request");
+                    System.out.println("Sending focuser settings request");
                     Commands.PRINT_CONFIG.run(Board.this, null);
                     timerCount++;
                     if (timerCount < 5) {

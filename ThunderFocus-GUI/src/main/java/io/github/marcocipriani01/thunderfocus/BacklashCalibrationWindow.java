@@ -134,7 +134,7 @@ public class BacklashCalibrationWindow extends JDialog implements Board.Listener
     }
 
     @Override
-    public synchronized void onReachedPos() {
+    public synchronized void onFocuserReachedPos() {
         switch (phase) {
             case 0 -> {
                 try {

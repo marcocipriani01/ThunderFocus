@@ -12,8 +12,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 
-import static io.github.marcocipriani01.thunderfocus.Main.i18n;
-import static io.github.marcocipriani01.thunderfocus.Main.settings;
+import static io.github.marcocipriani01.thunderfocus.Main.*;
 
 /**
  * JTable for viewing, editing and rendering {@link ArduinoPin} objects.
@@ -230,7 +229,7 @@ public class JPowerBoxTable extends JTable {
 
                 case 2 -> {
                     try {
-                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(),
+                        board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(),
                                 pin.isPWMEnabled() ? ArduinoPin.constrain((int) val) : (((boolean) val) ? 255 : 0));
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
@@ -243,8 +242,8 @@ public class JPowerBoxTable extends JTable {
                     boolean enablePWM = (boolean) val;
                     pin.setPWMEnabled(enablePWM);
                     try {
-                        Main.board.run(Board.Commands.POWER_BOX_EN_PIN_PWM, mainWindow, pin.getNumber(), enablePWM ? 1 : 0);
-                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), pin.getValuePWM());
+                        board.run(Board.Commands.POWER_BOX_EN_PIN_PWM, mainWindow, pin.getNumber(), enablePWM ? 1 : 0);
+                        board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), pin.getValuePWM());
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (IllegalArgumentException ex) {
@@ -262,13 +261,14 @@ public class JPowerBoxTable extends JTable {
                         pin.setValue(true);
                         fireTableCellUpdated(rowIndex, 2);
                         try {
-                            Main.board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), 255);
+                            board.run(Board.Commands.POWER_BOX_SET_PIN, mainWindow, pin.getNumber(), 255);
                         } catch (IOException | SerialPortException ex) {
                             mainWindow.connectionErr(ex);
                         } catch (IllegalArgumentException ex) {
                             mainWindow.valueOutOfLimits(ex);
                         }
                     }
+                    board.notifyListeners(mainWindow, Board.Parameters.POWERBOX_PINS);
                     PowerBox.clonePins(powerBox, settings.powerBoxPins);
                     try {
                         Main.settings.save();
@@ -281,7 +281,7 @@ public class JPowerBoxTable extends JTable {
                     boolean b = (boolean) val;
                     pin.setAutoModeEn(b);
                     try {
-                        Main.board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
+                        board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, mainWindow, pin.getNumber(), b ? 1 : 0);
                     } catch (IOException | SerialPortException ex) {
                         mainWindow.connectionErr(ex);
                     } catch (IllegalArgumentException ex) {

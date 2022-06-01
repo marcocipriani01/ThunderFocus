@@ -11,13 +11,14 @@ unsigned long lastMoveTime = 0L;
 CoverStatus coverStatus = CLOSED;
 MotorDirection motorDirection = NONE;
 #endif
-boolean lightStatus = 0;
+boolean lightStatus = false;
 uint16_t brightness = 0;
 uint16_t targetBrightness = 0;
 uint16_t currentBrightness = 0;
 unsigned long lastBrightnessAdj = 0L;
 
 void begin() {
+#if SERVO_MOTOR != DISABLED
     servo.attach(SERVO_PIN);
     if (Settings::settings.coverStatus == OPEN) {
         servo.write(Settings::settings.openServoVal);
@@ -27,6 +28,7 @@ void begin() {
         servo.write(Settings::settings.closedServoVal);
         currentVal = Settings::settings.closedServoVal;
     }
+#endif
 #if EL_PANEL_ON_BOOT == true
     analogWrite(EL_PANEL_PIN, 255);
     currentBrightness = 255;
@@ -83,7 +85,7 @@ void setBrightness(int val) {
 #if SERVO_MOTOR != DISABLED
     if (lightStatus && (coverStatus == CLOSED)) targetBrightness = brightness;
 #else
-    if (lightStatus == ON) targetBrightness = brightness;
+    if (lightStatus) targetBrightness = brightness;
 #endif
 }
 
@@ -118,7 +120,7 @@ void run() {
                 coverStatus = CLOSED;
                 Settings::settings.coverStatus = CLOSED;
                 Settings::requestSave = true;
-                if (lightStatus == true) targetBrightness = brightness;
+                if (lightStatus) targetBrightness = brightness;
             }
         } else {
             motorDirection = NONE;

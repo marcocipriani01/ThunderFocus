@@ -34,7 +34,7 @@
 #define SERIAL_TIMEOUT 100
 #define SERIAL_SPEED 115200
 #define SENSORS_SYNC_INTERVAL 10000L
-#define FOCUSER_SYNC_INTERVAL 150L
+#define FOCUSER_SYNC_INTERVAL 100L
 
 namespace ThunderFocus {
 #if FOCUSER_DRIVER != DISABLED
@@ -42,6 +42,7 @@ enum FocuserState { MOVING = (int)'M', HOLD = (int)'H', ARRIVED = (int)'A', POWE
 
 extern FocuserState lastFocuserState;
 extern unsigned long focuserSyncTime;
+extern long lastFocuserPosition;
 
 inline int speedToPercentage(double speed);
 inline double percentageToSpeed(int percentage);

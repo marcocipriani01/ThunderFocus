@@ -79,7 +79,7 @@ public class ASCOMBridge extends SimpleServer {
                 switch (cmd) {
                     case "HasPowerBox" -> println(from, "true");
 
-                    case "HasAmbientSensors" -> println(from, String.valueOf(powerBox.supportsAmbient()));
+                    case "HasAmbientSensors" -> println(from, String.valueOf(powerBox.hasAmbientSensors()));
 
                     case "MaxSwitch" -> {
                         int max = 0;

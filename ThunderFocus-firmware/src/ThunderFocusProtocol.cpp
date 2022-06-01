@@ -4,6 +4,7 @@ namespace ThunderFocus {
 #if FOCUSER_DRIVER != DISABLED
 FocuserState lastFocuserState = FocuserState::POWER_SAVE;
 unsigned long focuserSyncTime = 0L;
+long lastFocuserPosition = 0L;
 #endif
 #if TEMP_HUM_SENSOR != DISABLED
 unsigned long sensorsSyncTime = 0L;
@@ -29,6 +30,7 @@ void setup() {
 #endif
 #if FOCUSER_DRIVER != DISABLED
     Focuser::begin();
+    lastFocuserPosition = Focuser::stepper.getPosition();
 #endif
 #if ENABLE_DEVMAN == true
     DevManager::begin();
@@ -78,9 +80,11 @@ void run() {
         Serial.println((char)currentState);
         lastFocuserState = currentState;
     }
-    if ((t - focuserSyncTime) >= FOCUSER_SYNC_INTERVAL) {
+    long focuserPos = Focuser::stepper.getPosition();
+    if ((lastFocuserPosition != focuserPos) && ((t - focuserSyncTime) >= FOCUSER_SYNC_INTERVAL)) {
         Serial.print(F("S"));
-        Serial.println(Focuser::stepper.getPosition());
+        Serial.println(focuserPos);
+        lastFocuserPosition = focuserPos;
         focuserSyncTime = t;
     }
 #endif
@@ -216,6 +220,8 @@ void serialEvent() {
 #endif
                 Serial.println(n);
                 Focuser::stepper.move(n);
+                lastFocuserState = FocuserState::MOVING;
+                Serial.println((char)lastFocuserState);
                 break;
             }
 
@@ -226,6 +232,8 @@ void serialEvent() {
                 Serial.println(n);
 #endif
                 Focuser::stepper.moveTo(n);
+                lastFocuserState = FocuserState::MOVING;
+                Serial.println((char)lastFocuserState);
                 break;
             }
 

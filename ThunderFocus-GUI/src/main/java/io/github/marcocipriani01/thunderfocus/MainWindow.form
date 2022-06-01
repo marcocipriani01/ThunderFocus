@@ -765,6 +765,7 @@
                     <properties>
                       <enabled value="false"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.action.close"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.tooltip"/>
                     </properties>
                   </component>
                   <vspacer id="30c97">
@@ -779,6 +780,7 @@
                     <properties>
                       <enabled value="false"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.action.open"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.tooltip"/>
                     </properties>
                   </component>
                   <component id="b659a" class="javax.swing.JSlider" binding="brightnessSlider">
@@ -792,7 +794,7 @@
                       <minorTickSpacing value="5"/>
                       <paintLabels value="true"/>
                       <paintTicks value="true"/>
-                      <toolTipText value=""/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="brightness.tooltip"/>
                       <value value="0"/>
                     </properties>
                   </component>
@@ -808,7 +810,7 @@
                       <paintLabels value="true"/>
                       <paintTicks value="true"/>
                       <snapToTicks value="true"/>
-                      <toolTipText value=""/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.speed.tooltip"/>
                       <value value="0"/>
                     </properties>
                   </component>
@@ -825,6 +827,7 @@
                     <properties>
                       <font style="1"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="brightness"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="brightness.tooltip"/>
                     </properties>
                   </component>
                   <component id="80fe6" class="javax.swing.JLabel">
@@ -834,6 +837,7 @@
                     <properties>
                       <font style="1"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.status"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.tooltip"/>
                     </properties>
                   </component>
                   <component id="39b1" class="javax.swing.JLabel">
@@ -842,6 +846,7 @@
                     </constraints>
                     <properties>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="speed"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.speed.tooltip"/>
                     </properties>
                   </component>
                   <component id="a8676" class="javax.swing.JSpinner" binding="openAngleSpinner" custom-create="true">
@@ -850,7 +855,7 @@
                     </constraints>
                     <properties>
                       <enabled value="false"/>
-                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="units.correspondence.steps"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="open.angle.tooltip"/>
                     </properties>
                   </component>
                   <component id="6f1e1" class="javax.swing.JSpinner" binding="closedAngleSpinner" custom-create="true">
@@ -859,7 +864,7 @@
                     </constraints>
                     <properties>
                       <enabled value="false"/>
-                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="units.correspondence.steps"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="closed.angle.tooltip"/>
                     </properties>
                   </component>
                   <component id="89bb5" class="javax.swing.JLabel">
@@ -868,6 +873,7 @@
                     </constraints>
                     <properties>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="open.angle"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="open.angle.tooltip"/>
                     </properties>
                   </component>
                   <component id="afb73" class="javax.swing.JLabel">
@@ -876,6 +882,7 @@
                     </constraints>
                     <properties>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="closed.angle"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="closed.angle.tooltip"/>
                     </properties>
                   </component>
                   <component id="dff65" class="javax.swing.JLabel">
@@ -894,6 +901,7 @@
                     <properties>
                       <font style="1"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.status"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.tooltip"/>
                     </properties>
                   </component>
                   <component id="d61ab" class="javax.swing.JRadioButton" binding="lightOnRadio">
@@ -903,6 +911,7 @@
                     <properties>
                       <enabled value="false"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.on"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.tooltip"/>
                     </properties>
                   </component>
                   <component id="b7cc1" class="javax.swing.JRadioButton" binding="lightOffRadio">
@@ -912,6 +921,7 @@
                     <properties>
                       <enabled value="false"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.off"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="light.tooltip"/>
                     </properties>
                   </component>
                   <component id="ce205" class="javax.swing.JLabel" binding="coverStatusLabel">
@@ -921,20 +931,21 @@
                     <properties>
                       <font size="14" style="1"/>
                       <text value="-"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.status.tooltip"/>
                     </properties>
                   </component>
                   <component id="3537b" class="javax.swing.JButton" binding="saveServoConfig">
                     <constraints>
                       <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
-                        <preferred-size width="-1" height="42"/>
-                        <maximum-size width="-1" height="42"/>
+                        <preferred-size width="-1" height="36"/>
+                        <maximum-size width="-1" height="3642"/>
                       </grid>
                     </constraints>
                     <properties>
                       <enabled value="false"/>
-                      <icon value="io/github/marcocipriani01/thunderfocus/res/save.png"/>
-                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save"/>
-                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="save.tooltip"/>
+                      <icon value="io/github/marcocipriani01/thunderfocus/res/apply.png"/>
+                      <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="apply"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.settings.apply"/>
                     </properties>
                   </component>
                   <component id="ae19a" class="javax.swing.JButton" binding="haltFlatButton">
@@ -949,6 +960,7 @@
                       <icon value="io/github/marcocipriani01/thunderfocus/res/halt.png"/>
                       <iconTextGap value="16"/>
                       <text resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="cover.stop.moving"/>
+                      <toolTipText resource-bundle="io/github/marcocipriani01/thunderfocus/lang" key="halt.tooltip"/>
                     </properties>
                   </component>
                 </children>

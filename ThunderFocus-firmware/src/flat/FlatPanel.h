@@ -19,7 +19,7 @@
 #endif
 
 #define SERVO_STEP_SIZE 10
-#define EL_PANEL_FADE_DELAY 8
+#define EL_PANEL_FADE_DELAY 10
 
 namespace FlatPanel {
 #if SERVO_MOTOR != DISABLED

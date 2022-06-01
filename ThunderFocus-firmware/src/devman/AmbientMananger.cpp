@@ -17,6 +17,12 @@ MedianFilter temperatureFilter(SENSORS_DATAPOINTS);
 MedianFilter humidityFilter(SENSORS_DATAPOINTS);
 
 void begin() {
+#ifdef I2C_SDA_PIN
+	Wire.setSDA(I2C_SDA_PIN);
+#endif
+#ifdef I2C_SCL_PIN
+	Wire.setSCL(I2C_SCL_PIN);
+#endif
 #if TEMP_HUM_SENSOR == BME280
     if (!sensor.begin(BME280_ADDRESS_ALTERNATE)) {
 #elif TEMP_HUM_SENSOR == HTU21D

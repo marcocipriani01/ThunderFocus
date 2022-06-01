@@ -19,6 +19,8 @@ import java.util.HashMap;
 
 import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.settings;
+import static io.github.marcocipriani01.thunderfocus.board.PowerBox.ABSOLUTE_ZERO;
+import static io.github.marcocipriani01.thunderfocus.board.PowerBox.INVALID_HUMIDITY;
 
 /**
  * INDI ThunderFocuser driver (focuser + power box).
@@ -29,9 +31,6 @@ import static io.github.marcocipriani01.thunderfocus.Main.settings;
 public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.Listener, Settings.SettingsListener {
 
     public static final String DRIVER_NAME = "ThunderFocus";
-    public static final String POWER_BOX_GROUP = "Powerbox";
-    public static final String FLAT_PANEL_GROUP = "Flat panel";
-    public static final String AMBIENT_GROUP = "Sensors";
     public static final String DIGITAL_PINS_PROP = "Digital outputs";
     public static final String PWM_PINS_PROP = "Analog outputs";
 
@@ -65,7 +64,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
     private INDISwitchProperty portsListProp;
     private INDISwitchElement searchElem;
     private HashMap<INDISwitchElement, String> portsListElements;
-    private INDISwitchProperty digitalPinProps;
+    private INDISwitchProperty digitalPinsProps;
     private INDINumberProperty pwmPinsProp;
     private HashMap<INDIElement<?>, ArduinoPin> pinsMap;
     private boolean relativeFocusDirection = false;
@@ -76,56 +75,57 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
     public INDIThunderFocusDriver(INDIConnection connection) {
         super(connection);
 
-        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label(INDIDriver.GROUP_MAIN_CONTROL).group(INDIDriver.GROUP_MAIN_CONTROL)
+        connectionProp = newSwitchProperty().name(INDIStandardProperty.CONNECTION).label(GROUP_MAIN_CONTROL).group(GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         connectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.CONNECT)
                 .label("Connect").switchValue(Constants.SwitchStatus.OFF).create();
         disconnectElem = new INDIElementBuilder<>(INDISwitchElement.class, connectionProp).name(INDIStandardElement.DISCONNECT)
                 .label("Disconnect").switchValue(Constants.SwitchStatus.ON).create();
         addProperty(connectionProp);
-        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group(INDIDriver.GROUP_MAIN_CONTROL)
+        serialPortFieldProp = newTextProperty().name(INDIStandardProperty.DEVICE_PORT).label("Port").group(GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         serialPortFieldElem = new INDIElementBuilder<>(INDITextElement.class, serialPortFieldProp)
                 .name(INDIStandardElement.PORT).label("Port").textValue(settings.getSerialPort()).create();
         addProperty(serialPortFieldProp);
         refreshSerialPorts();
 
-        focusRelPositionP = newNumberProperty().name(INDIStandardProperty.REL_FOCUS_POSITION).label("Relative").group(INDIDriver.GROUP_MAIN_CONTROL).create();
-        focusRelPositionE = focusRelPositionP.newElement().name(INDIStandardElement.FOCUS_RELATIVE_POSITION).label("Focus Movement").step(1d).numberFormat("%.0f")
+        focusRelPositionP = newNumberProperty().name(INDIStandardProperty.REL_FOCUS_POSITION).label("Relative").group(GROUP_MAIN_CONTROL).create();
+        focusRelPositionE = focusRelPositionP.newElement().name(INDIStandardElement.FOCUS_RELATIVE_POSITION).label("Focus Movement").step(1d)
+                .numberFormat("%.0f")
                 .numberValue(settings.relativeStepSize).minimum(0).maximum(2147483647).create();
 
-        focusDirectionP = newSwitchProperty().name(INDIStandardProperty.FOCUS_MOTION).label("Direction").group(INDIDriver.GROUP_MAIN_CONTROL).create();
+        focusDirectionP = newSwitchProperty().name(INDIStandardProperty.FOCUS_MOTION).label("Direction").group(GROUP_MAIN_CONTROL).create();
         focusDirectionInE = focusDirectionP.newElement().name(INDIStandardElement.FOCUS_INWARD).label("Focus in").switchValue(Constants.SwitchStatus.OFF).create();
         focusDirectionP.newElement().name(INDIStandardElement.FOCUS_OUTWARD).label("Focus out").switchValue(Constants.SwitchStatus.ON).create();
 
-        syncFocusPositionP = newNumberProperty().name(INDIStandardProperty.FOCUS_SYNC).label("Sync position").group(INDIDriver.GROUP_MAIN_CONTROL).create();
-        syncFocusPositionE = syncFocusPositionP.newElement().name(INDIStandardElement.FOCUS_SYNC_VALUE).label("Sync position").step(1d).numberFormat("%.0f")
-                .numberValue(0).minimum(0).maximum(2147483647).create();
+        syncFocusPositionP = newNumberProperty().name(INDIStandardProperty.FOCUS_SYNC).label("Sync position").group(GROUP_MAIN_CONTROL).create();
+        syncFocusPositionE = syncFocusPositionP.newElement().name(INDIStandardElement.FOCUS_SYNC_VALUE).label("Sync position").step(1d)
+                .numberFormat("%.0f").numberValue(0).minimum(0).maximum(2147483647).create();
 
-        focuserMaxPositionP = newNumberProperty().name(INDIStandardProperty.FOCUS_MAX).label("Max position").group(INDIDriver.GROUP_OPTIONS).create();
-        focuserMaxPositionE = focuserMaxPositionP.newElement().name(INDIStandardElement.FOCUS_MAX_VALUE).label("Max position").step(1d).numberFormat("%.0f")
-                .numberValue(settings.getFocuserMaxTravel()).minimum(0).maximum(2147483647).create();
+        focuserMaxPositionP = newNumberProperty().name(INDIStandardProperty.FOCUS_MAX).label("Max position").group(GROUP_OPTIONS).create();
+        focuserMaxPositionE = focuserMaxPositionP.newElement().name(INDIStandardElement.FOCUS_MAX_VALUE).label("Max position").step(1d)
+                .numberFormat("%.0f").numberValue(settings.getFocuserMaxTravel()).minimum(0).maximum(2147483647).create();
 
-        focusReverseP = newSwitchProperty().name(INDIStandardProperty.FOCUS_REVERSE_MOTION).label("Reverse directions").group(INDIDriver.GROUP_OPTIONS).create();
+        focusReverseP = newSwitchProperty().name(INDIStandardProperty.FOCUS_REVERSE_MOTION).label("Reverse directions").group(GROUP_OPTIONS).create();
         focusReverseEnE = focusReverseP.newElement().name(INDIStandardElement.ENABLED).label("Enabled").switchValue(Constants.SwitchStatus.OFF).create();
         focusReverseDisE = focusReverseP.newElement().name(INDIStandardElement.DISABLED).label("Disabled").switchValue(Constants.SwitchStatus.ON).create();
 
-        ambientP = newNumberProperty().name(INDIStandardProperty.ATMOSPHERE).label("Sensors data").group(AMBIENT_GROUP)
+        ambientP = newNumberProperty().name(INDIStandardProperty.ATMOSPHERE).label("Sensors data").group(GROUP_MAIN_CONTROL)
                 .permission(Constants.PropertyPermissions.RO).create();
         temperatureE = ambientP.newElement().name(INDIStandardElement.TEMPERATURE).label("Temperature").step(0.01).numberFormat("%.1f")
-                .numberValue(PowerBox.ABSOLUTE_ZERO).minimum(PowerBox.ABSOLUTE_ZERO).maximum(1000.0).create();
+                .numberValue(ABSOLUTE_ZERO).minimum(ABSOLUTE_ZERO).maximum(1000.0).create();
         humidityE = ambientP.newElement().name(INDIStandardElement.HUMIDITY).label("Humidity").step(0.01).numberFormat("%.1f")
-                .numberValue(PowerBox.INVALID_HUMIDITY).minimum(PowerBox.INVALID_HUMIDITY).maximum(100.0).create();
+                .numberValue(INVALID_HUMIDITY).minimum(INVALID_HUMIDITY).maximum(100.0).create();
 
-        flatLightP = newSwitchProperty().name("FLAT_LIGHT_CONTROL").label("Flat light").group(FLAT_PANEL_GROUP).create();
+        flatLightP = newSwitchProperty().name("FLAT_LIGHT_CONTROL").label("Flat light").group(GROUP_MAIN_CONTROL).create();
         flatLightOnE = flatLightP.newElement().name("FLAT_LIGHT_ON").label("On").switchValue(Constants.SwitchStatus.ON).create();
         flatLightOffE = flatLightP.newElement().name("FLAT_LIGHT_OFF").label("Off").switchValue(Constants.SwitchStatus.OFF).create();
 
-        flatBrightnessP = newNumberProperty().name("FLAT_LIGHT_INTENSITY").label("Light intensity").group(FLAT_PANEL_GROUP).create();
+        flatBrightnessP = newNumberProperty().name("FLAT_LIGHT_INTENSITY").label("Light intensity").group(GROUP_MAIN_CONTROL).create();
         flatBrightnessE = flatBrightnessP.newElement().name("FLAT_LIGHT_INTENSITY_VALUE").label("Value")
                 .step(1d).numberFormat("%.0f").numberValue(0.0).minimum(0.0).maximum(255.0).create();
 
-        dustCapP = newSwitchProperty().name("CAP_PARK").label("Dust cover").group(FLAT_PANEL_GROUP).create();
+        dustCapP = newSwitchProperty().name("CAP_PARK").label("Dust cover").group(GROUP_MAIN_CONTROL).create();
         dustCapOpenE = dustCapP.newElement().name("UNPARK").label("Open").switchValue(Constants.SwitchStatus.ON).create();
         dustCapCloseE = dustCapP.newElement().name("PARK").label("Close").switchValue(Constants.SwitchStatus.OFF).create();
 
@@ -220,7 +220,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
         if (portsListProp != null && getPropertiesAsList().contains(portsListProp)) {
             removeProperty(portsListProp);
         }
-        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group(INDIDriver.GROUP_MAIN_CONTROL)
+        portsListProp = newSwitchProperty().name("AVAILABLE_PORTS").label("Available ports").group(GROUP_MAIN_CONTROL)
                 .state(Constants.PropertyStates.OK).create();
         searchElem = new INDIElementBuilder<>(INDISwitchElement.class, portsListProp).name("REFRESH_PORTS").label("Refresh")
                 .switchValue(Constants.SwitchStatus.ON).create();
@@ -426,7 +426,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
             updateProperty(portsListProp);
             updateProperty(serialPortFieldProp);
 
-        } else if (property == digitalPinProps) {
+        } else if (property == digitalPinsProps) {
             try {
                 for (INDISwitchElementAndValue eAV : elementsAndValues) {
                     INDISwitchElement element = eAV.getElement();
@@ -436,17 +436,17 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
                             (val == Constants.SwitchStatus.ON) ? 255 : 0);
                     element.setValue(val);
                 }
-                digitalPinProps.setState(Constants.PropertyStates.OK);
-                updateProperty(digitalPinProps);
+                digitalPinsProps.setState(Constants.PropertyStates.OK);
+                updateProperty(digitalPinsProps);
             } catch (IOException | SerialPortException e) {
                 e.printStackTrace();
                 connectionProp.setState(Constants.PropertyStates.ALERT);
                 updateProperty(connectionProp);
-                digitalPinProps.setState(Constants.PropertyStates.ALERT);
-                updateProperty(digitalPinProps);
+                digitalPinsProps.setState(Constants.PropertyStates.ALERT);
+                updateProperty(digitalPinsProps);
             } catch (IllegalArgumentException e) {
-                digitalPinProps.setState(Constants.PropertyStates.ALERT);
-                updateProperty(digitalPinProps);
+                digitalPinsProps.setState(Constants.PropertyStates.ALERT);
+                updateProperty(digitalPinsProps);
             }
 
         } else if (property == focusDirectionP) {
@@ -578,8 +578,10 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
             boolean lightStatus = flat.getLightStatus();
             flatLightOnE.setValue(lightStatus ? Constants.SwitchStatus.ON : Constants.SwitchStatus.OFF);
             flatLightOffE.setValue(lightStatus ? Constants.SwitchStatus.OFF : Constants.SwitchStatus.ON);
+            flatLightP.setState(Constants.PropertyStates.OK);
             addProperty(flatLightP);
             flatBrightnessE.setValue(flat.getBrightness());
+            flatBrightnessP.setState(Constants.PropertyStates.OK);
             addProperty(flatBrightnessP);
             if (flat.hasServo()) {
                 updateCoverStatus(flat);
@@ -607,7 +609,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
 
     private void updatePowerBoxProperties() {
         pinsMap = new HashMap<>();
-        if (digitalPinProps != null) removeProperty(digitalPinProps);
+        if (digitalPinsProps != null) removeProperty(digitalPinsProps);
         if (pwmPinsProp != null) removeProperty(pwmPinsProp);
         removeProperty(ambientP);
         PowerBox powerBox = board.powerBox();
@@ -615,31 +617,37 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
             ArrayList<ArduinoPin> digitalPins = powerBox.filter(pin ->
                     pin.isDigitalPin() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
             if (digitalPins.size() > 0) {
-                digitalPinProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
-                        .group(POWER_BOX_GROUP).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
+                digitalPinsProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
+                        .group(GROUP_MAIN_CONTROL).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
                 for (ArduinoPin pin : digitalPins) {
                     String pinName = pin.getName();
-                    pinsMap.put(new INDIElementBuilder<>(INDISwitchElement.class, digitalPinProps).name(pinName)
+                    pinsMap.put(new INDIElementBuilder<>(INDISwitchElement.class, digitalPinsProps).name(pinName)
                             .label(pinName).switchValue(pin.getValueINDI()).create(), pin);
                 }
-                addProperty(digitalPinProps);
+                digitalPinsProps.setState(Constants.PropertyStates.OK);
+                addProperty(digitalPinsProps);
             }
             ArrayList<ArduinoPin> pwmPins = powerBox.filter(pin ->
                     pin.isPWMEnabled() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
             if (pwmPins.size() > 0) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
-                        .group(POWER_BOX_GROUP).create();
+                        .group(GROUP_MAIN_CONTROL).create();
                 for (ArduinoPin pin : pwmPins) {
                     String pinName = pin.getName();
                     pinsMap.put(new INDIElementBuilder<>(INDINumberElement.class, pwmPinsProp).name(pinName)
                             .label(pinName).step(1).numberFormat("%.0f")
                             .maximum(255.0).numberValue(pin.getValuePWM()).create(), pin);
                 }
+                pwmPinsProp.setState(Constants.PropertyStates.OK);
                 addProperty(pwmPinsProp);
             }
             if (powerBox.hasAmbientSensors()) {
-                temperatureE.setValue(powerBox.getTemperature());
-                humidityE.setValue(powerBox.getHumidity());
+                double temperature = powerBox.getTemperature(),
+                        humidity = powerBox.getHumidity();
+                temperatureE.setValue(temperature);
+                humidityE.setValue(humidity);
+                ambientP.setState(((temperature == ABSOLUTE_ZERO) || (humidity == INVALID_HUMIDITY)) ?
+                        Constants.PropertyStates.BUSY : Constants.PropertyStates.OK);
                 addProperty(ambientP);
             }
         }
@@ -667,8 +675,12 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
             case POWERBOX_PINS -> updatePowerBoxProperties();
             case POWERBOX_AMBIENT_DATA -> {
                 PowerBox powerBox = board.powerBox();
-                temperatureE.setValue(powerBox.getTemperature());
-                humidityE.setValue(powerBox.getHumidity());
+                double temperature = powerBox.getTemperature(),
+                        humidity = powerBox.getHumidity();
+                temperatureE.setValue(temperature);
+                humidityE.setValue(humidity);
+                ambientP.setState(((temperature == ABSOLUTE_ZERO) || (humidity == INVALID_HUMIDITY)) ?
+                        Constants.PropertyStates.BUSY : Constants.PropertyStates.OK);
                 updateProperty(ambientP);
             }
             case FLAT_BRIGHTNESS -> {
@@ -699,9 +711,9 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
         switch (connectionState) {
             case CONNECTED_READY -> onBoardConnected();
             case DISCONNECTED -> {
-                if (digitalPinProps != null) {
-                    removeProperty(digitalPinProps);
-                    digitalPinProps = null;
+                if (digitalPinsProps != null) {
+                    removeProperty(digitalPinsProps);
+                    digitalPinsProps = null;
                 }
                 if (pwmPinsProp != null) {
                     removeProperty(pwmPinsProp);

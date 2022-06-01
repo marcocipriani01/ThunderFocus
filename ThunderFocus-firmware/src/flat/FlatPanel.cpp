@@ -12,7 +12,7 @@ CoverStatus coverStatus = CLOSED;
 MotorDirection motorDirection = NONE;
 #endif
 boolean lightStatus = false;
-uint16_t brightness = 0;
+uint16_t brightness = 255;
 uint16_t targetBrightness = 0;
 uint16_t currentBrightness = 0;
 unsigned long lastBrightnessAdj = 0L;
@@ -29,11 +29,12 @@ void begin() {
         currentVal = Settings::settings.closedServoVal;
     }
 #endif
+    pinMode(EL_PANEL_PIN, OUTPUT);
 #if EL_PANEL_ON_BOOT == true
     analogWrite(EL_PANEL_PIN, 255);
     currentBrightness = 255;
     targetBrightness = 255;
-    lightStatus = false;
+    lightStatus = true;
 #else
     analogWrite(EL_PANEL_PIN, 0);
 #endif
@@ -46,8 +47,6 @@ void setShutter(int val) {
         coverStatus = NEITHER_OPEN_NOR_CLOSED;
         targetVal = Settings::settings.openServoVal;
         targetBrightness = 0;
-        currentBrightness = 0;
-        analogWrite(EL_PANEL_PIN, 0);
     } else if ((val == CLOSED) && (coverStatus != CLOSED)) {
         motorDirection = CLOSING;
         coverStatus = NEITHER_OPEN_NOR_CLOSED;
@@ -58,7 +57,8 @@ void setShutter(int val) {
 void halt() {
     if (motorDirection != NONE) {
         motorDirection = NONE;
-        coverStatus = HALT;   
+        coverStatus = HALT;
+        targetVal = currentVal;
     }
 }
 #endif
@@ -78,7 +78,7 @@ void setLight(boolean val) {
 
 void setBrightness(int val) {
 #if EL_PANEL_LOG_SCALE == true
-    brightness = constrain((int)(255.0 * log10(val + 1.0) / log10(256.0)), 0, 255);
+    brightness = constrain((int)(exp(log(256.0) * (val / 255.0)) - 1.0), 0, 255);
 #else
     brightness = val;
 #endif

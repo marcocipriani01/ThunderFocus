@@ -89,6 +89,15 @@ void run() {
     }
 #endif
 
+#if FLAT_PANEL == true
+    FlatPanel::run();
+#if SERVO_MOTOR != DISABLED
+    updateCoverStatus();
+    if (lastCoverStatus == FlatPanel::CoverStatus::NEITHER_OPEN_NOR_CLOSED)
+        return;
+#endif
+#endif
+
 #if ENABLE_DEVMAN == true
     if (DevManager::run()) updatePins();
 #if TEMP_HUM_SENSOR != DISABLED
@@ -108,13 +117,6 @@ void run() {
         updateSunPosition();
         sunSyncTime = t;
     }
-#endif
-#endif
-
-#if FLAT_PANEL == true
-    FlatPanel::run();
-#if SERVO_MOTOR != DISABLED
-    updateCoverStatus();
 #endif
 #endif
 }
@@ -142,7 +144,7 @@ void serialEvent() {
                 Serial.print(F(","));
                 Serial.print(Focuser::stepper.getAutoPowerTimeout() != 0);
                 Serial.print(F("]"));
-#if (ENABLED_DEVMAN == true) || (FLAT_PANEL == true)
+#if (ENABLE_DEVMAN == true) || (FLAT_PANEL == true)
                 Serial.print(F(";"));
 #endif
 #endif
@@ -336,6 +338,7 @@ void serialEvent() {
 #endif
                 if (DevManager::setPinPwmEn(pin, en)) updatePins();
                 Settings::requestSave = true;
+                break;
             }
 
 #if DEVMAN_HAS_AUTO_MODES
@@ -447,6 +450,7 @@ void serialEvent() {
 #endif
                 FlatPanel::halt();
                 updateCoverStatus();
+                break;
             }
 
             case 'F': {
@@ -456,9 +460,9 @@ void serialEvent() {
 #if DEBUG_EN
                 Serial.print(F(">SetServoConfig="));
                 Serial.print(Settings::settings.openServoVal);
-                Serial.print(F(", "));
+                Serial.print(F(","));
                 Serial.print(Settings::settings.closedServoVal);
-                Serial.print(F(", "));
+                Serial.print(F(","));
                 Serial.println(Settings::settings.servoDelay);
 #endif
                 Settings::requestSave = true;

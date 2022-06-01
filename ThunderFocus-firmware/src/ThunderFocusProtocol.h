@@ -30,7 +30,9 @@
 #include "flat/FlatPanel.h"
 #endif
 
+#ifdef __AVR__
 #define CMD_RECEIVE_WAIT 1
+#endif
 #define SERIAL_TIMEOUT 100
 #define SERIAL_SPEED 115200
 #define SENSORS_SYNC_INTERVAL 10000L

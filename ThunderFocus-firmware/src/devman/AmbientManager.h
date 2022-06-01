@@ -15,10 +15,13 @@
 #else
 #error "Unsupported temperature and humidity sensor!"
 #endif
+#if defined(I2C_SDA_PIN) || defined(I2C_SCL_PIN)
+#include <Wire.h>
+#endif
 
-#define SENSORS_UPDATE_INTERVAL 1000L
+#define SENSORS_UPDATE_INTERVAL 5000L
 #define TEMP_ABSOLUTE_ZERO -273.15
-#define SENSORS_DATAPOINTS 30
+#define SENSORS_DATAPOINTS 6
 #define HUMIDITY_INVALID -1
 
 namespace AmbientManger {

@@ -52,6 +52,8 @@ Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\C
 Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator\ASCOM.ThunderFocus.CoverCalibrator.dll"""; Flags: runhidden 64bit; Check: IsWin64
 Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 32bit
 Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64
+Filename: "{dotnet4032}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\ObservingConditions\ASCOM.ThunderFocus.ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.dll"""; Flags: runhidden 32bit
+Filename: "{dotnet4064}\RegAsm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\ObservingConditions\ASCOM.ThunderFocus.ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.dll"""; Flags: runhidden 64bit; Check: IsWin64
 Filename: "{app}\bin\javaw.exe"; Parameters: "-jar ""{app}\ThunderFocus.jar"""; Description: "{cm:LaunchProgram,ThunderFocus}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
@@ -64,6 +66,9 @@ Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\CoverCal
 Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL7"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL8"
 Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\Switch\ASCOM.ThunderFocus.Switch.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL9"
+Filename: "{dotnet4032}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.dll"""; Flags: runhidden 32bit; RunOnceId: "RemoveDDL10"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "/codebase ""{commoncf}\ASCOM\ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL11"
+Filename: "{dotnet4064}\regasm.exe"; Parameters: "-u ""{commoncf}\ASCOM\ObservingConditions\ASCOM.ThunderFocus.ObservingConditions.dll"""; Flags: runhidden 64bit; Check: IsWin64; RunOnceId: "RemoveDDL12"
 
 [Registry]
 Root: HKCR; Subkey: ".thunder"; ValueData: "ThunderFocus"; Flags: uninsdeletevalue; ValueType: string; ValueName: ""

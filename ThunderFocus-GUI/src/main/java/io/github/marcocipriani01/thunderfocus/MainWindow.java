@@ -948,7 +948,7 @@ public class MainWindow extends JFrame implements
             if (settings.ascomBridge) {
                 if (Main.isAscomRunning()) {
                     if (forceRestart) {
-                        Main.ascomBridge.close();
+                        Main.ascomBridge.stop();
                         Main.ascomBridge = new ASCOMBridge(settings.ascomBridgePort, this::onASCOMClientListChange);
                         Main.ascomBridge.start();
                     }
@@ -958,10 +958,10 @@ public class MainWindow extends JFrame implements
                 }
                 ascomStatusLabel.setText(i18n("bridge.active"));
             } else {
-                if (Main.isAscomRunning()) Main.ascomBridge.close();
+                if (Main.isAscomRunning()) Main.ascomBridge.stop();
                 ascomStatusLabel.setText(i18n("bridge.inactive"));
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             onCriticalError(e);
             ascomStatusLabel.setText(i18n("error"));
         }
@@ -1236,7 +1236,7 @@ public class MainWindow extends JFrame implements
                     connStatusLabel.setText(connectionState.getLabel());
                     if (Main.isAscomRunning()) {
                         try {
-                            Main.ascomBridge.close();
+                            Main.ascomBridge.stop();
                             ascomStatusLabel.setText(i18n("bridge.inactive"));
                         } catch (IOException ex) {
                             onCriticalError(ex);

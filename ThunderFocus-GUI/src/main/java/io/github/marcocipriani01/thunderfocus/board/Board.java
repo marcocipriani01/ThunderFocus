@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
 
-public class Board implements SerialMessageListener {
+public final class Board implements SerialMessageListener {
 
     private final ArrayList<Listener> listeners = new ArrayList<>();
     private final SerialPortImpl serialPort = new SerialPortImpl();
@@ -126,7 +126,7 @@ public class Board implements SerialMessageListener {
     }
 
     @Override
-    public final synchronized void onSerialMessage(String msg) {
+    public synchronized void onSerialMessage(String msg) {
         if (msg.length() == 0)
             return;
         char c = msg.charAt(0);
@@ -290,7 +290,7 @@ public class Board implements SerialMessageListener {
     }
 
     @Override
-    public final void onSerialError(Exception e) {
+    public void onSerialError(Exception e) {
         updConnSate(ConnectionState.ERROR);
         e.printStackTrace();
     }
@@ -461,7 +461,7 @@ public class Board implements SerialMessageListener {
             run(b, caller, true, params);
         }
 
-        private void run(Board b, Listener caller, boolean applyPinsOnDisconnect, int... params)
+        private synchronized void run(Board b, Listener caller, boolean applyPinsOnDisconnect, int... params)
                 throws IllegalArgumentException, SerialPortException, IOException {
             StringBuilder cmd = new StringBuilder("$").append(id);
             if (params.length != paramsCount)

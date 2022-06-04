@@ -43,6 +43,9 @@ Public Class Switch
     Private TL As TraceLogger
 
     Private maxSwitchVal As Short = 0
+    Private switchNames() As String
+    Private switchValues() As Short
+    Private switchMaxValues() As Short
 
     '
     ' Constructor - Must be public for COM registration!
@@ -125,15 +128,10 @@ Public Class Switch
                 Try
                     SyncLock helper
                         connectedState = helper.Connect(socketPort, "HasPowerBox")
-                        helper.SocketSend("MaxSwitch")
-                        Dim rcv As String = helper.SocketRead()
-                        If String.IsNullOrEmpty(rcv) Then
-                            helper.Disconnect()
-                            connectedState = False
-                            Throw New DriverException("Trouble reading information from ThunderFocus!")
-                        End If
-                        maxSwitchVal = Short.Parse(rcv)
+                        maxSwitchVal = Short.Parse(SendAndReceive("MaxSwitch"))
                         TL.LogMessage("Connected Set", "Number of switches = " + maxSwitchVal.ToString())
+                        switchNames = SendAndReceive("GetSwitchNames").Split(","c)
+                        switchMaxValues = 
                     End SyncLock
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
@@ -151,6 +149,15 @@ Public Class Switch
             End If
         End Set
     End Property
+
+    Private Function SendAndReceive(msg As String) As String
+        helper.SocketSend(msg)
+        Dim rcv As String = helper.SocketRead()
+        If String.IsNullOrEmpty(rcv) Then
+            Throw New DriverException("Trouble reading information from ThunderFocus!")
+        End If
+        Return rcv
+    End Function
 
     Public ReadOnly Property Description As String Implements ISwitchV2.Description
         Get

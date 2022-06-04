@@ -25,7 +25,7 @@ public abstract class SimpleServer {
      * Port.
      */
     protected final int port;
-    protected ServerSocket serverSocket;
+    protected volatile ServerSocket serverSocket;
     /**
      * Connection state.
      */
@@ -43,44 +43,40 @@ public abstract class SimpleServer {
     /**
      * Starts the connection to the client/server.
      */
-    public void start() {
+    public synchronized void start() throws IOException {
         if (connected) throw new IllegalStateException("Already connected.");
+        serverSocket = new ServerSocket(port);
+        connected = true;
         new Thread(() -> {
-            try {
-                serverSocket = new ServerSocket(port);
-                connected = true;
-                while (connected) {
-                    try {
-                        Socket socket = serverSocket.accept();
-                        if (!acceptClient(socket.getInetAddress())) {
-                            socket.close();
-                            continue;
-                        }
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                        clients.put(socket, out);
-                        new Thread(() -> {
-                            try {
-                                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                                String inputLine;
-                                while ((inputLine = in.readLine()) != null) {
-                                    onMessage(socket, inputLine);
-                                }
-                                closeClient(socket);
-                            } catch (Exception e) {
-                                closeClient(socket);
-                            }
-                        }, "Reading thread").start();
-                        onNewClient(socket);
-                    } catch (Exception ignored) {
+            while (connected) {
+                try {
+                    Socket socket = serverSocket.accept();
+                    if (!acceptClient(socket.getInetAddress())) {
+                        socket.close();
+                        continue;
                     }
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    clients.put(socket, out);
+                    new Thread(() -> {
+                        try {
+                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            String inputLine;
+                            while ((inputLine = in.readLine()) != null) {
+                                onMessage(socket, inputLine);
+                            }
+                            closeClient(socket);
+                        } catch (Exception e) {
+                            closeClient(socket);
+                        }
+                    }, "Reader thread for " + socket).start();
+                    onNewClient(socket);
+                } catch (Exception ignored) {
                 }
-            } catch (Exception e) {
-                onError(e);
             }
-        }, "Connection thread").start();
+        }, "Client listener thread").start();
     }
 
-    private void closeClient(Socket socket) {
+    private synchronized void closeClient(Socket socket) {
         try {
             socket.close();
         } catch (Exception ex) {
@@ -93,7 +89,7 @@ public abstract class SimpleServer {
     /**
      * Closes the connection.
      */
-    public void close() throws IOException {
+    public synchronized void stop() throws IOException {
         if (!connected) throw new IllegalStateException("Not connected!");
         for (Socket s : clients.keySet()) {
             s.close();
@@ -108,17 +104,15 @@ public abstract class SimpleServer {
      *
      * @param msg the message to send.
      */
-    public void println(String msg) {
+    public synchronized void println(final String msg) {
         if (!connected) throw new IllegalStateException("Not connected!");
-        new Thread(() -> {
-            for (Socket s : clients.keySet()) {
-                try {
-                    clients.get(s).println(msg);
-                } catch (Exception ex) {
-                    closeClient(s);
-                }
+        for (Socket s : clients.keySet()) {
+            try {
+                clients.get(s).println(msg);
+            } catch (Exception ex) {
+                closeClient(s);
             }
-        }, "Socket write").start();
+        }
     }
 
     /**
@@ -126,25 +120,23 @@ public abstract class SimpleServer {
      *
      * @param msg the message to send.
      */
-    public void println(Socket client, String msg) {
+    public synchronized void println(final Socket client, final String msg) {
         if (!connected) throw new IllegalStateException("Not connected!");
-        new Thread(() -> {
-            try {
-                clients.get(client).println(msg);
-            } catch (Exception ex) {
-                closeClient(client);
-            }
-        }, "Socket write").start();
+        try {
+            clients.get(client).println(msg);
+        } catch (Exception ex) {
+            closeClient(client);
+        }
     }
 
-    public int getClientsCount() {
+    public final int getClientsCount() {
         return clients.size();
     }
 
     /**
      * @return the current TCP port.
      */
-    public int getPort() {
+    public final int getPort() {
         return port;
     }
 
@@ -153,7 +145,7 @@ public abstract class SimpleServer {
      *
      * @return the connection state, connected or not.
      */
-    public boolean isConnected() {
+    public final boolean isConnected() {
         return connected;
     }
 
@@ -167,6 +159,4 @@ public abstract class SimpleServer {
     protected abstract void onNewClient(Socket client);
 
     protected abstract void onClientLost(Socket client);
-
-    protected abstract void onError(Exception e);
 }

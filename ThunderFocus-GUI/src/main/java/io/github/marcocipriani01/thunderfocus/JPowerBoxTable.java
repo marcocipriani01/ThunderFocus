@@ -218,7 +218,7 @@ public class JPowerBoxTable extends JTable {
             ArduinoPin pin = powerBox.getIndex(rowIndex);
             switch (columnIndex) {
                 case 0 -> {
-                    pin.setName((String) val);
+                    pin.setName(((String) val).trim().replaceAll("[^A-Za-z0-9 ]", ""));
                     PowerBox.clonePins(powerBox, settings.powerBoxPins);
                     try {
                         Main.settings.save();

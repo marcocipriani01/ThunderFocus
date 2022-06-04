@@ -143,7 +143,7 @@ public class Main {
         }
         if (isAscomRunning()) {
             try {
-                ascomBridge.close();
+                ascomBridge.stop();
             } catch (IOException e) {
                 e.printStackTrace();
             }

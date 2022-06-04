@@ -55,7 +55,7 @@ public final class ASCOMBridge extends SimpleServer {
 
                     case "Move" -> board.run(Board.Commands.FOCUSER_ABS_MOVE, null, Integer.parseInt(params[0]));
 
-                    case "MaxStep" -> println(String.valueOf(Main.settings.getFocuserMaxTravel()));
+                    case "MaxStep" -> println(String.valueOf(settings.getFocuserMaxTravel()));
 
                     default -> exit = false;
                 }
@@ -72,41 +72,78 @@ public final class ASCOMBridge extends SimpleServer {
 
                     case "HasAmbientSensors" -> println(from, String.valueOf(powerBox.hasAmbientSensors()));
 
-                    case "MaxSwitch" -> println(from, String.valueOf(maxSwitch() + 1));
+                    case "MaxSwitch" -> println(from, String.valueOf(powerBox.maxPinNumber() + 1));
 
                     case "GetSwitchNames" -> {
-                        int max = maxSwitch();
+                        int max = powerBox.maxPinNumber();
                         StringBuilder sb = new StringBuilder();
                         for (int i = 0; i <= max; i++) {
                             ArduinoPin pin = powerBox.get(i);
-                            sb.append((pin == null) ? "<Unavailable>" : pin.getName());
-                            if (i < max) sb.append(",");
+                            sb.append((pin == null) ? "Unavailable" : pin.getName());
+                            if (i < max) sb.append(";");
                         }
                         println(from, sb.toString());
                     }
 
-                    case "GetSwitchName", "GetSwitchDescription" -> {
-                        ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        println(from, (pin == null) ? "<Unavailable>" : pin.getName());
-                    }
-
-                    case "SetSwitchName" -> {
-                        ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        if (pin != null) {
-                            pin.setName(params[1]);
-                            PowerBox.clonePins(powerBox, settings.powerBoxPins);
-                            Main.settings.save();
+                    case "GetSwitchDescriptions" -> {
+                        int max = powerBox.maxPinNumber();
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i <= max; i++) {
+                            ArduinoPin pin = powerBox.get(i);
+                            if (pin == null) {
+                                sb.append("This switch doesn't exist on the powerbox.");
+                            } else {
+                                sb.append(pin.getName());
+                                if (pin.isPWMEnabled()) sb.append(" (PWM)");
+                                if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) sb.append(", automatic mode enabled.");
+                            }
+                            if (i < max) sb.append(";");
                         }
+                        println(from, sb.toString());
                     }
 
                     case "CanWrite" -> {
-                        ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        println(from, (pin == null) ? "false" : String.valueOf((!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen())));
+                        int max = powerBox.maxPinNumber();
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i <= max; i++) {
+                            ArduinoPin pin = powerBox.get(i);
+                            sb.append((pin != null) && pin.canWrite());
+                            if (i < max) sb.append(";");
+                        }
+                        println(from, sb.toString());
+                    }
+
+                    case "GetSwitches" -> {
+                        int max = powerBox.maxPinNumber();
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i <= max; i++) {
+                            ArduinoPin pin = powerBox.get(i);
+                            sb.append((pin == null) ? 0 : (pin.isPWMEnabled() ? pin.getValuePWM() :
+                                    (pin.getValueBoolean() ? 1 : 0)));
+                            if (i < max) sb.append(";");
+                        }
+                        println(from, sb.toString());
                     }
 
                     case "GetSwitch" -> {
                         ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        println(from, (pin == null) ? "Unavailable" : pin.isPWMEnabled() ? "PWM" : String.valueOf(pin.getValueBoolean()));
+                        if (pin == null) {
+                            println(from, "0");
+                        } else {
+                            int value = pin.getValuePWM();
+                            println(from, pin.isPWMEnabled() ? String.valueOf(value) : ((value > 100) ? "1" : "0"));
+                        }
+                    }
+
+                    case "MaxSwitchValues" -> {
+                        int max = powerBox.maxPinNumber();
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i <= max; i++) {
+                            ArduinoPin pin = powerBox.get(i);
+                            sb.append((pin == null) ? 1 : (pin.isPWMEnabled() ? 255 : 1));
+                            if (i < max) sb.append(";");
+                        }
+                        println(from, sb.toString());
                     }
 
                     case "SetSwitch" -> {
@@ -118,44 +155,9 @@ public final class ASCOMBridge extends SimpleServer {
                             if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
                                 println(from, "ReadOnly");
                             } else {
-                                Main.board.run(Board.Commands.POWER_BOX_SET_PIN, null, pinNumber, params[1].contains("true") ? 255 : 0);
-                                println(from, "OK");
-                            }
-                        }
-                    }
-
-                    case "MaxSwitchValues" -> {
-                        int max = maxSwitch();
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i <= max; i++) {
-                            ArduinoPin pin = powerBox.get(i);
-                            sb.append((pin == null) ? (-1) : (pin.isPWMEnabled() ? 255 : 1));
-                            if (i < max) sb.append(",");
-                        }
-                        println(from, sb.toString());
-                    }
-
-                    case "MaxSwitchValue" -> {
-                        ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        println(from, (pin == null) ? "Unavailable" : (pin.isPWMEnabled() ? "255" : "1"));
-                    }
-
-                    case "GetSwitchValue" -> {
-                        ArduinoPin pin = powerBox.get(Integer.parseInt(params[0]));
-                        println(from, (pin == null) ? "Unavailable" :
-                                (pin.isPWMEnabled() ? String.valueOf(pin.getValuePWM()) : String.valueOf(pin.getValueBoolean())));
-                    }
-
-                    case "SetSwitchValue" -> {
-                        int pinNumber = Integer.parseInt(params[0]);
-                        ArduinoPin pin = powerBox.get(pinNumber);
-                        if (pin == null) {
-                            println(from, "Unavailable");
-                        } else {
-                            if (pin.isAutoModeEn() || pin.isOnWhenAppOpen()) {
-                                println(from, "ReadOnly");
-                            } else {
-                                Main.board.run(Board.Commands.POWER_BOX_SET_PIN, null, pinNumber, Integer.parseInt(params[1]));
+                                int val = Integer.parseInt(params[1]);
+                                if (pin.isDigitalPin() && (val == 1)) val = 255;
+                                Main.board.run(Board.Commands.POWER_BOX_SET_PIN, null, pinNumber, val);
                                 println(from, "OK");
                             }
                         }
@@ -236,15 +238,6 @@ public final class ASCOMBridge extends SimpleServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private int maxSwitch() {
-        int max = 0;
-        for (ArduinoPin pin : board.powerBox().asList()) {
-            int n = pin.getNumber();
-            if (n > max) max = n;
-        }
-        return max;
     }
 
     @Override

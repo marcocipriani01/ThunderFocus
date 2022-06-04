@@ -3,6 +3,7 @@ package io.github.marcocipriani01.thunderfocus.board;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
 
 /**
@@ -59,6 +60,15 @@ public class PowerBox {
 
     public void setOnWhenAppOpen(ArduinoPin pin, boolean onWhenAppOpen) {
         get(pin.getNumber()).setOnWhenAppOpen(onWhenAppOpen);
+    }
+
+    public int maxPinNumber() {
+        int max = 0;
+        for (ArduinoPin pin : pins) {
+            int n = pin.getNumber();
+            if (n > max) max = n;
+        }
+        return max;
     }
 
     public double getSunElev() {

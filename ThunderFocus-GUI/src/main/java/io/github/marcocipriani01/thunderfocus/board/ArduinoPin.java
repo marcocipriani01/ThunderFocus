@@ -35,6 +35,7 @@ public class ArduinoPin {
     public ArduinoPin() {
 
     }
+
     /**
      * Class constructor.
      *
@@ -93,16 +94,16 @@ public class ArduinoPin {
         return isPWM && enablePWM;
     }
 
-    public boolean isDigitalPin() {
-        return (!isPWM) || (!enablePWM);
-    }
-
     public void setPWMEnabled(boolean enablePWM) {
         if (!isPWM)
             throw new IllegalStateException("This pin is not a PWM pin!");
         this.enablePWM = enablePWM;
         if (!enablePWM)
             value = (value > 100) ? 255 : 0;
+    }
+
+    public boolean isDigitalPin() {
+        return (!isPWM) || (!enablePWM);
     }
 
     public boolean isOnWhenAppOpen() {
@@ -123,6 +124,10 @@ public class ArduinoPin {
 
     public void setAutoModeEn(boolean autoModeEn) {
         this.autoModeEn = autoModeEn;
+    }
+
+    public boolean canWrite() {
+        return (!autoModeEn) && (!onWhenAppOpen);
     }
 
     /**
@@ -152,7 +157,7 @@ public class ArduinoPin {
      * @param value a new value for this pin, 0→255.
      */
     public void setValue(int value) {
-        this.value = isPWMEnabled() ? constrain(value) : (value > 100 ? 255 : 0);
+        this.value = (isPWM && enablePWM) ? constrain(value) : ((value > 100) ? 255 : 0);
     }
 
     public void setValue(boolean value) {

@@ -12,8 +12,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.github.marcocipriani01.thunderfocus.Main.board;
-import static io.github.marcocipriani01.thunderfocus.Main.i18n;
+import static io.github.marcocipriani01.thunderfocus.Main.*;
 
 public final class Board implements SerialMessageListener {
 
@@ -210,13 +209,13 @@ public final class Board implements SerialMessageListener {
                     char type = dev.charAt(0);
                     String[] config = dev.substring(dev.indexOf("[") + 1, dev.indexOf("]")).split(",");
                     switch (type) {
-                        case 'F' -> // Focuser
-                                focuser = new Focuser(
-                                        Integer.parseInt(config[0]),
-                                        Integer.parseInt(config[1]),
-                                        Integer.parseInt(config[2]),
-                                        config[3].equals("1"),
-                                        config[4].equals("1"));
+                        case 'F' -> { // Focuser
+                            int pos = Integer.parseInt(config[0]);
+                            if (pos > settings.getFocuserMaxTravel())
+                                settings.setFokMaxTravel(pos, null);
+                            focuser = new Focuser(pos, Integer.parseInt(config[1]), Integer.parseInt(config[2]),
+                                    config[3].equals("1"), config[4].equals("1"));
+                        }
 
                         case 'D' -> { // Powerbox
                             boolean ambient = config[0].equals("1"),

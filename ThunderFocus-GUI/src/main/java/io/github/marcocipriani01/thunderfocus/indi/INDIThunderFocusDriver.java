@@ -762,6 +762,8 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
     public void updateFocuserMaxTravel(int value) {
         focuserMaxPositionE.setValue(value);
         updateProperty(focuserMaxPositionP);
+        absFocusPositionE.setMax(value);
+        updateProperty(absFocusPositionP);
     }
 
     @Override

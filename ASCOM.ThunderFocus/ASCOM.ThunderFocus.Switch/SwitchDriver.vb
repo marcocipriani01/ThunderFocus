@@ -42,10 +42,12 @@ Public Class Switch
     Private connectedState As Boolean = False
     Private TL As TraceLogger
 
-    Private maxSwitchVal As Short = 0
+    Private switchCount As Short = 0
     Private switchNames() As String
+    Private switchDescr() As String
     Private switchValues() As Short
     Private switchMaxValues() As Short
+    Private switchCanWrite() As Boolean
 
     '
     ' Constructor - Must be public for COM registration!
@@ -128,10 +130,13 @@ Public Class Switch
                 Try
                     SyncLock helper
                         connectedState = helper.Connect(socketPort, "HasPowerBox")
-                        maxSwitchVal = Short.Parse(SendAndReceive("MaxSwitch"))
-                        TL.LogMessage("Connected Set", "Number of switches = " + maxSwitchVal.ToString())
-                        switchNames = SendAndReceive("GetSwitchNames").Split(","c)
-                        switchMaxValues = 
+                        switchCount = Short.Parse(SendAndReceive("MaxSwitch"))
+                        TL.LogMessage("Connected Set", "Number of switches = " + switchCount.ToString())
+                        switchNames = SendAndReceiveStrings("GetSwitchNames")
+                        switchDescr = SendAndReceiveStrings("GetSwitchDescriptions")
+                        switchMaxValues = SendAndReceiveShorts("MaxSwitchValues")
+                        switchValues = SendAndReceiveShorts("GetSwitches")
+                        switchCanWrite = SendAndReceiveBooleans("CanWrite")
                     End SyncLock
                 Catch ex As Exception
                     TL.LogIssue("Connected Set", "Connection exception! " + ex.Message)
@@ -149,6 +154,18 @@ Public Class Switch
             End If
         End Set
     End Property
+
+    Private Function SendAndReceiveStrings(msg As String) As String()
+        Return SendAndReceive(msg).Split(";"c)
+    End Function
+
+    Private Function SendAndReceiveShorts(msg As String) As Short()
+        Return Array.ConvertAll(SendAndReceive(msg).Split(";"c), Function(Str) Short.Parse(Str))
+    End Function
+
+    Private Function SendAndReceiveBooleans(msg As String) As Boolean()
+        Return Array.ConvertAll(SendAndReceive(msg).Split(";"c), Function(Str) Str.Equals("true"))
+    End Function
 
     Private Function SendAndReceive(msg As String) As String
         helper.SocketSend(msg)
@@ -221,7 +238,7 @@ Public Class Switch
     Public ReadOnly Property MaxSwitch As Short Implements ISwitchV2.MaxSwitch
         Get
             CheckConnected("Attemped MaxSwitch while disconnected!")
-            Return maxSwitchVal
+            Return switchCount
         End Get
     End Property
 
@@ -233,19 +250,7 @@ Public Class Switch
     Public Function GetSwitchName(id As Short) As String Implements ISwitchV2.GetSwitchName
         CheckConnected("Attemped GetSwitchName while disconnected!")
         ValidateId("GetSwitchName", id)
-        Try
-            SyncLock helper
-                helper.SocketSend("GetSwitchName=" + id.ToString())
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    TL.LogMessage("GetSwitchName", rcv)
-                    Return rcv
-                End If
-            End SyncLock
-        Catch ex As Exception
-            TL.LogIssue("GetSwitchName", "Exception while getting switch name: " + ex.Message)
-        End Try
-        Throw New DriverException("No response from ThunderFocus!")
+        Return switchNames(id)
     End Function
 
     ''' <summary>
@@ -256,13 +261,7 @@ Public Class Switch
     Sub SetSwitchName(id As Short, name As String) Implements ISwitchV2.SetSwitchName
         CheckConnected("Attemped SetSwitchName while disconnected!")
         ValidateId("SetSwitchName", id)
-        Try
-            SyncLock helper
-                helper.SocketSend("SetSwitchName=" + id.ToString() + "," + name)
-            End SyncLock
-        Catch ex As Exception
-            TL.LogIssue("SetSwitchName", "Exception while setting switch name: " + ex.Message)
-        End Try
+        Throw New MethodNotImplementedException("SetSwitchName")
     End Sub
 
     ''' <summary>
@@ -271,17 +270,9 @@ Public Class Switch
     ''' <param name="id">The number of the switch whose description is to be returned</param><returns></returns>
     ''' <exception cref="InvalidValueException">If id is outside the range 0 to MaxSwitch - 1</exception>
     Public Function GetSwitchDescription(id As Short) As String Implements ISwitchV2.GetSwitchDescription
-        Dim descr As String = GetSwitchName(id)
-        If descr.Contains("<Unavailable>") Then
-            Return "This switch doesn't exist on the powerbox."
-        End If
-        If MaxSwitchValue(id) = 255.0 Then
-            descr += " (PWM)"
-        End If
-        If Not CanWrite(id) Then
-            descr += ", automatic mode enabled."
-        End If
-        Return descr
+        CheckConnected("Attemped GetSwitchDescription while disconnected!")
+        ValidateId("GetSwitchDescription", id)
+        Return switchDescr(id)
     End Function
 
     ''' <summary>
@@ -297,20 +288,7 @@ Public Class Switch
     Public Function CanWrite(id As Short) As Boolean Implements ISwitchV2.CanWrite
         CheckConnected("Attemped CanWrite while disconnected!")
         ValidateId("CanWrite", id)
-        Try
-            SyncLock helper
-                helper.SocketSend("CanWrite=" + id.ToString())
-                Dim rcv As String = helper.SocketRead()
-                If Not String.IsNullOrEmpty(rcv) Then
-                    Dim b As Boolean = rcv.Contains("true")
-                    TL.LogMessage("CanWrite", "ID = " + id.ToString() + ": " + b.ToString())
-                    Return b
-                End If
-            End SyncLock
-        Catch ex As Exception
-            TL.LogIssue("CanWrite", "Exception while getting switch write state: " + ex.Message)
-        End Try
-        Throw New DriverException("No response from ThunderFocus!")
+        Return switchCanWrite(id)
     End Function
 
 #Region "boolean members"
@@ -323,22 +301,21 @@ Public Class Switch
     Function GetSwitch(id As Short) As Boolean Implements ISwitchV2.GetSwitch
         CheckConnected("Attemped GetSwitch while disconnected!")
         ValidateId("GetSwitch", id)
+        If switchMaxValues(id) > 1 Then
+            Throw New MethodNotImplementedException("GetSwitch is not implemented for multi-value switches")
+        End If
         Try
             SyncLock helper
                 helper.SocketSend("GetSwitch=" + id.ToString())
                 Dim rcv As String = helper.SocketRead()
                 If Not String.IsNullOrEmpty(rcv) Then
-                    TL.LogMessage("GetSwitch", rcv)
-                    If rcv.Contains("PWM") Then
-                        Throw New MethodNotImplementedException("GetSwitch is not implemented for multi-value switches")
-                    End If
-                    Return rcv.Contains("true")
+                    switchValues(id) = Short.Parse(rcv)
                 End If
             End SyncLock
         Catch ex As Exception
             TL.LogIssue("GetSwitch", "Exception while getting switch state: " + ex.Message)
         End Try
-        Throw New DriverException("No response from ThunderFocus!")
+        Return switchValues(id) > 0
     End Function
 
     ''' <summary>
@@ -350,16 +327,13 @@ Public Class Switch
     Sub SetSwitch(id As Short, state As Boolean) Implements ISwitchV2.SetSwitch
         CheckConnected("Attemped SetSwitch while disconnected!")
         ValidateId("SetSwitch", id)
-        Dim stateStr As String
-        If state Then
-            stateStr = "true"
-        Else
-            stateStr = "false"
+        If switchCanWrite(id) = False Then
+            Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
         Dim rcv As String = ""
         Try
             SyncLock helper
-                helper.SocketSend("SetSwitch=" + id.ToString() + "," + stateStr)
+                helper.SocketSend("SetSwitch=" + id.ToString() + "," + If(state, "1", "0"))
                 rcv = helper.SocketRead()
             End SyncLock
         Catch ex As Exception
@@ -386,27 +360,7 @@ Public Class Switch
     Function MaxSwitchValue(id As Short) As Double Implements ISwitchV2.MaxSwitchValue
         CheckConnected("Attemped MaxSwitchValue while disconnected!")
         ValidateId("MaxSwitchValue", id)
-        Dim rcv As String = ""
-        Try
-            SyncLock helper
-                helper.SocketSend("MaxSwitchValue=" + id.ToString())
-                rcv = helper.SocketRead()
-            End SyncLock
-        Catch ex As Exception
-            TL.LogIssue("MaxSwitchValue", "Exception while getting switch max value: " + ex.Message)
-        End Try
-        If String.IsNullOrEmpty(rcv) Then
-            Throw New DriverException("No response from ThunderFocus!")
-        End If
-        TL.LogMessage("MaxSwitchValue", rcv)
-        If rcv.Contains("Unavailable") Then
-            Return 1.0
-        End If
-        Try
-            Return CInt(rcv)
-        Catch ex As Exception
-            Throw New DriverException("Invalid response from ThunderFocus!")
-        End Try
+        Return switchMaxValues(id)
     End Function
 
     ''' <summary>
@@ -443,26 +397,18 @@ Public Class Switch
     Function GetSwitchValue(id As Short) As Double Implements ISwitchV2.GetSwitchValue
         CheckConnected("Attemped GetSwitchValue while disconnected!")
         ValidateId("GetSwitchValue", id)
-        Dim rcv As String = ""
         Try
             SyncLock helper
-                helper.SocketSend("GetSwitchValue=" + id.ToString())
-                rcv = helper.SocketRead()
+                helper.SocketSend("GetSwitch=" + id.ToString())
+                Dim rcv As String = helper.SocketRead()
+                If Not String.IsNullOrEmpty(rcv) Then
+                    switchValues(id) = Short.Parse(rcv)
+                End If
             End SyncLock
         Catch ex As Exception
-            TL.LogIssue("GetSwitchValue", "Exception while getting switch value: " + ex.Message)
+            TL.LogIssue("GetSwitch", "Exception while getting switch state: " + ex.Message)
         End Try
-        If String.IsNullOrEmpty(rcv) Then
-            Throw New DriverException("No response from ThunderFocus!")
-        End If
-        TL.LogMessage("GetSwitchValue", rcv)
-        If rcv.Contains("true") Then
-            Return 1.0
-        End If
-        If rcv.Contains("false") Or rcv.Contains("Unavailable") Then
-            Return 0.0
-        End If
-        Return CInt(rcv)
+        Return switchValues(id)
     End Function
 
     ''' <summary>
@@ -476,18 +422,17 @@ Public Class Switch
     Sub SetSwitchValue(id As Short, value As Double) Implements ISwitchV2.SetSwitchValue
         CheckConnected("Attemped SetSwitchValue while disconnected!")
         ValidateRange("SetSwitchValue", id, value)
-        If value = 1.0 And MaxSwitchValue(id) = 1.0 Then
-            TL.LogMessage("SetSwitchValue", "Setting switch #" + id.ToString() + " to 1.0 because it is a boolean switch")
-            value = 255.0
+        If switchCanWrite(id) = False Then
+            Throw New MethodNotImplementedException("Can't write to switch #" + id.ToString() + "!")
         End If
         Dim rcv As String = ""
         Try
             SyncLock helper
-                helper.SocketSend("SetSwitchValue=" + id.ToString() + "," + CInt(value).ToString())
+                helper.SocketSend("SetSwitch=" + id.ToString() + "," + CShort(value).ToString())
                 rcv = helper.SocketRead()
             End SyncLock
         Catch ex As Exception
-            TL.LogIssue("SetSwitchValue", "Exception while setting switch value: " + ex.Message)
+            TL.LogIssue("SetSwitchValue", "Exception while setting switch state: " + ex.Message)
         End Try
         If String.IsNullOrEmpty(rcv) Then
             Throw New DriverException("No response from ThunderFocus!")
@@ -510,8 +455,8 @@ Public Class Switch
     ''' <param name="message">The message.</param>
     ''' <param name="id">The id.</param>
     Private Sub ValidateId(message As String, id As Short)
-        If (id < 0 Or id >= maxSwitchVal) Then
-            Throw New InvalidValueException(message, id.ToString(), String.Format("0 to {0}", maxSwitchVal - 1))
+        If (id < 0 Or id >= switchCount) Then
+            Throw New InvalidValueException(message, id.ToString(), String.Format("0 to {0}", switchCount - 1))
         End If
     End Sub
 
@@ -524,7 +469,7 @@ Public Class Switch
     ''' <param name="value">The value.</param>
     Private Sub ValidateRange(message As String, id As Short, value As Double)
         ValidateId(message, id)
-        Dim max = MaxSwitchValue(id)
+        Dim max = switchMaxValues(id)
         If value < 0.0 Or value > max Then
             TL.LogMessage(message, String.Format("Value {1} for Switch {0} is out of the allowed range {2} to {3}", id, value, 0.0, max))
             Throw New InvalidValueException(message, value.ToString(), String.Format("Switch({0}) range {1} to {2}", id, 0.0, max))

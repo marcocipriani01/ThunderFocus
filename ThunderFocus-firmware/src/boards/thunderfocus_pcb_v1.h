@@ -43,9 +43,9 @@
 #define STATUS_LED_MANAGED true
 
 // ---------- Ambient sensors ----------
-#define TEMP_HUM_SENSOR BME280
-#define I2C_SDA_PIN 17
-#define I2C_SCL_PIN 16
+#define TEMP_HUM_SENSOR HTU21D
+//#define I2C_SDA_PIN 17
+//#define I2C_SCL_PIN 16
 
 // ---------- Time ----------
 #define RTC_SUPPORT TEENSY_RTC

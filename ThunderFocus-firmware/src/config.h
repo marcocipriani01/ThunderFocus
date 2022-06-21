@@ -7,7 +7,7 @@
 //#include "boards/thunderfocus_pcb_v2.h"
 //#include "boards/arduino_nano_prototype.h"
 //#include "boards/my_guidescope.h"
-//#include "boards/nik_solar_scope_fok.h"
+#include "boards/nik_solar_scope_fok.h"
 
 
 // ===================================================================================
@@ -51,6 +51,10 @@
 #endif
 #else
 #error "FOCUSER_DRIVER must be defined as either BIPOLAR or UNIPOLAR"
+#endif
+#if HAND_CONTROLLER == true
+#if !defined(HAND_CONTROLLER_POT) || !defined(HAND_CONTROLLER_LEFT) || !defined(HAND_CONTROLLER_RIGHT) || !defined(HAND_CONTROLLER_STEPS_MIN) || !defined(HAND_CONTROLLER_STEPS_MAX)
+#error "HAND_CONTROLLER_POT, HAND_CONTROLLER_LEFT, HAND_CONTROLLER_RIGHT, HAND_CONTROLLER_STEPS_MIN, and HAND_CONTROLLER_STEPS_MAX must be defined"
 #endif
 #endif
 

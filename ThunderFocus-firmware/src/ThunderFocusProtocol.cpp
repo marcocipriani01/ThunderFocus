@@ -65,6 +65,9 @@ void run() {
     unsigned long t = millis();
 #if FOCUSER_DRIVER != OFF
     FocuserState currentState;
+#if HAND_CONTROLLER == true
+    Focuser::updateHandController();
+#endif
     if (Focuser::stepper.run()) {
         currentState = FocuserState::MOVING;
     } else if (lastFocuserState == FocuserState::MOVING) {

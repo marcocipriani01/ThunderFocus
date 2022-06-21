@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../config.h"
 
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 #include <math.h>
 #include "MedianFilter.h"
 #if TEMP_HUM_SENSOR == BME280

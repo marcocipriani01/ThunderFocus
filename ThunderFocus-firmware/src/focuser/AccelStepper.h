@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../config.h"
 
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 #if F_CPU >= 20000000
 #define ACCELSTEPPER_PULSE_WIDTH_MICROS 1
 #else

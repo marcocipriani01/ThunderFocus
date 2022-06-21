@@ -10,7 +10,7 @@
 #if ENABLE_DEVMAN == true
 #include "../devman/DevManagerDefinitions.h"
 #endif
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
 #include "../flat/FlatPanelEnums.h"
 #include "../flat/ServoModels.h"
 #endif
@@ -20,7 +20,7 @@
 namespace Settings {
 struct Struct {
     uint8_t marker;
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
     long focuserPosition;
     double focuserSpeed;
     long focuserBacklash;
@@ -31,13 +31,13 @@ struct Struct {
 #if ENABLE_DEVMAN == true
     DevManager::Pin devManPins[MANAGED_PINS_COUNT];
     DevManager::AutoMode devManAutoMode;
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
     double latitude;
     double longitude;
 #endif
 #endif
 
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
     uint16_t servoDelay;
     uint16_t openServoVal;
     uint16_t closedServoVal;

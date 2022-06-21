@@ -9,19 +9,19 @@
 #include "settings/Settings.h"
 #endif
 
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 #include "focuser/Focuser.h"
 #include "focuser/AccelStepper.h"
 #endif
 
 #if ENABLE_DEVMAN == true
 #include "devman/DevManager.h"
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 #include <TimeLib.h>
 #include <math.h>
 #include "devman/SunUtil.h"
 #endif
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 #include "devman/AmbientManager.h"
 #endif
 #endif
@@ -39,7 +39,7 @@
 #define FOCUSER_SYNC_INTERVAL 100L
 
 namespace ThunderFocus {
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 enum FocuserState { MOVING = (int)'M', HOLD = (int)'H', ARRIVED = (int)'A', POWER_SAVE = (int)'P' };
 
 extern FocuserState lastFocuserState;
@@ -50,14 +50,14 @@ inline int speedToPercentage(double speed);
 inline double percentageToSpeed(int percentage);
 #endif
 
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 extern unsigned long sensorsSyncTime;
 #endif
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 extern unsigned long sunSyncTime;
 #endif
 
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
 extern FlatPanel::CoverStatus lastCoverStatus;
 void updateCoverStatus();
 #endif
@@ -68,7 +68,7 @@ void serialEvent();
 
 #if ENABLE_DEVMAN == true
 void updatePins();
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 void updateSunPosition();
 #endif
 #endif

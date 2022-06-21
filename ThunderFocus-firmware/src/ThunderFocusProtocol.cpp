@@ -1,18 +1,18 @@
 #include "ThunderFocusProtocol.h"
 
 namespace ThunderFocus {
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 FocuserState lastFocuserState = FocuserState::POWER_SAVE;
 unsigned long focuserSyncTime = 0L;
 long lastFocuserPosition = 0L;
 #endif
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 unsigned long sensorsSyncTime = 0L;
 #endif
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 unsigned long sunSyncTime = 0L;
 #endif
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
 FlatPanel::CoverStatus lastCoverStatus = FlatPanel::CoverStatus::NEITHER_OPEN_NOR_CLOSED;
 #endif
 
@@ -28,7 +28,7 @@ void setup() {
     Serial.println(F(">Settings loading"));
 #endif
 #endif
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
     Focuser::begin();
     lastFocuserPosition = Focuser::stepper.getPosition();
 #endif
@@ -52,7 +52,7 @@ void setup() {
 #endif
 #if FLAT_PANEL == true
     FlatPanel::begin();
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
     lastCoverStatus = FlatPanel::coverStatus;
 #endif
 #endif
@@ -63,13 +63,15 @@ void setup() {
 
 void run() {
     unsigned long t = millis();
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
     FocuserState currentState;
     if (Focuser::stepper.run()) {
         currentState = FocuserState::MOVING;
     } else if (lastFocuserState == FocuserState::MOVING) {
         currentState = FocuserState::ARRIVED;
+#if SETTINGS_SUPPORT == true
         Focuser::updateSettings();
+#endif
     } else if (Focuser::stepper.isEnabled()) {
         currentState = FocuserState::HOLD;
     } else {
@@ -91,7 +93,7 @@ void run() {
 
 #if FLAT_PANEL == true
     FlatPanel::run();
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
     updateCoverStatus();
     if (lastCoverStatus == FlatPanel::CoverStatus::NEITHER_OPEN_NOR_CLOSED)
         return;
@@ -100,7 +102,7 @@ void run() {
 
 #if ENABLE_DEVMAN == true
     if (DevManager::run()) updatePins();
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
     AmbientManger::run();
     if ((t - sensorsSyncTime) >= SENSORS_SYNC_INTERVAL) {
         Serial.print(F("J"));
@@ -112,7 +114,7 @@ void run() {
         sensorsSyncTime = t;
     }
 #endif
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
     if ((t - sunSyncTime) >= DEVMAN_UPDATE_INTERVAL) {
         updateSunPosition();
         sunSyncTime = t;
@@ -132,7 +134,7 @@ void serialEvent() {
                 Serial.print(F("C"));
                 Serial.print(FIRMWARE_VERSION);
                 Serial.print(F(";"));
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
                 Serial.print(F("F["));
                 Serial.print(Focuser::stepper.getPosition());
                 Serial.print(F(","));
@@ -150,11 +152,11 @@ void serialEvent() {
 #endif
 #if ENABLE_DEVMAN == true
                 Serial.print(F("D["));
-                Serial.print(TEMP_HUM_SENSOR != DISABLED);
+                Serial.print(TEMP_HUM_SENSOR != OFF);
                 Serial.print(F(","));
-                Serial.print(RTC_SUPPORT != DISABLED);
+                Serial.print(RTC_SUPPORT != OFF);
                 Serial.print(F(","));
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
                 Serial.print(Settings::settings.latitude, 3);
                 Serial.print(F(","));
                 Serial.print(Settings::settings.longitude, 3);
@@ -193,7 +195,7 @@ void serialEvent() {
                 Serial.print(F(","));
                 Serial.print(FlatPanel::brightness);
                 Serial.print(F(","));
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
                 Serial.print(F("1,"));
                 Serial.print(map(Settings::settings.openServoVal, OPEN_SERVO_170deg, OPEN_SERVO_290deg, 170, 290));
                 Serial.print(F(","));
@@ -208,13 +210,13 @@ void serialEvent() {
 #endif
 #endif
                 Serial.println();
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
                 updateSunPosition();
 #endif
                 break;
             }
 
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
             case 'R': {
                 long n = Serial.parseInt();
 #if DEBUG_EN
@@ -254,7 +256,9 @@ void serialEvent() {
                 Serial.println(n);
 #endif
                 Focuser::stepper.setPosition(n);
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 
@@ -263,7 +267,9 @@ void serialEvent() {
                 Serial.println(F(">SetZero"));
 #endif
                 Focuser::stepper.setPosition(0);
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 
@@ -274,7 +280,9 @@ void serialEvent() {
                 Serial.println(b);
 #endif
                 Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 
@@ -285,7 +293,9 @@ void serialEvent() {
                 Serial.println(n);
 #endif
                 Focuser::stepper.setMaxSpeed(percentageToSpeed(n));
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 
@@ -296,7 +306,9 @@ void serialEvent() {
                 Serial.println(n);
 #endif
                 Focuser::stepper.setBacklash(n);
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 
@@ -307,7 +319,9 @@ void serialEvent() {
                 Serial.println(b);
 #endif
                 Focuser::stepper.setDirectionInverted(b);
+#if SETTINGS_SUPPORT == true
                 Settings::requestSave = true;
+#endif
                 break;
             }
 #endif
@@ -368,7 +382,7 @@ void serialEvent() {
             }
 #endif
 
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
             case 'T': {
                 unsigned long time = Serial.parseInt();
                 long lat = Serial.parseInt();
@@ -429,7 +443,7 @@ void serialEvent() {
                 break;
             }
 
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
             case 'Q': {
                 byte value = Serial.parseInt();
 #if DEBUG_EN
@@ -474,7 +488,7 @@ void serialEvent() {
     }
 }
 
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
     void updateCoverStatus() {
         if (lastCoverStatus != FlatPanel::coverStatus) {
             Serial.print(F("E"));
@@ -505,7 +519,7 @@ void updatePins() {
 }
 #endif
 
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 void updateSunPosition() {
     double sunElev = SunUtil::getSunElevation();
     if (!isnan(sunElev)) {
@@ -515,7 +529,7 @@ void updateSunPosition() {
 }
 #endif
 
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 inline int speedToPercentage(double speed) { return (speed - FOCUSER_PPS_MIN) * 100.0 / (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN); }
 
 inline double percentageToSpeed(int percentage) { return percentage * (FOCUSER_PPS_MAX - FOCUSER_PPS_MIN) / 100.0 + FOCUSER_PPS_MIN; }

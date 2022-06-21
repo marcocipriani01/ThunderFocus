@@ -1,5 +1,5 @@
 #include "SunUtil.h"
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 
 namespace SunUtil {
 

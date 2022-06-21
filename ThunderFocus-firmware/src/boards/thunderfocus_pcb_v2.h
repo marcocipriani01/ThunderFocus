@@ -44,7 +44,7 @@
 #define EL_PANEL_LOG_SCALE true
 #define EL_PANEL_ON_BOOT false
 #define SERVO_MOTOR SERVO_RDS3225
-#if defined(SERVO_MOTOR) && SERVO_MOTOR != DISABLED
+#if defined(SERVO_MOTOR) && SERVO_MOTOR != OFF
 #define SERVO_PIN 17
 #endif
 

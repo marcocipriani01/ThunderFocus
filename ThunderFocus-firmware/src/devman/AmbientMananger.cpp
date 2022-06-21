@@ -1,5 +1,5 @@
 #include "AmbientManager.h"
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 
 namespace AmbientManger {
 #if TEMP_HUM_SENSOR == BME280

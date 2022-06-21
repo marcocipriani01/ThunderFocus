@@ -3,7 +3,7 @@
 
 namespace FlatPanel {
 
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
 ServoHack servo;
 uint16_t targetVal = 0;
 uint16_t currentVal = 0;
@@ -18,7 +18,7 @@ uint16_t currentBrightness = 0;
 unsigned long lastBrightnessAdj = 0L;
 
 void begin() {
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
     servo.attach(SERVO_PIN);
     if (Settings::settings.coverStatus == OPEN) {
         servo.write(Settings::settings.openServoVal);
@@ -40,7 +40,7 @@ void begin() {
 #endif
 }
 
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
 void setShutter(int val) {
     if ((val == OPEN) && (coverStatus != OPEN)) {
         motorDirection = OPENING;
@@ -66,7 +66,7 @@ void halt() {
 void setLight(boolean val) {
     lightStatus = val;
     if (val) {
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
         if (coverStatus == CLOSED) targetBrightness = brightness;
 #else
         targetBrightness = brightness;
@@ -82,7 +82,7 @@ void setBrightness(int val) {
 #else
     brightness = val;
 #endif
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
     if (lightStatus && (coverStatus == CLOSED)) targetBrightness = brightness;
 #else
     if (lightStatus) targetBrightness = brightness;
@@ -101,7 +101,7 @@ void run() {
         }
         lastBrightnessAdj = t;
     }
-#if SERVO_MOTOR != DISABLED
+#if SERVO_MOTOR != OFF
     if ((motorDirection != NONE) && ((t - lastMoveTime) >= Settings::settings.servoDelay)) {
         if ((currentVal > targetVal) && (motorDirection == OPENING)) {
             currentVal -= SERVO_STEP_SIZE;

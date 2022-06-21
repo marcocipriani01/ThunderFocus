@@ -6,17 +6,17 @@
 //#include "boards/thunderfocus_pcb_v1.h"
 //#include "boards/thunderfocus_pcb_v2.h"
 //#include "boards/arduino_nano_prototype.h"
-#include "boards/my_guidescope.h"
-//#include "boards/nik_solar_scope_fok.h"
+//#include "boards/my_guidescope.h"
+#include "boards/nik_solar_scope_fok.h"
 
 
 // ===================================================================================
 // ============================== FOCUSER VALIDATION =================================
 // ===================================================================================
 #ifndef FOCUSER_DRIVER
-#define FOCUSER_DRIVER DISABLED
+#define FOCUSER_DRIVER OFF
 #endif
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 #ifndef FOCUSER_ACCEL
 #error "FOCUSER_ACCEL must be defined"
 #endif
@@ -68,12 +68,12 @@
 #error "STATUS_LED_MANAGED must be defined if STATUS_LED is defined"
 #endif
 #ifndef TEMP_HUM_SENSOR
-#define TEMP_HUM_SENSOR DISABLED
+#define TEMP_HUM_SENSOR OFF
 #endif
 #ifndef RTC_SUPPORT
-#define RTC_SUPPORT DISABLED
+#define RTC_SUPPORT OFF
 #endif
-#if (RTC_SUPPORT != DISABLED) || (TEMP_HUM_SENSOR != DISABLED)
+#if (RTC_SUPPORT != OFF) || (TEMP_HUM_SENSOR != OFF)
 #define DEVMAN_HAS_AUTO_MODES true
 #else
 #define DEVMAN_HAS_AUTO_MODES false
@@ -88,8 +88,8 @@
 #endif
 #else
 #define ENABLE_PFI false
-#define RTC_SUPPORT DISABLED
-#define TEMP_HUM_SENSOR DISABLED
+#define RTC_SUPPORT OFF
+#define TEMP_HUM_SENSOR OFF
 #define STATUS_LED_MANAGED false
 #endif
 
@@ -110,9 +110,9 @@
 #define EL_PANEL_ON_BOOT false
 #endif
 #ifndef SERVO_MOTOR
-#define SERVO_MOTOR DISABLED
+#define SERVO_MOTOR OFF
 #endif
-#if (SERVO_MOTOR != DISABLED) && (!defined(SERVO_PIN))
+#if (SERVO_MOTOR != OFF) && (!defined(SERVO_PIN))
 #error "SERVO_PIN must be defined if SERVO_MOTOR is defined"
 #endif
 #endif
@@ -131,7 +131,7 @@
 // ===================================================================================
 // =============================== GENERAL VALIDATION ================================
 // ===================================================================================
-#if (FOCUSER_DRIVER == DISABLED) && (ENABLE_DEVMAN == false) && (FLAT_PANEL == false)
+#if (FOCUSER_DRIVER == OFF) && (ENABLE_DEVMAN == false) && (FLAT_PANEL == false)
 #error "At least one of FOCUSER_DRIVER, ENABLE_DEVMAN, or FLAT_PANEL must be defined"
 #endif
 

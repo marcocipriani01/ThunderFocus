@@ -1,7 +1,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define DISABLED 0
+#define OFF 0
 
 #define BIPOLAR 1
 #define UNIPOLAR 2

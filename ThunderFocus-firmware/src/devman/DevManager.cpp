@@ -9,10 +9,10 @@ unsigned long lastUpdateTime = 0L;
 #endif
 
 void begin() {
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
     SunUtil::begin();
 #endif
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
     AmbientManger::begin();
 #endif
     for (uint8_t i = 0; i < MANAGED_PINS_COUNT; i++) {
@@ -90,7 +90,7 @@ boolean processAutoMode(boolean force) {
         unsigned long t = millis();
         if (force || ((t - lastUpdateTime) >= DEVMAN_UPDATE_INTERVAL)) {
             switch (autoMode) {
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
                 case AutoMode::NIGHT_ASTRONOMICAL: {
                     double sunElevation = SunUtil::getSunElevation();
                     if (!isnan(sunElevation))
@@ -111,7 +111,7 @@ boolean processAutoMode(boolean force) {
                 }
 #endif
 
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
                 case AutoMode::DEW_POINT_DIFF1: {
                     hasChanged = processDewPoint(1.0);
                     break;
@@ -222,7 +222,7 @@ AutoMode getAutoMode() { return autoMode; }
 
 boolean setAutoMode(AutoMode am) {
     switch (am) {
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
         case AutoMode::NIGHT_ASTRONOMICAL:
         case AutoMode::NIGHT_CIVIL:
         case AutoMode::DAYTIME: {
@@ -230,7 +230,7 @@ boolean setAutoMode(AutoMode am) {
             return updateAutoMode();
         }
 #endif
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
         case AutoMode::DEW_POINT_DIFF1:
         case AutoMode::DEW_POINT_DIFF2:
         case AutoMode::DEW_POINT_DIFF3:
@@ -301,7 +301,7 @@ int pwmMap(double in, double min, double max) {
 }
 #endif
 
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 boolean processDewPoint(double triggerDiff) {
     double dewPoint = AmbientManger::getDewPoint(), temperature = AmbientManger::getTemperature();
     if ((temperature != TEMP_ABSOLUTE_ZERO) && (dewPoint != TEMP_ABSOLUTE_ZERO))

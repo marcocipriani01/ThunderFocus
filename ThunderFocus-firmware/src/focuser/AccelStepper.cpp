@@ -1,5 +1,5 @@
 #include "AccelStepper.h"
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 
 #pragma region Constructor
 #if ACCELSTEPPER_UNIPOLAR_STEPPER == true

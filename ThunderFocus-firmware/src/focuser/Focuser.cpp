@@ -1,5 +1,5 @@
 #include "Focuser.h"
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
 
 namespace Focuser {
 #if FOCUSER_DRIVER == BIPOLAR
@@ -25,18 +25,29 @@ void begin() {
 #ifdef FOCUSER_STEPS_SCALING
     stepper.setStepsScaling(FOCUSER_STEPS_SCALING);
 #endif
+#ifdef FOCUSER_EN
+    stepper.setEnablePin(FOCUSER_EN, false);
+#endif
+#if SETTINGS_SUPPORT == true
     stepper.setPosition(Settings::settings.focuserPosition);
     stepper.setMaxSpeed(Settings::settings.focuserSpeed);
     stepper.setBacklash(Settings::settings.focuserBacklash);
     stepper.setDirectionInverted(Settings::settings.focuserReverse);
+    stepper.setAutoPowerTimeout(Settings::settings.focuserPowerSave ? FOCUSER_POWER_TIMEOUT : 0);
+#else
+    stepper.setPosition(0L);
+    stepper.setMaxSpeed((FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2.0);
+    stepper.setBacklash(0L);
+    stepper.setDirectionInverted(false);
 #ifdef FOCUSER_EN
-    stepper.setEnablePin(FOCUSER_EN, false);
     stepper.setAutoPowerTimeout(FOCUSER_POWER_TIMEOUT);
 #else
     stepper.setAutoPowerTimeout(0);
 #endif
+#endif
 }
 
+#if SETTINGS_SUPPORT == true
 void updateSettings() {
     Settings::settings.focuserPosition = stepper.getPosition();
     Settings::settings.focuserSpeed = stepper.getMaxSpeed();
@@ -45,6 +56,7 @@ void updateSettings() {
     Settings::settings.focuserReverse = stepper.isDirectionInverted();
     Settings::requestSave = true;
 }
+#endif
 
 }  // namespace Focuser
 #endif

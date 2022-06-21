@@ -5,7 +5,7 @@
 
 #include "../config.h"
 
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 #if SETTINGS_SUPPORT == false
 #error "The sun elevation feature requires an EEPROM!"
 #endif

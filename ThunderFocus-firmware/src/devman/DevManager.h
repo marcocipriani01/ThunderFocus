@@ -7,11 +7,14 @@
 
 #if ENABLE_DEVMAN == true
 #include "DevManagerDefinitions.h"
+#if SETTINGS_SUPPORT == false
+#error "SETTINGS_SUPPORT must be true to use the device manager."
+#endif
 #include "settings/Settings.h"
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 #include "AmbientManager.h"
 #endif
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
 #include <math.h>
 #include "SunUtil.h"
 #endif
@@ -43,7 +46,7 @@ boolean forEachAutoPin(int pwm, boolean digital);
 boolean setPinAutoModeEn(uint8_t pin, boolean enabled);
 boolean setPinPwmEn(uint8_t pin, boolean pwmEn);
 #endif
-#if TEMP_HUM_SENSOR != DISABLED
+#if TEMP_HUM_SENSOR != OFF
 boolean processDewPoint(double triggerDiff);
 boolean processHumidity(double triggerHum);
 #endif

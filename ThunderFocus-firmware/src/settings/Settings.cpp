@@ -11,7 +11,7 @@ void reset() {
     Serial.println(F(">Settings reset!"));
 #endif
     settings.marker = EEPROM_MARKER;
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
     settings.focuserPosition = 0L;
     settings.focuserSpeed = (FOCUSER_PPS_MAX + FOCUSER_PPS_MIN) / 2.0;
     settings.focuserBacklash = 0L;
@@ -25,12 +25,12 @@ void reset() {
         settings.devManPins[i] = defaults[i];
     }
     settings.devManAutoMode = DevManager::AutoMode::NONE;
-#if RTC_SUPPORT != DISABLED
+#if RTC_SUPPORT != OFF
     settings.latitude = 0.0;
     settings.longitude = 0.0;
 #endif
 #endif
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
     settings.servoDelay = SERVO_DELAY_DEFAULT;
     settings.openServoVal = OPEN_SERVO_DEFAULT;
     settings.closedServoVal = CLOSED_SERVO_DEFAULT;
@@ -70,15 +70,15 @@ void load() {
     Serial.println(settings.marker);
 #endif
     if (settings.marker != EEPROM_MARKER) reset();
-#if FOCUSER_DRIVER != DISABLED
+#if FOCUSER_DRIVER != OFF
     if (isnan(settings.focuserSpeed)) reset();
     settings.focuserSpeed = constrain(settings.focuserSpeed, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX);
     if (settings.focuserBacklash < 0) settings.focuserBacklash = 0;
 #endif
-#if (ENABLE_DEVMAN == true) && (RTC_SUPPORT != DISABLED)
+#if (ENABLE_DEVMAN == true) && (RTC_SUPPORT != OFF)
     if (isnan(settings.latitude) || isnan(settings.longitude)) reset();
 #endif
-#if (FLAT_PANEL == true) && (SERVO_MOTOR != DISABLED)
+#if (FLAT_PANEL == true) && (SERVO_MOTOR != OFF)
     settings.servoDelay = constrain(settings.servoDelay, SERVO_DELAY_MIN, SERVO_DELAY_MAX);
     settings.closedServoVal = constrain(settings.closedServoVal, CLOSED_SERVO_15deg, CLOSED_SERVO_m15deg);
     settings.openServoVal = constrain(settings.openServoVal, OPEN_SERVO_290deg, OPEN_SERVO_170deg);

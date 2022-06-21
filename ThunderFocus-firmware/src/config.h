@@ -7,7 +7,7 @@
 //#include "boards/thunderfocus_pcb_v2.h"
 //#include "boards/arduino_nano_prototype.h"
 //#include "boards/my_guidescope.h"
-#include "boards/nik_solar_scope_fok.h"
+//#include "boards/nik_solar_scope_fok.h"
 
 
 // ===================================================================================

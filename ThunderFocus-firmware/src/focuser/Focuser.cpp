@@ -1,6 +1,10 @@
 #include "Focuser.h"
 #if FOCUSER_DRIVER != OFF
 
+#if HAND_CONTROLLER == true
+unsigned long lastHcUpdate = 0L;
+#endif
+
 namespace Focuser {
 #if FOCUSER_DRIVER == BIPOLAR
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
@@ -45,6 +49,10 @@ void begin() {
     stepper.setAutoPowerTimeout(0);
 #endif
 #endif
+#if HAND_CONTROLLER == true
+    pinMode(HAND_CONTROLLER_LEFT, INPUT_PULLUP);
+	pinMode(HAND_CONTROLLER_RIGHT, INPUT_PULLUP);
+#endif
 }
 
 #if SETTINGS_SUPPORT == true
@@ -55,6 +63,28 @@ void updateSettings() {
     Settings::settings.focuserBacklash = stepper.getBacklash();
     Settings::settings.focuserReverse = stepper.isDirectionInverted();
     Settings::requestSave = true;
+}
+#endif
+
+#if HAND_CONTROLLER == true
+void updateHandController() {
+    unsigned long t = millis();
+    unsigned int speed = analogRead(HAND_CONTROLLER_POT);
+    if ((t - lastHcUpdate) > ((unsigned long) map(speed, 0, 1023, HAND_CONTROLLER_DELAY_MIN, HAND_CONTROLLER_DELAY_MAX))) {
+        boolean a = !digitalRead(HAND_CONTROLLER_LEFT), b = !digitalRead(HAND_CONTROLLER_RIGHT);
+        if (a && b) {
+            stepper.stop();
+        } else if (a) {
+            stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
+            stepper.move(map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX));
+        } else if (b) {
+            stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
+            stepper.move(-map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX));
+        } else {
+            stepper.setMaxSpeed(Settings::settings.focuserSpeed);
+        }
+        lastHcUpdate = t;
+    }
 }
 #endif
 

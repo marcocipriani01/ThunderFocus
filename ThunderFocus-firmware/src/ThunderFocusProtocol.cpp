@@ -257,7 +257,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setPosition(n);
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }
@@ -268,7 +268,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setPosition(0);
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }
@@ -281,7 +281,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setAutoPowerTimeout(b ? FOCUSER_POWER_TIMEOUT : 0);
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }
@@ -294,7 +294,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setMaxSpeed(percentageToSpeed(n));
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }
@@ -307,7 +307,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setBacklash(n);
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }
@@ -320,7 +320,7 @@ void serialEvent() {
 #endif
                 Focuser::stepper.setDirectionInverted(b);
 #if SETTINGS_SUPPORT == true
-                Settings::requestSave = true;
+                Focuser::updateSettings();
 #endif
                 break;
             }

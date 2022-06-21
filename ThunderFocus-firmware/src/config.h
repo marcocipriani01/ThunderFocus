@@ -7,7 +7,7 @@
 //#include "boards/thunderfocus_pcb_v2.h"
 //#include "boards/arduino_nano_prototype.h"
 //#include "boards/my_guidescope.h"
-#include "boards/nik_solar_scope_fok.h"
+//#include "boards/nik_solar_scope_fok.h"
 
 
 // ===================================================================================
@@ -120,7 +120,7 @@
 // ===================================================================================
 // ============================== EEPROM CONFIGURATION ===============================
 // ===================================================================================
-#if defined(__AVR__) || defined(CORE_TEENSY)
+#if defined(__AVR__) || defined(CORE_TEENSY) || defined(ESP32)
 #define SETTINGS_SUPPORT true
 #define EEPROM_MARKER (__TIME__[4] + __TIME__[6] + __TIME__[7] - (3 * '0'))
 #define EEPROM_START 0

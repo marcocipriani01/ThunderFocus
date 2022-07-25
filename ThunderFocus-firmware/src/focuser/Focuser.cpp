@@ -1,15 +1,15 @@
 #include "Focuser.h"
 #if FOCUSER_DRIVER != OFF
 
-#if HAND_CONTROLLER == true
-unsigned long lastHcUpdate = 0L;
-#endif
-
 namespace Focuser {
 #if FOCUSER_DRIVER == BIPOLAR
 AccelStepper stepper(FOCUSER_STEP, FOCUSER_DIR);
 #elif FOCUSER_DRIVER == UNIPOLAR
 AccelStepper stepper(FOCUSER_IN1, FOCUSER_IN2, FOCUSER_IN3, FOCUSER_IN4);
+#endif
+
+#if HAND_CONTROLLER == true
+unsigned long lastHcUpdate = 0L;
 #endif
 
 void begin() {

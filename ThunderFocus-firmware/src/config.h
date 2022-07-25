@@ -24,7 +24,7 @@
 #error "FOCUSER_PPS_MIN must be defined"
 #endif
 #ifndef FOCUSER_PPS_MAX
-#error "FOCUSER_PPS_MAX must be defined"
+#error "FOCUSER_PPS_MAX must be defined"<
 #endif
 #if defined(FOCUSER_EN) && (!defined(FOCUSER_POWER_TIMEOUT))
 #error "FOCUSER_POWER_TIMEOUT must be defined if FOCUSER_EN is defined"
@@ -55,6 +55,7 @@
 #if HAND_CONTROLLER == true
 #if !defined(HAND_CONTROLLER_POT) || !defined(HAND_CONTROLLER_LEFT) || !defined(HAND_CONTROLLER_RIGHT) || !defined(HAND_CONTROLLER_STEPS_MIN) || !defined(HAND_CONTROLLER_STEPS_MAX)
 #error "HAND_CONTROLLER_POT, HAND_CONTROLLER_LEFT, HAND_CONTROLLER_RIGHT, HAND_CONTROLLER_STEPS_MIN, and HAND_CONTROLLER_STEPS_MAX must be defined"
+#endif
 #endif
 #endif
 

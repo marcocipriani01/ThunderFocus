@@ -31,6 +31,7 @@ void updateSettings();
 extern unsigned long lastHcUpdate;
 
 void updateHandController();
+void hcMove(unsigned int speed, boolean invert);
 #endif
 }
 

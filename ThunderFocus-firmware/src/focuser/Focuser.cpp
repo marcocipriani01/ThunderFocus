@@ -72,19 +72,24 @@ void updateHandController() {
     unsigned int speed = analogRead(HAND_CONTROLLER_POT);
     if ((t - lastHcUpdate) > ((unsigned long) map(speed, 0, 1023, HAND_CONTROLLER_DELAY_MIN, HAND_CONTROLLER_DELAY_MAX))) {
         boolean a = !digitalRead(HAND_CONTROLLER_LEFT), b = !digitalRead(HAND_CONTROLLER_RIGHT);
-        if (a && b) {
+        long fokPos = stepper.getPosition();
+        if (a && b)
             stepper.stop();
-        } else if (a) {
-            stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
-            stepper.move(map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX));
-        } else if (b) {
-            stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
-            stepper.move(-map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX));
-        } else {
+        else if (a)
+            hcMove(speed, false);
+        else if (b)
+            hcMove(speed, true);
+        else
             stepper.setMaxSpeed(Settings::settings.focuserSpeed);
-        }
         lastHcUpdate = t;
     }
+}
+
+void hcMove(unsigned int speed, boolean invert) {
+    stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
+    long steps = map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX);
+    steps = stepper.getPosition() + (invert ? (-steps) : steps);
+    stepper.moveTo(constrain(steps, 0L, FOCUSER_MAX_TRAVEL));
 }
 #endif
 

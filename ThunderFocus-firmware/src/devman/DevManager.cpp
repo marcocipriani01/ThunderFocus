@@ -29,7 +29,7 @@ void begin() {
 boolean run() {
 #if ENABLE_PFI == true
     int val = analogRead(PFI_KNOB);
-    analogWrite(PFI_LED, (val > PFI_THRESHOLD) ? map(val, PFI_THRESHOLD, 1023, 0, 255) : 0);
+    analogWrite(PFI_LED, (val > PFI_THRESHOLD) ? map(val, PFI_THRESHOLD, ANALOG_READ_MAX_VALUE, 0, 255) : 0);
 #endif
 #if DEVMAN_HAS_AUTO_MODES
     return processAutoMode(false);

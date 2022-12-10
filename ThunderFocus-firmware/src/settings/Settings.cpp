@@ -40,6 +40,9 @@ void reset() {
 }
 
 void load() {
+#ifdef ESP32
+    EEPROM.begin(sizeof(Struct) + 1);
+#else
 #if DEBUG_EN
     Serial.print(F(">EEPROM size = "));
     Serial.println(EEPROM.length());
@@ -61,6 +64,7 @@ void load() {
 #endif
         }
     }
+#endif
 #if DEBUG_EN
     Serial.println(F(">Loading settings..."));
 #endif

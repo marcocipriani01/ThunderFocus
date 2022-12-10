@@ -5,9 +5,11 @@
 
 //#include "boards/thunderfocus_pcb_v1.h"
 //#include "boards/thunderfocus_pcb_v2.h"
+#include "boards/thunderfocus_pcb_v2_badass.h"
 //#include "boards/arduino_nano_prototype.h"
 //#include "boards/my_guidescope.h"
 //#include "boards/nik_solar_scope_fok.h"
+//#include "boards/nik_solar_scope_v2.h"
 
 
 // ===================================================================================
@@ -138,6 +140,11 @@
 // ===================================================================================
 #if (FOCUSER_DRIVER == OFF) && (ENABLE_DEVMAN == false) && (FLAT_PANEL == false)
 #error "At least one of FOCUSER_DRIVER, ENABLE_DEVMAN, or FLAT_PANEL must be defined"
+#endif
+#ifdef ESP32
+#define ANALOG_READ_MAX_VALUE 4095
+#else
+#define ANALOG_READ_MAX_VALUE 1023
 #endif
 
 #endif

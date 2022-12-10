@@ -70,7 +70,7 @@ void updateSettings() {
 void updateHandController() {
     unsigned long t = millis();
     unsigned int speed = analogRead(HAND_CONTROLLER_POT);
-    if ((t - lastHcUpdate) > ((unsigned long) map(speed, 0, 1023, HAND_CONTROLLER_DELAY_MIN, HAND_CONTROLLER_DELAY_MAX))) {
+    if ((t - lastHcUpdate) > ((unsigned long) map(speed, 0, ANALOG_READ_MAX_VALUE, HAND_CONTROLLER_DELAY_MIN, HAND_CONTROLLER_DELAY_MAX))) {
         boolean a = !digitalRead(HAND_CONTROLLER_LEFT), b = !digitalRead(HAND_CONTROLLER_RIGHT);
         long fokPos = stepper.getPosition();
         if (a && b)
@@ -86,10 +86,14 @@ void updateHandController() {
 }
 
 void hcMove(unsigned int speed, boolean invert) {
-    stepper.setMaxSpeed(map(speed, 0, 1023, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
-    long steps = map(speed, 0, 1023, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX);
+    stepper.setMaxSpeed(map(speed, 0, ANALOG_READ_MAX_VALUE, FOCUSER_PPS_MIN, FOCUSER_PPS_MAX));
+    long steps = map(speed, 0, ANALOG_READ_MAX_VALUE, HAND_CONTROLLER_STEPS_MIN, HAND_CONTROLLER_STEPS_MAX);
     steps = stepper.getPosition() + (invert ? (-steps) : steps);
+#ifdef FOCUSER_MAX_TRAVEL
     stepper.moveTo(constrain(steps, 0L, FOCUSER_MAX_TRAVEL));
+#else
+    stepper.moveTo((steps > 0L) ? steps : 0L);
+#endif
 }
 #endif
 

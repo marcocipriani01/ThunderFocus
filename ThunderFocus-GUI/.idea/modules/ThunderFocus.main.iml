@@ -12,10 +12,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-server:2.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-focuser:2.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:2.2" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:3.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.10.1" level="project" />
     <orderEntry type="library" name="Gradle: io.github.java-native:jssc:2.9.4" level="project" />
-    <orderEntry type="library" name="Gradle: org.jfree:jfreechart:1.5.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.jfree:jfreechart:1.5.4" level="project" />
     <orderEntry type="library" name="Gradle: com.github.Dansoftowner:jSystemThemeDetector:3.8" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-driver:2.1.1" level="project" />
     <orderEntry type="library" name="Gradle: org.scijava:native-lib-loader:2.3.6" level="project" />

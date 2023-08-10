@@ -1,8 +1,8 @@
 [Setup]
 AppId={{863670cf-a7a6-4314-9479-c99e1c6fce06}
 AppName=ThunderFocus
-AppVersion=2.7.0
-AppVerName=ThunderFocus v2.7.0
+AppVersion=2.7.1
+AppVerName=ThunderFocus v2.7.1
 AppPublisher=marcocipriani01
 AppPublisherURL=https://marcocipriani01.github.io/
 AppSupportURL=https://marcocipriani01.github.io/

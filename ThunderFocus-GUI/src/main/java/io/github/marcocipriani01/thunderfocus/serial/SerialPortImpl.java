@@ -72,7 +72,7 @@ public class SerialPortImpl implements SerialPortEventListener {
         if (isConnected()) throw new IllegalStateException("Already connected.");
         serialPort = new SerialPort(port);
         serialPort.openPort();
-        serialPort.setParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE, false, false);
+        serialPort.setParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE, true, true);
         serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
         serialPort.addEventListener(this);
     }

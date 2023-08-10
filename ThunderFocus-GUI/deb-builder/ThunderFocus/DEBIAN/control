@@ -2,7 +2,7 @@ Package: ThunderFocus
 Architecture: all
 Maintainer: marcocipriani01
 Depends:
-Suggests: openjdk-17-jre
+Suggests: openjdk-20-jre
 Priority: optional
-Version: 2.7.0
+Version: 2.7.1
 Description: ThunderFocus for Debian.

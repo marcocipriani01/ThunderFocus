@@ -126,7 +126,7 @@ public final class Board implements SerialMessageListener {
 
     @Override
     public synchronized void onSerialMessage(String msg) {
-        if (msg.length() == 0)
+        if (msg.isEmpty())
             return;
         char c = msg.charAt(0);
         String param = msg.substring(1);
@@ -514,7 +514,7 @@ public final class Board implements SerialMessageListener {
                     System.out.println("Sending focuser settings request");
                     Commands.PRINT_CONFIG.run(Board.this, null);
                     timerCount++;
-                    if (timerCount < 5) {
+                    if (timerCount < 10) {
                         new Timer("SendSettingsRequestTask #" + timerCount).schedule(new PingRetryTimer(), 500);
                     } else {
                         disconnect();

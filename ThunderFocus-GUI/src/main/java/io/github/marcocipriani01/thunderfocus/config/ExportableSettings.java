@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static io.github.marcocipriani01.thunderfocus.Main.board;
-
 /**
  * @author marcocipriani01
  * @version 1.0
@@ -111,31 +109,31 @@ public class ExportableSettings extends Settings {
         s.powerBoxPins = this.powerBoxPins;
         s.setFokMaxTravel(this.focuserMaxTravel, null);
         s.save();
-        if (board.isReady()) {
-            Focuser focuser = board.focuser();
+        if (b.isReady()) {
+            Focuser focuser = b.focuser();
             if (focuser != null) {
-                board.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
-                board.run(Board.Commands.FOCUSER_SET_SPEED, null, this.speed);
-                board.run(Board.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
-                board.run(Board.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
+                b.run(Board.Commands.FOCUSER_SET_BACKLASH, null, this.backlash);
+                b.run(Board.Commands.FOCUSER_SET_SPEED, null, this.speed);
+                b.run(Board.Commands.FOCUSER_REVERSE_DIR, null, this.reverseDir ? 1 : 0);
+                b.run(Board.Commands.FOCUSER_POWER_SAVER, null, this.powerSaver ? 1 : 0);
             }
-            PowerBox powerBox = board.powerBox();
+            PowerBox powerBox = b.powerBox();
             if (powerBox != null) {
                 for (ArduinoPin p : this.powerBoxPins) {
                     if (powerBox.contains(p)) {
                         if (p.isOnWhenAppOpen()) {
-                            board.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
+                            b.run(Board.Commands.POWER_BOX_SET_PIN_AUTO, null, p.getNumber(), 0);
                             powerBox.setOnWhenAppOpen(p, true);
-                            board.run(Board.Commands.POWER_BOX_SET_PIN, null, p.getNumber(), 255);
+                            b.run(Board.Commands.POWER_BOX_SET_PIN, null, p.getNumber(), 255);
                         } else {
                             powerBox.setOnWhenAppOpen(p, false);
                         }
                     }
                 }
                 if (powerBox.supportsAutoModes() && (this.autoMode != PowerBox.AutoModes.UNAVAILABLE))
-                    board.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
+                    b.run(Board.Commands.POWER_BOX_SET_AUTO_MODE, null, this.autoMode.ordinal());
                 if (powerBox.hasAmbientSensors())
-                    board.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
+                    b.run(Board.Commands.SET_TIME_LAT_LONG, null, 0,
                             (int) ((this.latitude) * 1000), (int) ((this.longitude) * 1000));
             }
         }

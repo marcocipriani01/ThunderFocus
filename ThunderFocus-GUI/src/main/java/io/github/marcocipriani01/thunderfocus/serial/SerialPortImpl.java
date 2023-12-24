@@ -171,12 +171,12 @@ public class SerialPortImpl implements SerialPortEventListener {
     public void serialEvent(SerialPortEvent portEvent) {
         try {
             String in = serialPort.readString();
-            if (in != null && !in.equals("")) {
+            if (in != null && !in.isEmpty()) {
                 String[] split = (buf + in.replace("\r", "")).split("\n", 0);
                 boolean b = in.endsWith("\n");
                 for (int i = 0; i < (b ? split.length : (split.length - 1)); i++) {
                     split[i] = split[i].trim();
-                    if (split[i] != null && !split[i].equals("")) {
+                    if (split[i] != null && !split[i].isEmpty()) {
                         for (SerialMessageListener l : listeners) {
                             l.onSerialMessage(split[i]);
                         }

@@ -616,7 +616,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
         if (powerBox != null) {
             ArrayList<ArduinoPin> digitalPins = powerBox.filter(pin ->
                     pin.isDigitalPin() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
-            if (digitalPins.size() > 0) {
+            if (!digitalPins.isEmpty()) {
                 digitalPinsProps = newSwitchProperty().name(DIGITAL_PINS_PROP).label(DIGITAL_PINS_PROP)
                         .group(GROUP_MAIN_CONTROL).switchRule(Constants.SwitchRules.ANY_OF_MANY).create();
                 for (ArduinoPin pin : digitalPins) {
@@ -629,7 +629,7 @@ public class INDIThunderFocusDriver extends INDIFocuserDriver implements Board.L
             }
             ArrayList<ArduinoPin> pwmPins = powerBox.filter(pin ->
                     pin.isPWMEnabled() && (!pin.isAutoModeEn()) && (!pin.isOnWhenAppOpen()));
-            if (pwmPins.size() > 0) {
+            if (!pwmPins.isEmpty()) {
                 pwmPinsProp = newNumberProperty().name(PWM_PINS_PROP).label(PWM_PINS_PROP)
                         .group(GROUP_MAIN_CONTROL).create();
                 for (ArduinoPin pin : pwmPins) {

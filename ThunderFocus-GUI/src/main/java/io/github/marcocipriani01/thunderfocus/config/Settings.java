@@ -118,8 +118,8 @@ public class Settings {
         // Normalize invalid values
         if (s.indiServerPort <= 1024 || s.indiServerPort >= 65535) s.indiServerPort = 7625;
         if (s.ascomBridgePort <= 1024 || s.ascomBridgePort >= 65535) s.ascomBridgePort = 5001;
-        if (s.focuserTicksCount < 10 || s.focuserTicksCount >= 2147483647) s.focuserTicksCount = 70;
-        if (s.focuserMaxTravel < 1 || s.focuserMaxTravel >= 2147483647) s.focuserMaxTravel = 32767;
+        if (s.focuserTicksCount < 10 || s.focuserTicksCount == 2147483647) s.focuserTicksCount = 70;
+        if (s.focuserMaxTravel < 1 || s.focuserMaxTravel == 2147483647) s.focuserMaxTravel = 32767;
         if (s.theme == null) s.theme = Theme.LIGHT;
         if (s.focuserTicksUnit == null) s.focuserTicksUnit = Units.TICKS;
         if (s.powerBoxPins == null) s.powerBoxPins = new ArrayList<>();

@@ -9,15 +9,15 @@
     <orderEntry type="module" module-name="ThunderFocus.main" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-server:2.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-focuser:2.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:3.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.formdev:flatlaf:3.2.5" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.10.1" level="project" />
-    <orderEntry type="library" name="Gradle: io.github.java-native:jssc:2.9.4" level="project" />
+    <orderEntry type="library" name="Gradle: io.github.java-native:jssc:2.9.6" level="project" />
     <orderEntry type="library" name="Gradle: org.jfree:jfreechart:1.5.4" level="project" />
     <orderEntry type="library" name="Gradle: com.github.Dansoftowner:jSystemThemeDetector:3.8" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-driver:2.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.scijava:native-lib-loader:2.3.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.scijava:native-lib-loader:2.5.0" level="project" />
     <orderEntry type="library" name="Gradle: com.github.INDIForJava:INDIForJava-core:2.1.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.32" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.36" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.tyrus:tyrus-client:2.0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.thoughtworks.xstream:xstream:1.4.18" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.tyrus:tyrus-core:2.0.1" level="project" />

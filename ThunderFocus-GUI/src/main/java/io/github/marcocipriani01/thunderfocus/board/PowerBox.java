@@ -3,7 +3,6 @@ package io.github.marcocipriani01.thunderfocus.board;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static io.github.marcocipriani01.thunderfocus.Main.board;
 import static io.github.marcocipriani01.thunderfocus.Main.i18n;
 
 /**

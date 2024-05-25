@@ -46,11 +46,14 @@ public abstract class SimpleServer {
     public synchronized void start() throws IOException {
         if (connected) throw new IllegalStateException("Already connected.");
         serverSocket = new ServerSocket(port);
+        serverSocket.setSoTimeout(0);
         connected = true;
         new Thread(() -> {
             while (connected) {
                 try {
                     Socket socket = serverSocket.accept();
+                    socket.setKeepAlive(true);
+                    socket.setSoTimeout(0);
                     if (!acceptClient(socket.getInetAddress())) {
                         socket.close();
                         continue;
@@ -64,13 +67,15 @@ public abstract class SimpleServer {
                             while ((inputLine = in.readLine()) != null) {
                                 onMessage(socket, inputLine);
                             }
-                            closeClient(socket);
                         } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
                             closeClient(socket);
                         }
                     }, "Reader thread for " + socket).start();
                     onNewClient(socket);
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }, "Client listener thread").start();
